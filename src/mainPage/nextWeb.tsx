@@ -22,7 +22,7 @@ import {
 } from '~/assets/Icons/Icons';
 import Background from 'src/backbround/background';
 import { onPersonalPage, setTrueErrorServer } from '~/redux/hideShow';
-import HttpRequestUser from '~/restAPI/requestServers/accountRequest/userAPI';
+import HttpRequestUser from '~/restAPI/userAPI';
 import CurrentPageL from './CurrentPage';
 import {
     DivAvatar,
@@ -49,19 +49,13 @@ import Tools from './Tools/Tools';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Profile from './profiles/profile';
 import NextListWeb from './listWebs/ListWebs';
-import PeopleRequest from '~/restAPI/requestServers/socialNetwork/peopleAPI';
+import PeopleRequest from '~/restAPI/socialNetwork/peopleAPI';
 import WarningBrowser from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
 import CommonUtils from '~/utils/CommonUtils';
 import { PropsUser, PropsUserPer } from 'src/App';
-import { PropsBackGroundRedux } from '~/redux/background';
+import { PropsBgNEGA } from '~/redux/background';
 import { PropsReloadRD, online } from '~/redux/reload';
 export const socket = io('http://localhost:3001', { transports: ['websocket'] });
-
-export interface PropsBg {
-    persistedReducer: {
-        background: PropsBackGroundRedux;
-    };
-}
 
 const Website: React.FC<{
     idUser: string[];
@@ -69,14 +63,10 @@ const Website: React.FC<{
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
 }> = ({ idUser, dataUser, setDataUser }) => {
     const dispatch = useDispatch();
-    const { colorText, colorBg } = useSelector((state: PropsBg) => state.persistedReducer.background);
+    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
     const { userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
 
     const [cookies, setCookie] = useCookies(['tks', 'k_user']);
-    // const [darkShining, setDarkShining] = useState<boolean>(backgr);
-    // const [user, setUser] = useState<PropsUserPer | undefined>(dataUser);
-
-    // const [friends, setFriends] = useState<{ idFriend: string }[]>([]);
     const [friendsOnline, setFriendsOnline] = useState<number>(0);
     const [friends, setFriends] = useState<{ idFriend: string; idCurrentUser: string }[]>([]);
     const [warningBrs, setWarningBrs] = useState<
@@ -88,52 +78,6 @@ const Website: React.FC<{
         | undefined
     >();
     const userId = cookies.k_user;
-
-    // useEffect(() => {
-    //     //  const data = GetFriend.friend(dispatch);
-    //     async function fectData() {
-    //         const res: PropsRes = await HttpRequestUser.getById(
-    //             cookies.tks,
-    //             cookies.k_user,
-    //             {
-    //                 avatar: 'avatar',
-    //                 fullName: 'fullname',
-    //                 status: 'status',
-    //                 gender: 'gender',
-    //                 as: 'as',
-    //                 sn: 'sn',
-    //                 l: 'l',
-    //                 w: 'w',
-    //             },
-    //             { position: 'position' },
-    //         );
-    //         console.log('second');
-
-    //         if (res?.status === 9999) {
-    //             dispatch(setTrueErrorServer(''));
-    //         } else {
-    //             if (res?.fullName) {
-    //                 if (res.avatar) {
-    //                     const av: any = CommonUtils.convertBase64(res.avatar);
-    //                     res.avatar = av;
-    //                 }
-
-    //                 setUser({ ...res, avatar: res.avatar });
-    //                 setWarningBrs(res?.warning_browser);
-    //                 dispatch(changeThree({ sn: res.sn, l: res.l, w: res.w }));
-    //             }
-    //             const friends: { idFriend: string; idCurrentUser: string }[] = await PeopleRequest.getfriendAll(
-    //                 cookies.tks,
-    //             );
-    //             setFriends(friends);
-    //         }
-    //     }
-    //     fectData();
-
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
-
-    console.log(friends);
     useEffect(() => {
         const browserId = navigator.userAgent;
         socket.on(userId + browserId + 'browserId', (data) => {

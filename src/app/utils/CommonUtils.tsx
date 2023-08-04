@@ -28,7 +28,7 @@ class CommonUtils {
     }
     convertBase64(file: any) {
         try {
-            if (file?.type === 'Buffer') {
+            if (file && file?.type === 'Buffer') {
                 const imageBase64 = Buffer.from(file, 'base64').toString('binary');
                 if (imageBase64) return imageBase64;
             }

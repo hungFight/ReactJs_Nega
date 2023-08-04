@@ -1,5 +1,3 @@
-import { AnyAction, Dispatch } from '@reduxjs/toolkit';
-import { HttpRequest } from '../httpRequest';
 import refreshToken from '~/refreshToken/refreshToken';
 class PeopleRequest {
     getPeople = async (accessToken: string, rl?: string) => {

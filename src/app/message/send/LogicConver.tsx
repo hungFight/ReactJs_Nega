@@ -2,16 +2,16 @@ import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
-import sendChatAPi from '~/restAPI/requestServers/accountRequest/sendChatAPi';
-import sendChatAPI from '~/restAPI/requestServers/accountRequest/sendChatAPi';
+import userAPI from '~/restAPI/userAPI';
+import sendChatAPi from '~/restAPI/chatAPI';
+import sendChatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setTrueErrorServer } from '~/redux/hideShow';
-import CookiesF from '~/reUsingComponents/cookies';
-import fileGridFS from '~/restAPI/requestServers/fileGridFS';
+import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
+import Cookies from '~/utils/Cookies';
 
 export interface PropsChat {
     id_us: string[];
@@ -37,7 +37,7 @@ export interface PropsChat {
 }
 export default function LogicConversation(id_room: string | undefined, id_others: string, id_you: string) {
     const dispatch = useDispatch();
-    const { userId, token } = CookiesF();
+    const { userId, token } = Cookies();
 
     const cRef = useRef<number>(0);
     const mRef = useRef<any>(0);
@@ -94,11 +94,10 @@ export default function LogicConversation(id_room: string | undefined, id_others
                     if (newData.room.length > 0 && chatRef.current) {
                         chatRef.current = {
                             ...chatRef.current,
-                            room: [...newData.room.reverse(), ...chatRef.current.room],
+                            room: [...chatRef.current.room, ...newData.room],
                         };
                     }
                 } else {
-                    newData.room = newData.room.reverse();
                     chatRef.current = newData;
                     cRef.current = 7;
                 }

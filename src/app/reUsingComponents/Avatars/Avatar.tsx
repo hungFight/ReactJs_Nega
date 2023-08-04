@@ -53,9 +53,9 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     const [idUser] = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow.idUser);
     const [avatar, setAvatar] = useState<boolean>(false);
     const [avatarFallback, setAvatarFallback] = useState<string>('');
-    useEffect(() => {
-        setAvatarFallback(!src ? Fallback : src);
-    }, [Fallback, src]);
+    // useEffect(() => {
+    //     setAvatarFallback(!src ? Fallback : src);
+    // }, [Fallback, src]);
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = () => {
         console.log('err');
@@ -84,7 +84,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         <DivImg id={idH} width={width} css={css} {...events} ref={ref}>
             {children}
             <Img
-                src={src || avatarFallback}
+                src={src || Fallback || avatarFallback}
                 alt={alt}
                 onError={handleErrorImage}
                 radius={radius}

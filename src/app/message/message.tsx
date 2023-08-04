@@ -5,13 +5,13 @@ import Send from './Send/Send';
 import { DivMs } from './styleMessage';
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PropsBg } from 'src/mainPage/nextWeb';
 import { PropsUser } from 'src/App';
 import Conversation from './Send/Conversation';
+import { PropsBgNEGA } from '~/redux/background';
 
 const Message: React.FC<{ dataUser: PropsUser; userOnline: string[] }> = ({ dataUser, userOnline }) => {
     const [width, setWidth] = useState<string>('');
-    const { colorText, colorBg } = useSelector((state: PropsBg) => state.persistedReducer.background);
+    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
     const elRef = useRef<any>();
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);

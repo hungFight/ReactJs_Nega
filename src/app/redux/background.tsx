@@ -1,8 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export interface PropsBackGroundRedux {
+interface PropsBackGroundRedux {
     colorText: string;
     colorBg: number;
+}
+export interface PropsBgNEGA {
+    persistedReducer: {
+        background: {
+            colorText: string;
+            colorBg: number;
+        };
+    };
 }
 const initialState: PropsBackGroundRedux = {
     colorText: '#cbcbcb',

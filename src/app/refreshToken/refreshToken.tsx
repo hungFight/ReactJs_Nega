@@ -2,7 +2,7 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
 import Cookies from 'universal-cookie';
-import authHttpRequest from '~/restAPI/requestServers/authRequest/authRequest';
+import authHttpRequest from '~/restAPI/authAPI/authAPI';
 axios.defaults.withCredentials = true;
 const axiosJWT = axios.create({
     baseURL: process.env.REACT_APP_SPACESHIP,
@@ -10,13 +10,12 @@ const axiosJWT = axios.create({
 const cookies = new Cookies();
 class refreshToken {
     private isInterceptorAttached: boolean = false;
-    private interceptor: any;
     axiosJWTs(token: string) {
         console.log('token here', token);
 
         let i = 0;
         if (!this.isInterceptorAttached) {
-            this.interceptor = axiosJWT.interceptors.request.use(
+            axiosJWT.interceptors.request.use(
                 async (config) => {
                     console.log('all right', i++);
                     const date = new Date();
@@ -42,19 +41,11 @@ class refreshToken {
                 },
                 (err) => {
                     console.log('error Axios');
-
                     return Promise.reject(err);
                 },
             );
         }
         return axiosJWT;
-    }
-    ejectInterceptor() {
-        // Gỡ bỏ interceptor nếu đã được gắn
-        if (this.interceptor) {
-            axiosJWT.interceptors.request.eject(this.interceptor);
-            this.isInterceptorAttached = false;
-        }
     }
 }
 export default new refreshToken();

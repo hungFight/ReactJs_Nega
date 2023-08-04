@@ -15,7 +15,7 @@ import { DivTitleP } from './styleLayout';
 import { useRef, useState } from 'react';
 import UserBar from 'src/mainPage/personalPage/layout/UserBar';
 import { useCookies } from 'react-cookie';
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
+import userAPI from '~/restAPI/userAPI';
 
 export interface PropsTitleP {
     position: string;

@@ -8,7 +8,7 @@ export const DivForm = styled.div`
     text-align: center;
     position: relative;
     box-shadow: 0 0 20px #0a0a0a;
-    background-image: linear-gradient(345deg, #7474740a, #00000021);
+    background-image: linear-gradient(324deg, #383838ed, #3cccbc47);
     @media (max-width: 400px) {
         max-width: 320px;
     }
@@ -31,9 +31,9 @@ export const Pcontent = styled.p`
     color: rgb(255, 142, 142);
     font-family: 'Arima', sans-serif;
 `;
-export const SpanIconPhoneMail = styled.span`
-    right: ${(props: { right?: string }) => props.right || '12px'};
-    top: 13px;
+export const SpanIconPhoneMail = styled.span<{ top?: string; right?: string }>`
+    right: ${(props) => props.right || '25px'};
+    top: ${(props) => props.top};
     font-size: 2.5rem;
     position: absolute;
     color: #aeaeae;
@@ -50,7 +50,7 @@ export const DivGenderP = styled.div`
     justify-content: center;
 `;
 export const DivGenderC = styled.div`
-    width: 189px;
+    width: 48%;
     height: 37px;
     display: flex;
     align-items: center;
@@ -60,12 +60,13 @@ export const DivGenderC = styled.div`
     border: 1px solid #8686869e;
     color: #fff;
     cursor: pointer;
-    background-color: ${(props) => props.color};
+    ${(props: { css?: string }) => props.css}
     &:hover {
-        background-color: rgb(99, 99, 99);
+        background-image: linear-gradient(45deg, black, #2a8828);
     }
 `;
 export const DivLGBT = styled(DivGenderC)`
+    width: 48%;
     margin-top: 10px;
     justify-content: space-evenly;
     border-radius: 5px;

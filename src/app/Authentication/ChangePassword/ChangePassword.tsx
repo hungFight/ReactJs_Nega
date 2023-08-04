@@ -7,24 +7,16 @@ import { ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Pmessage } from '../Register/styleRegister';
 import TagProfle from '~/social_network/components/Header/layout/MakingFriends/TagProfle';
-import accountRequest from '~/restAPI/requestServers/accountRequest/accountRequest';
-import { useSelector } from 'react-redux';
-import { PropsBg } from 'src/mainPage/nextWeb';
+import accountRequest from '~/restAPI/accounAPI';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-interface PropsChangeP {
-    Next: ReactNode;
-    phoneMail: string | number;
-}
-const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
-    const [dataAccount, setDataAccount] = useState<
-        {
-            id: string;
-            fullName: string;
-            nickName: string | undefined;
-            avatar: string | undefined;
-            gender: number;
-        }[]
-    >();
+import { PropsAccount, PropsChangeP } from './typeChangePassword';
+import { useQuery } from '@tanstack/react-query';
+import { PropsBgNEGA } from '~/redux/background';
+import { useSelector } from 'react-redux';
+
+const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, setEnable }) => {
+    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+
     const [id, setId] = useState<string>('');
     const [messageStatus, setMessageStatus] = useState<{ status: boolean; message: string }>({
         status: false,
@@ -101,7 +93,11 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
                                 window.location.reload();
                             }
                         } else {
-                            setCheckValue({ ...checkValue, value2: true, message: 'The Password is incorrect!' });
+                            setCheckValue({
+                                ...checkValue,
+                                value2: true,
+                                message: 'The Passwords 1 and 1 are incorrect!',
+                            });
                         }
                     } else {
                         console.log('sd');
@@ -113,33 +109,28 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
                     }
                 }
             }
-
             messageRef.current.value1 = !value1 ? true : false;
             messageRef.current.value2 = !value2 ? true : false;
-
             const mes = value1.length > 5 ? '' : 'The length Password must than 6 character!';
             setCheckValue({ ...messageRef.current, message: mes || checkValue.message });
         }
     };
-    console.log(checkValue);
+    const params = { phoneMail: phoneMail };
+    const { data, isLoading } = useQuery({
+        queryKey: ['changePassword', 1],
+        enabled: phoneMail !== undefined,
+        queryFn: () => accountRequest.getPhoneMail(params),
+    });
+    console.log(data, isLoading);
 
-    useEffect(() => {
-        const get = async () => {
-            const params = { phoneMail: phoneMail };
-            const res: any = await accountRequest.getPhoneMail(params);
-            const { status, data } = res;
-            if (status === 200 && data.status === 1) return setDataAccount(data.user);
-            window.location.reload();
-        };
-        get();
-    }, []);
     const handleChangePass = useCallback((id: string) => {
         setId(id);
     }, []);
     useEffect(() => {
         if (success) {
             const time = setTimeout(() => {
-                window.location.reload();
+                setWhatKind('');
+                setEnable(false);
             }, 2000);
             return () => clearTimeout(time);
         }
@@ -149,14 +140,14 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
             <form action="" onSubmit={handleSubmit}>
                 <DivChangePass>
                     <Htitle>Change Password</Htitle>
-                    {dataAccount?.map((data) => {
+                    {data?.map((data) => {
                         if (data.id === id)
                             return (
                                 <div key={data.id}>
-                                    <Div>
+                                    <Div css="justify-content: center;">
                                         <Div
                                             wrap="wrap"
-                                            css="width: 183px; height: 150px; margin: 5px 15px; justify-content: center; color: #cbcbcb;background-color: #454646;"
+                                            css="width: 183px; height: 150px; margin: 5px 15px; justify-content: center; color: #cbcbcb;background-color: #454646; background-image: linear-gradient(177deg, #789382, #4e4242);"
                                         >
                                             <Avatar
                                                 css="width: 100px; height: 100px;"
@@ -176,14 +167,14 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
                                             type={type[show1.check]}
                                             placeholder="Enter New Password"
                                             onChange={handleInputChangeP1}
-                                            color={checkValue.value1 ? 'rgb(255 97 97 / 83%)' : ''}
+                                            color={checkValue.value1 ? 'rgb(255 97 97 / 83%)' : colorText}
                                         />
                                         <Eyes value={value1} setShow={setShow1} show={show1} top="15px" />
                                         <Input
                                             type={type[show2.check]}
                                             placeholder="Enter Repeat New Password"
                                             onChange={handleInputChangeP2}
-                                            color={checkValue.value2 ? 'rgb(255 97 97 / 83%)' : ''}
+                                            color={checkValue.value2 ? 'rgb(255 97 97 / 83%)' : colorText}
                                         />
                                         <Pmessage
                                             color={messageStatus.status ? ' rgb(124, 245, 122)' : 'rgb(255, 142, 142)'}
@@ -201,11 +192,11 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
             </form>
 
             <Div css="justify-content: center; margin: auto">
-                {dataAccount?.map((data) => (
+                {data?.map((data) => (
                     <Div
                         key={data.id}
                         wrap="wrap"
-                        css="width: 183px; height: 150px;margin: 5px 15px; cursor: pointer; text-align: center; justify-content: center; color: #cbcbcb;background-color: #454646;"
+                        css="width: 183px; height: 150px;margin: 5px 15px; cursor: pointer; text-align: center; justify-content: center; color: #cbcbcb;background-color: #454646; background-image: linear-gradient(177deg, #789382, #4e4242);"
                         onClick={() => handleChangePass(data.id)}
                     >
                         <Avatar
@@ -214,9 +205,9 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next }) => {
                             alt={data.fullName}
                             gender={data.gender}
                         />
-                        <Div width="100%">
+                        <Div width="100%" wrap="wrap" css="justify-content: center;">
                             <Hname>{data.fullName}</Hname>
-                            <P>{data.nickName}</P>
+                            <P z="1.2rem">{data.nickName}</P>
                         </Div>
                     </Div>
                     // <TagProfle

@@ -1,13 +1,7 @@
-import clsx from 'clsx';
 import React, { useState, useEffect, memo } from 'react';
-import styles from './personalPage.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '../../app/reUsingComponents/Avatars/Avatar';
 
-import Button from '../../app/reUsingComponents/Buttoms/ListButton/Buttons';
-
-import Edit from '../editInformation/editInformation';
-import Part from './layout/result';
 import { Buttons, Div, Img, P, Span } from '../../app/reUsingComponents/styleComponents/styleDefault';
 import { DivContainer, DivLoading, DivPos, Hname } from '../../app/reUsingComponents/styleComponents/styleComponents';
 import { DivPersonalPage } from '../styleNextWeb';
@@ -16,14 +10,9 @@ import { offPersonalPage, setTrueErrorServer } from '../../app/redux/hideShow';
 import Title from './layout/Title';
 import { CheckI, CloseI, DotI, HeartI, HeartMI, ImageI, LoadingI, UndoI } from '~/assets/Icons/Icons';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
-import CommonUtils from '~/utils/CommonUtils';
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
-import { useCookies } from 'react-cookie';
 import { PropsUser, PropsUserPer } from 'src/App';
 import EditP from './layout/EditP';
 import moment from 'moment';
-import ErrorBoudaries from '~/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
-import peopleAPI from '~/restAPI/requestServers/socialNetwork/peopleAPI';
 import LogicView from './logicPersonal';
 
 interface PropsPer {

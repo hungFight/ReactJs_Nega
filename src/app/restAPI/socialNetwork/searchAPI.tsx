@@ -1,6 +1,4 @@
 import refreshToken from '~/refreshToken/refreshToken';
-import { HttpRequest } from '../httpRequest';
-
 class SearchAPI {
     user = async (id: string, accessToken: string) => {
         try {

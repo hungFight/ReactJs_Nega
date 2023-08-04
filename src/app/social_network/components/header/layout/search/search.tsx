@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 import useDebounce from '../../../../../reUsingComponents/hook/useDebounce';
 
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
+import userAPI from '~/restAPI/userAPI';
 import { CloseI, DotI, SearchI } from '~/assets/Icons/Icons';
 import Account from '~/social_network/Accoutns/Account';
 import styles from './search.module.scss';
@@ -11,7 +11,6 @@ import Bar from '~/reUsingComponents/Bar/Bar';
 import { useCookies } from 'react-cookie';
 import { DivResults, DivSearch, Input } from './styleSearch';
 import { useSelector } from 'react-redux';
-import { PropsBg } from 'src/mainPage/nextWeb';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import CommonUtils from '~/utils/CommonUtils';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';

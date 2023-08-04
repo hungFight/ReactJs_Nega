@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { NavigateFunction } from 'react-router-dom';
 import { CookieSetOptions } from 'universal-cookie/cjs/types';
 import refreshToken from '~/refreshToken/refreshToken';
-import { HttpRequest } from '../httpRequest';
+import http from '~/utils/http';
 
 class AuthRequest {
     postLogin = async (
@@ -10,11 +10,11 @@ class AuthRequest {
         setCookies: (name: 'tks' | 'k_user', value: any, options?: CookieSetOptions | undefined) => void,
     ) => {
         try {
-            const reponse = await HttpRequest.post('/account/login', { params });
-            console.log(reponse);
+            const res = await http.post('/account/login', { params });
+            console.log(res);
 
-            if (reponse.data.user) {
-                const { id, accessToken } = reponse.data.user;
+            if (res.data.user) {
+                const { id, accessToken } = res.data.user;
                 const token = 'Bearer ' + accessToken;
                 setCookies('tks', token, {
                     path: '/',
@@ -22,7 +22,7 @@ class AuthRequest {
                     sameSite: 'strict',
                     expires: new Date(new Date().getTime() + 30 * 86409000),
                 });
-                delete reponse.data?.user.accessToken;
+                delete res.data?.user.accessToken;
                 setCookies('k_user', id, {
                     path: '/',
                     secure: false,
@@ -30,7 +30,7 @@ class AuthRequest {
                     expires: new Date(new Date().getTime() + 30 * 86409000),
                 });
             }
-            return reponse.data;
+            return res.data;
         } catch (error) {
             console.log('login', error);
         }
@@ -38,7 +38,7 @@ class AuthRequest {
     postSendOTP = async (params: { phoneMail: string | number }) => {
         try {
             const path = 'otp/send';
-            const response = await HttpRequest.post(path, { params });
+            const response = await http.post(path, { params });
             return response;
         } catch (error) {
             console.log('sendOTP', error);
@@ -46,8 +46,8 @@ class AuthRequest {
     };
     postVerifyOTP = async (params: { phoneMail: string; otp: string }) => {
         try {
-            const path = 'otp/verify';
-            const res = await HttpRequest.post(path, { params });
+            const path = 'verify/otp';
+            const res = await http.post(path, { params });
             console.log('rés', res);
 
             return res;
@@ -63,8 +63,8 @@ class AuthRequest {
         date: string;
     }) => {
         try {
-            const reponse = await HttpRequest.post('/account/register', { params });
-            return reponse?.data;
+            const res = await http.post('/account/register', { params });
+            return res?.data;
         } catch (error) {
             console.log('register', error);
         }
@@ -86,14 +86,14 @@ class AuthRequest {
             const errStatus = err.response?.data;
             if (errStatus) {
                 if (errStatus.status === 0) {
-                    return { status: errStatus.status, message: 'You does not Allow' };
+                    return { status: errStatus.status, message: 'You are not allowed!' };
                 }
             }
         }
     };
     refreshToken = async () => {
         try {
-            const res = await HttpRequest.post('/account/refresh', {
+            const res = await http.post('/account/refresh', {
                 withCredentials: true,
             });
             return res.data;

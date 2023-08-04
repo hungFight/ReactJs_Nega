@@ -17,7 +17,7 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import ListAccounts from './SendReults';
 import MoreOption from './MoreOption';
 import Conversation from './Conversation';
-import sendChatAPi from '~/restAPI/requestServers/accountRequest/sendChatAPi';
+import sendChatAPi from '~/restAPI/chatAPI';
 import { useCookies } from 'react-cookie';
 import CommonUtils from '~/utils/CommonUtils';
 import { socket } from 'src/mainPage/nextWeb';

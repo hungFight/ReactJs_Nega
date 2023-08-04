@@ -32,12 +32,12 @@ interface PropsInput {
 export const Input = styled.input<PropsInput>`
     width: ${(props) => props.width || '100%'};
     padding: ${(props) => props.padding || '10px 44px 10px 10px'};
-    border: ${(props) => props.border || '1px solid rgba(255, 255, 255, 0.83)'};
+    border: ${(props) => props.border || '1px solid rgb(104 104 104)'};
     border-radius: ${(props) => props.radius || '5px'};
     margin: ${(props) => props.margin || '10px 0'};
-    background-color: ${(props) => props.background || ' rgba(255, 255, 255, 0)'};
+    background-color: ${(props) => props.background || '#202124'};
     color: ${(props) => props.color};
-    border-color: ${(props: { color?: string }) => props.color || ''};
+    border-color: ${(props) => props.borderColor};
 `;
 export const Span = styled.span`
     display: flex;

@@ -1,143 +1,18 @@
-import { DivContainer, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { DivNews } from './stylePost';
+import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { useEffect, useRef, useState } from 'react';
-import homeAPI from '~/restAPI/requestServers/socialNetwork/homeAPI';
-import CookiesF from '~/reUsingComponents/cookies';
 import { Div, H3, Img, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews';
-import { DotI, FullScreenI, HeartI, LikeI, LockI, ShareI } from '~/assets/Icons/Icons';
-import Comment from '../FormUpNews/Comment';
+import { DotI, HeartI, LikeI, LockI, ShareI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { PropsUserHome } from '../../Home';
-import CommonUtils from '~/utils/CommonUtils';
-import Images from '~/assets/images';
 import moment from 'moment';
 import Languages from '~/reUsingComponents/languages';
 import OpUpdate from '~/reUsingComponents/Options/OpUpdate';
-interface feel {
-    amount: number;
-    like: {
-        act: number;
-        id_user: string[];
-    };
-    love: {
-        act: number;
-        id_user: string[];
-    };
-    smile: {
-        act: number;
-        id_user: string[];
-    };
-    sad: {
-        act: number;
-        id_user: string[];
-    };
-    angry: {
-        act: number;
-        id_user: string[];
-    };
-    only: {
-        id: number;
-        icon: string;
-    }[];
-    act: number;
-}
-export interface PropsDataPosts {
-    _id: string;
-    user: { Avatar: Buffer; fullName: string; gender: number }[];
-    category: number;
-    id_user: string;
-    feel: feel;
-    commentsOne: {
-        id_user: string;
-        content: {
-            text: string;
-            imageOrVideos: {
-                file: string[];
-                feel: feel;
-            };
-        };
-        feel: feel;
-        reply: [
-            {
-                id_user: { type: string; maxLength: 50; required: true };
-                content: { text: { type: string; text: string }; imageOrVideos: [String] };
-                anonymous: { type: Boolean; defaultValue: false };
-            },
-        ];
-    };
-    amountComments: number;
-    content: {
-        text: string;
-        fontFamily: string;
-        options: {
-            default: {
-                comments: {
-                    id_user: string;
-                    content: {
-                        text: string;
-                        file: string[];
-                    };
-                    feel: feel;
-                    reply: [
-                        {
-                            id_user: string;
-                            content: {
-                                text: string;
-                                file: string[];
-                            };
-                            feel: feel;
-                        },
-                    ];
-                };
-                file: string;
-                love: { id_user: string[] };
-                title: string;
-                _id: string;
-            }[];
-            swiper: {
-                id: number;
-                name: string;
-                data: {
-                    file: string[];
-                    data?: {
-                        file: string[];
-                        centered: {
-                            id: number;
-                            column: number;
-                            data: string[];
-                        };
-                    };
-                };
-            };
-            grid: {
-                file: string[];
-                BgColor: string;
-                column: number;
-            };
-            onlyImage: string[];
-        };
-    };
-    anonymous: boolean;
-    private: {
-        id: number;
-        name: string;
-    }[];
-    createdAt: string;
-}
-
-interface PropsPosts {
-    user: PropsUserHome;
-    colorBg: number;
-    colorText: string;
-    dataPosts: PropsDataPosts;
-    include: boolean;
-    setInclude: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import Cookies from '~/utils/Cookies';
+import { PropsPosts } from './interfacePosts';
 
 const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, include, setInclude }) => {
     const { lg } = Languages();
-    const { userId } = CookiesF();
+    const { userId } = Cookies();
     const [showComment, setShowComment] = useState<boolean>(false);
     const [actImotion, setActImotion] = useState<boolean>(false);
     const [options, setOptions] = useState<boolean>(false);

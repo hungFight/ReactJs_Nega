@@ -46,7 +46,15 @@ const Authentication: React.FC<{ dataLogin: PropsLogin; dataRegister: PropsRegis
             if (enable) return <Register acc={acc} dataRegister={dataRegister} account={account} Next={Next} />;
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else if (whatKind === 'changePassword') {
-            if (enable) return <ChangePassword phoneMail={account} Next={Next} />;
+            if (enable)
+                return (
+                    <ChangePassword
+                        phoneMail={'nguyentronghung05072003@gmail.com'}
+                        Next={Next}
+                        setWhatKind={setWhatKind}
+                        setEnable={setEnable}
+                    />
+                );
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else {
             return <Login data={dataLogin} setWhatKind={setWhatKind} />;

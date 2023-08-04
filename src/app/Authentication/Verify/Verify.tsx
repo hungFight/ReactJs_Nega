@@ -1,12 +1,14 @@
 import { ReactNode, SetStateAction, useEffect, useState } from 'react';
 
-import authHttpRequest from '~/restAPI/requestServers/authRequest/authRequest';
+import authAPI from '~/restAPI/authAPI/authAPI';
 
 import { DivLoading, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
 import { EmailI, LoadingI, PhoneI, SendOPTI } from '~/assets/Icons/Icons';
 import { DivExpireTime, DivOtp, DivReSend, DivSendMail, DivVerifymail, Form } from './styleVerify';
 import { Pcontent, SpanIconPhoneMail } from '../Register/styleRegister';
 import { Button, Input } from '~/reUsingComponents/styleComponents/styleDefault';
+import { useSelector } from 'react-redux';
+import { PropsBgNEGA } from '~/redux/background';
 interface PropsVerify {
     setEnable: React.Dispatch<SetStateAction<boolean>>;
     setAccount: React.Dispatch<React.SetStateAction<string | number>>;
@@ -14,6 +16,7 @@ interface PropsVerify {
     setAcc: React.Dispatch<React.SetStateAction<number>>;
 }
 const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) => {
+    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
     const [loading, setLoading] = useState<boolean>(false);
     const [otpStatus, setOtpStatus] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');
@@ -72,7 +75,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                     phoneMail: valuePhoneNumberEmail.value,
                 };
                 setLoading(true);
-                const res = await authHttpRequest.postSendOTP(params);
+                const res = await authAPI.postSendOTP(params);
                 console.log('prohibit', res);
 
                 setLoading(false);
@@ -95,7 +98,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                         phoneMail: valuePhoneNumberEmail.value,
                         otp: otp,
                     };
-                    const res = await authHttpRequest.postVerifyOTP(params);
+                    const res = await authAPI.postVerifyOTP(params);
                     setAcc(Number(res?.data.acc));
                     console.log('wrong', res);
 
@@ -134,8 +137,8 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
         if (otpStatus) {
             return (
                 <DivOtp>
-                    <DivExpireTime>Code expires in {otpTime} seconds!</DivExpireTime>
-                    <Input placeholder="Enter your OTP." onChange={handleInputOtp} value={otp} />
+                    <DivExpireTime>This code will be existed in 1 minute.</DivExpireTime>
+                    <Input placeholder="Enter your OTP." color={colorText} onChange={handleInputOtp} value={otp} />
                     <Pcontent>{error.otp}</Pcontent>
                     {otpStatus && btnSubmit().Div2()}
                     {btnSubmit().Div1()}
@@ -180,11 +183,11 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                     <Input
                         placeholder="Your Email"
                         onChange={handlePhoneNumberEmail}
-                        color={checkPhoneNumberEmail.check ? 'rgb(255 97 97 / 83%)' : ''}
+                        color={checkPhoneNumberEmail.check ? 'rgb(255 97 97 / 83%)' : colorText}
                     />
 
                     <Pcontent>{error.mail}</Pcontent>
-                    <SpanIconPhoneMail right="11px">{valuePhoneNumberEmail.icon}</SpanIconPhoneMail>
+                    <SpanIconPhoneMail top="25px">{valuePhoneNumberEmail.icon}</SpanIconPhoneMail>
                     <Pcontent>{checkPhoneNumberEmail.title}</Pcontent>
                 </DivSendMail>
                 {!otpStatus && btnSubmit().Div1()}

@@ -3,7 +3,7 @@ import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
 import TagProfle from './TagProfle';
 import { useCookies } from 'react-cookie';
 import { useEffect, useRef, useState } from 'react';
-import peopleAPI from '~/restAPI/requestServers/socialNetwork/peopleAPI';
+import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import { useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';

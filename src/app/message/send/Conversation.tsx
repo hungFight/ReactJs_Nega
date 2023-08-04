@@ -11,7 +11,7 @@ import LogicConversation from './LogicConver';
 import { Player } from 'video-react';
 import { PropsUser } from 'src/App';
 import { offChat } from '~/redux/reload';
-import sendChatAPi from '~/restAPI/requestServers/accountRequest/sendChatAPi';
+import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import FileConversation from './File';
 import moment from 'moment';
@@ -195,55 +195,53 @@ const Conversation: React.FC<{
                     onScroll={() => handleScroll}
                     onClick={() => setEmoji(false)}
                 >
-                    <Div display="block">
-                        <Div
-                            width="100%"
-                            wrap="wrap"
-                            css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
-                        >
-                            <P z="1.3rem" align="center" css="width: 100%; margin: 8px 0; ">
-                                {relative}
-                            </P>
-                            <Div
-                                css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
-                                onClick={handleProfile}
-                            >
-                                <ProfileCircelI /> <Hname css="margin: 0 5px; width: fit-content;">View profile</Hname>
-                            </Div>
-                        </Div>
-                        {conversation?.room.map((rc, index, arr) => {
-                            let listDateTime;
-                            if (startOfDay) {
-                                const dayOld = moment(startOfDay, 'HH:mm:ss YYYY-MM-DD');
-                                const dayNew = moment(rc.createdAt).format('HH:mm:ss YYYY-MM-DD');
-                                const r = moment(dayNew, 'HH:mm:ss YYYY-MM-DD');
-                                const diffInDays = r.diff(dayOld, 'days');
-                                if (diffInDays > 0) {
-                                    Diff.current = 1;
-                                    listDateTime = moment(rc.createdAt).locale(lg).format('MMMM Do YYYY, h:mm:ss a');
-                                } else {
-                                    Diff.current = 0;
-                                }
+                    {conversation?.room.map((rc, index, arr) => {
+                        let listDateTime;
+                        if (startOfDay) {
+                            const dayOld = moment(startOfDay, 'HH:mm:ss YYYY-MM-DD');
+                            const dayNew = moment(rc.createdAt).format('HH:mm:ss YYYY-MM-DD');
+                            const r = moment(dayNew, 'HH:mm:ss YYYY-MM-DD');
+                            const diffInDays = r.diff(dayOld, 'days');
+                            if (diffInDays > 0) {
+                                Diff.current = 1;
+                                listDateTime = moment(rc.createdAt).locale(lg).format('MMMM Do YYYY, h:mm:ss a');
+                            } else {
+                                Diff.current = 0;
                             }
-                            if (Diff.current === 1) startOfDay = moment(rc.createdAt).format('HH:mm:ss YYYY-MM-DD');
-                            return (
-                                <ItemsRoom
-                                    key={rc.text.t + index}
-                                    rc={rc}
-                                    index={index}
-                                    listDateTime={listDateTime}
-                                    startOfDay={startOfDay}
-                                    Diff={Diff}
-                                    lg={lg}
-                                    userId={userId}
-                                    handleWatchMore={handleWatchMore}
-                                    ERef={ERef}
-                                    token={token}
-                                    handleTime={handleTime}
-                                    user={user}
-                                />
-                            );
-                        })}
+                        }
+                        if (Diff.current === 1) startOfDay = moment(rc.createdAt).format('HH:mm:ss YYYY-MM-DD');
+                        return (
+                            <ItemsRoom
+                                key={rc.text.t + index}
+                                rc={rc}
+                                index={index}
+                                listDateTime={listDateTime}
+                                startOfDay={startOfDay}
+                                Diff={Diff}
+                                lg={lg}
+                                userId={userId}
+                                handleWatchMore={handleWatchMore}
+                                ERef={ERef}
+                                token={token}
+                                handleTime={handleTime}
+                                user={user}
+                            />
+                        );
+                    })}
+                    <Div
+                        width="100%"
+                        wrap="wrap"
+                        css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
+                    >
+                        <P z="1.3rem" align="center" css="width: 100%; margin: 8px 0; ">
+                            {relative}
+                        </P>
+                        <Div
+                            css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
+                            onClick={handleProfile}
+                        >
+                            <ProfileCircelI /> <Hname css="margin: 0 5px; width: fit-content;">View profile</Hname>
+                        </Div>
                     </Div>
                 </Div>
                 <Div

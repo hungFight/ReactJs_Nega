@@ -23,14 +23,14 @@ import {
 } from './styleHeader';
 import styled from 'styled-components';
 import Socialnetwork from '~/social_network';
-import { PropsBg } from 'src/mainPage/nextWeb';
 import { PropsTextHome } from './layout/Home/Home';
 import { PropsTextFriends } from './layout/MakingFriends/People';
 import { DivItems, Input } from './layout/MakingFriends/styleMakingFriends';
 import { A, Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { people } from '~/redux/reload';
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
+import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
+import { PropsBgNEGA } from '~/redux/background';
 
 //button
 // to = Link tag, href = a tag
@@ -72,7 +72,7 @@ const Header: React.FC<{
     >([]);
 
     const { logo, sett, home, exchange, search, video, friends, location } = dataText;
-    const { colorBg, colorText } = useSelector((state: PropsBg) => state.persistedReducer.background);
+    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
     const [border, setBorder] = useState<string>(() => {
         const location = window.location.pathname;
         console.log(

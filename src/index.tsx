@@ -7,18 +7,30 @@ import 'moment/locale/vi';
 import { Provider } from 'react-redux';
 import { store, persistor } from '~/redux/configStore';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PersistGate } from 'redux-persist/integration/react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false, // default: true
+        },
+    },
+});
 root.render(
     //<React.StrictMode>
     <Router>
-        <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <Globalestyle>
-                    <App />
-                </Globalestyle>
-            </PersistGate>
-        </Provider>
+        <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <Globalestyle>
+                        <App />
+                    </Globalestyle>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </PersistGate>
+            </Provider>
+        </QueryClientProvider>
     </Router>,
     //  </React.StrictMode>,
 );

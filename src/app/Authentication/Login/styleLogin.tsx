@@ -15,7 +15,7 @@ export const DivForm = styled.div`
     flex-wrap: wrap;
     position: relative;
     box-shadow: 0 0 20px #0a0a0a;
-    background-image: linear-gradient(345deg, #7474740a, #00000021);
+    background-image: linear-gradient(64deg, #40c6ff0a, #de888821);
     @media (min-width: 400px) {
         width: 400px;
     }

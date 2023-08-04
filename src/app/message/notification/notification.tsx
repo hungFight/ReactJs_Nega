@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
-import peopleAPI from '~/restAPI/requestServers/socialNetwork/peopleAPI';
+import userAPI from '~/restAPI/userAPI';
+import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 
 import { CloseI, DotI, MoveI, NotificationI, UndoI } from '~/assets/Icons/Icons';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';

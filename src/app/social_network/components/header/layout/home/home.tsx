@@ -4,18 +4,19 @@ import { DivPost } from './styleHome';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
-import HomeAPI from '~/restAPI/requestServers/socialNetwork/homeAPI';
+import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
 import FormUpNews, { PropsFormHome } from './Layout/FormUpNews/FormUpNews';
-import Posts, { PropsDataPosts } from './Layout/DataPosts/Posts';
-import HttpRequestUser from '~/restAPI/requestServers/accountRequest/userAPI';
+import Posts from './Layout/DataPosts/Posts';
+import HttpRequestUser from '~/restAPI/userAPI';
 import { Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { socket } from 'src/mainPage/nextWeb';
 import { setTrueErrorServer } from '~/redux/hideShow';
-import CookiesF from '~/reUsingComponents/cookies';
-import homeAPI from '~/restAPI/requestServers/socialNetwork/homeAPI';
-import fileGridFS from '~/restAPI/requestServers/fileGridFS';
+import homeAPI from '~/restAPI/socialNetwork/homeAPI';
+import fileGridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
+import Cookies from '~/utils/Cookies';
+import { PropsDataPosts } from './Layout/DataPosts/interfacePosts';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 
@@ -45,7 +46,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const [userList, setUserList] = useState();
     const [moveForm, setMoveForm] = useState<boolean>(false);
     const [dataPosts, setDataPosts] = useState<PropsDataPosts[]>([]);
-    const { token } = CookiesF();
+    const { token } = Cookies();
     const offest = useRef<number>(0);
     const limit = 5;
     console.log('nooo');

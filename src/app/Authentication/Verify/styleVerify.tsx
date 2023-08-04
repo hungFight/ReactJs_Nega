@@ -19,6 +19,9 @@ export const DivSendMail = styled.div`
     justify-content: center;
     position: relative;
     flex-wrap: wrap;
+    padding: 10px 20px;
+    background-image: linear-gradient(58deg, #78272796, #2f718dad, #80339bc2);
+    border-radius: 5px;
 `;
 export const DivOtp = styled.div`
     width: 300px;

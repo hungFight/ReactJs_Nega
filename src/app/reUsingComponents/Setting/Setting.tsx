@@ -2,8 +2,8 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { InitialStateHideShow, offAll, offSetting } from '~/redux/hideShow';
 
-import authHttpRequest from '~/restAPI/requestServers/authRequest/authRequest';
-import HttpRequestUser from '~/restAPI/requestServers/accountRequest/userAPI';
+import authHttpRequest from '~/restAPI/authAPI/authAPI';
+import HttpRequestUser from '~/restAPI/userAPI';
 
 import { CloseI } from '~/assets/Icons/Icons';
 import Bar from '~/reUsingComponents/Bar/Bar';

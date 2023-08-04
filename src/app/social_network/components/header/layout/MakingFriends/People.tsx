@@ -13,7 +13,7 @@ import { DivItems, DivMenu, DivOptions, DivResults, DivSearch, Input } from './s
 import TagProfle from '~/social_network/components/Header/layout/MakingFriends/TagProfle';
 import { useState, useEffect, useLayoutEffect, memo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import peopleAPI from '~/restAPI/requestServers/socialNetwork/peopleAPI';
+import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { useCookies } from 'react-cookie';
 import { DotI, LoadingI } from '~/assets/Icons/Icons';
 import { text } from 'stream/consumers';

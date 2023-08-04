@@ -17,15 +17,17 @@ import {
 import Language from '~/Language/Language';
 import { changeRegister } from '~/redux/languageRD';
 import { DivLanguage } from '../Login/styleLogin';
-import authHttpRequest from '~/restAPI/requestServers/authRequest/authRequest';
+import authHttpRequest from '~/restAPI/authAPI/authAPI';
 import { PropsRegister, PropsState } from './interfaceType';
 import { Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import { setTrueErrorServer } from '~/redux/hideShow';
+import { PropsBgNEGA } from '~/redux/background';
 
 const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next }) => {
     //dataLanguage
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer.language?.register);
+    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
 
     const [language, setLanguage] = useState<boolean>(false);
     const { title, input, submit, messagePhoneEmail, messagePassword, messageDate, messageName } =
@@ -285,7 +287,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
             '',
             checkAll.date,
         ];
-        return colorInputs[id] ? 'rgb(255 97 97 / 83%)' : '';
+        return colorInputs[id] ? 'rgb(255 97 97 / 83%)' : colorText;
     };
     const handlelanguage = () => {
         setLanguage(!language);
@@ -300,7 +302,9 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                 {val === 'password2' && <PcontentPassword>{checkPassword.icon}</PcontentPassword>}
                 {val === 'phoneEmail' && (
                     <>
-                        <SpanIconPhoneMail>{valuePhoneNumberEmail.icon}</SpanIconPhoneMail>
+                        <SpanIconPhoneMail top="15px" right="7px">
+                            {valuePhoneNumberEmail.icon}
+                        </SpanIconPhoneMail>
                         <Pcontent>{checkPhoneNumberEmail.title}</Pcontent>
                     </>
                 )}
@@ -332,28 +336,35 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                         return (
                             <DivFormGroup key={val.id}>
                                 <DivGenderP>
-                                    {val.gender?.map((valC) => {
+                                    {val.gender?.map((valC, index) => {
                                         return valC.id !== 2 ? (
                                             <DivGenderC
                                                 key={valC.id}
-                                                color={optionGender[valC.id] ? 'rgb(99, 99, 99)' : ''}
+                                                css={`
+                                                    ${optionGender[valC.id]
+                                                        ? 'background-image: linear-gradient(45deg, black, #2a8828);'
+                                                        : 'background-color: rgb(32 33 36);'}
+                                                    ${index ? 'padding-left: 5px;' : 'padding-right: 5px;'}
+                                                `}
                                                 onClick={eventsOnClickGender[valC.id]}
                                             >
                                                 {valC.type}
                                             </DivGenderC>
                                         ) : (
-                                            <div key={valC.id}>
-                                                <DivLGBT
-                                                    key={valC.id}
-                                                    color={optionGender[valC.id] ? 'rgb(99, 99, 99)' : ''}
-                                                    onClick={handleValueOther}
-                                                >
-                                                    {valC.type}
-                                                    <p>
-                                                        <LGBTI />
-                                                    </p>
-                                                </DivLGBT>
-                                            </div>
+                                            <DivLGBT
+                                                key={valC.id}
+                                                css={`
+                                                    ${optionGender[valC.id]
+                                                        ? 'background-image: linear-gradient(45deg, black, #2a8828);'
+                                                        : 'background-color: rgb(32 33 36);'}
+                                                `}
+                                                onClick={handleValueOther}
+                                            >
+                                                {valC.type}
+                                                <p>
+                                                    <LGBTI />
+                                                </p>
+                                            </DivLGBT>
                                         );
                                     })}
                                 </DivGenderP>

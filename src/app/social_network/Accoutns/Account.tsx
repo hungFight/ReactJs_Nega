@@ -7,7 +7,7 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useDispatch } from 'react-redux';
 import { offPersonalPage, onPersonalPage, setIdUser } from '~/redux/hideShow';
 import { profile } from 'console';
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
+import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
 
 const Account: React.FC<{

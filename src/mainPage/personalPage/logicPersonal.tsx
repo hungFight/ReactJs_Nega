@@ -7,8 +7,8 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import { onChat } from '~/redux/reload';
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
-import peopleAPI from '~/restAPI/requestServers/socialNetwork/peopleAPI';
+import userAPI from '~/restAPI/userAPI';
+import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 interface PropsLanguage {
     persistedReducer: {

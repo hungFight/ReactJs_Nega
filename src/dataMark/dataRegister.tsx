@@ -34,7 +34,7 @@ export const register = {
                 id: 4,
                 gender: [
                     { id: 0, type: 'Male' },
-                    { id: 1, type: 'Femail' },
+                    { id: 1, type: 'Female' },
                     { id: 2, type: 'LGBT+' },
                 ],
                 role: 'gender',

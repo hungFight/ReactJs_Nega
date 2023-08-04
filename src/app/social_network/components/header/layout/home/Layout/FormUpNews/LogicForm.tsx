@@ -7,11 +7,11 @@ import { PropsFormHome } from './FormUpNews';
 import { PropsUserHome } from '../../Home';
 import CommonUtils from '~/utils/CommonUtils';
 import { useCookies } from 'react-cookie';
-import CookiesF from '~/reUsingComponents/cookies';
+import Cookies from '~/utils/Cookies';
 
 export default function LogicForm(form: PropsFormHome, colorText: string, colorBg: number, user?: PropsUserHome) {
     const dispatch = useDispatch();
-    const { userId, token } = CookiesF();
+    const { userId, token } = Cookies();
 
     const [displayEmoji, setdisplayEmoji] = useState<boolean>(false);
     const [displayFontText, setDisplayFontText] = useState<boolean>(false);

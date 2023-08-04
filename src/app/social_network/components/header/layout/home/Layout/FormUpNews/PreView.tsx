@@ -38,7 +38,7 @@ import Coverflow from './ViewPostFrame/TypeFile/Swipers/Coverflow';
 import Grid from './ViewPostFrame/TypeFile/Grid';
 import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import OptionType from './ViewPostFrame/OptionType';
-import HomeAPI from '~/restAPI/requestServers/socialNetwork/homeAPI';
+import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
 import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import OpFeature from '~/reUsingComponents/Options/OpFeature';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';

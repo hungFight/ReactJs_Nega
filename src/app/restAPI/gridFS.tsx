@@ -1,6 +1,6 @@
 import refreshToken from '~/refreshToken/refreshToken';
 
-class GetFileGriFS {
+class FileGriFS {
     getFile = async (token: string, id_file: string) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
@@ -12,4 +12,4 @@ class GetFileGriFS {
         }
     };
 }
-export default new GetFileGriFS();
+export default new FileGriFS();

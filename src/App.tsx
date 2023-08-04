@@ -1,27 +1,29 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { InitialStateHideShow, offAll, onPersonalPage, setIdUser } from './app/redux/hideShow';
+import { Buffer } from 'buffer';
 
 import Personalpage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
-import { useCookies } from 'react-cookie';
-import React, { Suspense, useEffect, useState } from 'react';
-import searchAPI from './app/restAPI/requestServers/socialNetwork/searchAPI_SN';
-import { DivContainer, DivLoading, DivPos } from './app/reUsingComponents/styleComponents/styleComponents';
+import React, { Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
-import { A, Div } from './app/reUsingComponents/styleComponents/styleDefault';
+import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
 import Progress from './app/reUsingComponents/Progress/Progress';
-import Cookies from 'universal-cookie';
 import ErrorBoudaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
-import { PropsBg } from './mainPage/nextWeb';
-import { LoadingI, UndoI } from '~/assets/Icons/Icons';
+import { socket } from './mainPage/nextWeb';
+import { DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
-import userAPI from '~/restAPI/requestServers/accountRequest/userAPI';
+import userAPI from '~/restAPI/userAPI';
 import { PropsTitleP } from './mainPage/personalPage/layout/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Send/Conversation';
 import { PropsReloadRD } from '~/redux/reload';
-import Player from '~/reUsingComponents/Videos/Player';
+import fileGridFS from '~/restAPI/gridFS';
+import { PropsBgNEGA } from '~/redux/background';
+import Cookies from '~/utils/Cookies';
+import { useQuery } from '@tanstack/react-query';
+import verifyAPI from '~/restAPI/verifyAPI/verifyAPI';
 const DivOpacity = styled.div`
     width: 100%;
     height: 100%;
@@ -97,19 +99,33 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [cookies, setCookie] = useCookies(['tks', 'k_user', 'sn']);
+    const { userId, token } = Cookies(); // customs hook
     const dispatch = useDispatch();
     const { idUser, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { setting, personalPage } = useSelector((state: any) => state.hideShow);
     const { chat, userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
-    const { colorText, colorBg } = useSelector((state: PropsBg) => state.persistedReducer.background);
+    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
     const [userData, setUserData] = useState<PropsUserPer[]>([]);
 
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
+    // messenger
+    const [dataMFirst, setDataMFirst] = useState<
+        {
+            user: {
+                id: string;
+                fullName: string;
+                avatar: any;
+                gender: number;
+            };
+            createdAt: string;
+            imageOrVideos: { v: any; icon: string }[];
+            seenBy: string[];
+            text: { t: string; icon: string };
+            _id: string;
+        }[]
+    >([]);
 
-    const token = cookies.tks;
-    const k_user = cookies.k_user;
     async function fetch(id: string, first?: string) {
         if (!first) setLoading(true);
         const res = await userAPI.getById(
@@ -119,7 +135,7 @@ function App() {
                 id: 'id',
                 avatar: 'avatar',
                 background: 'background',
-                fullName: 'fullname',
+                fullName: 'fullName',
                 nickName: 'nickName',
                 status: 'status',
                 gender: 'gender',
@@ -144,6 +160,7 @@ function App() {
             const av = CommonUtils.convertBase64(res.background);
             res.background = av;
         }
+
         if (first) {
             setUserFirst(res);
         } else {
@@ -159,179 +176,73 @@ function App() {
             if (search && idUser.length === 0) {
                 const id = search.split('id=');
                 const ids = [];
-                const datas = [];
+                const datas: PropsUserPer[] = [];
                 if (id.length < 5 && id.length > 0) {
                     for (let i = 1; i < id.length; i++) {
                         ids.push(id[i]);
-                        console.log('hii', id[i]);
                         const data = await fetch(id[i]);
-                        datas.push(data);
+                        if (data) datas.push(data);
                     }
-                    setUserData(datas);
+                    if (datas.length > 0) setUserData(datas);
                 }
-                dispatch(setIdUser(ids));
             }
         };
-        search();
+        if (userId && token) search();
+        socket.on(
+            `${userId}roomChat`,
+            async (data: {
+                user: {
+                    id: string;
+                    fullName: string;
+                    avatar: Buffer;
+                    gender: number;
+                };
+                createdAt: string;
+                imageOrVideos: { v: string; icon: string }[];
+                seenBy: string[];
+                text: { t: string; icon: string };
+                _id: string;
+            }) => {
+                const newD: any = await new Promise(async (resolve, reject) => {
+                    try {
+                        await Promise.all(
+                            data.imageOrVideos.map(async (d, index) => {
+                                const buffer = await fileGridFS.getFile(token, d.v);
+                                const base64 = CommonUtils.convertBase64Gridfs(buffer.file);
+                                data.imageOrVideos[index].v = base64;
+                            }),
+                        );
+
+                        resolve(data);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+
+                setDataMFirst([...dataMFirst, newD]);
+                console.log(newD, 'be sent by others');
+            },
+        );
     }, []);
     useEffect(() => {
         const search = async () => {
             if (idUser.length === 1) {
                 const data = await fetch(idUser[0]);
-                setUserData([data]);
+                if (data) setUserData([data]);
             }
         };
-        search();
+        if (userId && token) search();
     }, [idUser]);
+
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUserData([]);
         dispatch(setIdUser([]));
     };
     useEffect(() => {
-        if (k_user) fetch(k_user, 'first');
-    }, [k_user]);
+        if (userId && token) fetch(userId, 'first');
+    }, [userId]);
 
-    //     name: 'Ubuntu',
-    //     version: 18.04,
-    //     license: 'Open Source',
-    // };
-    // // const news = Object.freeze(operatingSystem);
-    // // Get the object key/value pairs
-    // console.log((operatingSystem.name = 'hello world'));
-    // console.log(operatingSystem);
-    // const employees = ['Ron', 'April', 'Andy', 'Leslie'];
-
-    // console.log(Object.getPrototypeOf(employees));
-    // useEffect(() => {
-    //     //seach on the url of web add profile?id=id
-    //     const search = async () => {
-    //         const search = window.location.search;
-    //         if (search) {
-    //             const id = search.split('id=');
-
-    //             if (id.length < 4 && id.length > 0) {
-    //                 const arrayData = [];
-    //                 const ids = [];
-    //                 for (let i = 1; i < id.length; i++) {
-    //                     ids.push(id[i]);
-    //                     fetch(id[i]);
-    //                 }
-    //                 if (ids.length > 0) {
-    //                     console.log('hereeeee');
-    //                     dispatch(setIdUser(ids));
-    //                 }
-    //             }
-    //         } else {
-    //             dispatch(setIdUser([]));
-    //             dispatch(offAll());
-    //         }
-    //     };
-    //     search();
-    // }, []);
-
-    // const home = {
-    //     id: 0,
-    //     name: 'hung',
-    //     avatar: 'url',
-    //     image: 'images',
-    //     dis: '...',
-    //     feel: {
-    //         like: '1',
-    //         love: '5',
-    //     },
-    //     comment: [
-    //         {
-    //             id: 1 - 0,
-    //             name: 'hung',
-    //             avatar: 'url',
-    //             reply: [
-    //                 {
-    //                     id: 2 - 1,
-    //                     content: '...',
-    //                     reply: [
-    //                         {
-    //                             id: 3 - 2,
-    //                             name: 'han',
-    //                             avatar: 'url',
-    //                             reply: [
-    //                                 {
-    //                                     id: 1 - 3,
-    //                                     content: '...',
-    //                                     reply: [
-    //                                         {
-    //                                             id: 4,
-    //                                             name: 'han',
-    //                                             avatar: 'url',
-    //                                             reply: [{ content: '...' }],
-    //                                         },
-    //                                     ],
-    //                                 },
-    //                                 {
-    //                                     id: 3 - 1,
-    //                                     content: '...',
-    //                                 },
-    //                                 { content: '...' },
-    //                             ],
-    //                         },
-    //                         {
-    //                             id: 2 - 3,
-    //                             name: 'han',
-    //                             avatar: 'url',
-    //                             reply: [{ content: '...' }],
-    //                         },
-    //                         {
-    //                             id: 2 - 2,
-    //                             content: '...',
-    //                         },
-    //                         {
-    //                             id: 1 - 2,
-    //                             content: '...',
-    //                         },
-    //                         {
-    //                             id: 2 - 1,
-    //                             content: '...',
-    //                         },
-    //                     ],
-    //                 },
-    //                 {
-    //                     id: 3 - 1,
-    //                     content: '...',
-    //                 },
-    //                 {
-    //                     id: 1 - 2,
-    //                     content: '...',
-    //                 },
-    //                 {
-    //                     id: 1 - 3,
-    //                     content: '...',
-    //                 },
-    //                 {
-    //                     id: 2 - 2,
-    //                     content: '...',
-    //                 },
-    //             ],
-    //         },
-    //         {
-    //             id: 6,
-    //             name: 'han',
-    //             avatar: 'url',
-    //             comment: [
-    //                 {
-    //                     content: '...',
-    //                     reply: {},
-    //                 },
-    //                 {
-    //                     content: '...',
-    //                 },
-    //                 {
-    //                     content: '...',
-    //                 },
-    //             ],
-    //         },
-    //     ],
-    // };
-    // console.log(Math.round(Math.random() * 9573), 'heress');
     const leng = idUser?.length;
     const css = `
         position: fixed;
@@ -346,7 +257,8 @@ function App() {
         }
 
 `;
-    if (token && k_user) {
+
+    if (token && userId) {
         return (
             <Suspense
                 fallback={
@@ -367,7 +279,86 @@ function App() {
                     <>
                         <Website idUser={idUser} dataUser={userFirst} setDataUser={setUserFirst} />
                         {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
+                        <Div
+                            css={`
+                                position: absolute;
+                                top: 57px;
+                                right: 50px;
+                                z-index: 1;
+                            `}
+                        >
+                            {dataMFirst.map((m) => (
+                                <Div
+                                    key={m.user.id}
+                                    width="200px"
+                                    css={`
+                                        background-color: #276aa5;
+                                        border-radius: 50px;
+                                        height: 40px;
+                                        align-items: center;
+                                        padding: 0 3px;
+                                        margin: 5px 0;
+                                        user-select: none;
+                                        color: ${colorText};
+                                        transition: all 0.5s linear;
+                                        &:active {
+                                            background-color: #484848ba;
+                                        }
+                                        @media (min-width: 768px) {
+                                            cursor: var(--pointer);
+                                            &:hover {
+                                                background-color: #484848ba;
+                                            }
+                                        }
+                                    `}
+                                >
+                                    <Avatar
+                                        src={CommonUtils.convertBase64(Buffer.from(m.user.avatar))}
+                                        gender={m.user.gender}
+                                        radius="50%"
+                                        css={`
+                                            min-width: 30px;
+                                            width: 30px;
+                                            height: 30px;
+                                            margin: 3px 5px;
+                                        `}
+                                    />
+                                    {userOnline.includes(m.user.id) && (
+                                        <DivPos
+                                            bottom="2px"
+                                            left="32px"
+                                            size="10px"
+                                            css="color: #149314; padding: 2px; background-color: #1c1b1b;"
+                                        >
+                                            <TyOnlineI />
+                                        </DivPos>
+                                    )}
+                                    <Div width="72%" wrap="wrap">
+                                        <Hname>{m.user.fullName}</Hname>
+                                        <Div
+                                            width="80%"
+                                            css={`
+                                                align-items: center;
+                                                position: relative;
+                                            `}
+                                        >
+                                            <P
+                                                z="1.2rem"
+                                                css="width: 100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-top: 3px; "
+                                            >
+                                                {m.text.t}
+                                            </P>
+                                            <P z="1rem" css="width: 100%; margin-top: 5px; margin-left: 10px">
+                                                {/* {Time} */}
+                                            </P>
+                                        </Div>
+                                    </Div>
+                                    <Div>{/* <Mess */}</Div>
+                                </Div>
+                            ))}
+                        </Div>
                         <Message dataUser={userFirst} userOnline={userOnline} />
+
                         {chat?.map((room) => (
                             <Conversation
                                 key={room.id_room}
@@ -434,7 +425,7 @@ function App() {
                                                         alt={rs.fullName}
                                                         gender={rs.gender}
                                                         radius="50%"
-                                                        id={cookies.k_user}
+                                                        id={userId}
                                                         css=" width: 40px; height: 40px; cursor: var(--pointer);"
                                                     />
                                                 </A>

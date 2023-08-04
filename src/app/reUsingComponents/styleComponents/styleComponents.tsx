@@ -76,7 +76,7 @@ const Div = styled.div`
 // transparent, #ff37374d, #ff3737;
 const Button = styled.button`
     width: 96%;
-    height: 96%;
+    height: 93%;
     background: #202124;
     position: absolute;
     top: 50%;

@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
-import sendChatAPi from '~/restAPI/requestServers/accountRequest/sendChatAPi';
+import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
 const FileConversation: React.FC<{ token: string; type?: string; v: string; icon: string; ERef: any }> = ({

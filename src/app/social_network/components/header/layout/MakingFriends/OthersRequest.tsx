@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { DotI, LoadingI } from '~/assets/Icons/Icons';
 import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
-import peopleAPI from '~/restAPI/requestServers/socialNetwork/peopleAPI';
+import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import TagProfle from './TagProfle';
 import { useSelector } from 'react-redux';
