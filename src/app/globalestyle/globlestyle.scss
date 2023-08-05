@@ -130,3 +130,67 @@ img {
 .Website {
     transition: var(--transition-03s);
 }
+.showChatDiv1 {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #276aa5;
+    border-radius: 50px;
+    height: 50px;
+    align-items: center;
+    padding: 0 3px;
+    margin: 5px 0;
+    user-select: none;
+    transition: all 1s linear;
+    background-image: linear-gradient(45deg, #000000, #8b9aa800);
+    &:active {
+        background-color: #484848ba;
+    }
+    @media (min-width: 768px) {
+        cursor: var(--pointer);
+        &:hover {
+            background-color: #484848ba;
+        }
+    }
+}
+.showChatImg {
+    min-width: 35px;
+    width: 35px;
+    height: 35px;
+    margin: 3px 5px;
+    box-shadow: 0 0 4px #22d056;
+    border-radius: 50%;
+}
+.showChatDiv2 {
+    width: 72%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.showChatName {
+    height: fit-content;
+    font-size: 1.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.showChatDiv3 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.showChatTitle {
+    font-size: 1.2rem;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-top: 3px;
+}
+.showChatPState {
+    font-size: 1rem;
+    width: 100%;
+    margin-top: 5px;
+    margin-left: 10px;
+}

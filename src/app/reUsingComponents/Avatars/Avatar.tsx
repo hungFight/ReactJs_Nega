@@ -58,7 +58,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     // }, [Fallback, src]);
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = () => {
-        console.log('err');
+        console.log('err avatar');
 
         setAvatarFallback(Fallback);
         setRepetitions((pev) => pev + 1);
@@ -76,7 +76,6 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     const handleOpentProfile = () => {
         if (profile) dispatch(setIdUser([id]));
     };
-    console.log(src, 'src');
 
     return avatar ? (
         <FaUserCircle />

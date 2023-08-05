@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from 'react-redux';
 import { InitialStateHideShow, offAll, onPersonalPage, setIdUser } from './app/redux/hideShow';
 import { Buffer } from 'buffer';
@@ -5,7 +6,7 @@ import { Buffer } from 'buffer';
 import Personalpage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
-import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
@@ -124,7 +125,8 @@ function App() {
     const [loading, setLoading] = useState<boolean>(false);
     // messenger
     const [dataMFirst, setDataMFirst] = useState<PropsMFirst[]>([]);
-    const dataMFirstRef = useRef<PropsMFirst[]>([]);
+    const [dataMTwo, setDataMTwo] = useState<PropsMFirst>();
+    const showChat = useRef<HTMLInputElement | null>(null);
 
     async function fetch(id: string | string[], first?: string) {
         if (!first) setLoading(true);
@@ -161,6 +163,15 @@ function App() {
     }
     console.log(userFirst, 'userFirst');
     console.log(userData, 'userData');
+    function expire(eleDiv1s: NodeListOf<Element>) {
+        for (let i = eleDiv1s.length - 1; i >= 0; i--) {
+            const timeOut = setTimeout(() => {
+                console.log('nooo');
+                Array.from(eleDiv1s)[i].remove();
+                return () => clearTimeout(timeOut);
+            }, 5000);
+        }
+    }
     useEffect(() => {
         const search = async () => {
             const search = window.location.search;
@@ -188,36 +199,67 @@ function App() {
                             data.imageOrVideos[index].v = base64;
                         }),
                     );
-
                     resolve(data);
                 } catch (error) {
                     reject(error);
                 }
             });
-            dataMFirstRef.current.push(newD);
-            // setDataMFirst([...dataMFirst, newD]);
+
+            const eleDiv1 = document.createElement('div');
+            const eleDiv2 = document.createElement('div');
+            const eleImg = document.createElement('img');
+            const eleH3 = document.createElement('h3');
+            const eleDiv3 = document.createElement('div');
+            const eleP = document.createElement('p');
+            const elePState = document.createElement('p');
+            eleDiv1.className = 'showChatDiv1';
+            eleImg.className = 'showChatImg';
+            eleImg.src = CommonUtils.convertBase64(Buffer.from(newD.user.avatar));
+            eleImg.alt = newD.user.fullName;
+            eleDiv2.className = 'showChatDiv2';
+            eleDiv2.style.color = colorText;
+            eleH3.className = 'showChatName';
+            eleH3.innerText = newD.user.fullName;
+            eleDiv3.className = 'showChatDiv3';
+            eleP.className = 'showChatTitle';
+            eleP.innerText = newD.text.t;
+            elePState.className = 'showChatPState';
+            elePState.innerText = 'Vừa xong';
+            //Add
+            eleDiv3.appendChild(eleP);
+            eleDiv3.appendChild(elePState);
+            eleDiv2.appendChild(eleH3);
+            eleDiv2.appendChild(eleDiv3);
+            eleDiv1.appendChild(eleImg);
+            eleDiv1.appendChild(eleDiv2);
+            if (showChat.current) showChat.current.insertAdjacentElement('beforeend', eleDiv1);
+            const eleDiv1s = document.querySelectorAll('.showChatDiv1');
+            console.log(eleDiv1s.length, 'eleDiv1s');
+            expire(eleDiv1s);
         });
     }, [idUser]);
-    // useEffect(() => {
-    //     let timeOut: NodeJS.Timeout;
 
-    //     if (dataMFirst.length > 0) {
-    //         timeOut = setTimeout(() => {
-    //             console.log('time Out');
-
-    //             setDataMFirst((pre) => pre.filter((p, index) => index !== 0));
-    //         }, 10000);
-    //     }
-    //     return () => clearTimeout(timeOut);
-    // }, [dataMFirst]);
+    useEffect(() => {
+        if (dataMTwo) setDataMFirst([...dataMFirst, dataMTwo]);
+    }, [dataMTwo]);
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUserData([]);
         dispatch(setIdUser([]));
     };
+
+    let timeOut: NodeJS.Timeout;
     useEffect(() => {
         if (userId && token) fetch(userId, 'only');
-    }, []);
+        if (dataMFirst.length > 0) {
+            timeOut = setTimeout(() => {
+                console.log('time Out');
+                setDataMFirst((pre) => pre.filter((p, index) => index !== 0));
+            }, 5000);
+        }
+        return () => clearTimeout(timeOut);
+    }, [dataMFirst]);
+    console.log(dataMFirst, 'dataMFirst');
 
     const leng = idUser?.length;
     const css = `
@@ -257,16 +299,18 @@ function App() {
                         <Div
                             width="240px"
                             wrap="wrap"
+                            ref={showChat}
                             css={`
                                 position: absolute;
                                 top: 57px;
                                 right: 50px;
                                 z-index: 1;
+                                transition: all 1s linear;
                             `}
                         >
-                            {dataMFirstRef.current.map((m) => (
+                            {dataMFirst.map((m) => (
                                 <Div
-                                    key={m._id}
+                                    key={m.createdAt}
                                     width="100%"
                                     wrap="wrap"
                                     css={`
