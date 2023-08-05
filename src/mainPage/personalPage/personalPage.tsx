@@ -12,7 +12,6 @@ import { CheckI, CloseI, DotI, HeartI, HeartMI, ImageI, LoadingI, UndoI } from '
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { PropsUser, PropsUserPer } from 'src/App';
 import EditP from './layout/EditP';
-import moment from 'moment';
 import LogicView from './logicPersonal';
 
 interface PropsPer {

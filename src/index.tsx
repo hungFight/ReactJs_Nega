@@ -11,7 +11,7 @@ import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider
 import { PersistGate } from 'redux-persist/integration/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             refetchOnWindowFocus: false, // default: true

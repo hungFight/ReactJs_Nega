@@ -5,7 +5,7 @@ import { Buffer } from 'buffer';
 import Personalpage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
-import React, { Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
@@ -92,6 +92,19 @@ export interface PropsUserPer {
         id_loved: string;
     };
 }
+type PropsMFirst = {
+    user: {
+        id: string;
+        fullName: string;
+        avatar: any;
+        gender: number;
+    };
+    createdAt: string;
+    imageOrVideos: { v: any; icon: string }[];
+    seenBy: string[];
+    text: { t: string; icon: string };
+    _id: string;
+};
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
 const Message = React.lazy(() => import('~/Message/message'));
@@ -110,23 +123,10 @@ function App() {
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
     // messenger
-    const [dataMFirst, setDataMFirst] = useState<
-        {
-            user: {
-                id: string;
-                fullName: string;
-                avatar: any;
-                gender: number;
-            };
-            createdAt: string;
-            imageOrVideos: { v: any; icon: string }[];
-            seenBy: string[];
-            text: { t: string; icon: string };
-            _id: string;
-        }[]
-    >([]);
+    const [dataMFirst, setDataMFirst] = useState<PropsMFirst[]>([]);
+    const dataMFirstRef = useRef<PropsMFirst[]>([]);
 
-    async function fetch(id: string, first?: string) {
+    async function fetch(id: string | string[], first?: string) {
         if (!first) setLoading(true);
         const res = await userAPI.getById(
             token,
@@ -151,17 +151,8 @@ function App() {
             },
             first,
         );
-        if (res?.avatar) {
-            const av = CommonUtils.convertBase64(res.avatar);
-            res.avatar = av;
-            console.log(res, 'sss');
-        }
-        if (res?.background) {
-            const av = CommonUtils.convertBase64(res.background);
-            res.background = av;
-        }
 
-        if (first) {
+        if (!Array.isArray(res)) {
             setUserFirst(res);
         } else {
             setLoading(false);
@@ -174,74 +165,59 @@ function App() {
         const search = async () => {
             const search = window.location.search;
             if (search && idUser.length === 0) {
-                const id = search.split('id=');
-                const ids = [];
-                const datas: PropsUserPer[] = [];
-                if (id.length < 5 && id.length > 0) {
-                    for (let i = 1; i < id.length; i++) {
-                        ids.push(id[i]);
-                        const data = await fetch(id[i]);
-                        if (data) datas.push(data);
-                    }
-                    if (datas.length > 0) setUserData(datas);
+                const ids = search.split('id=');
+                if (ids.length < 5 && ids.length > 0) {
+                    const datas = await fetch(ids);
+                    if (datas) setUserData(datas);
+                }
+            } else {
+                if (idUser.length === 1) {
+                    const data = await fetch(idUser);
+                    if (data) setUserData(data);
                 }
             }
         };
         if (userId && token) search();
-        socket.on(
-            `${userId}roomChat`,
-            async (data: {
-                user: {
-                    id: string;
-                    fullName: string;
-                    avatar: Buffer;
-                    gender: number;
-                };
-                createdAt: string;
-                imageOrVideos: { v: string; icon: string }[];
-                seenBy: string[];
-                text: { t: string; icon: string };
-                _id: string;
-            }) => {
-                const newD: any = await new Promise(async (resolve, reject) => {
-                    try {
-                        await Promise.all(
-                            data.imageOrVideos.map(async (d, index) => {
-                                const buffer = await fileGridFS.getFile(token, d.v);
-                                const base64 = CommonUtils.convertBase64Gridfs(buffer.file);
-                                data.imageOrVideos[index].v = base64;
-                            }),
-                        );
+        socket.on(`${userId}roomChat`, async (data: PropsMFirst) => {
+            const newD = await new Promise<PropsMFirst>(async (resolve, reject) => {
+                try {
+                    await Promise.all(
+                        data.imageOrVideos.map(async (d, index) => {
+                            const buffer = await fileGridFS.getFile(token, d.v);
+                            const base64 = CommonUtils.convertBase64Gridfs(buffer.file);
+                            data.imageOrVideos[index].v = base64;
+                        }),
+                    );
 
-                        resolve(data);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-
-                setDataMFirst([...dataMFirst, newD]);
-                console.log(newD, 'be sent by others');
-            },
-        );
-    }, []);
-    useEffect(() => {
-        const search = async () => {
-            if (idUser.length === 1) {
-                const data = await fetch(idUser[0]);
-                if (data) setUserData([data]);
-            }
-        };
-        if (userId && token) search();
+                    resolve(data);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+            dataMFirstRef.current.push(newD);
+            // setDataMFirst([...dataMFirst, newD]);
+        });
     }, [idUser]);
+    // useEffect(() => {
+    //     let timeOut: NodeJS.Timeout;
 
+    //     if (dataMFirst.length > 0) {
+    //         timeOut = setTimeout(() => {
+    //             console.log('time Out');
+
+    //             setDataMFirst((pre) => pre.filter((p, index) => index !== 0));
+    //         }, 10000);
+    //     }
+    //     return () => clearTimeout(timeOut);
+    // }, [dataMFirst]);
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUserData([]);
         dispatch(setIdUser([]));
     };
     useEffect(() => {
-        if (userId && token) fetch(userId, 'first');
-    }, [userId]);
+        if (userId && token) fetch(userId, 'only');
+    }, []);
 
     const leng = idUser?.length;
     const css = `
@@ -270,16 +246,17 @@ function App() {
                     />
                 }
             >
-                {/* <Div>Helloo</Div> */}
                 <ErrorBoudaries
                     check={errorServer.check}
                     message={errorServer.message || 'Server is having a problem. Please try again later!'}
                 />
-                {userFirst && (
+                {userFirst ? (
                     <>
                         <Website idUser={idUser} dataUser={userFirst} setDataUser={setUserFirst} />
                         {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
                         <Div
+                            width="240px"
+                            wrap="wrap"
                             css={`
                                 position: absolute;
                                 top: 57px;
@@ -287,20 +264,22 @@ function App() {
                                 z-index: 1;
                             `}
                         >
-                            {dataMFirst.map((m) => (
+                            {dataMFirstRef.current.map((m) => (
                                 <Div
-                                    key={m.user.id}
-                                    width="200px"
+                                    key={m._id}
+                                    width="100%"
+                                    wrap="wrap"
                                     css={`
                                         background-color: #276aa5;
                                         border-radius: 50px;
-                                        height: 40px;
+                                        height: 50px;
                                         align-items: center;
                                         padding: 0 3px;
                                         margin: 5px 0;
                                         user-select: none;
                                         color: ${colorText};
                                         transition: all 0.5s linear;
+                                        background-image: linear-gradient(45deg, #000000, #8b9aa800);
                                         &:active {
                                             background-color: #484848ba;
                                         }
@@ -317,10 +296,12 @@ function App() {
                                         gender={m.user.gender}
                                         radius="50%"
                                         css={`
-                                            min-width: 30px;
-                                            width: 30px;
-                                            height: 30px;
+                                            min-width: 35px;
+                                            width: 35px;
+                                            height: 35px;
                                             margin: 3px 5px;
+                                            box-shadow: 0 0 4px #22d056;
+                                            border-radius: 50%;
                                         `}
                                     />
                                     {userOnline.includes(m.user.id) && (
@@ -336,7 +317,7 @@ function App() {
                                     <Div width="72%" wrap="wrap">
                                         <Hname>{m.user.fullName}</Hname>
                                         <Div
-                                            width="80%"
+                                            width="100%"
                                             css={`
                                                 align-items: center;
                                                 position: relative;
@@ -349,7 +330,7 @@ function App() {
                                                 {m.text.t}
                                             </P>
                                             <P z="1rem" css="width: 100%; margin-top: 5px; margin-left: 10px">
-                                                {/* {Time} */}
+                                                vừa xong
                                             </P>
                                         </Div>
                                     </Div>
@@ -458,6 +439,13 @@ function App() {
                             </DivContainer>
                         )}
                     </>
+                ) : (
+                    <Progress
+                        title={{
+                            vn: 'Đang tải dữ liệu...',
+                            en: 'loading data...',
+                        }}
+                    />
                 )}
             </Suspense>
         );

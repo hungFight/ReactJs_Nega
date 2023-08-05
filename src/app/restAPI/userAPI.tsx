@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import refreshToken from '~/refreshToken/refreshToken';
 import Cookies from 'universal-cookie';
+import { PropsUser, PropsUserPer } from 'src/App';
+import CommonUtils from '~/utils/CommonUtils';
 
 export interface PropsParamsById {
     id?: string;
@@ -35,18 +37,46 @@ interface PropsParamsMores {
 }
 const cookies = new Cookies();
 class HttpRequestUser {
-    getById = async (token: string, id: string, params: PropsParamsById, mores: PropsParamsMores, first?: string) => {
+    getById = async (
+        token: string,
+        id: string | string[],
+        params: PropsParamsById,
+        mores: PropsParamsMores,
+        first?: string,
+    ) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
-            const res = await Axios.post('/SN/user/getById', {
+            const res = await Axios.post<PropsUserPer[] | PropsUser>('/SN/user/getById', {
                 id: id,
                 mores,
                 first,
                 params: params,
             });
             console.log(res, 'res');
-
-            return res.data;
+            if (Array.isArray(res.data)) {
+                return res.data.map((dt) => {
+                    if (dt.avatar) {
+                        const av = CommonUtils.convertBase64(dt.avatar);
+                        dt.avatar = av;
+                        console.log(res, 'sss');
+                    }
+                    if (dt.background) {
+                        const av = CommonUtils.convertBase64(dt.background);
+                        dt.background = av;
+                    }
+                    return dt;
+                });
+            } else {
+                if (res?.data.avatar) {
+                    const av = CommonUtils.convertBase64(res.data.avatar);
+                    res.data.avatar = av;
+                }
+                if (res?.data.background) {
+                    const av = CommonUtils.convertBase64(res.data.background);
+                    res.data.background = av;
+                }
+                return res.data;
+            }
         } catch (error) {
             console.log(error);
 

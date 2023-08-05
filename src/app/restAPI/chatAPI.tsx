@@ -1,3 +1,4 @@
+import { PropsChat } from '~/Message/Send/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 
 class SendChat {
@@ -31,7 +32,9 @@ class SendChat {
     ) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
-            const res = await Axios.get('/SN/sendChat/getChat', { params: { id_room, id_other, limit, offset, of } });
+            const res = await Axios.get<PropsChat>('/SN/sendChat/getChat', {
+                params: { id_room, id_other, limit, offset, of },
+            });
 
             return res.data;
         } catch (error) {

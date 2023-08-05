@@ -71,12 +71,12 @@ export default function LogicConversation(id_room: string | undefined, id_others
 
         setLoading(true);
         cRef.current = 2;
-        const res: any = await sendChatAPi.getChat(token, id_room, id_others, limit, offset.current, of);
+        const res = await sendChatAPi.getChat(token, id_room, id_others, limit, offset.current, of);
         if (res) {
-            const newData: any = await new Promise(async (resolve, reject) => {
+            const newData = await new Promise<PropsChat>(async (resolve, reject) => {
                 const modifiedData = { ...res };
                 await Promise.all(
-                    modifiedData.room.map(async (rr: any, index1: number) => {
+                    modifiedData.room.map(async (rr, index1: number) => {
                         await Promise.all(
                             rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
                                 const buffer = await fileGridFS.getFile(token, fl.v);
@@ -104,8 +104,8 @@ export default function LogicConversation(id_room: string | undefined, id_others
                 offset.current += limit;
             }
             setConversation(chatRef.current);
-            setLoading(false);
         }
+        setLoading(false);
     }
     useEffect(() => {
         if (id_room) fetchChat();
@@ -179,7 +179,7 @@ export default function LogicConversation(id_room: string | undefined, id_others
                 sending: true,
                 _id: userId,
             };
-            if (conversation) conversation.room.push(chat);
+            if (conversation) conversation.room.unshift(chat);
             setupload([]);
             uploadRef.current = [];
             const formData = new FormData();
@@ -207,10 +207,11 @@ export default function LogicConversation(id_room: string | undefined, id_others
                 ];
                 createdAt: string;
             } = await sendChatAPI.send(token, formData);
-            console.log(res);
             if (res && conversation) {
-                conversation.room[conversation.room.length - 1].sending = false;
+                conversation.room[0].sending = false;
+                console.log(res, 'here', conversation);
                 setFileUpload([]);
+                // setConversation(conversation);
             }
         }
     };

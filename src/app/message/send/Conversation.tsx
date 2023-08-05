@@ -1,8 +1,8 @@
 import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from './styleSed';
-import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI } from '~/assets/Icons/Icons';
+import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { CallName, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { CallName, DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
 import { useEffect, useRef, useState } from 'react';
@@ -59,8 +59,6 @@ const Conversation: React.FC<{
     const ERef = useRef<any>();
     const Diff = useRef<number>(1);
     const check = useRef<number>(0);
-    const [dataImage, setDataImage] = useState<any>();
-    const [watchMore, setWatchMore] = useState<boolean>(false);
     const relative =
         conversation?.status === 'isFriend'
             ? `You and ${CallName(user.gender)} are each other of friend`
@@ -72,26 +70,7 @@ const Conversation: React.FC<{
         ERef.current.scrollTop = -check.current;
     }, [conversation]);
     useEffect(() => {
-        // ERef.current.scrollTop = check.current;
-        console.log('ok', check.current);
-        const observer = new MutationObserver((mutationsList) => {
-            console.log(mutationsList, ERef.current.scrollTop, ERef.current.scrollHeight, '===', cRef.current);
-            mutationsList.forEach((m, index, arr) => {
-                if (arr.length === index + 1) {
-                }
-            });
-        });
-
-        // Configure and start observing the element
-        const observerConfig = {
-            attributes: true,
-            attributeFilter: ['style'],
-            subtree: true,
-            childList: true,
-        };
-        observer.observe(ERef.current, observerConfig);
         ERef.current.addEventListener('scroll', handleScroll);
-
         return () => {
             ERef.current?.removeEventListener('scroll', handleScroll);
         };
@@ -135,7 +114,7 @@ const Conversation: React.FC<{
         });
         dispatch(setIdUser(id_oth));
     };
-    console.log(conversation, 'cc');
+    console.log(conversation, 'cc', loading);
 
     return (
         <DivConversation>
@@ -228,21 +207,27 @@ const Conversation: React.FC<{
                             />
                         );
                     })}
-                    <Div
-                        width="100%"
-                        wrap="wrap"
-                        css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
-                    >
-                        <P z="1.3rem" align="center" css="width: 100%; margin: 8px 0; ">
-                            {relative}
-                        </P>
+                    {loading ? (
+                        <DivLoading>
+                            <LoadingI />
+                        </DivLoading>
+                    ) : (
                         <Div
-                            css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
-                            onClick={handleProfile}
+                            width="100%"
+                            wrap="wrap"
+                            css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
                         >
-                            <ProfileCircelI /> <Hname css="margin: 0 5px; width: fit-content;">View profile</Hname>
+                            <P z="1.3rem" align="center" css="width: 100%; margin: 8px 0; ">
+                                {relative}
+                            </P>
+                            <Div
+                                css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
+                                onClick={handleProfile}
+                            >
+                                <ProfileCircelI /> <Hname css="margin: 0 5px; width: fit-content;">View profile</Hname>
+                            </Div>
                         </Div>
-                    </Div>
+                    )}
                 </Div>
                 <Div
                     width="100%"
