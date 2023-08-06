@@ -5,9 +5,10 @@ import { useCookies } from 'react-cookie';
 import { useEffect, useRef, useState } from 'react';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
+import { onChat } from '~/redux/hideShow';
 interface PropsFriends {
     avatar: any;
     birthday: string;
@@ -17,6 +18,7 @@ interface PropsFriends {
     nickName: string | undefined;
 }
 const Friends: React.FC<{ type: string }> = ({ type }) => {
+    const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
 
@@ -72,7 +74,7 @@ const Friends: React.FC<{ type: string }> = ({ type }) => {
         };
     }, [reload]);
     const handleMessenger = (id: string) => {
-        console.log('messenger', id);
+        dispatch(onChat({ id_room: undefined, id_other: id }));
     };
     const css = `    display: flex;
             align-items: center;

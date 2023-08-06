@@ -42,10 +42,7 @@ export const DivResults = styled.div`
 `;
 export const DivConversation = styled.div`
     width: 100%;
-    height: 93%;
-    position: fixed;
-    bottom: 0;
-    right: 0;
+    height: ${(props: { height?: string }) => props.height || '100%'};
     border: 1px solid #1b1a1a;
     border-radius: 5px;
     background-color: #202124;
@@ -55,6 +52,12 @@ export const DivConversation = styled.div`
     }
     @media (min-width: 360px) {
         width: 360px;
+    }
+    @media (max-width: 1080px) {
+        height: 48%;
+    }
+    @media (min-width: 1080px) {
+        height: 100%;
     }
 `;
 export const DivResultsConversation = styled.div`

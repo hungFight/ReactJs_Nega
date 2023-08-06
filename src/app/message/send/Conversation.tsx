@@ -10,7 +10,7 @@ import { Label } from '~/social_network/components/Header/layout/Home/Layout/For
 import LogicConversation from './LogicConver';
 import { Player } from 'video-react';
 import { PropsUser } from 'src/App';
-import { offChat } from '~/redux/reload';
+import { offChat } from '~/redux/hideShow';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import FileConversation from './File';
@@ -25,16 +25,16 @@ import ItemsRoom from './ItemsConvers';
 const Conversation: React.FC<{
     colorText: string;
     colorBg: number;
-    data: {
-        id_room: string | undefined;
-        user: { id: string; avatar: any; fullName: string; gender: number };
-    };
+    id_chat: { id_room: string | undefined; id_other: string };
     dataFirst: PropsUser;
     currentPage: number;
-}> = ({ colorText, colorBg, dataFirst, data, currentPage }) => {
+    chat: {
+        id_room: string | undefined;
+        id_other: string;
+    }[];
+}> = ({ colorText, colorBg, dataFirst, id_chat, currentPage, chat }) => {
     const { lg } = Languages();
-    const id_room = data.id_room;
-    const user = data.user;
+
     const {
         handleImageUpload,
         upload,
@@ -55,16 +55,10 @@ const Conversation: React.FC<{
         fetchChat,
         loading,
         cRef,
-    } = LogicConversation(id_room, user.id, dataFirst.id);
+    } = LogicConversation(id_chat, dataFirst.id);
     const ERef = useRef<any>();
-    const Diff = useRef<number>(1);
     const check = useRef<number>(0);
-    const relative =
-        conversation?.status === 'isFriend'
-            ? `You and ${CallName(user.gender)} are each other of friend`
-            : conversation?.status === 'isNotFriend'
-            ? `You and ${CallName(user.gender)} are not friend`
-            : '';
+
     useEffect(() => {
         console.log(check.current, 'check');
         ERef.current.scrollTop = -check.current;
@@ -106,7 +100,7 @@ const Conversation: React.FC<{
             if (cRef.current !== 2) fetchChat(true);
         }
     };
-    let startOfDay: string = '';
+
     const handleProfile = () => {
         const id_oth: string[] = [];
         conversation?.id_us.map((id) => {
@@ -114,10 +108,10 @@ const Conversation: React.FC<{
         });
         dispatch(setIdUser(id_oth));
     };
-    console.log(conversation, 'cc', loading);
+    console.log(conversation, 'conversation');
 
     return (
-        <DivConversation>
+        <DivConversation height={chat.length > 2 ? '48%' : chat.length === 1 ? '100% !important' : ''}>
             <DivResultsConversation color="#e4e4e4">
                 <Div
                     width="100%"
@@ -129,24 +123,30 @@ const Conversation: React.FC<{
                         top: 10px;
                         left: 0;
                         background-color: #202124;
+                        z-index: 1;
                     `}
                 >
                     <Div
                         width="30px"
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center; cursor: var(--pointer)"
-                        onClick={() => dispatch(offChat(id_room))}
+                        onClick={() => {
+                            const newD = chat.filter(
+                                (c) => c.id_other !== id_chat.id_other && c.id_room !== id_chat.id_room,
+                            );
+                            dispatch(offChat(newD));
+                        }}
                     >
                         <UndoI />
                     </Div>
                     <Div width="85%" css="align-items: center;">
                         <Avatar
-                            src={user.avatar}
-                            alt={user.fullName}
-                            gender={user.gender}
+                            src={conversation?.user.avatar}
+                            alt={conversation?.user.fullName}
+                            gender={conversation?.user.gender}
                             radius="50%"
                             css="min-width: 30px; width: 30px; height: 30px; margin-right: 5px;"
                         />
-                        <Hname>{user.fullName}</Hname>
+                        <Hname>{conversation?.user.fullName}</Hname>
                         <Div>
                             <DotI />
                         </Div>
@@ -159,10 +159,11 @@ const Conversation: React.FC<{
                     css={`
                         flex-direction: column-reverse;
                         padding-bottom: 10px;
-                        ${emoji ? 'height: 150px;' : 'height: 95%;'}
+                        ${emoji ? 'height: 150px;' : `height:${chat.length > 2 ? '90%' : '95%'};`}
                         overflow-y: overlay;
                         scroll-behavior: smooth;
                         padding-right: 5px;
+                        transition: all 0.5s linear;
                         @media (max-width: 768px) {
                             padding-right: 0px;
                             &::-webkit-scrollbar {
@@ -170,40 +171,25 @@ const Conversation: React.FC<{
                                 transform: translateX(calc(100% - 100vw));
                             }
                         }
+                        @media (max-width: 1080px) {
+                            height: 90%;
+                        }
                     `}
                     onScroll={() => handleScroll}
                     onClick={() => setEmoji(false)}
                 >
                     {conversation?.room.map((rc, index, arr) => {
-                        let listDateTime;
-                        if (startOfDay) {
-                            const dayOld = moment(startOfDay, 'HH:mm:ss YYYY-MM-DD');
-                            const dayNew = moment(rc.createdAt).format('HH:mm:ss YYYY-MM-DD');
-                            const r = moment(dayNew, 'HH:mm:ss YYYY-MM-DD');
-                            const diffInDays = r.diff(dayOld, 'days');
-                            if (diffInDays > 0) {
-                                Diff.current = 1;
-                                listDateTime = moment(rc.createdAt).locale(lg).format('MMMM Do YYYY, h:mm:ss a');
-                            } else {
-                                Diff.current = 0;
-                            }
-                        }
-                        if (Diff.current === 1) startOfDay = moment(rc.createdAt).format('HH:mm:ss YYYY-MM-DD');
                         return (
                             <ItemsRoom
                                 key={rc.text.t + index}
                                 rc={rc}
                                 index={index}
-                                listDateTime={listDateTime}
-                                startOfDay={startOfDay}
-                                Diff={Diff}
-                                lg={lg}
                                 userId={userId}
                                 handleWatchMore={handleWatchMore}
                                 ERef={ERef}
                                 token={token}
                                 handleTime={handleTime}
-                                user={user}
+                                user={conversation.user}
                             />
                         );
                     })}
@@ -217,9 +203,6 @@ const Conversation: React.FC<{
                             wrap="wrap"
                             css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
                         >
-                            <P z="1.3rem" align="center" css="width: 100%; margin: 8px 0; ">
-                                {relative}
-                            </P>
                             <Div
                                 css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
                                 onClick={handleProfile}
@@ -268,7 +251,6 @@ const Conversation: React.FC<{
                                         ) : (
                                             item.type === 'video' && <Player key={item.link} src={item.link} />
                                         )}
-                                        <Div></Div>
                                     </Div>
                                 ))}
                             </Div>
@@ -311,7 +293,7 @@ const Conversation: React.FC<{
                             <Div
                                 width="34px"
                                 css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
-                                onClick={handleSend}
+                                onClick={(e) => handleSend(e, conversation?._id, conversation?.user.id)}
                             >
                                 <SendOPTI />
                             </Div>

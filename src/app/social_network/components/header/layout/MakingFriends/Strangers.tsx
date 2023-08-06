@@ -111,7 +111,6 @@ const Strangers: React.FC<{
         };
     }, [reload]);
 
-    useEffect(() => {}, []);
     const handleAdd = async (id: string, kindOf: string = 'friend') => {
         const res: {
             id_friend: string;
@@ -129,8 +128,6 @@ const Strangers: React.FC<{
                 x.id_f_user.idFriend = res.data.idFriend;
                 x.id_f_user.createdAt = res.data.createdAt;
                 x.id_f_user.level = 1;
-                console.log('xxxx', x);
-
                 return x;
             } else {
                 return x;
@@ -139,9 +136,7 @@ const Strangers: React.FC<{
         setData(newStranger);
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        console.log('Abolish', kindOf, id);
         const res = await peopleAPI.delete(token, id, kindOf);
-        console.log('Abolish', res);
         const newStranger = data?.filter((x: PropsData) => {
             if (
                 (x.id_f_user.idCurrentUser === res.ok?.idCurrentUser && x.id_f_user.idFriend === res.ok?.idFriend) ||
@@ -169,7 +164,6 @@ const Strangers: React.FC<{
     };
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
         const res = await peopleAPI.setConfirm(token, id, kindOf);
-        console.log('confirm', kindOf, id, res);
         refresh(res);
         function refresh(res: any) {
             if (res.ok === 1) {
@@ -185,7 +179,6 @@ const Strangers: React.FC<{
                         return x;
                     }
                 });
-                console.log('newStranger', newStranger);
                 setData(newStranger);
             }
         }

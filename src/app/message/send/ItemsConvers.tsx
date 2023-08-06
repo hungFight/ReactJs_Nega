@@ -23,10 +23,6 @@ const ItemsRoom: React.FC<{
         createdAt: string;
     };
     index: number;
-    listDateTime: string | undefined;
-    startOfDay: string;
-    Diff: React.MutableRefObject<number>;
-    lg: string;
     userId: string;
     token: string;
     handleWatchMore: (e: any) => void;
@@ -38,15 +34,9 @@ const ItemsRoom: React.FC<{
         fullName: string;
         gender: number;
     };
-}> = ({ rc, index, listDateTime, startOfDay, Diff, lg, userId, token, handleWatchMore, ERef, handleTime, user }) => {
-    
+}> = ({ rc, index, userId, token, handleWatchMore, ERef, handleTime, user }) => {
     return (
         <>
-            {listDateTime && (
-                <P z="1rem" css="text-align: center; margin: 10px 0;">
-                    -----{listDateTime}-----
-                </P>
-            )}
             {rc._id === userId ? (
                 <Div
                     width="100%"
@@ -122,7 +112,9 @@ const ItemsRoom: React.FC<{
                             </Div>
                         )}
                         {rc?.sending ? (
-                            <P>sending...</P>
+                            <P z="1rem" css="text-align: end;">
+                                sending...
+                            </P>
                         ) : (
                             <>
                                 {rc.imageOrVideos.length > 0 ? (

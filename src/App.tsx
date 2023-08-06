@@ -1,12 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from 'react-redux';
-import { InitialStateHideShow, offAll, onPersonalPage, setIdUser } from './app/redux/hideShow';
-import { Buffer } from 'buffer';
+import Cookies from '~/utils/Cookies';
 
+import { Buffer } from 'buffer';
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper';
+import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+
+import { InitialStateHideShow, offAll, onPersonalPage, setIdUser } from './app/redux/hideShow';
 import Personalpage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
-import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
@@ -22,9 +30,7 @@ import Conversation from '~/Message/Send/Conversation';
 import { PropsReloadRD } from '~/redux/reload';
 import fileGridFS from '~/restAPI/gridFS';
 import { PropsBgNEGA } from '~/redux/background';
-import Cookies from '~/utils/Cookies';
-import { useQuery } from '@tanstack/react-query';
-import verifyAPI from '~/restAPI/verifyAPI/verifyAPI';
+
 const DivOpacity = styled.div`
     width: 100%;
     height: 100%;
@@ -115,9 +121,9 @@ function App() {
     });
     const { userId, token } = Cookies(); // customs hook
     const dispatch = useDispatch();
-    const { idUser, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
+    const { chat, idUser, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { setting, personalPage } = useSelector((state: any) => state.hideShow);
-    const { chat, userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
+    const { userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
     const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
     const [userData, setUserData] = useState<PropsUserPer[]>([]);
 
@@ -384,17 +390,35 @@ function App() {
                         </Div>
                         <Message dataUser={userFirst} userOnline={userOnline} />
 
-                        {chat?.map((room) => (
-                            <Conversation
-                                key={room.id_room}
-                                colorText={colorText}
-                                colorBg={colorBg}
-                                data={room}
-                                currentPage={currentPage}
-                                dataFirst={userFirst}
-                            />
-                        ))}
-
+                        <Div
+                            wrap="wrap"
+                            css="position: fixed; bottom: 0; right: 360px; z-index: 103; height: 93%; justify-content: space-around; overflow-y: overlay  "
+                        >
+                            {/* <Swiper
+                                slidesPerView={2}
+                                spaceBetween={30}
+                                centeredSlides={true}
+                                pagination={{
+                                    clickable: true,
+                                }}
+                                modules={[Pagination]}
+                                className="mySwiper"
+                            > */}
+                            {chat?.map((room, index) => (
+                                // <SwiperSlide key={index}>
+                                <Conversation
+                                    key={index}
+                                    colorText={colorText}
+                                    colorBg={colorBg}
+                                    id_chat={room}
+                                    currentPage={currentPage}
+                                    dataFirst={userFirst}
+                                    chat={chat}
+                                />
+                                // </SwiperSlide>
+                            ))}
+                            {/* </Swiper> */}
+                        </Div>
                         {loading && (
                             <Div
                                 width="100%"

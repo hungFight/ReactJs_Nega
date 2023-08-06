@@ -25,9 +25,6 @@ interface PropsPer {
 }
 
 const Personalpage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, online, userFirst, setUserFirst }) => {
-    console.log(user, 'user herrrr');
-    // const lg
-    const dispatch = useDispatch();
     const [dataUser, setDataUser] = useState<PropsUserPer>(user);
     const {
         edit,
@@ -69,14 +66,6 @@ const Personalpage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
         id_friend,
         level,
     } = LogicView(user, userFirst, setUserFirst, dataUser, setDataUser, leng, colorText, online);
-
-    const handlePersonalPage = () => {
-        dispatch(offPersonalPage());
-    };
-    console.log('dataUserFirst', userFirst);
-
-    console.log(dataUser, 'dataUser', id_loved);
-
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
         return (
             <Div width="196px" wrap="wrap" css="position: relative; @media(min-width: 600px){width: 250px}">

@@ -45,30 +45,16 @@ interface PropsMakingFriends {
 const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colorBg, dataUser }) => {
     const [type, setType] = useState<string>(() => window.location.href.split('#')[1] || 'strangers');
     const lRef = useRef<any>();
-
     const menu = friendsT.menu;
-
-    const pagination = {
-        clickable: true,
-        renderBullet: function (index: number, className: string) {
-            return '<span class="' + className + '">' + (index + 1) + '</span>';
-        },
-    };
-
     useEffect(() => {
         const as = document.querySelectorAll('.idHref');
         Array.from(as).forEach((item) => {
             console.log(item, 'item', item.getAttribute('href'));
-
             if (item.getAttribute('href') === '#' + window.location.href.split('#')[1]) {
                 item.dispatchEvent(new MouseEvent('click'));
             }
         });
-        console.log(window.location.href.split('#')[1], 'aa', as);
     }, []);
-
-    console.log(type, 'people');
-
     return (
         <DivOptions bg={colorBg === 1 ? '#353535' : ''} color={colorText}>
             <Div width="100%" css="height: 30px;"></Div>

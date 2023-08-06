@@ -24,8 +24,7 @@ class SendChat {
     };
     getChat = async (
         token: string,
-        id_room: string | undefined,
-        id_other: string,
+        id_chat: { id_room: string | undefined; id_other: string },
         limit: number,
         offset: number,
         of?: boolean,
@@ -33,9 +32,8 @@ class SendChat {
         try {
             const Axios = refreshToken.axiosJWTs(token);
             const res = await Axios.get<PropsChat>('/SN/sendChat/getChat', {
-                params: { id_room, id_other, limit, offset, of },
+                params: { ...id_chat, limit, offset, of },
             });
-
             return res.data;
         } catch (error) {
             console.log(error);

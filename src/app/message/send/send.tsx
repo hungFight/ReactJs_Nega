@@ -21,6 +21,8 @@ import sendChatAPi from '~/restAPI/chatAPI';
 import { useCookies } from 'react-cookie';
 import CommonUtils from '~/utils/CommonUtils';
 import { socket } from 'src/mainPage/nextWeb';
+import { useSelector } from 'react-redux';
+import { PropsReloadRD } from '~/redux/reload';
 
 export interface PropsRoomChat {
     _id: any;
@@ -48,6 +50,7 @@ const Send: React.FC<{
     dataUser: { id: string; avatar: any; fullName: string; nickName: string; gender: number };
     userOline: string[];
 }> = ({ colorBg, colorText, dataUser, userOline }) => {
+    const roomChat = useSelector((state: { reload: PropsReloadRD }) => state.reload.roomChat);
     const [send, setSend] = useState(false);
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
     const userId = cookies.k_user;
@@ -78,7 +81,7 @@ const Send: React.FC<{
         socket.on(`${userId}roomChat`, (data: string) => {
             fetchRoom();
         });
-    }, []);
+    }, [roomChat]);
 
     const handleUndo = () => {};
     // const debounce = useDebounce(searchUser, 500);

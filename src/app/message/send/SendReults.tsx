@@ -1,7 +1,7 @@
 import moment from 'moment';
 import 'moment/locale/vi';
 import { useState } from 'react';
-import { PropsReloadRD, onChat } from '~/redux/reload';
+import { PropsReloadRD } from '~/redux/reload';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Languages from '~/reUsingComponents/languages';
@@ -11,6 +11,7 @@ import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, ProfileI, TyOnlineI } from '~/assets/Icons/Icons';
 import { PropsRoomChat } from './Send';
+import { onChat } from '~/redux/hideShow';
 
 const ListAccounts: React.FC<{
     colorText: string;
@@ -57,7 +58,7 @@ const ListAccounts: React.FC<{
                         onTouchMove={handleTouchMove}
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
-                        onClick={() => dispatch(onChat({ id_room: data._id, user: rs }))}
+                        onClick={() => dispatch(onChat({ id_room: data._id, id_other: data.user[0].id }))}
                         width="100%"
                         css={`
                             height: 50px;

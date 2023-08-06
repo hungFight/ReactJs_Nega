@@ -12,9 +12,18 @@ import { setTrueErrorServer } from '~/redux/hideShow';
 import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
 import Cookies from '~/utils/Cookies';
+import moment from 'moment';
+import { reRoomChat } from '~/redux/reload';
 
 export interface PropsChat {
+    _id: string;
     id_us: string[];
+    user: {
+        id: string;
+        fullName: string;
+        avatar: string | undefined;
+        gender: number;
+    };
     status: string;
     background: string;
     room: {
@@ -35,7 +44,7 @@ export interface PropsChat {
     }[];
     createdAt: string;
 }
-export default function LogicConversation(id_room: string | undefined, id_others: string, id_you: string) {
+export default function LogicConversation(id_chat: { id_room: string | undefined; id_other: string }, id_you: string) {
     const dispatch = useDispatch();
     const { userId, token } = Cookies();
 
@@ -71,7 +80,7 @@ export default function LogicConversation(id_room: string | undefined, id_others
 
         setLoading(true);
         cRef.current = 2;
-        const res = await sendChatAPi.getChat(token, id_room, id_others, limit, offset.current, of);
+        const res = await sendChatAPi.getChat(token, id_chat, limit, offset.current, of);
         if (res) {
             const newData = await new Promise<PropsChat>(async (resolve, reject) => {
                 const modifiedData = { ...res };
@@ -88,6 +97,8 @@ export default function LogicConversation(id_room: string | undefined, id_others
                 );
                 resolve(modifiedData);
             });
+            const a = CommonUtils.convertBase64(newData.user?.avatar);
+            if (a) newData.user.avatar = a;
             if (newData) {
                 if (of) {
                     cRef.current = 8;
@@ -108,7 +119,7 @@ export default function LogicConversation(id_room: string | undefined, id_others
         setLoading(false);
     }
     useEffect(() => {
-        if (id_room) fetchChat();
+        fetchChat();
         socket.on(
             `${userId}roomChat`,
             async (data: {
@@ -165,7 +176,11 @@ export default function LogicConversation(id_room: string | undefined, id_others
     const handleTouchEnd = () => {
         clearTimeout(time);
     };
-    const handleSend = async (e: any) => {
+    const handleSend = async (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        id_room: string | undefined,
+        id_other: string | undefined,
+    ) => {
         if (value || upload.length > 0) {
             setValue('');
             const images = upload.map((i) => {
@@ -180,12 +195,12 @@ export default function LogicConversation(id_room: string | undefined, id_others
                 _id: userId,
             };
             if (conversation) conversation.room.unshift(chat);
-            setupload([]);
             uploadRef.current = [];
+            fileRef.current = [];
             const formData = new FormData();
             formData.append('value', value);
             if (id_room) formData.append('id_room', id_room);
-            formData.append('id_others', id_others);
+            if (id_other) formData.append('id_others', id_other);
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
             }
@@ -209,8 +224,8 @@ export default function LogicConversation(id_room: string | undefined, id_others
             } = await sendChatAPI.send(token, formData);
             if (res && conversation) {
                 conversation.room[0].sending = false;
+                dispatch(reRoomChat());
                 console.log(res, 'here', conversation);
-                setFileUpload([]);
                 // setConversation(conversation);
             }
         }
@@ -287,6 +302,7 @@ export default function LogicConversation(id_room: string | undefined, id_others
             dispatch(setTrueErrorServer(`You can only select ${fileAmount} file at most!`));
         }
     };
+
     return {
         handleImageUpload,
         upload,
