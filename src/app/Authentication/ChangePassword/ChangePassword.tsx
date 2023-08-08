@@ -1,21 +1,20 @@
 /* eslint-disable array-callback-return */
 import { DivChangePass } from './styleChangePassword';
 import { DivAccount } from '../Login/styleLogin';
-import { ButtonSubmit, DivContainer, Hname, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonSubmit, Hname, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
 import Eyes from '~/reUsingComponents/Eys/Eye';
-import { ReactNode, useRef, useState, useEffect, useCallback } from 'react';
-import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { Div, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Pmessage } from '../Register/styleRegister';
-import TagProfle from '~/social_network/components/Header/layout/MakingFriends/TagProfle';
 import accountRequest from '~/restAPI/accounAPI';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { PropsAccount, PropsChangeP } from './typeChangePassword';
+import { PropsChangeP } from './typeChangePassword';
 import { useQuery } from '@tanstack/react-query';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 import { useSelector } from 'react-redux';
 
 const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, setEnable }) => {
-    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const [id, setId] = useState<string>('');
     const [messageStatus, setMessageStatus] = useState<{ status: boolean; message: string }>({

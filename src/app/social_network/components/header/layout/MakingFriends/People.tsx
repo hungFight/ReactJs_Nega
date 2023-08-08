@@ -1,25 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { io } from 'socket.io-client';
-import moment from 'moment';
-import { Swiper, SwiperSlide } from 'swiper/react';
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Pagination, Mousewheel } from 'swiper';
 
 import { Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivItems, DivMenu, DivOptions, DivResults, DivSearch, Input } from './styleMakingFriends';
-import TagProfle from '~/social_network/components/Header/layout/MakingFriends/TagProfle';
 import { useState, useEffect, useLayoutEffect, memo, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
-import { useCookies } from 'react-cookie';
-import { DotI, LoadingI } from '~/assets/Icons/Icons';
-import { text } from 'stream/consumers';
-import { people } from '~/redux/reload';
-import CommonUtils from '~/utils/CommonUtils';
-import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import Strangers from './Strangers';
 import Friends from './Friends';
 import Requested from './Requested';

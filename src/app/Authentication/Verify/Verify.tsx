@@ -8,7 +8,7 @@ import { DivExpireTime, DivOtp, DivReSend, DivSendMail, DivVerifymail, Form } fr
 import { Pcontent, SpanIconPhoneMail } from '../Register/styleRegister';
 import { Button, Input } from '~/reUsingComponents/styleComponents/styleDefault';
 import { useSelector } from 'react-redux';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 interface PropsVerify {
     setEnable: React.Dispatch<SetStateAction<boolean>>;
     setAccount: React.Dispatch<React.SetStateAction<string | number>>;
@@ -16,7 +16,7 @@ interface PropsVerify {
     setAcc: React.Dispatch<React.SetStateAction<number>>;
 }
 const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) => {
-    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [loading, setLoading] = useState<boolean>(false);
     const [otpStatus, setOtpStatus] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');

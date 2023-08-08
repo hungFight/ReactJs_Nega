@@ -6,10 +6,10 @@ import { PropsUser, PropsUserPer } from 'src/App';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import { setTrueErrorServer } from '~/redux/hideShow';
-import { onChat } from '~/redux/hideShow';
 import userAPI from '~/restAPI/userAPI';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
+import { onChats } from '~/redux/background';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -269,7 +269,7 @@ export default function LogicView(
         }
     };
     const handleMessenger = async (id: string) => {
-        dispatch(onChat({ id_room: '', id_other: id }));
+        dispatch(onChats({ id_room: '', id_other: id }));
         console.log('handleMessenger');
     };
     const handleFollower = async (id: string, follow?: string) => {

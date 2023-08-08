@@ -21,7 +21,7 @@ interface PropsTagP {
     cssImage?: string;
     colorText?: string;
 }
-const TagProfle: React.FC<PropsTagP> = ({
+const TagProfile: React.FC<PropsTagP> = ({
     data,
     onClick,
     button,
@@ -103,4 +103,4 @@ const TagProfle: React.FC<PropsTagP> = ({
         </Div>
     );
 };
-export default memo(TagProfle);
+export default memo(TagProfile);

@@ -3,7 +3,7 @@ import { DivPage, Ptitle } from './styleListWeb';
 import { StyledComponent } from 'styled-components';
 import { LinkProps } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 
 export interface PropsListWeb {
     data: {
@@ -20,7 +20,7 @@ export interface PropsListWeb {
     }[];
 }
 const NextListWeb: React.FC<PropsListWeb> = ({ data }) => {
-    const { colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const { colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     console.log('next web', data);
 
     return (

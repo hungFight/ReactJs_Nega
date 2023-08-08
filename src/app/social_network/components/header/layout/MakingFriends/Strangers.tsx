@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
-import TagProfle from './TagProfle';
+import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import TagProfile from './TagProfile';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { useCookies } from 'react-cookie';
 import { DotI, LoadingI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
-import { socket } from 'src/mainPage/nextWeb';
 import { useDispatch, useSelector } from 'react-redux';
-import { people } from '~/redux/reload';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 interface PropsData {
@@ -330,7 +328,7 @@ const Strangers: React.FC<{
                             >
                                 <DotI />
                             </Div>
-                            <TagProfle profile button={buttons} cssImage={cssImage} data={vl} />
+                            <TagProfile profile button={buttons} cssImage={cssImage} data={vl} />
                         </Div>
                     );
                 })}

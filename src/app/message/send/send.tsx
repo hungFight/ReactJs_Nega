@@ -17,32 +17,14 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import ListAccounts from './SendReults';
 import MoreOption from './MoreOption';
 import Conversation from './Conversation';
-import sendChatAPi from '~/restAPI/chatAPI';
+import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import { useCookies } from 'react-cookie';
 import CommonUtils from '~/utils/CommonUtils';
 import { socket } from 'src/mainPage/nextWeb';
 import { useSelector } from 'react-redux';
 import { PropsReloadRD } from '~/redux/reload';
-
-export interface PropsRoomChat {
-    _id: any;
-    id_us: string[];
-    user: {
-        id: string;
-        avatar: any;
-        fullName: string;
-        gender: number;
-    }[];
-    imageOrVideos: string[];
-    room: {
-        _id: string;
-        text: { icon: string; t: string };
-        imageOrVideos: string[];
-        seenBy: string[];
-        createdAt: string;
-        // user: { avatar: any; fullName: string; gender: number; id: string };
-    };
-}
+import { useQuery } from '@tanstack/react-query';
+import gridFS from '~/restAPI/gridFS';
 
 const Send: React.FC<{
     colorText: string;
@@ -50,7 +32,7 @@ const Send: React.FC<{
     dataUser: { id: string; avatar: any; fullName: string; nickName: string; gender: number };
     userOline: string[];
 }> = ({ colorBg, colorText, dataUser, userOline }) => {
-    const roomChat = useSelector((state: { reload: PropsReloadRD }) => state.reload.roomChat);
+    const roomChat = useSelector((state: PropsReloadRD) => state.reload.roomChat);
     const [send, setSend] = useState(false);
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
     const userId = cookies.k_user;
@@ -58,6 +40,7 @@ const Send: React.FC<{
     const [searchUser, setSearchUser] = useState<string>('');
     const [resultSearch, setResultSearch] = useState<any>([]);
     const [rooms, setRooms] = useState<PropsRoomChat[]>([]);
+    const [roomNew, setRoomNew] = useState<PropsRoomChat>();
     const limit = 10;
     const offset = useRef<number>(0);
 
@@ -65,24 +48,48 @@ const Send: React.FC<{
     const handleShowHide = () => {
         setSend(!send);
     };
+
     useEffect(() => {
         async function fetchRoom() {
-            const res: PropsRoomChat[] = await sendChatAPi.getRoom(token, limit, offset.current);
-            res.map((sc) => {
-                sc.user.map((us) => {
-                    if (us?.avatar) us.avatar = CommonUtils.convertBase64(us.avatar);
-                });
-                // if (sc.room.user?.avatar) sc.room.user.avatar = CommonUtils.convertBase64(sc.room.user.avatar);
-            });
-            setRooms(res);
+            const res = await sendChatAPi.getRoom(token, limit, offset.current);
+            if (res) setRooms(res);
             console.log(res, 'get Room');
         }
         fetchRoom();
-        socket.on(`${userId}roomChat`, (data: string) => {
-            fetchRoom();
-        });
-    }, [roomChat]);
 
+        socket.on(`${userId}roomChat`, async (d: string) => {
+            const data: PropsRoomChat = JSON.parse(d);
+            const a = CommonUtils.convertBase64(data.user.avatar);
+            data.user.avatar = a;
+            data.users = [data.user];
+            const newD = await new Promise<PropsRoomChat>(async (resolve, reject) => {
+                try {
+                    await Promise.all(
+                        data.room.imageOrVideos.map(async (d, index) => {
+                            const buffer = await gridFS.getFile(token, d.v);
+                            const base64 = CommonUtils.convertBase64GridFS(buffer.file);
+                            data.room.imageOrVideos[index].v = base64;
+                        }),
+                    );
+                    resolve(data);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+            setRoomNew(newD);
+        });
+    }, []);
+    useEffect(() => {
+        if (roomNew) {
+            const newR = rooms.filter((r) => r._id !== roomNew._id);
+            setRooms([roomNew, ...newR]);
+        }
+        if (roomChat) {
+            const newR = rooms.filter((r) => r._id !== roomChat._id);
+            setRooms([roomChat, ...newR]);
+        }
+        console.log(roomNew, 'roomNew');
+    }, [roomNew, roomChat]);
     const handleUndo = () => {};
     // const debounce = useDebounce(searchUser, 500);
     // useEffect(() => {
@@ -287,7 +294,7 @@ const Send: React.FC<{
                         </Div>
                         {rooms.map((r) => (
                             <ListAccounts
-                                key={r._id}
+                                key={r._id + r.room._id}
                                 data={r}
                                 userId={userId}
                                 colorText={colorText}

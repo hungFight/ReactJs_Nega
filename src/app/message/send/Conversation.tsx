@@ -10,7 +10,6 @@ import { Label } from '~/social_network/components/Header/layout/Home/Layout/For
 import LogicConversation from './LogicConver';
 import { Player } from 'video-react';
 import { PropsUser } from 'src/App';
-import { offChat } from '~/redux/hideShow';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import FileConversation from './File';
@@ -21,8 +20,10 @@ import 'moment/locale/vi';
 import Languages from '~/reUsingComponents/languages';
 import { setIdUser } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
+import { offChats } from '~/redux/background';
 
 const Conversation: React.FC<{
+    index: number;
     colorText: string;
     colorBg: number;
     id_chat: { id_room: string | undefined; id_other: string };
@@ -32,7 +33,7 @@ const Conversation: React.FC<{
         id_room: string | undefined;
         id_other: string;
     }[];
-}> = ({ colorText, colorBg, dataFirst, id_chat, currentPage, chat }) => {
+}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat }) => {
     const { lg } = Languages();
 
     const {
@@ -111,7 +112,12 @@ const Conversation: React.FC<{
     console.log(conversation, 'conversation');
 
     return (
-        <DivConversation height={chat.length > 2 ? '48%' : chat.length === 1 ? '100% !important' : ''}>
+        <DivConversation
+            height={chat.length > 2 ? '48% !important' : chat.length === 1 ? '100% !important' : ''}
+            className="ofChats"
+            id={id_chat.id_other + id_chat.id_room}
+            aria-readonly={true}
+        >
             <DivResultsConversation color="#e4e4e4">
                 <Div
                     width="100%"
@@ -130,10 +136,31 @@ const Conversation: React.FC<{
                         width="30px"
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center; cursor: var(--pointer)"
                         onClick={() => {
-                            const newD = chat.filter(
-                                (c) => c.id_other !== id_chat.id_other && c.id_room !== id_chat.id_room,
-                            );
-                            dispatch(offChat(newD));
+                            const ofChat = document.querySelectorAll('.ofChats');
+                            const containChat = document.querySelector('.containChat');
+                            if (ofChat) {
+                                const newContainChat = Array.from(ofChat).filter((o, indexO) => {
+                                    if (o.getAttribute('id') === id_chat.id_other + id_chat.id_room) {
+                                        dispatch(
+                                            offChats(
+                                                chat.filter(
+                                                    (c) =>
+                                                        c.id_other !== id_chat.id_other &&
+                                                        c.id_room !== id_chat.id_room,
+                                                ),
+                                            ),
+                                        );
+                                        o.remove();
+                                    } else {
+                                        return o;
+                                    }
+                                });
+                                // Array.from(ofChat).forEach((o) => o.remove());
+                                const timeOut = setTimeout(() => {
+                                    containChat?.replaceChildren(...newContainChat);
+                                    return () => clearTimeout(timeOut);
+                                }, 10);
+                            }
                         }}
                     >
                         <UndoI />

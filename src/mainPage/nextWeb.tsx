@@ -53,8 +53,8 @@ import PeopleRequest from '~/restAPI/socialNetwork/peopleAPI';
 import WarningBrowser from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
 import CommonUtils from '~/utils/CommonUtils';
 import { PropsUser, PropsUserPer } from 'src/App';
-import { PropsBgNEGA } from '~/redux/background';
-import { PropsReloadRD, online } from '~/redux/reload';
+import { PropsBgRD } from '~/redux/background';
+import { PropsReloadRD, setOnline } from '~/redux/reload';
 export const socket = io('http://localhost:3001', { transports: ['websocket'] });
 
 const Website: React.FC<{
@@ -63,8 +63,8 @@ const Website: React.FC<{
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
 }> = ({ idUser, dataUser, setDataUser }) => {
     const dispatch = useDispatch();
-    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
-    const { userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
+    const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+    const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
 
     const [cookies, setCookie] = useCookies(['tks', 'k_user']);
     const [friendsOnline, setFriendsOnline] = useState<number>(0);
@@ -90,10 +90,10 @@ const Website: React.FC<{
             socket.emit('sendId', userId);
             socket.on('user connectedd', (re) => {
                 console.log(`connected`, JSON.parse(re));
-                dispatch(online(JSON.parse(re)));
+                dispatch(setOnline(JSON.parse(re)));
             });
             socket.on('user disconnected', (re) => {
-                dispatch(online(JSON.parse(re)));
+                dispatch(setOnline(JSON.parse(re)));
                 console.log('user disconnected', JSON.parse(re));
             });
         } else {

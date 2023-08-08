@@ -24,7 +24,7 @@ interface PropsPer {
     userFirst: PropsUser;
 }
 
-const Personalpage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, online, userFirst, setUserFirst }) => {
+const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, online, userFirst, setUserFirst }) => {
     const [dataUser, setDataUser] = useState<PropsUserPer>(user);
     const {
         edit,
@@ -354,4 +354,4 @@ const Personalpage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
         </Div>
     );
 };
-export default memo(Personalpage);
+export default memo(PersonalPage);

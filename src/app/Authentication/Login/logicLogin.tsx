@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import { PropsLogin } from './Login';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 interface PropsState {
     persistedReducer: {
         language: {
@@ -14,7 +14,7 @@ interface PropsState {
 function LogicLogin(data: PropsLogin, setWhatKind: React.Dispatch<React.SetStateAction<string>>) {
     const [, setCookies] = useCookies(['tks', 'k_user']);
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer?.language.login);
-    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [language, setLanguage] = useState<boolean>(false);
 
     const { title, input, changePassword, submit, register } = data[dataLanguages];

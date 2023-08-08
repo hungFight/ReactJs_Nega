@@ -27,10 +27,10 @@ import { PropsTextHome } from './layout/Home/Home';
 import { PropsTextFriends } from './layout/MakingFriends/People';
 import { DivItems, Input } from './layout/MakingFriends/styleMakingFriends';
 import { A, Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { people } from '~/redux/reload';
+import { setPeople } from '~/redux/reload';
 import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 
 //button
 // to = Link tag, href = a tag
@@ -72,7 +72,7 @@ const Header: React.FC<{
     >([]);
 
     const { logo, sett, home, exchange, search, video, friends, location } = dataText;
-    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [border, setBorder] = useState<string>(() => {
         const location = window.location.pathname;
         console.log(
@@ -256,9 +256,9 @@ const Header: React.FC<{
                             color={colorText}
                             onClick={() => setBorder('people')}
                             onDoubleClick={() => {
-                                dispatch(people(Math.random()));
+                                dispatch(setPeople(Math.random()));
                             }}
-                            onTouchStart={() => dispatch(people(Math.random()))}
+                            onTouchStart={() => dispatch(setPeople(Math.random()))}
                         />
                         <Div
                             width="40px"

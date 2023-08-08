@@ -27,12 +27,9 @@ const Tools: React.FC<{
         if (res === 1) {
             if (o.name === 'online') {
                 setDataUser({ ...dataUser, as: 1 });
-                // setUserOnline([...userOnline, userId]);
                 setOnOff(<OnlineI />);
             } else {
                 setDataUser({ ...dataUser, as: 0 });
-                // const newOnlone = userOnline.filter((ol) => ol !== userId);
-                // setUserOnline(newOnlone);
                 setOnOff(<OfflineI />);
             }
         }

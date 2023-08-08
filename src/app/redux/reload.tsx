@@ -1,30 +1,34 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { PropsRoomChat } from '~/restAPI/chatAPI';
 
-export interface PropsReloadRD {
+type PropsReLoad = {
     people: number;
     userOnline: string[];
-    roomChat: boolean;
+    roomChat: PropsRoomChat | undefined;
+};
+export interface PropsReloadRD {
+    reload: PropsReLoad;
 }
-const initialState: PropsReloadRD = {
+const initialState: PropsReLoad = {
     people: 0,
     userOnline: [],
-    roomChat: false,
+    roomChat: undefined,
 };
 const reloadPage = createSlice({
     name: 'reload',
     initialState: initialState,
     reducers: {
-        people: (state, action) => {
+        setPeople: (state, action) => {
             state.people = action.payload;
         },
 
-        online: (state, action) => {
+        setOnline: (state, action) => {
             state.userOnline = action.payload;
         },
-        reRoomChat: (state) => {
-            state.roomChat = !state.roomChat;
+        setRoomChat: (state, action: { payload: PropsRoomChat }) => {
+            state.roomChat = action.payload;
         },
     },
 });
-export const { people, online, reRoomChat } = reloadPage.actions;
+export const { setPeople, setOnline, setRoomChat } = reloadPage.actions;
 export default reloadPage.reducer;

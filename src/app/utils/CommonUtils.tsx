@@ -37,7 +37,7 @@ class CommonUtils {
             console.log(error);
         }
     }
-    convertBase64Gridfs = (file: any) => {
+    convertBase64GridFS = (file: any) => {
         try {
             if (file?.type === 'Buffer') {
                 const imageBase64 = Buffer.from(file).toString('base64');

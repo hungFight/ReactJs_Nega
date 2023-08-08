@@ -3,7 +3,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 
 import userAPI from '~/restAPI/userAPI';
-import sendChatAPi from '~/restAPI/chatAPI';
+import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import sendChatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
@@ -13,7 +13,7 @@ import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
 import Cookies from '~/utils/Cookies';
 import moment from 'moment';
-import { reRoomChat } from '~/redux/reload';
+import { setRoomChat } from '~/redux/reload';
 
 export interface PropsChat {
     _id: string;
@@ -89,7 +89,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                         await Promise.all(
                             rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
                                 const buffer = await fileGridFS.getFile(token, fl.v);
-                                const base64 = CommonUtils.convertBase64Gridfs(buffer.file);
+                                const base64 = CommonUtils.convertBase64GridFS(buffer.file);
                                 modifiedData.room[index1].imageOrVideos[index2].v = base64;
                             }),
                         );
@@ -99,6 +99,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             });
             const a = CommonUtils.convertBase64(newData.user?.avatar);
             if (a) newData.user.avatar = a;
+
             if (newData) {
                 if (of) {
                     cRef.current = 8;
@@ -120,39 +121,39 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     }
     useEffect(() => {
         fetchChat();
-        socket.on(
-            `${userId}roomChat`,
-            async (data: {
-                createdAt: string;
-                imageOrVideos: { v: string; icon: string }[];
-                seenBy: string[];
-                text: { t: string; icon: string };
-                _id: string;
-            }) => {
-                const newD: any = await new Promise(async (resolve, reject) => {
-                    try {
-                        await Promise.all(
-                            data.imageOrVideos.map(async (d, index) => {
-                                const buffer = await fileGridFS.getFile(token, d.v);
-                                const base64 = CommonUtils.convertBase64Gridfs(buffer.file);
-                                data.imageOrVideos[index].v = base64;
-                            }),
-                        );
-                        resolve(data);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-                setDataSent(newD);
-                console.log(newD, 'be sent by others');
-            },
-        );
+        socket.on(`${id_chat.id_room + '-' + id_chat.id_other}phrase`, async (d: string) => {
+            const data: {
+                room: {
+                    createdAt: string;
+                    imageOrVideos: { v: string; icon: string }[];
+                    seenBy: string[];
+                    text: { t: string; icon: string };
+                    _id: string;
+                };
+            } = JSON.parse(d);
+            const newD: any = await new Promise(async (resolve, reject) => {
+                try {
+                    await Promise.all(
+                        data.room.imageOrVideos.map(async (d, index) => {
+                            const buffer = await fileGridFS.getFile(token, d.v);
+                            const base64 = CommonUtils.convertBase64GridFS(buffer.file);
+                            data.room.imageOrVideos[index].v = base64;
+                        }),
+                    );
+                    resolve(data.room);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+            setDataSent(newD);
+            console.log(newD, 'be sent by others');
+        });
     }, []);
     console.log(conversation, 'con');
 
     useEffect(() => {
         if (dataSent) {
-            conversation?.room.push(dataSent);
+            conversation?.room.unshift(dataSent);
             setDataSent(undefined);
         }
     }, [dataSent]);
@@ -204,29 +205,11 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
             }
-            const res: {
-                id_us: string[];
-                status: string;
-                background: string;
-                room: [
-                    {
-                        _id: string;
-                        text: {
-                            t: string;
-                            icon: string;
-                        };
-                        seenBy: string[];
-                        imageOrVideos: { v: string; icon: string }[];
-                        createdAt: string;
-                    },
-                ];
-                createdAt: string;
-            } = await sendChatAPI.send(token, formData);
+            const res = await sendChatAPI.send(token, formData);
             if (res && conversation) {
                 conversation.room[0].sending = false;
-                dispatch(reRoomChat());
-                console.log(res, 'here', conversation);
-                // setConversation(conversation);
+                dispatch(setRoomChat(res));
+                setFileUpload([]);
             }
         }
     };

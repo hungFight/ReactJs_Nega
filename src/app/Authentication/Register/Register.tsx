@@ -22,12 +22,12 @@ import { PropsRegister, PropsState } from './interfaceType';
 import { Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import { setTrueErrorServer } from '~/redux/hideShow';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 
 const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next }) => {
     //dataLanguage
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer.language?.register);
-    const { colorBg, colorText } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const [language, setLanguage] = useState<boolean>(false);
     const { title, input, submit, messagePhoneEmail, messagePassword, messageDate, messageName } =

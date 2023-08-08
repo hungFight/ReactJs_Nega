@@ -11,8 +11,8 @@ import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useStat
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { InitialStateHideShow, offAll, onPersonalPage, setIdUser } from './app/redux/hideShow';
-import Personalpage from './mainPage/personalPage/PersonalPage';
+import { InitialStateHideShow, setIdUser } from './app/redux/hideShow';
+import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
 import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
@@ -27,9 +27,10 @@ import userAPI from '~/restAPI/userAPI';
 import { PropsTitleP } from './mainPage/personalPage/layout/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Send/Conversation';
-import { PropsReloadRD } from '~/redux/reload';
-import fileGridFS from '~/restAPI/gridFS';
-import { PropsBgNEGA } from '~/redux/background';
+import { PropsReloadRD, setRoomChat } from '~/redux/reload';
+import { PropsBgRD } from '~/redux/background';
+import Images from '~/assets/images';
+import { PropsRoomChat } from '~/restAPI/chatAPI';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -99,19 +100,7 @@ export interface PropsUserPer {
         id_loved: string;
     };
 }
-type PropsMFirst = {
-    user: {
-        id: string;
-        fullName: string;
-        avatar: any;
-        gender: number;
-    };
-    createdAt: string;
-    imageOrVideos: { v: any; icon: string }[];
-    seenBy: string[];
-    text: { t: string; icon: string };
-    _id: string;
-};
+
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
 const Message = React.lazy(() => import('~/Message/message'));
@@ -119,19 +108,18 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const { userId, token } = Cookies(); // customs hook
     const dispatch = useDispatch();
-    const { chat, idUser, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
+    const { userId, token } = Cookies(); // customs hook
+    const { idUser, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
+    const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+
     const { setting, personalPage } = useSelector((state: any) => state.hideShow);
-    const { userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
-    const { colorText, colorBg } = useSelector((state: PropsBgNEGA) => state.persistedReducer.background);
+    const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
     const [userData, setUserData] = useState<PropsUserPer[]>([]);
 
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
     // messenger
-    const [dataMFirst, setDataMFirst] = useState<PropsMFirst[]>([]);
-    const [dataMTwo, setDataMTwo] = useState<PropsMFirst>();
     const showChat = useRef<HTMLInputElement | null>(null);
 
     async function fetch(id: string | string[], first?: string) {
@@ -195,22 +183,8 @@ function App() {
             }
         };
         if (userId && token) search();
-        socket.on(`${userId}roomChat`, async (data: PropsMFirst) => {
-            const newD = await new Promise<PropsMFirst>(async (resolve, reject) => {
-                try {
-                    await Promise.all(
-                        data.imageOrVideos.map(async (d, index) => {
-                            const buffer = await fileGridFS.getFile(token, d.v);
-                            const base64 = CommonUtils.convertBase64Gridfs(buffer.file);
-                            data.imageOrVideos[index].v = base64;
-                        }),
-                    );
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-
+        socket.on(`${userId}roomChat`, async (dt: string) => {
+            const data: PropsRoomChat = JSON.parse(dt);
             const eleDiv1 = document.createElement('div');
             const eleDiv2 = document.createElement('div');
             const eleImg = document.createElement('img');
@@ -220,15 +194,21 @@ function App() {
             const elePState = document.createElement('p');
             eleDiv1.className = 'showChatDiv1';
             eleImg.className = 'showChatImg';
-            eleImg.src = CommonUtils.convertBase64(Buffer.from(newD.user.avatar));
-            eleImg.alt = newD.user.fullName;
+            eleImg.src = data.user.avatar
+                ? CommonUtils.convertBase64(Buffer.from(data.user.avatar))
+                : data.user.gender === 0
+                ? Images.defaultAvatarMale
+                : data.user.gender === 1
+                ? Images.defaultAvatarFemale
+                : Images.defaultAvataLgbt;
+            eleImg.alt = data.user.fullName;
             eleDiv2.className = 'showChatDiv2';
             eleDiv2.style.color = colorText;
             eleH3.className = 'showChatName';
-            eleH3.innerText = newD.user.fullName;
+            eleH3.innerText = data.user.fullName;
             eleDiv3.className = 'showChatDiv3';
             eleP.className = 'showChatTitle';
-            eleP.innerText = newD.text.t;
+            eleP.innerText = data.room.text.t;
             elePState.className = 'showChatPState';
             elePState.innerText = 'Vừa xong';
             //Add
@@ -240,32 +220,19 @@ function App() {
             eleDiv1.appendChild(eleDiv2);
             if (showChat.current) showChat.current.insertAdjacentElement('beforeend', eleDiv1);
             const eleDiv1s = document.querySelectorAll('.showChatDiv1');
-            console.log(eleDiv1s.length, 'eleDiv1s');
             expire(eleDiv1s);
         });
     }, [idUser]);
 
-    useEffect(() => {
-        if (dataMTwo) setDataMFirst([...dataMFirst, dataMTwo]);
-    }, [dataMTwo]);
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUserData([]);
         dispatch(setIdUser([]));
     };
 
-    let timeOut: NodeJS.Timeout;
     useEffect(() => {
         if (userId && token) fetch(userId, 'only');
-        if (dataMFirst.length > 0) {
-            timeOut = setTimeout(() => {
-                console.log('time Out');
-                setDataMFirst((pre) => pre.filter((p, index) => index !== 0));
-            }, 5000);
-        }
-        return () => clearTimeout(timeOut);
-    }, [dataMFirst]);
-    console.log(dataMFirst, 'dataMFirst');
+    }, [userId]);
 
     const leng = idUser?.length;
     const css = `
@@ -313,85 +280,12 @@ function App() {
                                 z-index: 1;
                                 transition: all 1s linear;
                             `}
-                        >
-                            {dataMFirst.map((m) => (
-                                <Div
-                                    key={m.createdAt}
-                                    width="100%"
-                                    wrap="wrap"
-                                    css={`
-                                        background-color: #276aa5;
-                                        border-radius: 50px;
-                                        height: 50px;
-                                        align-items: center;
-                                        padding: 0 3px;
-                                        margin: 5px 0;
-                                        user-select: none;
-                                        color: ${colorText};
-                                        transition: all 0.5s linear;
-                                        background-image: linear-gradient(45deg, #000000, #8b9aa800);
-                                        &:active {
-                                            background-color: #484848ba;
-                                        }
-                                        @media (min-width: 768px) {
-                                            cursor: var(--pointer);
-                                            &:hover {
-                                                background-color: #484848ba;
-                                            }
-                                        }
-                                    `}
-                                >
-                                    <Avatar
-                                        src={CommonUtils.convertBase64(Buffer.from(m.user.avatar))}
-                                        gender={m.user.gender}
-                                        radius="50%"
-                                        css={`
-                                            min-width: 35px;
-                                            width: 35px;
-                                            height: 35px;
-                                            margin: 3px 5px;
-                                            box-shadow: 0 0 4px #22d056;
-                                            border-radius: 50%;
-                                        `}
-                                    />
-                                    {userOnline.includes(m.user.id) && (
-                                        <DivPos
-                                            bottom="2px"
-                                            left="32px"
-                                            size="10px"
-                                            css="color: #149314; padding: 2px; background-color: #1c1b1b;"
-                                        >
-                                            <TyOnlineI />
-                                        </DivPos>
-                                    )}
-                                    <Div width="72%" wrap="wrap">
-                                        <Hname>{m.user.fullName}</Hname>
-                                        <Div
-                                            width="100%"
-                                            css={`
-                                                align-items: center;
-                                                position: relative;
-                                            `}
-                                        >
-                                            <P
-                                                z="1.2rem"
-                                                css="width: 100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-top: 3px; "
-                                            >
-                                                {m.text.t}
-                                            </P>
-                                            <P z="1rem" css="width: 100%; margin-top: 5px; margin-left: 10px">
-                                                vừa xong
-                                            </P>
-                                        </Div>
-                                    </Div>
-                                    <Div>{/* <Mess */}</Div>
-                                </Div>
-                            ))}
-                        </Div>
+                        ></Div>
                         <Message dataUser={userFirst} userOnline={userOnline} />
 
                         <Div
                             wrap="wrap"
+                            className="containChat"
                             css="position: fixed; bottom: 0; right: 360px; z-index: 103; height: 93%; justify-content: space-around; overflow-y: overlay  "
                         >
                             {/* <Swiper
@@ -404,16 +298,17 @@ function App() {
                                 modules={[Pagination]}
                                 className="mySwiper"
                             > */}
-                            {chat?.map((room, index) => (
+                            {chats?.map((room, index) => (
                                 // <SwiperSlide key={index}>
                                 <Conversation
                                     key={index}
+                                    index={index}
                                     colorText={colorText}
                                     colorBg={colorBg}
                                     id_chat={room}
                                     currentPage={currentPage}
                                     dataFirst={userFirst}
-                                    chat={chat}
+                                    chat={chats}
                                 />
                                 // </SwiperSlide>
                             ))}
@@ -483,7 +378,7 @@ function App() {
                                     </Div>
                                 )}
                                 {userData?.map((data: any, index: number) => (
-                                    <Personalpage
+                                    <PersonalPage
                                         setUserFirst={setUserFirst}
                                         userFirst={userFirst}
                                         colorText={colorText}

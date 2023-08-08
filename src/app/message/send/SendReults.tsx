@@ -10,8 +10,8 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, ProfileI, TyOnlineI } from '~/assets/Icons/Icons';
-import { PropsRoomChat } from './Send';
-import { onChat } from '~/redux/hideShow';
+import { onChats } from '~/redux/background';
+import { PropsRoomChat } from '~/restAPI/chatAPI';
 
 const ListAccounts: React.FC<{
     colorText: string;
@@ -21,7 +21,7 @@ const ListAccounts: React.FC<{
     userId: string;
 }> = ({ colorText, colorBg, setMoreBar, data, userId }) => {
     const dispatch = useDispatch();
-    const { userOnline } = useSelector((state: { reload: PropsReloadRD }) => state.reload);
+    const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
 
     const { lg } = Languages();
 
@@ -38,9 +38,11 @@ const ListAccounts: React.FC<{
         clearTimeout(time);
         console.log('no');
     };
+    console.log(data, 'data room');
+
     return (
         <>
-            {data.user.map((rs) => {
+            {data.users.map((rs) => {
                 const who =
                     data.room._id === userId
                         ? 'You: '
@@ -58,7 +60,9 @@ const ListAccounts: React.FC<{
                         onTouchMove={handleTouchMove}
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
-                        onClick={() => dispatch(onChat({ id_room: data._id, id_other: data.user[0].id }))}
+                        onClick={() => {
+                            dispatch(onChats({ id_room: data._id, id_other: rs.id }));
+                        }}
                         width="100%"
                         css={`
                             height: 50px;
