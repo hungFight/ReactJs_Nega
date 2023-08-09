@@ -5,6 +5,7 @@ export interface PropsRoomChat {
     _id: any;
     id_us: string[];
     background: string;
+    miss: number;
     users: {
         id: string;
         avatar: any;

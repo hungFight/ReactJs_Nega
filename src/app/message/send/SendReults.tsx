@@ -1,6 +1,6 @@
 import moment from 'moment';
 import 'moment/locale/vi';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PropsReloadRD } from '~/redux/reload';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,9 +10,49 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, ProfileI, TyOnlineI } from '~/assets/Icons/Icons';
-import { onChats } from '~/redux/background';
+import { PropsBgRD, onChats } from '~/redux/background';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
-
+import moments from '~/utils/moment';
+moment.updateLocale('en', {
+    relativeTime: {
+        future: 'in %s',
+        past: '%s',
+        s: 'just now',
+        ss: '%ds ago',
+        m: '1m ago',
+        mm: '%dms ago',
+        h: '1h ago',
+        hh: '%dhs ago',
+        d: '1d ago',
+        dd: '%dds ago',
+        w: '1w ago',
+        ww: '%dws ago',
+        M: '1m ago',
+        MM: '%dms ago',
+        y: '1y agoe',
+        yy: '%dys ago',
+    },
+});
+moment.updateLocale('vi', {
+    relativeTime: {
+        future: 'in %s',
+        past: '%s',
+        s: 'vừa xong',
+        ss: '%d giây trước',
+        m: '1p trước',
+        mm: '%dp trước',
+        h: '1h trước',
+        hh: '%dh trước',
+        d: '1ng trước',
+        dd: '%dng trước',
+        w: '1tn trước',
+        ww: '%dtn trước',
+        M: '1th trước',
+        MM: '%dth trước',
+        y: '1 năm trước',
+        yy: '%d năm trước',
+    },
+});
 const ListAccounts: React.FC<{
     colorText: string;
     colorBg: number;
@@ -21,9 +61,14 @@ const ListAccounts: React.FC<{
     userId: string;
 }> = ({ colorText, colorBg, setMoreBar, data, userId }) => {
     const dispatch = useDispatch();
-    const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
-
+    const { userOnline, id_chat } = useSelector((state: any) => {
+        return {
+            userOnline: state.reload.userOnline,
+            id_chat: state.persistedReducer.background.chats,
+        };
+    });
     const { lg } = Languages();
+    const seenBy = useRef<HTMLDivElement | null>(null);
 
     let time: string | number | NodeJS.Timeout | undefined;
     const handleTouchStart = () => {
@@ -39,6 +84,23 @@ const ListAccounts: React.FC<{
         console.log('no');
     };
     console.log(data, 'data room');
+    useEffect(() => {
+        // check have you seen this chat?
+        let check = false;
+        id_chat.forEach((i: { id_room: any; id_other: string }) => {
+            if (i.id_room) {
+                if (i.id_room === data._id) {
+                    check = true;
+                }
+            } else {
+                if (data.room.seenBy.includes(i.id_other)) {
+                    check = true;
+                }
+            }
+        });
+        if (seenBy.current && !check && !data.room.seenBy.includes(userId))
+            seenBy.current.setAttribute('style', 'color: #f0ffffde;');
+    }, [data]);
 
     return (
         <>
@@ -51,17 +113,16 @@ const ListAccounts: React.FC<{
                         : rs.gender === 1
                         ? 'Her: '
                         : 'Cuy: ';
-                const Time = moment(moment(data.room.createdAt).format('YYYY-MM-DD HH:mm:ss'), 'YYYY-MM-DD HH:mm:ss')
-                    .locale(lg)
-                    .fromNow();
+                const Time = moments().FromNow(data.room.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg);
                 return (
                     <Div
                         key={rs.id}
                         onTouchMove={handleTouchMove}
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
-                        onClick={() => {
+                        onClick={(e) => {
                             dispatch(onChats({ id_room: data._id, id_other: rs.id }));
+                            if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
                         }}
                         width="100%"
                         css={`
@@ -100,14 +161,23 @@ const ListAccounts: React.FC<{
                                 <TyOnlineI />
                             </DivPos>
                         )}
-                        <Div width="72%" wrap="wrap">
+                        <Div
+                            width="73%"
+                            wrap="wrap"
+                            css={`
+                                /* @media (min-width: 768px) {
+                                    width: 73%;
+                                } */
+                            `}
+                        >
                             <Hname>{rs.fullName}</Hname>
                             <Div
-                                width="80%"
+                                width="88%"
+                                ref={seenBy}
                                 css={`
                                     align-items: center;
                                     position: relative;
-                                    ${data.room.seenBy.includes(userId) ? 'color: #eeeeee;' : ''};
+                                    color: #adadadde;
                                 `}
                             >
                                 <P css="min-width: 21px; width: 17px; height: 17px; margin-right: 5px; font-size: 1.1rem; margin-top: 3px;">
@@ -119,29 +189,50 @@ const ListAccounts: React.FC<{
                                 >
                                     {data.room.text.t}
                                 </P>
-                                <P z="1rem" css="width: 100%; margin-top: 5px; margin-left: 10px">
+                                <P
+                                    z="1rem"
+                                    css="width: fit-content; margin-top: 5px;margin-left: 10px;text-wrap: nowrap;"
+                                >
                                     {Time}
                                 </P>
-                                <Div
+                                {/* {data.miss ? (
+                                    <Div
+                                        display="block"
+                                        width="15px"
+                                        css={`
+                                            min-width: 15px;
+                                            text-align: center;
+                                            padding-top: 1px;
+                                            border-radius: 50%;
+                                            font-size: 1.1rem;
+                                            margin-left: 10px;
+                                            background-color: #af5454;
+                                        `}
+                                    >
+                                        {data.miss}
+                                    </Div>
+                                ) : (
+                                    <></>
+                                )} */}
+                                {/* <Div
+                                    display="block"
                                     width="15px"
                                     css={`
-                                        position: absolute;
-                                        top: 4px;
-                                        right: -8px;
-                                        height: 15px;
+                                        min-width: 15px;
+                                        text-align: center;
+                                        padding-top: 1px;
                                         border-radius: 50%;
                                         font-size: 1.1rem;
-                                        justify-content: center;
+                                        margin-left: 10px;
                                         background-color: #af5454;
                                     `}
                                 >
-                                    3
-                                </Div>
+                                    {data.miss}
+                                </Div> */}
                             </Div>
                         </Div>
                         <Div
                             width="30px"
-                            display="none"
                             css={`
                                 height: 30px;
                                 border-radius: 50%;
@@ -149,14 +240,16 @@ const ListAccounts: React.FC<{
                                 justify-content: center;
                                 border-radius: 50%;
                                 @media (min-width: 768px) {
-                                    display: flex;
                                     cursor: var(--pointer);
                                     &:hover {
                                         background-color: #161414ba;
                                     }
                                 }
                             `}
-                            onClick={() => setMoreBar(true)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setMoreBar(true);
+                            }}
                         >
                             <DotI />
                         </Div>

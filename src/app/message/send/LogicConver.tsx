@@ -122,15 +122,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     useEffect(() => {
         fetchChat();
         socket.on(`${id_chat.id_room + '-' + id_chat.id_other}phrase`, async (d: string) => {
-            const data: {
-                room: {
-                    createdAt: string;
-                    imageOrVideos: { v: string; icon: string }[];
-                    seenBy: string[];
-                    text: { t: string; icon: string };
-                    _id: string;
-                };
-            } = JSON.parse(d);
+            const data: PropsRoomChat = JSON.parse(d);
             const newD: any = await new Promise(async (resolve, reject) => {
                 try {
                     await Promise.all(
@@ -145,6 +137,10 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                     reject(error);
                 }
             });
+            const a = CommonUtils.convertBase64(data.user.avatar);
+            data.user.avatar = a;
+            data.users.push(data.user);
+            dispatch(setRoomChat(data));
             setDataSent(newD);
             console.log(newD, 'be sent by others');
         });
@@ -208,6 +204,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             const res = await sendChatAPI.send(token, formData);
             if (res && conversation) {
                 conversation.room[0].sending = false;
+                res.users.push(conversation.user);
                 dispatch(setRoomChat(res));
                 setFileUpload([]);
             }

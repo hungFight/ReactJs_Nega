@@ -27,7 +27,7 @@ const MoreOption: React.FC<{
                     height: 60%;
                     padding-top: 8px;
                     background-color: #181919;
-                    cursor: auto;
+                    cursor: var(--pointer);
                     color: ${colorText};
                 `}
                 onClick={(e) => e.stopPropagation()}

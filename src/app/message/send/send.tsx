@@ -84,12 +84,16 @@ const Send: React.FC<{
             const newR = rooms.filter((r) => r._id !== roomNew._id);
             setRooms([roomNew, ...newR]);
         }
+
+        console.log(roomNew, 'roomNew', rooms);
+    }, [roomNew]);
+    useEffect(() => {
         if (roomChat) {
             const newR = rooms.filter((r) => r._id !== roomChat._id);
             setRooms([roomChat, ...newR]);
         }
-        console.log(roomNew, 'roomNew');
-    }, [roomNew, roomChat]);
+        console.log(roomNew, 'roomNew', rooms);
+    }, [roomChat]);
     const handleUndo = () => {};
     // const debounce = useDebounce(searchUser, 500);
     // useEffect(() => {
