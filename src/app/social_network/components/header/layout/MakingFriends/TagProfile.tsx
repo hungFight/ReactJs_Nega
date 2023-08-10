@@ -2,7 +2,7 @@ import { memo } from 'react';
 import Avatar from '../../../../../reUsingComponents/Avatars/Avatar';
 import { DivContainer, DivImg, Hname } from '../../../../../reUsingComponents/styleComponents/styleComponents';
 import { Button, Buttons, Div, P } from '../../../../../reUsingComponents/styleComponents/styleDefault';
-import { setIdUser } from '~/redux/hideShow';
+import { setOpenProfile } from '~/redux/hideShow';
 import { useDispatch } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtils';
 interface PropsTagP {
@@ -34,7 +34,7 @@ const TagProfile: React.FC<PropsTagP> = ({
     const dispatch = useDispatch();
     const handlePlPage = (id: string) => {
         if (profile) {
-            dispatch(setIdUser([id]));
+            dispatch(setOpenProfile([id]));
         }
     };
 

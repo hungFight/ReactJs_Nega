@@ -5,7 +5,18 @@ import { FreeMode, Pagination, EffectCoverflow } from 'swiper';
 import 'swiper/css/effect-coverflow';
 
 import clsx from 'clsx';
-import { CloseI, SendI, MoveI, UndoI, BeforeI, ProfileI, ProfileCircelI } from '~/assets/Icons/Icons';
+import {
+    CloseI,
+    SendI,
+    MoveI,
+    UndoI,
+    BeforeI,
+    ProfileI,
+    ProfileCircelI,
+    LoadingI,
+    MinusI,
+    CheckI,
+} from '~/assets/Icons/Icons';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import useDebounce from '~/reUsingComponents/hook/useDebounce';
@@ -13,7 +24,7 @@ import { DivIconMs } from '../styleMessage';
 import { DivResults, DivSend } from './styleSed';
 import { Div, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivPost } from '~/social_network/components/Header/layout/Home/styleHome';
-import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import ListAccounts from './SendReults';
 import MoreOption from './MoreOption';
 import Conversation from './Conversation';
@@ -21,10 +32,11 @@ import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import { useCookies } from 'react-cookie';
 import CommonUtils from '~/utils/CommonUtils';
 import { socket } from 'src/mainPage/nextWeb';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PropsReloadRD } from '~/redux/reload';
 import { useQuery } from '@tanstack/react-query';
 import gridFS from '~/restAPI/gridFS';
+import { setOpenProfile } from '~/redux/hideShow';
 
 const Send: React.FC<{
     colorText: string;
@@ -32,6 +44,7 @@ const Send: React.FC<{
     dataUser: { id: string; avatar: any; fullName: string; nickName: string; gender: number };
     userOline: string[];
 }> = ({ colorBg, colorText, dataUser, userOline }) => {
+    const dispatch = useDispatch();
     const roomChat = useSelector((state: PropsReloadRD) => state.reload.roomChat);
     const [send, setSend] = useState(false);
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
@@ -41,18 +54,33 @@ const Send: React.FC<{
     const [resultSearch, setResultSearch] = useState<any>([]);
     const [rooms, setRooms] = useState<PropsRoomChat[]>([]);
     const [roomNew, setRoomNew] = useState<PropsRoomChat>();
+    const [loading, setLoadind] = useState<boolean>(false);
+    const [loadDel, setLoadDel] = useState<boolean>(false);
     const limit = 10;
     const offset = useRef<number>(0);
 
-    const [moreBar, setMoreBar] = useState<boolean>(false);
+    const [moreBar, setMoreBar] = useState<{
+        id_room: string;
+        id: string;
+        avatar: string;
+        fullName: string;
+        gender: number;
+    }>({
+        id_room: '',
+        id: '',
+        avatar: '',
+        fullName: '',
+        gender: 0,
+    });
     const handleShowHide = () => {
         setSend(!send);
     };
-
     useEffect(() => {
         async function fetchRoom() {
+            setLoadind(true);
             const res = await sendChatAPi.getRoom(token, limit, offset.current);
             if (res) setRooms(res);
+            setLoadind(false);
             console.log(res, 'get Room');
         }
         fetchRoom();
@@ -84,15 +112,12 @@ const Send: React.FC<{
             const newR = rooms.filter((r) => r._id !== roomNew._id);
             setRooms([roomNew, ...newR]);
         }
-
-        console.log(roomNew, 'roomNew', rooms);
     }, [roomNew]);
     useEffect(() => {
         if (roomChat) {
             const newR = rooms.filter((r) => r._id !== roomChat._id);
             setRooms([roomChat, ...newR]);
         }
-        console.log(roomNew, 'roomNew', rooms);
     }, [roomChat]);
     const handleUndo = () => {};
     // const debounce = useDebounce(searchUser, 500);
@@ -113,12 +138,53 @@ const Send: React.FC<{
         setSearchUser(e.target.value);
     };
     console.log(searchUser);
-    const dataMore = {
-        avatar: 'https://hinhnen4k.com/wp-content/uploads/2023/02/anh-gai-xinh-vn-2.jpg',
-        fullName: 'Nguyen Trong Hung',
-        gender: 1,
-        options: [{ name: 'View Profile', icon: <ProfileCircelI />, id: 1 }],
+    const handleDelete = async () => {
+        setLoadDel(true);
+        const res = await sendChatAPi.delete(token, moreBar.id_room);
+        if (res) setRooms((pre) => pre.filter((r) => r._id !== moreBar.id_room));
+        setLoadDel(false);
     };
+    const dataMore: {
+        options: {
+            id: number;
+            load?: boolean;
+            name: string;
+            icon: JSX.Element;
+            onClick: () => any;
+        }[];
+        id_room: string;
+        id: string;
+        avatar: string;
+        fullName: string;
+        gender: number;
+    } = {
+        ...moreBar,
+        options: [
+            {
+                id: 1,
+                name: 'View Profile',
+                icon: <ProfileCircelI />,
+                onClick: () => dispatch(setOpenProfile([moreBar.id])),
+            },
+        ],
+    };
+    if (rooms.some((r) => r._id === moreBar.id_room)) {
+        dataMore.options.push({
+            id: 2,
+            name: 'Remove',
+            load: loadDel,
+            icon: loadDel ? (
+                <DivLoading css="font-size: 12px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : rooms.some((r) => r._id === moreBar.id_room) ? (
+                <MinusI />
+            ) : (
+                <CheckI />
+            ),
+            onClick: () => handleDelete(),
+        });
+    }
 
     return (
         <>
@@ -296,17 +362,23 @@ const Send: React.FC<{
                                 </SwiperSlide>
                             </Swiper>
                         </Div>
-                        {rooms.map((r) => (
-                            <ListAccounts
-                                key={r._id + r.room._id}
-                                data={r}
-                                userId={userId}
-                                colorText={colorText}
-                                colorBg={colorBg}
-                                setMoreBar={setMoreBar}
-                            />
-                        ))}
-                        {moreBar && <MoreOption dataMore={dataMore} colorText={colorText} setMoreBar={setMoreBar} />}
+                        {loading ? (
+                            <DivLoading>
+                                <LoadingI />
+                            </DivLoading>
+                        ) : (
+                            rooms.map((r) => (
+                                <ListAccounts
+                                    key={r._id + r.room._id}
+                                    data={r}
+                                    userId={userId}
+                                    colorText={colorText}
+                                    colorBg={colorBg}
+                                    setMoreBar={setMoreBar}
+                                />
+                            ))
+                        )}
+                        {moreBar.id && <MoreOption dataMore={dataMore} colorText={colorText} setMoreBar={setMoreBar} />}
                     </DivResults>
                 </DivSend>
             )}

@@ -56,7 +56,9 @@ moment.updateLocale('vi', {
 const ListAccounts: React.FC<{
     colorText: string;
     colorBg: number;
-    setMoreBar: React.Dispatch<React.SetStateAction<boolean>>;
+    setMoreBar: React.Dispatch<
+        React.SetStateAction<{ id_room: string; id: string; avatar: string; fullName: string; gender: number }>
+    >;
     data: PropsRoomChat;
     userId: string;
 }> = ({ colorText, colorBg, setMoreBar, data, userId }) => {
@@ -71,9 +73,15 @@ const ListAccounts: React.FC<{
     const seenBy = useRef<HTMLDivElement | null>(null);
 
     let time: string | number | NodeJS.Timeout | undefined;
-    const handleTouchStart = () => {
+    const handleTouchStart = (user: {
+        id_room: string;
+        id: string;
+        avatar: string;
+        fullName: string;
+        gender: number;
+    }) => {
         time = setTimeout(() => {
-            setMoreBar(true);
+            setMoreBar(user);
         }, 500);
     };
     const handleTouchMove = () => {
@@ -118,7 +126,7 @@ const ListAccounts: React.FC<{
                     <Div
                         key={rs.id}
                         onTouchMove={handleTouchMove}
-                        onTouchStart={handleTouchStart}
+                        onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs })}
                         onTouchEnd={handleTouchEnd}
                         onClick={(e) => {
                             dispatch(onChats({ id_room: data._id, id_other: rs.id }));
@@ -195,40 +203,25 @@ const ListAccounts: React.FC<{
                                 >
                                     {Time}
                                 </P>
-                                {/* {data.miss ? (
+                                {data.miss ? (
                                     <Div
                                         display="block"
-                                        width="15px"
+                                        width="fit-content"
                                         css={`
-                                            min-width: 15px;
                                             text-align: center;
-                                            padding-top: 1px;
                                             border-radius: 50%;
                                             font-size: 1.1rem;
-                                            margin-left: 10px;
-                                            background-color: #af5454;
+                                            position: absolute;
+                                            right: 12px;
+                                            top: -18px;
+                                            color: #5594c7;
                                         `}
                                     >
-                                        {data.miss}
+                                        miss {data.miss}
                                     </Div>
                                 ) : (
                                     <></>
-                                )} */}
-                                {/* <Div
-                                    display="block"
-                                    width="15px"
-                                    css={`
-                                        min-width: 15px;
-                                        text-align: center;
-                                        padding-top: 1px;
-                                        border-radius: 50%;
-                                        font-size: 1.1rem;
-                                        margin-left: 10px;
-                                        background-color: #af5454;
-                                    `}
-                                >
-                                    {data.miss}
-                                </Div> */}
+                                )}
                             </Div>
                         </Div>
                         <Div
@@ -248,7 +241,7 @@ const ListAccounts: React.FC<{
                             `}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setMoreBar(true);
+                                setMoreBar({ id_room: data._id, ...rs });
                             }}
                         >
                             <DotI />

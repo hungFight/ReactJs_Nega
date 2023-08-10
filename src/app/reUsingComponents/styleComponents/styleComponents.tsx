@@ -187,7 +187,7 @@ export const DivPos = styled.div<PropsClose>`
 `;
 export const DivLoading = styled.div`
     color: #fff;
-    width: 100%;
+    width: 98%;
     margin: 30px auto;
     font-size: 25px;
     display: flex;

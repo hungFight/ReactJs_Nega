@@ -4,13 +4,23 @@ import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 const MoreOption: React.FC<{
     dataMore: {
+        id_room: string;
+        id: string;
         avatar: string;
         fullName: string;
         gender: number;
-        options: { name: string; icon: React.ReactElement; id: number }[];
+        options: {
+            name: string;
+            icon: React.ReactElement;
+            id: number;
+            load?: boolean;
+            onClick: () => any;
+        }[];
     };
     colorText: string;
-    setMoreBar: React.Dispatch<React.SetStateAction<boolean>>;
+    setMoreBar: React.Dispatch<
+        React.SetStateAction<{ id_room: string; id: string; avatar: string; fullName: string; gender: number }>
+    >;
 }> = ({ dataMore, colorText, setMoreBar }) => {
     return (
         <DivPos
@@ -18,7 +28,7 @@ const MoreOption: React.FC<{
             bottom="0"
             left="0"
             css="height: 82%; background-color: #1c1d1e7d; border-radius: 0; align-items: flex-end;"
-            onClick={() => setMoreBar(false)}
+            onClick={() => setMoreBar({ id_room: '', id: '', avatar: '', fullName: '', gender: 0 })}
         >
             <Div
                 display="block"
@@ -48,7 +58,16 @@ const MoreOption: React.FC<{
                     <Div
                         key={item.id}
                         width="100%"
-                        css="align-items: center; padding: 8px 7px; cursor: var(--pointer);"
+                        css={`
+                            align-items: center;
+                            padding: 8px 7px;
+                            cursor: var(--pointer);
+                            ${item?.load ? 'cursor: no-drop' : ''};
+                        `}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!item.load) item.onClick();
+                        }}
                     >
                         <Div css="margin: 0 5px;">{item.icon}</Div>
                         <P z="1.3rem">{item.name}</P>

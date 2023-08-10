@@ -58,10 +58,10 @@ import { PropsReloadRD, setOnline } from '~/redux/reload';
 export const socket = io('http://localhost:3001', { transports: ['websocket'] });
 
 const Website: React.FC<{
-    idUser: string[];
+    openProfile: string[];
     dataUser: PropsUser;
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
-}> = ({ idUser, dataUser, setDataUser }) => {
+}> = ({ openProfile, dataUser, setDataUser }) => {
     const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
@@ -247,7 +247,7 @@ const Website: React.FC<{
                 {dataUser ? (
                     <>
                         <Suspense>
-                            {!idUser.includes(userId) && (
+                            {!openProfile.includes(userId) && (
                                 <Avatar
                                     ref={elRef}
                                     profile

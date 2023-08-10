@@ -6,7 +6,7 @@ import Images from '../../assets/images';
 import { Img } from '../styleComponents/styleDefault';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivImg } from '../styleComponents/styleComponents';
-import { InitialStateHideShow, onPersonalPage, onSetting, setIdUser } from '../../redux/hideShow';
+import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from '../../redux/hideShow';
 import CommonUtils from '~/utils/CommonUtils';
 
 interface _Avatar {
@@ -50,7 +50,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         children,
     } = props;
     const dispatch = useDispatch();
-    const [idUser] = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow.idUser);
+    const [idUser] = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow.openProfile);
     const [avatar, setAvatar] = useState<boolean>(false);
     const [avatarFallback, setAvatarFallback] = useState<string>('');
     // useEffect(() => {
@@ -74,7 +74,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     };
 
     const handleOpentProfile = () => {
-        if (profile) dispatch(setIdUser([id]));
+        if (profile) dispatch(setOpenProfile([id]));
     };
 
     return avatar ? (

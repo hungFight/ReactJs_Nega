@@ -14,8 +14,8 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { socket } from 'src/mainPage/nextWeb';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import Send from '../Send/Send';
-import { setIdUser } from '~/redux/hideShow';
+import Send from '../Send/Messenger';
+import { setOpenProfile } from '~/redux/hideShow';
 import moment from 'moment';
 import CommonUtils from '~/utils/CommonUtils';
 interface PropsLanguage {
@@ -259,7 +259,7 @@ const Notification: React.FC<{
                                                                 text-decoration: underline;
                                                             }
                                                         `}
-                                                        onClick={() => dispatch(setIdUser([v.id]))}
+                                                        onClick={() => dispatch(setOpenProfile([v.id]))}
                                                     >
                                                         {v.fullName + ' '}
                                                     </Strong>

@@ -3,7 +3,7 @@ import { createSlice, current } from '@reduxjs/toolkit';
 export interface InitialStateHideShow {
     setting: boolean;
     personalPage: boolean;
-    idUser: string[];
+    openProfile: string[];
     errorServer: {
         check: boolean;
         message?: string;
@@ -12,7 +12,7 @@ export interface InitialStateHideShow {
 const initialState: InitialStateHideShow = {
     setting: false,
     personalPage: false,
-    idUser: [],
+    openProfile: [],
     errorServer: {
         check: false,
         message: '',
@@ -38,8 +38,8 @@ const hideShowSlice = createSlice({
             state.personalPage = false;
             state.setting = false;
         },
-        setIdUser: (state, action) => {
-            state.idUser = action.payload;
+        setOpenProfile: (state, action) => {
+            state.openProfile = action.payload;
         },
         setTrueErrorServer: (state, action?: { payload: string }) => {
             state.errorServer.check = true;
@@ -56,7 +56,7 @@ export const {
     offSetting,
     onPersonalPage,
     offPersonalPage,
-    setIdUser,
+    setOpenProfile,
     offAll,
     setTrueErrorServer,
     setFalseErrorServer,

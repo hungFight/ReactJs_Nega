@@ -1,7 +1,7 @@
 import Notification from './Notification/Notification';
 
 import './message.scss';
-import Send from './Send/Send';
+import Send from './Send/Messenger';
 import { DivMs } from './styleMessage';
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';

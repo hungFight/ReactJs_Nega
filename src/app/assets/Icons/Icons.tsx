@@ -22,6 +22,7 @@ import {
     IoCloseOutline,
     IoLanguageOutline,
     IoArrowUndoCircleOutline,
+    IoRemoveOutline,
 } from 'react-icons/io5';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
 import { BiBullseye, BiDotsHorizontalRounded, BiLike, BiReset, BiSolidSquareRounded, BiUser } from 'react-icons/bi';
@@ -147,3 +148,4 @@ export const OclockI = () => <GoClockFill />;
 export const SmileI = () => <FaRegSmileBeam />;
 export const EarthI = () => <GiEarthAsiaOceania />;
 export const LoadingCircleI = () => <AiOutlineLoading3Quarters />;
+export const MinusI = () => <IoRemoveOutline />;

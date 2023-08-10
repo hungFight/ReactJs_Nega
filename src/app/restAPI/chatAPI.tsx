@@ -33,7 +33,7 @@ class SendChat {
     send = async (token: string, formData: any) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
-            const res = await Axios.post<PropsRoomChat>('/SN/sendChat/send', formData);
+            const res = await Axios.post<PropsRoomChat>('/messenger/send', formData);
             return res.data;
         } catch (error) {
             console.log(error);
@@ -42,7 +42,7 @@ class SendChat {
     getRoom = async (token: string, limit: number, offset: number) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
-            const res = await Axios.get<PropsRoomChat[]>('/SN/sendChat/getRoom', { params: { limit, offset } });
+            const res = await Axios.get<PropsRoomChat[]>('/messenger/getRoom', { params: { limit, offset } });
             res.data.map((sc) => {
                 sc.users.map((us) => {
                     if (us?.avatar) us.avatar = CommonUtils.convertBase64(us.avatar);
@@ -64,8 +64,19 @@ class SendChat {
     ) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
-            const res = await Axios.get<PropsChat>('/SN/sendChat/getChat', {
-                params: { ...id_chat, limit, offset, of },
+            const res = await Axios.get<PropsChat>('/messenger/getChat', {
+                params: { id_room: id_chat.id_room, id_other: id_chat.id_other, limit, offset, of },
+            });
+            return res.data;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    delete = async (token: string, id_room: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs(token);
+            const res = await Axios.delete<boolean>('/messenger/delete', {
+                params: { id_room },
             });
             return res.data;
         } catch (error) {

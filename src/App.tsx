@@ -11,7 +11,7 @@ import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useStat
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { InitialStateHideShow, setIdUser } from './app/redux/hideShow';
+import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
@@ -103,14 +103,14 @@ export interface PropsUserPer {
 
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
-const Message = React.lazy(() => import('~/Message/message'));
+const Message = React.lazy(() => import('~/Message/Message'));
 function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
     const dispatch = useDispatch();
     const { userId, token } = Cookies(); // customs hook
-    const { idUser, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
+    const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const { setting, personalPage } = useSelector((state: any) => state.hideShow);
@@ -169,15 +169,15 @@ function App() {
     useEffect(() => {
         const search = async () => {
             const search = window.location.search;
-            if (search && idUser.length === 0) {
+            if (search && openProfile.length === 0) {
                 const ids = search.split('id=');
                 if (ids.length < 5 && ids.length > 0) {
                     const datas = await fetch(ids);
                     if (datas) setUserData(datas);
                 }
             } else {
-                if (idUser.length === 1) {
-                    const data = await fetch(idUser);
+                if (openProfile.length === 1) {
+                    const data = await fetch(openProfile);
                     if (data) setUserData(data);
                 }
             }
@@ -222,19 +222,19 @@ function App() {
             const eleDiv1s = document.querySelectorAll('.showChatDiv1');
             expire(eleDiv1s);
         });
-    }, [idUser]);
+    }, [openProfile]);
 
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUserData([]);
-        dispatch(setIdUser([]));
+        dispatch(setOpenProfile([]));
     };
 
     useEffect(() => {
         if (userId && token) fetch(userId, 'only');
     }, [userId]);
 
-    const leng = idUser?.length;
+    const leng = openProfile?.length;
     const css = `
         position: fixed;
         right: 0;
@@ -267,7 +267,7 @@ function App() {
                 />
                 {userFirst ? (
                     <>
-                        <Website idUser={idUser} dataUser={userFirst} setDataUser={setUserFirst} />
+                        <Website openProfile={openProfile} dataUser={userFirst} setDataUser={setUserFirst} />
                         {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
                         <Div
                             width="240px"

@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { PropsLanguage } from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
 import 'moment/locale/vi';
 import Languages from '~/reUsingComponents/languages';
-import { setIdUser } from '~/redux/hideShow';
+import { setOpenProfile } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
 import { offChats } from '~/redux/background';
 
@@ -107,7 +107,7 @@ const Conversation: React.FC<{
         conversation?.id_us.map((id) => {
             if (id !== userId) id_oth.push(id);
         });
-        dispatch(setIdUser(id_oth));
+        dispatch(setOpenProfile(id_oth));
     };
     console.log(conversation, 'conversation');
 
