@@ -13,7 +13,7 @@ import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
 import Cookies from '~/utils/Cookies';
 import moment from 'moment';
-import { setRoomChat } from '~/redux/reload';
+import { setRoomChat, setSession } from '~/redux/reload';
 
 export interface PropsChat {
     _id: string;
@@ -81,42 +81,49 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         setLoading(true);
         cRef.current = 2;
         const res = await sendChatAPi.getChat(token, id_chat, limit, offset.current, of);
-        if (res) {
-            const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                const modifiedData = { ...res };
-                await Promise.all(
-                    modifiedData.room.map(async (rr, index1: number) => {
-                        await Promise.all(
-                            rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
-                                const buffer = await fileGridFS.getFile(token, fl.v);
-                                const base64 = CommonUtils.convertBase64GridFS(buffer.file);
-                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                            }),
-                        );
-                    }),
-                );
-                resolve(modifiedData);
-            });
-            const a = CommonUtils.convertBase64(newData.user?.avatar);
-            if (a) newData.user.avatar = a;
+        if (typeof res === 'string' && res === 'NeGA_off') {
+            dispatch(setSession('The session expired! Please login again'));
+        } else {
+            if (res) {
+                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                    const modifiedData = { ...res };
+                    await Promise.all(
+                        modifiedData.room.map(
+                            async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
+                                await Promise.all(
+                                    rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
+                                        const buffer = await fileGridFS.getFile(token, fl.v);
+                                        const base64 = CommonUtils.convertBase64GridFS(buffer.file);
+                                        modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                    }),
+                                );
+                            },
+                        ),
+                    );
+                    resolve(modifiedData);
+                });
+                const a = CommonUtils.convertBase64(newData.user?.avatar);
+                if (a) newData.user.avatar = a;
 
-            if (newData) {
-                if (of) {
-                    cRef.current = 8;
-                    if (newData.room.length > 0 && chatRef.current) {
-                        chatRef.current = {
-                            ...chatRef.current,
-                            room: [...chatRef.current.room, ...newData.room],
-                        };
+                if (newData) {
+                    if (of) {
+                        cRef.current = 8;
+                        if (newData.room.length > 0 && chatRef.current) {
+                            chatRef.current = {
+                                ...chatRef.current,
+                                room: [...chatRef.current.room, ...newData.room],
+                            };
+                        }
+                    } else {
+                        chatRef.current = newData;
+                        cRef.current = 7;
                     }
-                } else {
-                    chatRef.current = newData;
-                    cRef.current = 7;
+                    offset.current += limit;
                 }
-                offset.current += limit;
+                setConversation(chatRef.current);
             }
-            setConversation(chatRef.current);
         }
+
         setLoading(false);
     }
     useEffect(() => {

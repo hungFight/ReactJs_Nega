@@ -1,6 +1,8 @@
 import { PropsChat } from '~/Message/Send/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 import CommonUtils from '~/utils/CommonUtils';
+import errorHandling from './errorHandling/errorHandling';
+import { AxiosError } from 'axios';
 export interface PropsRoomChat {
     _id: any;
     id_us: string[];
@@ -29,7 +31,7 @@ export interface PropsRoomChat {
     createdAt: string;
 }
 
-class SendChat {
+class Messenger {
     send = async (token: string, formData: any) => {
         try {
             const Axios = refreshToken.axiosJWTs(token);
@@ -52,7 +54,8 @@ class SendChat {
 
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getChat = async (
@@ -69,7 +72,8 @@ class SendChat {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     delete = async (token: string, id_room: string) => {
@@ -84,4 +88,4 @@ class SendChat {
         }
     };
 }
-export default new SendChat();
+export default new Messenger();

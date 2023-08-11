@@ -96,7 +96,8 @@ const Settingcbl: React.FC<{
     };
     const handleLogOut = async () => {
         const res = await authHttpRequest.postLogOut(token);
-        if (res === 1) {
+        console.log(res);
+        if (res) {
             navigate('/');
             dispatch(offAll());
             removeCookie('tks');

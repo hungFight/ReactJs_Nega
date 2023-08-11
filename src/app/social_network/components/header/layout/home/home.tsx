@@ -17,6 +17,7 @@ import fileGridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import Cookies from '~/utils/Cookies';
 import { PropsDataPosts } from './Layout/DataPosts/interfacePosts';
+import { setSession } from '~/redux/reload';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 
@@ -58,28 +59,32 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     useEffect(() => {
         async function fetch() {
             const data: PropsDataPosts[] = await homeAPI.getPosts(token, limit, offest.current, 'friend');
-            const newData: any = await new Promise(async (resolve, reject) => {
-                try {
-                    await Promise.all(
-                        data.map(async (n, index) => {
-                            n.user.map((u) => (u.Avatar = CommonUtils.convertBase64(u.Avatar)));
-                            if (n.category === 0) {
-                                n.content.options.default.map(async (d, index2) => {
-                                    if (d.file) {
-                                        const file = await fileGridFS.getFile(token, d.file);
-                                        data[index].content.options.default[index2].file = file;
-                                    }
-                                });
-                            }
-                        }),
-                    );
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-            console.log(newData, 'data post');
-            setDataPosts(newData);
+            if (typeof data === 'string' && data === 'NeGA_off') {
+                dispatch(setSession('The session expired! Please login again'));
+            } else {
+                const newData: any = await new Promise(async (resolve, reject) => {
+                    try {
+                        await Promise.all(
+                            data.map(async (n, index) => {
+                                n.user.map((u) => (u.Avatar = CommonUtils.convertBase64(u.Avatar)));
+                                if (n.category === 0) {
+                                    n.content.options.default.map(async (d, index2) => {
+                                        if (d.file) {
+                                            const file = await fileGridFS.getFile(token, d.file);
+                                            data[index].content.options.default[index2].file = file;
+                                        }
+                                    });
+                                }
+                            }),
+                        );
+                        resolve(data);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+                console.log(newData, 'data post');
+                setDataPosts(newData);
+            }
         }
         fetch();
     }, []);

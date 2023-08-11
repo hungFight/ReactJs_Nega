@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const DivMessage = styled.div`
-    border-radius: 5px;
     position: fixed;
     width: 100%;
     height: 100%;
@@ -13,8 +12,7 @@ export const DivMessage = styled.div`
     left: 50%;
     translate: -50% -50%;
     z-index: 1000;
-    cursor: pointer;
-    background-color: #0000008a;
+    background-color: #242424e3;
     align-items: center;
 `;
 export const DivWarBs = styled.div`

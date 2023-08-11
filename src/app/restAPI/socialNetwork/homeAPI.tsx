@@ -1,6 +1,7 @@
 import axios, { AxiosError, CancelTokenSource } from 'axios';
 import refreshToken from '~/refreshToken/refreshToken';
 import { CookieSetOptions } from 'universal-cookie';
+import errorHandling from '../errorHandling/errorHandling';
 class HomeAPI {
     getPosts = async (accessToken: string, limit: number, offset: number, status: string) => {
         try {
@@ -10,7 +11,8 @@ class HomeAPI {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     setPost = async (accessToken: string, formData: any) => {

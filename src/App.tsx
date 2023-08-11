@@ -19,7 +19,7 @@ import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
 import Progress from './app/reUsingComponents/Progress/Progress';
-import ErrorBoudaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
+import ErrorBoundaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
 import { socket } from './mainPage/nextWeb';
 import { DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
@@ -27,10 +27,11 @@ import userAPI from '~/restAPI/userAPI';
 import { PropsTitleP } from './mainPage/personalPage/layout/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Send/Conversation';
-import { PropsReloadRD, setRoomChat } from '~/redux/reload';
+import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
 import { PropsBgRD } from '~/redux/background';
 import Images from '~/assets/images';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
+import { useNavigate } from 'react-router-dom';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -105,16 +106,17 @@ const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
 function App() {
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
     const dispatch = useDispatch();
-    const { userId, token } = Cookies(); // customs hook
+    const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const { setting, personalPage } = useSelector((state: any) => state.hideShow);
-    const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
+    const { userOnline, session } = useSelector((state: PropsReloadRD) => state.reload);
     const [userData, setUserData] = useState<PropsUserPer[]>([]);
 
     const [userFirst, setUserFirst] = useState<PropsUser>();
@@ -147,6 +149,9 @@ function App() {
             },
             first,
         );
+        if (typeof res === 'string' && res === 'NeGA_off')
+            dispatch(setSession('The session expired! Please login again'));
+        console.log(res, 'resss');
 
         if (!Array.isArray(res)) {
             setUserFirst(res);
@@ -261,14 +266,18 @@ function App() {
                     />
                 }
             >
-                <ErrorBoudaries
-                    check={errorServer.check}
-                    message={errorServer.message || 'Server is having a problem. Please try again later!'}
-                />
+                {session ? <ErrorBoundaries message={session} /> : ''}
                 {userFirst ? (
                     <>
-                        <Website openProfile={openProfile} dataUser={userFirst} setDataUser={setUserFirst} />
-                        {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
+                        {!session ? (
+                            <>
+                                <Website openProfile={openProfile} dataUser={userFirst} setDataUser={setUserFirst} />
+                                <Message dataUser={userFirst} userOnline={userOnline} />
+                                {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
+                            </>
+                        ) : (
+                            ''
+                        )}
                         <Div
                             width="240px"
                             wrap="wrap"
@@ -281,7 +290,6 @@ function App() {
                                 transition: all 1s linear;
                             `}
                         ></Div>
-                        <Message dataUser={userFirst} userOnline={userOnline} />
 
                         <Div
                             wrap="wrap"

@@ -1,43 +1,50 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-
-import Cookies from 'universal-cookie';
+import Cookies from 'js-cookie';
 import authHttpRequest from '~/restAPI/authAPI/authAPI';
 axios.defaults.withCredentials = true;
 const axiosJWT = axios.create({
     baseURL: process.env.REACT_APP_SPACESHIP,
 });
-const cookies = new Cookies();
 class refreshToken {
     private isInterceptorAttached: boolean = false;
-    axiosJWTs(token: string) {
+    axiosJWTs(t?: string) {
+        const token = Cookies.get('tks');
         console.log('token here', token);
-
         let i = 0;
-        if (!this.isInterceptorAttached) {
+        if (!this.isInterceptorAttached && token) {
+            let tokenN = token;
+
             axiosJWT.interceptors.request.use(
                 async (config) => {
-                    console.log('all right', i++);
-                    const date = new Date();
-                    const decodeToken: any = await jwt_decode(token);
+                    return await new Promise(async (resolve, reject) => {
+                        try {
+                            console.log('all right', i++);
+                            const date = new Date();
+                            const decodeToken: any = await jwt_decode(tokenN);
 
-                    if (decodeToken.exp < date.getTime() / 1000 + 5) {
-                        console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
-                        const data = await authHttpRequest.refreshToken();
-                        console.log(data.newAccessToken, 'newAccessToken');
+                            if (decodeToken.exp < date.getTime() / 1000 + 5) {
+                                console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
+                                const data = await authHttpRequest.refreshToken();
+                                console.log(data.newAccessToken, 'newAccessToken');
 
-                        if (data) {
-                            const newToken = 'Bearer ' + data.newAccessToken;
-                            cookies.set('tks', newToken, {
-                                path: '/',
-                                secure: false,
-                                sameSite: 'strict',
-                                expires: new Date(new Date().getTime() + 30 * 86409000),
-                            });
+                                if (data) {
+                                    const newToken = 'Bearer ' + data.newAccessToken;
+                                    tokenN = newToken;
+                                    Cookies.set('tks', newToken, {
+                                        path: '/',
+                                        secure: false,
+                                        sameSite: 'strict',
+                                        expires: new Date(new Date().getTime() + 30 * 86409000),
+                                    });
+                                }
+                            }
+                            this.isInterceptorAttached = true;
+                            resolve(config);
+                        } catch (error) {
+                            reject(error);
                         }
-                    }
-                    this.isInterceptorAttached = true;
-                    return config;
+                    });
                 },
                 (err) => {
                     console.log('error Axios');

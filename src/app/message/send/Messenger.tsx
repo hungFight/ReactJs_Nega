@@ -33,7 +33,7 @@ import { useCookies } from 'react-cookie';
 import CommonUtils from '~/utils/CommonUtils';
 import { socket } from 'src/mainPage/nextWeb';
 import { useDispatch, useSelector } from 'react-redux';
-import { PropsReloadRD } from '~/redux/reload';
+import { PropsReloadRD, setSession } from '~/redux/reload';
 import { useQuery } from '@tanstack/react-query';
 import gridFS from '~/restAPI/gridFS';
 import { setOpenProfile } from '~/redux/hideShow';
@@ -79,9 +79,12 @@ const Send: React.FC<{
         async function fetchRoom() {
             setLoadind(true);
             const res = await sendChatAPi.getRoom(token, limit, offset.current);
-            if (res) setRooms(res);
-            setLoadind(false);
-            console.log(res, 'get Room');
+            if (typeof res === 'string' && res === 'NeGA_off') {
+                dispatch(setSession('The session expired! Please login again'));
+            } else {
+                if (res) setRooms(res);
+                setLoadind(false);
+            }
         }
         fetchRoom();
 

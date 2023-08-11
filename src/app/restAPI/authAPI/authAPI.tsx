@@ -3,6 +3,7 @@ import { NavigateFunction } from 'react-router-dom';
 import { CookieSetOptions } from 'universal-cookie/cjs/types';
 import refreshToken from '~/refreshToken/refreshToken';
 import http from '~/utils/http';
+import errorHandling from '../errorHandling/errorHandling';
 
 class AuthRequest {
     postLogin = async (
@@ -75,20 +76,12 @@ class AuthRequest {
 
         try {
             const axiosJWTss: any = refreshToken.axiosJWTs(accessToken);
-            const data: any = await axiosJWTss.post('/account/logout');
-            const { status } = data.data;
-            if (status === 1 && data.status === 200) {
-                return status;
-            }
+            const data = await axiosJWTss.post('/account/logout');
+            if (data.data.status === 200) return true;
+            return false;
         } catch (error) {
-            console.log(error);
-            const err: any = error as AxiosError;
-            const errStatus = err.response?.data;
-            if (errStatus) {
-                if (errStatus.status === 0) {
-                    return { status: errStatus.status, message: 'You are not allowed!' };
-                }
-            }
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     refreshToken = async () => {

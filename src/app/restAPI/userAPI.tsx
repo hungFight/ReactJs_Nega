@@ -3,6 +3,7 @@ import refreshToken from '~/refreshToken/refreshToken';
 import Cookies from 'universal-cookie';
 import { PropsUser, PropsUserPer } from 'src/App';
 import CommonUtils from '~/utils/CommonUtils';
+import errorHandling from './errorHandling/errorHandling';
 
 export interface PropsParamsById {
     id?: string;
@@ -78,14 +79,8 @@ class HttpRequestUser {
                 return res.data;
             }
         } catch (error) {
-            console.log(error);
-            // const err: any = error as AxiosError;
-            // const errStatus = err.response;
-            // if (errStatus.status === 410) {
-            //     return { status: errStatus.status, message: 'Your token expired!' };
-            // } else {
-            // }
-            // console.log(error.reponsive.data);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getByName = async (token: string, name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {

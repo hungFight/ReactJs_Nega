@@ -1,32 +1,48 @@
 import { useEffect, useState } from 'react';
 import { DivMessage } from './stylesErrorBoudaries';
-import { P } from '../styleComponents/styleDefault';
+import { Button, P } from '../styleComponents/styleDefault';
 import { useDispatch } from 'react-redux';
 import { setFalseErrorServer } from '~/redux/hideShow';
-
-function ErrorBoudaries(props: { check: boolean; message: string }) {
+import { setSession } from '~/redux/reload';
+import { useCookies } from 'react-cookie';
+import Cookies from 'js-cookie';
+const ErrorBoundaries: React.FC<{
+    message: string;
+}> = ({ message }) => {
     const dispatch = useDispatch();
-    if (props.check)
-        return (
-            <DivMessage onClick={() => dispatch(setFalseErrorServer())}>
-                <P
-                    color="#ff5252;"
-                    css="    color: #ff5252;
+    const [c, s, removeCookies] = useCookies(['k_user', 'tks']);
+    return (
+        <DivMessage>
+            <P
+                color="#ff5252;"
+                css="    color: #ff5252;
                             width: 70%;
-                            background-color: aliceblue;
+                            background-color: #282828;
                             font-size: 1.6rem;
                             font-weight: bold;
                             border-radius: 5px;
                             text-align: center;
                             padding: 10px;"
+            >
+                {message}
+                <br></br>
+                <Button
+                    bg="#2e8c65b5"
+                    color="#d4d4d4"
+                    size="1.3rem"
+                    css="margin: 10px auto; "
+                    onClick={() => {
+                        dispatch(setSession(''));
+                        Cookies.remove('tks');
+                        Cookies.remove('k_user');
+                        removeCookies('k_user');
+                    }}
                 >
-                    {props.message}
-                    <br></br>
-                    <span style={{ fontSize: '1.3rem' }}>( Click anywhere on the screen to out of the message. )</span>
-                </P>
-            </DivMessage>
-        );
+                    Login
+                </Button>
+            </P>
+        </DivMessage>
+    );
+};
 
-    return <></>;
-}
-export default ErrorBoudaries;
+export default ErrorBoundaries;
