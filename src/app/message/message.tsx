@@ -1,15 +1,26 @@
 import Notification from './Notification/Notification';
 
 import './message.scss';
-import Send from './Send/Messenger';
+import Send from './Messenger/Messenger';
 import { DivMs } from './styleMessage';
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PropsUser } from 'src/App';
-import Conversation from './Send/Conversation';
+import Conversation from './Messenger/Conversation/Conversation';
 import { PropsBgRD } from '~/redux/background';
 
-const Message: React.FC<{ dataUser: PropsUser; userOnline: string[] }> = ({ dataUser, userOnline }) => {
+const Message: React.FC<{
+    dataUser: PropsUser;
+    userOnline: string[];
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ dataUser, userOnline, setId_chats }) => {
     const [width, setWidth] = useState<string>('');
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const elRef = useRef<any>();
@@ -46,7 +57,13 @@ const Message: React.FC<{ dataUser: PropsUser; userOnline: string[] }> = ({ data
     return (
         <DivMs width="50px" top="60px" ref={elRef} onTouchMove={handleTouchMove}>
             <Notification dataUser={dataUser} userOline={userOnline} colorText={colorText} colorBg={colorBg} />
-            <Send dataUser={dataUser} userOline={userOnline} colorText={colorText} colorBg={colorBg} />
+            <Send
+                dataUser={dataUser}
+                userOline={userOnline}
+                colorText={colorText}
+                colorBg={colorBg}
+                setId_chats={setId_chats}
+            />
         </DivMs>
     );
 };

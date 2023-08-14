@@ -49,7 +49,7 @@ const Settingcbl: React.FC<{
     }, [showHideSettingn]);
     const handleChangeLanguage = async (lg: string) => {
         if (checkLg.current !== lg) {
-            const res = await HttpRequestUser.setLg(token, k_user, lg);
+            const res = await HttpRequestUser.setLg(k_user, lg);
             console.log('laggggg', res);
             dispatch(changeSN(lg));
 
@@ -95,7 +95,7 @@ const Settingcbl: React.FC<{
         });
     };
     const handleLogOut = async () => {
-        const res = await authHttpRequest.postLogOut(token);
+        const res = await authHttpRequest.postLogOut();
         console.log(res);
         if (res) {
             navigate('/');

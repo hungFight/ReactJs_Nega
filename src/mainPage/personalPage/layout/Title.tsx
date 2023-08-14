@@ -66,7 +66,7 @@ const Title: React.FC<{
         { icon: 'Following', key: 6, qt: data.following },
     ];
     const handlePosition = async (id: number) => {
-        const res = await userAPI.getMore(token, offset.current, limit);
+        const res = await userAPI.getMore(offset.current, limit);
 
         setPosition(id);
     };

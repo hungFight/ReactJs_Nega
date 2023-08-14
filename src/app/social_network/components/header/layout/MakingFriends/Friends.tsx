@@ -20,7 +20,6 @@ interface PropsFriends {
 const Friends: React.FC<{ type: string }> = ({ type }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
-    const [cookies, setCookies] = useCookies(['tks', 'k_user']);
 
     const [loading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<PropsFriends[]>();
@@ -31,9 +30,6 @@ const Friends: React.FC<{ type: string }> = ({ type }) => {
     const eleRef = useRef<any>();
     const dataRef = useRef<any>([]);
 
-    const token = cookies.tks;
-    const userId = cookies.k_user;
-
     async function fetch(rel: boolean) {
         cRef.current = 1;
         if (rel) {
@@ -42,7 +38,7 @@ const Friends: React.FC<{ type: string }> = ({ type }) => {
             setLoading(true);
         }
 
-        const res = await peopleAPI.getFriends(token, offsetRef.current, limit, 'friends');
+        const res = await peopleAPI.getFriends(offsetRef.current, limit, 'friends');
         console.log('friends', res);
         res.map((f: { avatar: string | undefined }) => {
             if (f.avatar) {

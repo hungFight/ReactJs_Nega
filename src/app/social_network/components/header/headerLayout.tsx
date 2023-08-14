@@ -108,7 +108,7 @@ const Header: React.FC<{
         if (e.target.getAttribute('id') !== 'notS') setSearchC(!searchC);
         if (!searchC) {
             console.log('ddddd');
-            const res = await userAPI.getHistory(token);
+            const res = await userAPI.getHistory();
 
             setHistory(res);
         }

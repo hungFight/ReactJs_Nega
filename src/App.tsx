@@ -26,7 +26,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import userAPI from '~/restAPI/userAPI';
 import { PropsTitleP } from './mainPage/personalPage/layout/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import Conversation from '~/Message/Send/Conversation';
+import Conversation from '~/Message/Messenger/Conversation/Conversation';
 import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
 import { PropsBgRD } from '~/redux/background';
 import Images from '~/assets/images';
@@ -106,7 +106,6 @@ const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
 function App() {
-    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
@@ -121,13 +120,13 @@ function App() {
 
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [id_chats, setId_chats] = useState<{ id_room: string | undefined; id_other: string }[]>(chats);
     // messenger
     const showChat = useRef<HTMLInputElement | null>(null);
 
     async function fetch(id: string | string[], first?: string) {
         if (!first) setLoading(true);
         const res = await userAPI.getById(
-            token,
             id,
             {
                 id: 'id',
@@ -272,7 +271,7 @@ function App() {
                         {!session ? (
                             <>
                                 <Website openProfile={openProfile} dataUser={userFirst} setDataUser={setUserFirst} />
-                                <Message dataUser={userFirst} userOnline={userOnline} />
+                                <Message dataUser={userFirst} userOnline={userOnline} setId_chats={setId_chats} />
                                 {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
                             </>
                         ) : (
@@ -306,7 +305,7 @@ function App() {
                                 modules={[Pagination]}
                                 className="mySwiper"
                             > */}
-                            {chats?.map((room, index) => (
+                            {id_chats?.map((room, index) => (
                                 // <SwiperSlide key={index}>
                                 <Conversation
                                     key={index}
@@ -317,6 +316,7 @@ function App() {
                                     currentPage={currentPage}
                                     dataFirst={userFirst}
                                     chat={chats}
+                                    id_chats={id_chats}
                                 />
                                 // </SwiperSlide>
                             ))}

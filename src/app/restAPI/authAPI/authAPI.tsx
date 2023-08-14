@@ -71,11 +71,9 @@ class AuthRequest {
         }
     };
 
-    postLogOut = async (accessToken: string) => {
-        console.log(accessToken, '123');
-
+    postLogOut = async () => {
         try {
-            const axiosJWTss: any = refreshToken.axiosJWTs(accessToken);
+            const axiosJWTss: any = refreshToken.axiosJWTs();
             const data = await axiosJWTss.post('/account/logout');
             if (data.data.status === 200) return true;
             return false;

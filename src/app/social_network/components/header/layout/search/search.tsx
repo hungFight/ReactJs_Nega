@@ -65,7 +65,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
         }
         const fechApi = async () => {
             try {
-                const results = await userAPI.getByName(cookies.tks, searchUser, cateMore, searchUserMore, {
+                const results = await userAPI.getByName(searchUser, cateMore, searchUserMore, {
                     id: 'id',
                     avatar: 'avatar',
                     fullName: 'fullName',

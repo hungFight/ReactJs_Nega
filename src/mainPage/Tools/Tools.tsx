@@ -22,7 +22,7 @@ const Tools: React.FC<{
     const [status, setStatus] = useState<React.ReactNode>(null);
     const [onOff, setOnOff] = useState<React.ReactElement>(() => (as === 1 ? <OnlineI /> : <OfflineI />));
     const handleChange = async (o: { name: string }) => {
-        const res = await HttpRequestUser.setAs(cookies.get('tks'), o.name === 'online' ? 1 : 0);
+        const res = await HttpRequestUser.setAs(o.name === 'online' ? 1 : 0);
         console.log(res, o, 'res here');
         if (res === 1) {
             if (o.name === 'online') {

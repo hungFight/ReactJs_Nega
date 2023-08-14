@@ -29,9 +29,6 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     const eleRef = useRef<any>();
     const dataRef = useRef<any>([]);
 
-    const token = cookies.tks;
-    const userId = cookies.k_user;
-
     async function fetch(rel: boolean) {
         cRef.current = 1;
         if (rel) {
@@ -39,7 +36,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
             dataRef.current = [];
             setLoading(true);
         }
-        const res = await peopleAPI.getFriends(token, offsetRef.current, limit, 'yousent');
+        const res = await peopleAPI.getFriends(offsetRef.current, limit, 'yousent');
         console.log(type, res);
         res.map((f: { avatar: string | undefined }) => {
             if (f.avatar) {
@@ -70,7 +67,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     }, [reload]);
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         console.log('Abolish', kindOf, id);
-        const res = await peopleAPI.delete(token, id, kindOf);
+        const res = await peopleAPI.delete(id, kindOf);
         if (res) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             setData(newData);
@@ -78,7 +75,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     };
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
-        const res = await peopleAPI.delete(token, id, kindOf);
+        const res = await peopleAPI.delete(id, kindOf);
         if (res) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             console.log('delete', res);

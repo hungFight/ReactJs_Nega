@@ -16,6 +16,7 @@ import {
     LoadingI,
     MinusI,
     CheckI,
+    ClockCirclesI,
 } from '~/assets/Icons/Icons';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -25,170 +26,37 @@ import { DivResults, DivSend } from './styleSed';
 import { Div, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivPost } from '~/social_network/components/Header/layout/Home/styleHome';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
-import ListAccounts from './SendReults';
+import ListAccounts from './ListAccounts';
 import MoreOption from './MoreOption';
-import Conversation from './Conversation';
-import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
-import { useCookies } from 'react-cookie';
-import CommonUtils from '~/utils/CommonUtils';
-import { socket } from 'src/mainPage/nextWeb';
-import { useDispatch, useSelector } from 'react-redux';
-import { PropsReloadRD, setSession } from '~/redux/reload';
-import { useQuery } from '@tanstack/react-query';
-import gridFS from '~/restAPI/gridFS';
-import { setOpenProfile } from '~/redux/hideShow';
+import LogicMessenger from './LogicMessenger';
 
 const Send: React.FC<{
     colorText: string;
     colorBg: number;
     dataUser: { id: string; avatar: any; fullName: string; nickName: string; gender: number };
     userOline: string[];
-}> = ({ colorBg, colorText, dataUser, userOline }) => {
-    const dispatch = useDispatch();
-    const roomChat = useSelector((state: PropsReloadRD) => state.reload.roomChat);
-    const [send, setSend] = useState(false);
-    const [cookies, setCookies] = useCookies(['k_user', 'tks']);
-    const userId = cookies.k_user;
-    const token = cookies.tks;
-    const [searchUser, setSearchUser] = useState<string>('');
-    const [resultSearch, setResultSearch] = useState<any>([]);
-    const [rooms, setRooms] = useState<PropsRoomChat[]>([]);
-    const [roomNew, setRoomNew] = useState<PropsRoomChat>();
-    const [loading, setLoadind] = useState<boolean>(false);
-    const [loadDel, setLoadDel] = useState<boolean>(false);
-    const limit = 10;
-    const offset = useRef<number>(0);
-
-    const [moreBar, setMoreBar] = useState<{
-        id_room: string;
-        id: string;
-        avatar: string;
-        fullName: string;
-        gender: number;
-    }>({
-        id_room: '',
-        id: '',
-        avatar: '',
-        fullName: '',
-        gender: 0,
-    });
-    const handleShowHide = () => {
-        setSend(!send);
-    };
-    useEffect(() => {
-        async function fetchRoom() {
-            setLoadind(true);
-            const res = await sendChatAPi.getRoom(token, limit, offset.current);
-            if (typeof res === 'string' && res === 'NeGA_off') {
-                dispatch(setSession('The session expired! Please login again'));
-            } else {
-                if (res) setRooms(res);
-                setLoadind(false);
-            }
-        }
-        fetchRoom();
-
-        socket.on(`${userId}roomChat`, async (d: string) => {
-            const data: PropsRoomChat = JSON.parse(d);
-            const a = CommonUtils.convertBase64(data.user.avatar);
-            data.user.avatar = a;
-            data.users = [data.user];
-            const newD = await new Promise<PropsRoomChat>(async (resolve, reject) => {
-                try {
-                    await Promise.all(
-                        data.room.imageOrVideos.map(async (d, index) => {
-                            const buffer = await gridFS.getFile(token, d.v);
-                            const base64 = CommonUtils.convertBase64GridFS(buffer.file);
-                            data.room.imageOrVideos[index].v = base64;
-                        }),
-                    );
-                    resolve(data);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-            setRoomNew(newD);
-        });
-    }, []);
-    useEffect(() => {
-        if (roomNew) {
-            const newR = rooms.filter((r) => r._id !== roomNew._id);
-            setRooms([roomNew, ...newR]);
-        }
-    }, [roomNew]);
-    useEffect(() => {
-        if (roomChat) {
-            const newR = rooms.filter((r) => r._id !== roomChat._id);
-            setRooms([roomChat, ...newR]);
-        }
-    }, [roomChat]);
-    const handleUndo = () => {};
-    // const debounce = useDebounce(searchUser, 500);
-    // useEffect(() => {
-    //     if (!searchUser) {
-    //         setResultSearch([]);
-    //         return;
-    //     }
-    //     const fechApi = async () => {
-    //         // const results = await userService.search(searchUser);
-    //         // setResultSearch(results);
-    //     };
-
-    //     fechApi();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [debounce]);
-    const handleSearch = (e: { target: { value: string } }) => {
-        setSearchUser(e.target.value);
-    };
-    console.log(searchUser);
-    const handleDelete = async () => {
-        setLoadDel(true);
-        const res = await sendChatAPi.delete(token, moreBar.id_room);
-        if (res) setRooms((pre) => pre.filter((r) => r._id !== moreBar.id_room));
-        setLoadDel(false);
-    };
-    const dataMore: {
-        options: {
-            id: number;
-            load?: boolean;
-            name: string;
-            icon: JSX.Element;
-            onClick: () => any;
-        }[];
-        id_room: string;
-        id: string;
-        avatar: string;
-        fullName: string;
-        gender: number;
-    } = {
-        ...moreBar,
-        options: [
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
             {
-                id: 1,
-                name: 'View Profile',
-                icon: <ProfileCircelI />,
-                onClick: () => dispatch(setOpenProfile([moreBar.id])),
-            },
-        ],
-    };
-    if (rooms.some((r) => r._id === moreBar.id_room)) {
-        dataMore.options.push({
-            id: 2,
-            name: 'Remove',
-            load: loadDel,
-            icon: loadDel ? (
-                <DivLoading css="font-size: 12px; margin: 0;">
-                    <LoadingI />
-                </DivLoading>
-            ) : rooms.some((r) => r._id === moreBar.id_room) ? (
-                <MinusI />
-            ) : (
-                <CheckI />
-            ),
-            onClick: () => handleDelete(),
-        });
-    }
-
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ colorBg, colorText, dataUser, userOline, setId_chats }) => {
+    const {
+        userId,
+        rooms,
+        searchUser,
+        setSearchUser,
+        send,
+        loading,
+        moreBar,
+        setMoreBar,
+        handleShowHide,
+        handleSearch,
+        dataMore,
+    } = LogicMessenger();
     return (
         <>
             {!send && (
@@ -378,6 +246,7 @@ const Send: React.FC<{
                                     colorText={colorText}
                                     colorBg={colorBg}
                                     setMoreBar={setMoreBar}
+                                    setId_chats={setId_chats}
                                 />
                             ))
                         )}

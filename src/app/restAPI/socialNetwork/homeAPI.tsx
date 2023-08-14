@@ -3,9 +3,9 @@ import refreshToken from '~/refreshToken/refreshToken';
 import { CookieSetOptions } from 'universal-cookie';
 import errorHandling from '../errorHandling/errorHandling';
 class HomeAPI {
-    getPosts = async (accessToken: string, limit: number, offset: number, status: string) => {
+    getPosts = async (limit: number, offset: number, status: string) => {
         try {
-            const axiosJWTss = refreshToken.axiosJWTs(accessToken);
+            const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.get('/SN/home/getPosts', {
                 params: { limit, offset, status },
             });
@@ -15,11 +15,11 @@ class HomeAPI {
             return errorHandling(err);
         }
     };
-    setPost = async (accessToken: string, formData: any) => {
+    setPost = async (formData: any) => {
         try {
             console.log(formData);
 
-            const axiosJWTss = refreshToken.axiosJWTs(accessToken);
+            const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/home/setPost', formData);
             return res.data;
         } catch (error: any) {

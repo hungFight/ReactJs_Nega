@@ -44,21 +44,16 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
     const [include, setInclude] = useState<boolean>(false); // show imotion of icon
-    const [userList, setUserList] = useState();
-    const [moveForm, setMoveForm] = useState<boolean>(false);
     const [dataPosts, setDataPosts] = useState<PropsDataPosts[]>([]);
-    const { token } = Cookies();
-    const offest = useRef<number>(0);
+    const offset = useRef<number>(0);
     const limit = 5;
-    console.log('nooo');
-
     const handleOpenForm = () => {
         console.log('ok very good');
     };
 
     useEffect(() => {
         async function fetch() {
-            const data: PropsDataPosts[] = await homeAPI.getPosts(token, limit, offest.current, 'friend');
+            const data: PropsDataPosts[] = await homeAPI.getPosts(limit, offset.current, 'friend');
             if (typeof data === 'string' && data === 'NeGA_off') {
                 dispatch(setSession('The session expired! Please login again'));
             } else {
@@ -70,7 +65,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 if (n.category === 0) {
                                     n.content.options.default.map(async (d, index2) => {
                                         if (d.file) {
-                                            const file = await fileGridFS.getFile(token, d.file);
+                                            const file = await fileGridFS.getFile(d.file);
                                             data[index].content.options.default[index2].file = file;
                                         }
                                     });

@@ -14,7 +14,7 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { socket } from 'src/mainPage/nextWeb';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import Send from '../Send/Messenger';
+import Send from '../Messenger/Messenger';
 import { setOpenProfile } from '~/redux/hideShow';
 import moment from 'moment';
 import CommonUtils from '~/utils/CommonUtils';
@@ -76,7 +76,7 @@ const Notification: React.FC<{
     const [delReq, setDelReq] = useState<{ st: number; id: string }>({ st: 0, id: '' });
     useEffect(() => {
         async function fetch() {
-            const res = await userAPI.getNewMes(token);
+            const res = await userAPI.getNewMes();
             const newData = res.user.map((v: { avatar: any }) => {
                 if (v.avatar) v.avatar = CommonUtils.convertBase64(v.avatar);
                 return v;
@@ -115,8 +115,7 @@ const Notification: React.FC<{
 
     const handleShowHide = async () => {
         setNotification(!notification);
-        const res = await userAPI.delMessage(token);
-
+        const res = await userAPI.delMessage();
         if (res.ok) setDataInfo({ ...dataInfo, quantity: 0 });
     };
     const handleUndo = () => {
@@ -126,7 +125,7 @@ const Notification: React.FC<{
     console.log(dataInfo, dataTest);
     const handleConfirm = async (id: string) => {
         if (id) {
-            const res = await peopleAPI.setConfirm(token, id, 'friends', true);
+            const res = await peopleAPI.setConfirm(id, 'friends', true);
             if (res.ok === 1) {
                 const newData = dataInfo.user.filter((x) => {
                     if (x.id === res.id_fr) {
@@ -141,7 +140,7 @@ const Notification: React.FC<{
         }
     };
     const handleDelete = async (id: string) => {
-        const res = await peopleAPI.delete(token, id, 'friends');
+        const res = await peopleAPI.delete(id, 'friends');
         if (res) {
             const newData = dataInfo.user.filter((x) => {
                 if (x.id === res.idCurrentUser) {
@@ -218,14 +217,6 @@ const Notification: React.FC<{
                             <H3 color={colorText} css="font-size: 1.6rem;">
                                 {dataText[lg].title}
                             </H3>
-                            <Div css="position: absolute; top: 4px; right: 15px; ">
-                                <Send
-                                    dataUser={dataUser}
-                                    userOline={userOline}
-                                    colorText={colorText}
-                                    colorBg={colorBg}
-                                />
-                            </Div>
                         </DivBar>
                         <DivListIs>
                             {dataInfo?.user.map((v) => {

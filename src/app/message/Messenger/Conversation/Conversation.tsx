@@ -1,5 +1,5 @@
 import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivConversation, DivResultsConversation } from './styleSed';
+import { DivConversation, DivResultsConversation } from '../styleSed';
 import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { CallName, DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
@@ -12,7 +12,7 @@ import { Player } from 'video-react';
 import { PropsUser } from 'src/App';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
-import FileConversation from './File';
+import FileConversation from '../File';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { PropsLanguage } from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
@@ -21,6 +21,7 @@ import Languages from '~/reUsingComponents/languages';
 import { setOpenProfile } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
 import { offChats } from '~/redux/background';
+import MoreOption from '../MoreOption';
 
 const Conversation: React.FC<{
     index: number;
@@ -33,7 +34,11 @@ const Conversation: React.FC<{
         id_room: string | undefined;
         id_other: string;
     }[];
-}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat }) => {
+    id_chats: {
+        id_room: string | undefined;
+        id_other: string;
+    }[];
+}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat, id_chats }) => {
     const { lg } = Languages();
 
     const {
@@ -51,7 +56,6 @@ const Conversation: React.FC<{
         handleEmojiSelect,
         dispatch,
         conversation,
-        token,
         userId,
         fetchChat,
         loading,
@@ -110,7 +114,40 @@ const Conversation: React.FC<{
         dispatch(setOpenProfile(id_oth));
     };
     console.log(conversation, 'conversation');
-
+    const dataMore: {
+        options: {
+            id: number;
+            load?: boolean;
+            name: string;
+            icon: JSX.Element;
+            onClick: () => any;
+        }[];
+        id_room: string | undefined;
+        id: string | undefined;
+        avatar: string | undefined;
+        fullName: string | undefined;
+        gender: number | undefined;
+    } = {
+        id_room: conversation?._id,
+        id: conversation?.user.id,
+        avatar: conversation?.user.avatar,
+        fullName: conversation?.user.fullName,
+        gender: conversation?.user.gender,
+        options: [
+            {
+                id: 1,
+                name: 'View Profile',
+                icon: <ProfileCircelI />,
+                onClick: () => alert('hello'),
+            },
+            {
+                id: 2,
+                name: 'Undo',
+                icon: <ProfileCircelI />,
+                onClick: () => alert('hello'),
+            },
+        ],
+    };
     return (
         <DivConversation
             height={chat.length > 2 ? '48% !important' : chat.length === 1 ? '100% !important' : ''}
@@ -138,28 +175,16 @@ const Conversation: React.FC<{
                         onClick={() => {
                             const ofChat = document.querySelectorAll('.ofChats');
                             const containChat = document.querySelector('.containChat');
+
                             if (ofChat) {
-                                const newContainChat = Array.from(ofChat).filter((o, indexO) => {
-                                    if (o.getAttribute('id') === id_chat.id_other + id_chat.id_room) {
-                                        dispatch(
-                                            offChats(
-                                                chat.filter(
-                                                    (c) =>
-                                                        c.id_other !== id_chat.id_other &&
-                                                        c.id_room !== id_chat.id_room,
-                                                ),
-                                            ),
-                                        );
-                                        o.remove();
-                                    } else {
-                                        return o;
-                                    }
-                                });
-                                // Array.from(ofChat).forEach((o) => o.remove());
-                                const timeOut = setTimeout(() => {
-                                    containChat?.replaceChildren(...newContainChat);
-                                    return () => clearTimeout(timeOut);
-                                }, 10);
+                                dispatch(
+                                    offChats(
+                                        chat.filter(
+                                            (c) => c.id_other !== id_chat.id_other && c.id_room !== id_chat.id_room,
+                                        ),
+                                    ),
+                                );
+                                ofChat[index].remove();
                             }
                         }}
                     >
@@ -214,7 +239,6 @@ const Conversation: React.FC<{
                                 userId={userId}
                                 handleWatchMore={handleWatchMore}
                                 ERef={ERef}
-                                token={token}
                                 handleTime={handleTime}
                                 user={conversation.user}
                             />
@@ -340,6 +364,7 @@ const Conversation: React.FC<{
                     )}
                 </Div>
             </DivResultsConversation>
+            <MoreOption dataMore={dataMore} colorText={colorText} />
         </DivConversation>
     );
 };

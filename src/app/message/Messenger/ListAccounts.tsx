@@ -61,7 +61,15 @@ const ListAccounts: React.FC<{
     >;
     data: PropsRoomChat;
     userId: string;
-}> = ({ colorText, colorBg, setMoreBar, data, userId }) => {
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ colorText, colorBg, setMoreBar, data, userId, setId_chats }) => {
     const dispatch = useDispatch();
     const { userOnline, id_chat } = useSelector((state: any) => {
         return {
@@ -130,6 +138,16 @@ const ListAccounts: React.FC<{
                         onTouchEnd={handleTouchEnd}
                         onClick={(e) => {
                             dispatch(onChats({ id_room: data._id, id_other: rs.id }));
+                            setId_chats((pre) => {
+                                let check = false;
+                                pre.forEach((p) => {
+                                    if (p.id_other === id_chat.id_other) {
+                                        check = true;
+                                    }
+                                });
+                                if (!check) return [...pre, { id_room: data._id, id_other: rs.id }];
+                                return pre;
+                            });
                             if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
                         }}
                         width="100%"

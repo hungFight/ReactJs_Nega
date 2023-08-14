@@ -3,8 +3,7 @@ import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
-const FileConversation: React.FC<{ token: string; type?: string; v: string; icon: string; ERef: any }> = ({
-    token,
+const FileConversation: React.FC<{ type?: string; v: string; icon: string; ERef: any }> = ({
     type = '',
     v,
     icon,

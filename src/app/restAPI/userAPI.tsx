@@ -38,15 +38,9 @@ interface PropsParamsMores {
 }
 const cookies = new Cookies();
 class HttpRequestUser {
-    getById = async (
-        token: string,
-        id: string | string[],
-        params: PropsParamsById,
-        mores: PropsParamsMores,
-        first?: string,
-    ) => {
+    getById = async (id: string | string[], params: PropsParamsById, mores: PropsParamsMores, first?: string) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsUserPer[] | PropsUser>('/user/getById', {
                 id: id,
                 mores,
@@ -83,9 +77,9 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
-    getByName = async (token: string, name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {
+    getByName = async (name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/getByName', {
                 name,
                 cateMore,
@@ -97,9 +91,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    setLg = async (token: string, id: string, lg: string) => {
+    setLg = async (id: string, lg: string) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setLg', {
                 id: id,
                 lg: lg,
@@ -109,9 +103,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    setAs = async (token: string, as: number) => {
+    setAs = async (as: number) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/setAs', {
                 as: as,
             });
@@ -120,27 +114,27 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    getNewMes = async (token: string) => {
+    getNewMes = async () => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getNewMes');
             return res.data;
         } catch (error) {
             console.log(error);
         }
     };
-    delMessage = async (token: string) => {
+    delMessage = async () => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/delMessage');
             return res.data;
         } catch (error) {
             console.log(error);
         }
     };
-    changesOne = async (token: string, id: string, value: any, params: PropsParamsById) => {
+    changesOne = async (id: string, value: any, params: PropsParamsById) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/changesOne', {
                 params: {
                     id,
@@ -153,9 +147,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    follow = async (token: string, id: string, follow?: string) => {
+    follow = async (id: string, follow?: string) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/follow', {
                 params: {
                     id,
@@ -167,9 +161,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    Unfollow = async (token: string, id: string, unfollow: string) => {
+    Unfollow = async (id: string, unfollow: string) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/Unfollow', {
                 params: {
                     id,
@@ -183,9 +177,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    getMore = async (token: string, offset: number, limit: number) => {
+    getMore = async (offset: number, limit: number) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getMore', {
                 params: {
                     offset,
@@ -199,12 +193,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    setHistory = async (
-        token: string,
-        data: { id: string; avatar: string; fullName: string; nickName: string; gender: number },
-    ) => {
+    setHistory = async (data: { id: string; avatar: string; fullName: string; nickName: string; gender: number }) => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setHistory', {
                 params: {
                     data,
@@ -214,9 +205,9 @@ class HttpRequestUser {
             console.log(error);
         }
     };
-    getHistory = async (token: string) => {
+    getHistory = async () => {
         try {
-            const Axios = refreshToken.axiosJWTs(token);
+            const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getHistory');
             return res.data;
         } catch (error) {

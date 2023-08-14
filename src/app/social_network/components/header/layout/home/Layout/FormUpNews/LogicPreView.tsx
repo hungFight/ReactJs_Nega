@@ -234,7 +234,7 @@ export default function LogicPreView(
                         }
                     }
                     console.log('text', valueText, 'file', upload, 'fontFamily', font, Imotions);
-                    res = await HomeAPI.setPost(token, formData);
+                    res = await HomeAPI.setPost(formData);
                     setLoading(false);
                     console.log(res, 'res');
                     // id_c = res.id_c;
@@ -267,7 +267,7 @@ export default function LogicPreView(
                                 formData.append('files', f.file, JSON.stringify(c.id));
                             }
                         });
-                        res = await HomeAPI.setPost(token, formData);
+                        res = await HomeAPI.setPost(formData);
                         setLoading(false);
                         //     console.log(res, 'res');
                     } else {
@@ -275,7 +275,7 @@ export default function LogicPreView(
                             formData.append('files', fil.file);
                         }
                         console.log('text', valueText, 'file', upload, 'fontFamily', font, 'swiper', selectChild);
-                        res = await HomeAPI.setPost(token, formData);
+                        res = await HomeAPI.setPost(formData);
                         setLoading(false);
                         console.log(res, 'res');
                     }
@@ -295,7 +295,7 @@ export default function LogicPreView(
                     );
                     formData.append('BgColor', bg);
                     formData.append('columnOfGrid', JSON.stringify(column));
-                    res = await HomeAPI.setPost(token, formData);
+                    res = await HomeAPI.setPost(formData);
                     setLoading(false);
                     break;
                 case 3:
@@ -303,7 +303,7 @@ export default function LogicPreView(
                         formData.append('files', fil.file);
                     }
                     console.log('text', valueText, 'file', upload, 'fontFamily', font, Imotions);
-                    res = await HomeAPI.setPost(token, formData);
+                    res = await HomeAPI.setPost(formData);
                     console.log(res, 'res');
                     setLoading(false);
                     break;
@@ -312,7 +312,7 @@ export default function LogicPreView(
             }
             console.log(id_c, 'id_c');
             if (id_c.length > 0) {
-                // const exp = await HomeAPI.exp(token, id_c, newExpire);
+                // const exp = await HomeAPI.exp(id_c, newExpire);
             }
         }
     };

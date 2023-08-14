@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { PropsChat } from './LogicConver';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import FileConversation from './File';
+import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useEffect } from 'react';
 
@@ -24,7 +24,6 @@ const ItemsRoom: React.FC<{
     };
     index: number;
     userId: string;
-    token: string;
     handleWatchMore: (e: any) => void;
     ERef: React.MutableRefObject<any>;
     handleTime: (dateTime: string, type: string) => string;
@@ -34,7 +33,7 @@ const ItemsRoom: React.FC<{
         fullName: string;
         gender: number;
     };
-}> = ({ rc, index, userId, token, handleWatchMore, ERef, handleTime, user }) => {
+}> = ({ rc, index, userId, handleWatchMore, ERef, handleTime, user }) => {
     return (
         <>
             {rc._id === userId ? (
@@ -101,7 +100,6 @@ const ItemsRoom: React.FC<{
                                     {rc.imageOrVideos.map((fl, index) => (
                                         <FileConversation
                                             key={fl._id}
-                                            token={token}
                                             type={fl?.type}
                                             v={fl.v}
                                             icon={fl.icon}
@@ -229,7 +227,6 @@ const ItemsRoom: React.FC<{
                                             <FileConversation
                                                 key={fl.v + index}
                                                 type={fl?.type}
-                                                token={token}
                                                 v={fl.v}
                                                 icon={fl.icon}
                                                 ERef={ERef}

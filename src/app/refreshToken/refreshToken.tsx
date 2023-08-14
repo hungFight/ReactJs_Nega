@@ -8,7 +8,7 @@ const axiosJWT = axios.create({
 });
 class refreshToken {
     private isInterceptorAttached: boolean = false;
-    axiosJWTs(t?: string) {
+    axiosJWTs() {
         const token = Cookies.get('tks');
         console.log('token here', token);
         let i = 0;

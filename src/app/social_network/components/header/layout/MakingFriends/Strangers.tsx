@@ -54,7 +54,6 @@ const Strangers: React.FC<{
     const [loading, setLoading] = useState<boolean>(false);
     const offsetRef = useRef<number>(0);
     const limit: number = 3;
-    const token = cookies.tks;
     const userId = cookies.k_user;
     const eleRef = useRef<any>();
     const dataRef = useRef<any>([]);
@@ -71,7 +70,7 @@ const Strangers: React.FC<{
         }
         console.log(Array.from(ids), 'lll');
 
-        const res = await peopleAPI.getStrangers(token, limit, Array.from(ids));
+        const res = await peopleAPI.getStrangers(limit, Array.from(ids));
         console.log(dataRef.current.length, rel, 'strangers', res, Array.from(ids));
         res.map((f: { avatar: any; id: string }) => {
             ids.add(f.id);
@@ -118,7 +117,7 @@ const Strangers: React.FC<{
                 idCurrentUser: string;
                 idFriend: string;
             };
-        } = await peopleAPI.setFriend(token, id);
+        } = await peopleAPI.setFriend(id);
 
         const newStranger = data?.filter((x: PropsData) => {
             if (x.id === res.data.idFriend) {
@@ -134,7 +133,7 @@ const Strangers: React.FC<{
         setData(newStranger);
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const res = await peopleAPI.delete(token, id, kindOf);
+        const res = await peopleAPI.delete(id, kindOf);
         const newStranger = data?.filter((x: PropsData) => {
             if (
                 (x.id_f_user.idCurrentUser === res.ok?.idCurrentUser && x.id_f_user.idFriend === res.ok?.idFriend) ||
@@ -161,7 +160,7 @@ const Strangers: React.FC<{
         console.log('messenger', id);
     };
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
-        const res = await peopleAPI.setConfirm(token, id, kindOf);
+        const res = await peopleAPI.setConfirm(id, kindOf);
         refresh(res);
         function refresh(res: any) {
             if (res.ok === 1) {
@@ -188,7 +187,7 @@ const Strangers: React.FC<{
             console.log('newData', newData);
         } else {
             console.log('deleted', id);
-            const res = await peopleAPI.delete(token, id, kindOf);
+            const res = await peopleAPI.delete(id, kindOf);
             if (res) {
                 const newData: any = data?.filter((d: { id: string }) => d.id !== id);
                 setData(newData);

@@ -31,7 +31,7 @@ const Account: React.FC<{
         nickName: string;
         gender: number;
     }) => {
-        const result = await userAPI.setHistory(token, res);
+        const result = await userAPI.setHistory(res);
         console.log('sss');
     };
     return (

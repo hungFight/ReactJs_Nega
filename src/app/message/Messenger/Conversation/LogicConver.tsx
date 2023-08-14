@@ -42,6 +42,10 @@ export interface PropsChat {
         seenBy: string[];
         createdAt: string;
     }[];
+    deleted: {
+        id: string;
+        createdAt: string;
+    }[];
     createdAt: string;
 }
 export default function LogicConversation(id_chat: { id_room: string | undefined; id_other: string }, id_you: string) {
@@ -80,7 +84,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
 
         setLoading(true);
         cRef.current = 2;
-        const res = await sendChatAPi.getChat(token, id_chat, limit, offset.current, of);
+        const res = await sendChatAPi.getChat(id_chat, limit, offset.current, of);
         if (typeof res === 'string' && res === 'NeGA_off') {
             dispatch(setSession('The session expired! Please login again'));
         } else {
@@ -92,7 +96,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                             async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
                                 await Promise.all(
                                     rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
-                                        const buffer = await fileGridFS.getFile(token, fl.v);
+                                        const buffer = await fileGridFS.getFile(fl.v);
                                         const base64 = CommonUtils.convertBase64GridFS(buffer.file);
                                         modifiedData.room[index1].imageOrVideos[index2].v = base64;
                                     }),
@@ -134,7 +138,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                 try {
                     await Promise.all(
                         data.room.imageOrVideos.map(async (d, index) => {
-                            const buffer = await fileGridFS.getFile(token, d.v);
+                            const buffer = await fileGridFS.getFile(d.v);
                             const base64 = CommonUtils.convertBase64GridFS(buffer.file);
                             data.room.imageOrVideos[index].v = base64;
                         }),
@@ -208,7 +212,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
             }
-            const res = await sendChatAPI.send(token, formData);
+            const res = await sendChatAPI.send(formData);
             if (res && conversation) {
                 conversation.room[0].sending = false;
                 res.users.push(conversation.user);
@@ -305,7 +309,6 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         handleEmojiSelect,
         dispatch,
         conversation,
-        token,
         userId,
         fetchChat,
         loading,

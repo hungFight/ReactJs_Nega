@@ -86,7 +86,6 @@ export default function LogicView(
                         setLoading(true);
                         const base64 = await CommonUtils.getBase64(file);
                         const res = await userAPI.changesOne(
-                            token,
                             userId,
                             base64,
                             id === 0 ? { background: 'background' } : { avatar: 'avatar' },
@@ -114,7 +113,6 @@ export default function LogicView(
             if (dataUser.avatar || dataUser.background) {
                 setLoading(true);
                 const res = await userAPI.changesOne(
-                    token,
                     userId,
                     null,
                     id === 0 ? { background: 'background' } : { avatar: 'avatar' },
@@ -136,7 +134,7 @@ export default function LogicView(
     const handleNameU = async () => {
         if (valueName && valueName.length <= 30 && valueName !== userFirst.fullName) {
             setLoading(true);
-            const res = await userAPI.changesOne(token, userId, valueName, { fullName: 'fullName' });
+            const res = await userAPI.changesOne(userId, valueName, { fullName: 'fullName' });
             setLoading(false);
             if (res === 1) {
                 setUserFirst({ ...userFirst, fullName: valueName });
@@ -154,7 +152,7 @@ export default function LogicView(
     const handleNickNameU = async () => {
         if (valueNickN.length <= 30 && valueNickN !== userFirst.nickName) {
             setLoading(true);
-            const res = await userAPI.changesOne(token, userId, valueNickN, { nickName: 'nickName' });
+            const res = await userAPI.changesOne(userId, valueNickN, { nickName: 'nickName' });
             setLoading(false);
             if (res === 1) {
                 setUserFirst({ ...userFirst, nickName: valueNickN });
@@ -204,7 +202,7 @@ export default function LogicView(
             count_flwe: number;
             id: string;
             id_fl: string;
-        } = await peopleAPI.setFriend(token, id, 'yes');
+        } = await peopleAPI.setFriend(id, 'yes');
         setDataUser({
             ...dataUser,
             id_friend: {
@@ -228,7 +226,7 @@ export default function LogicView(
 
     const handleConfirm = async (id: string) => {
         if (id) {
-            const res = await peopleAPI.setConfirm(token, id, 'friends', true);
+            const res = await peopleAPI.setConfirm(id, 'friends', true);
             if (res.ok === 1) {
                 setDataUser({
                     ...dataUser,
@@ -239,7 +237,7 @@ export default function LogicView(
         }
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const res = await peopleAPI.delete(token, id, kindOf, 'yes');
+        const res = await peopleAPI.delete(id, kindOf, 'yes');
         console.log('Abolish', kindOf, res);
         if (res) {
             setDataUser({
@@ -274,7 +272,7 @@ export default function LogicView(
     };
     const handleFollower = async (id: string, follow?: string) => {
         console.log('handleFollowe', id);
-        const res = await userAPI.follow(token, id, follow);
+        const res = await userAPI.follow(id, follow);
         console.log(res, 'followres');
         if (res.ok === 1) {
             if (dataUser.id_flwing.id_following) {
@@ -325,7 +323,7 @@ export default function LogicView(
 
     const handleUnFollower = async (id: string, unfollow: string) => {
         console.log('handleUnFollowe', id);
-        const res = await userAPI.Unfollow(token, id, unfollow);
+        const res = await userAPI.Unfollow(id, unfollow);
         console.log(res);
 
         if (res.ok === 1) {
@@ -399,11 +397,11 @@ export default function LogicView(
     };
     const handleLoves = async () => {
         if (id_loved !== userId) {
-            const res = await userAPI.changesOne(token, dataUser.id, '', { more: { love: 'love' } });
+            const res = await userAPI.changesOne(dataUser.id, '', { more: { love: 'love' } });
             setId_loved(userId);
             setDataUser({ ...dataUser, id_m_user: { ...dataUser.id_m_user, love: res } });
         } else {
-            const res = await userAPI.changesOne(token, dataUser.id, '', { more: { love: 'unlove' } });
+            const res = await userAPI.changesOne(dataUser.id, '', { more: { love: 'unlove' } });
             setId_loved('');
             setDataUser({ ...dataUser, id_m_user: { ...dataUser.id_m_user, love: res } });
         }
@@ -683,7 +681,7 @@ export default function LogicView(
         room,
         setRoom,
         resTitle,
-        token,
+
         userId,
         handleChangeAvatar,
         handleNameU,
