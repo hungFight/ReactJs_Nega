@@ -28,6 +28,10 @@ export interface PropsRoomChat {
         createdAt: string;
         // user: { avatar: any; fullName: string; gender: number; id: string };
     };
+    deleted: {
+        id: string;
+        createdAt: string;
+    }[];
     createdAt: string;
 }
 
@@ -78,7 +82,14 @@ class Messenger {
     delete = async (id_room: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.delete<boolean>('/messenger/delete', {
+            const res = await Axios.delete<{
+                _id: string;
+                deleted: {
+                    id: string;
+                    createdAt: string;
+                    _id: string;
+                }[];
+            }>('/messenger/delete', {
                 params: { id_room },
             });
             return res.data;

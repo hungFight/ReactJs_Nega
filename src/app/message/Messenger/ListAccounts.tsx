@@ -57,7 +57,13 @@ const ListAccounts: React.FC<{
     colorText: string;
     colorBg: number;
     setMoreBar: React.Dispatch<
-        React.SetStateAction<{ id_room: string; id: string; avatar: string; fullName: string; gender: number }>
+        React.SetStateAction<{
+            id_room: string;
+            id: string;
+            avatar: string;
+            fullName: string;
+            gender: number;
+        }>
     >;
     data: PropsRoomChat;
     userId: string;
@@ -87,6 +93,10 @@ const ListAccounts: React.FC<{
         avatar: string;
         fullName: string;
         gender: number;
+        deleted: {
+            id: string;
+            createdAt: string;
+        }[];
     }) => {
         time = setTimeout(() => {
             setMoreBar(user);
@@ -134,7 +144,7 @@ const ListAccounts: React.FC<{
                     <Div
                         key={rs.id}
                         onTouchMove={handleTouchMove}
-                        onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs })}
+                        onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs, deleted: data.deleted })}
                         onTouchEnd={handleTouchEnd}
                         onClick={(e) => {
                             dispatch(onChats({ id_room: data._id, id_other: rs.id }));

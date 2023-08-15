@@ -1,6 +1,6 @@
 import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
-import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI } from '~/assets/Icons/Icons';
+import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, ClockCirclesI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { CallName, DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
@@ -60,6 +60,8 @@ const Conversation: React.FC<{
         fetchChat,
         loading,
         cRef,
+        opMore,
+        setOpMore,
     } = LogicConversation(id_chat, dataFirst.id);
     const ERef = useRef<any>();
     const check = useRef<number>(0);
@@ -142,8 +144,8 @@ const Conversation: React.FC<{
             },
             {
                 id: 2,
-                name: 'Undo',
-                icon: <ProfileCircelI />,
+                name: conversation?.deleted?.some((d) => d.id === userId) ? 'Undo' : 'Delete',
+                icon: conversation?.deleted?.some((d) => d.id === userId) ? <ClockCirclesI /> : <MinusI />,
                 onClick: () => alert('hello'),
             },
         ],
@@ -199,7 +201,7 @@ const Conversation: React.FC<{
                             css="min-width: 30px; width: 30px; height: 30px; margin-right: 5px;"
                         />
                         <Hname>{conversation?.user.fullName}</Hname>
-                        <Div>
+                        <Div onClick={() => setOpMore(!opMore)}>
                             <DotI />
                         </Div>
                     </Div>
@@ -364,7 +366,7 @@ const Conversation: React.FC<{
                     )}
                 </Div>
             </DivResultsConversation>
-            <MoreOption dataMore={dataMore} colorText={colorText} />
+            {opMore && <MoreOption dataMore={dataMore} colorText={colorText} />}
         </DivConversation>
     );
 };

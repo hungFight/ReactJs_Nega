@@ -62,7 +62,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     const [emoji, setEmoji] = useState<boolean>(false);
     const [option, setOption] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-
+    const [opMore, setOpMore] = useState<boolean>(false);
     const [fileUpload, setFileUpload] = useState<any>([]);
     const [upload, setupload] = useState<{ link: any; type: string }[]>([]);
     const uploadRef = useRef<{ link: string; type: string }[]>([]);
@@ -209,6 +209,8 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             formData.append('value', value);
             if (id_room) formData.append('id_room', id_room);
             if (id_other) formData.append('id_others', id_other);
+            console.log(id_room, 'id_room here ne!');
+
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
             }
@@ -313,5 +315,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         fetchChat,
         loading,
         cRef,
+        opMore,
+        setOpMore,
     };
 }

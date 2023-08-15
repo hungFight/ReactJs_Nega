@@ -29,6 +29,14 @@ const LogicMessenger = () => {
     const offset = useRef<number>(0);
     const preDelete = useRef<PropsRoomChat[]>([]);
     const idDeleted = useRef<string[]>([]);
+    const [delIds, setDelIds] = useState<{
+        _id: string;
+        deleted: {
+            id: string;
+            createdAt: string;
+            _id: string;
+        }[];
+    }>();
 
     const [moreBar, setMoreBar] = useState<{
         id_room: string;
@@ -118,6 +126,7 @@ const LogicMessenger = () => {
         setLoadDel(true);
         const res = await sendChatAPi.delete(moreBar.id_room);
         if (res) {
+            setDelIds(res);
             idDeleted.current.push(moreBar.id_room);
             setRooms((pre) => pre.filter((r) => r._id !== moreBar.id_room));
         }
@@ -128,6 +137,7 @@ const LogicMessenger = () => {
         setLoadDel(true);
         const res = await sendChatAPi.undo(moreBar.id_room);
         if (res) {
+            setDelIds(undefined);
             idDeleted.current = idDeleted.current.filter((i) => i !== moreBar.id_room);
             setRooms(() => preDelete.current.filter((p) => !idDeleted.current.includes(p._id)));
         }
@@ -155,23 +165,40 @@ const LogicMessenger = () => {
                 icon: <ProfileCircelI />,
                 onClick: () => dispatch(setOpenProfile([moreBar.id])),
             },
-            {
-                id: 2,
-                name: rooms.some((r) => r._id === moreBar.id_room) ? 'Delete' : 'Undo',
-                load: loadDel,
-                icon: loadDel ? (
-                    <DivLoading css="font-size: 12px; margin: 0;">
-                        <LoadingI />
-                    </DivLoading>
-                ) : rooms.some((r) => r._id === moreBar.id_room) ? (
-                    <MinusI />
-                ) : (
-                    <ClockCirclesI />
-                ),
-                onClick: () => (rooms.some((r) => r._id === moreBar.id_room) ? handleDelete() : handleUndo()),
-            },
         ],
     };
+    if (rooms.some((r) => r._id === moreBar.id_room) && !delIds) {
+        dataMore.options.push({
+            id: 2,
+            name: 'Delete',
+            load: loadDel,
+            icon: loadDel ? (
+                <DivLoading css="font-size: 12px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : (
+                <MinusI />
+            ),
+
+            onClick: () => handleDelete(),
+        });
+    } else {
+        dataMore.options.push({
+            id: 3,
+            name: 'Undo',
+            load: loadDel,
+            icon: loadDel ? (
+                <DivLoading css="font-size: 12px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : (
+                <ClockCirclesI />
+            ),
+
+            onClick: () => handleUndo(),
+        });
+    }
+
     return {
         userId,
         rooms,

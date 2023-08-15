@@ -9,6 +9,7 @@ const MoreOption: React.FC<{
         avatar: string | undefined;
         fullName: string | undefined;
         gender: number | undefined;
+
         options: {
             name: string;
             icon: React.ReactElement;
@@ -19,7 +20,13 @@ const MoreOption: React.FC<{
     };
     colorText: string;
     setMoreBar?: React.Dispatch<
-        React.SetStateAction<{ id_room: string; id: string; avatar: string; fullName: string; gender: number }>
+        React.SetStateAction<{
+            id_room: string;
+            id: string;
+            avatar: string;
+            fullName: string;
+            gender: number;
+        }>
     >;
 }> = ({ dataMore, colorText, setMoreBar }) => {
     return (
@@ -30,7 +37,13 @@ const MoreOption: React.FC<{
             css="height: 82%; background-color: #1c1d1e7d; border-radius: 0; align-items: flex-end;"
             onClick={() => {
                 if (setMoreBar) {
-                    setMoreBar({ id_room: '', id: '', avatar: '', fullName: '', gender: 0 });
+                    setMoreBar({
+                        id_room: '',
+                        id: '',
+                        avatar: '',
+                        fullName: '',
+                        gender: 0,
+                    });
                 }
             }}
         >
