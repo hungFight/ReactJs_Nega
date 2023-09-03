@@ -11,6 +11,7 @@ const ErrorBoundaries: React.FC<{
 }> = ({ message }) => {
     const dispatch = useDispatch();
     const [c, s, removeCookies] = useCookies(['k_user', 'tks']);
+    const login = message === 'NeGA_off' ? true : false;
     return (
         <DivMessage>
             <P
@@ -33,12 +34,14 @@ const ErrorBoundaries: React.FC<{
                     css="margin: 10px auto; "
                     onClick={() => {
                         dispatch(setSession(''));
-                        Cookies.remove('tks');
-                        Cookies.remove('k_user');
-                        removeCookies('k_user');
+                        if (login) {
+                            Cookies.remove('tks');
+                            Cookies.remove('k_user');
+                            removeCookies('k_user');
+                        }
                     }}
                 >
-                    Login
+                    {login ? 'Login' : 'Xác nhận'}
                 </Button>
             </P>
         </DivMessage>

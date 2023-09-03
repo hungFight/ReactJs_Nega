@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import { PropsLogin } from './Login';
 import { PropsBgRD } from '~/redux/background';
+import { PropsUser } from 'src/App';
 interface PropsState {
     persistedReducer: {
         language: {
@@ -11,7 +12,11 @@ interface PropsState {
         };
     };
 }
-function LogicLogin(data: PropsLogin, setWhatKind: React.Dispatch<React.SetStateAction<string>>) {
+function LogicLogin(
+    data: PropsLogin,
+    setWhatKind: React.Dispatch<React.SetStateAction<string>>,
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>,
+) {
     const [, setCookies] = useCookies(['tks', 'k_user']);
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer?.language.login);
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
@@ -49,23 +54,20 @@ function LogicLogin(data: PropsLogin, setWhatKind: React.Dispatch<React.SetState
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         checkRef.current = value;
-        try {
-            if (!value.nameAccount && !value.password) {
-                setInvalid({ ...invalid, nameAccount: true, password: true });
-            } else if (!value.nameAccount) {
-                setInvalid({ ...invalid, nameAccount: true, password: false });
-            } else if (!value.password) {
-                setInvalid({ ...invalid, nameAccount: false, password: true });
-            } else {
-                const params = {
-                    nameAccount: value.nameAccount,
-                    password: value.password,
-                };
-                const data = await authAPI.postLogin(params, setCookies);
-                if (!data.user) setErrText('Account is not exist or password wrong!');
-            }
-        } catch (e) {
-            console.log('errorLogin', e);
+        if (!value.nameAccount && !value.password) {
+            setInvalid({ ...invalid, nameAccount: true, password: true });
+        } else if (!value.nameAccount) {
+            setInvalid({ ...invalid, nameAccount: true, password: false });
+        } else if (!value.password) {
+            setInvalid({ ...invalid, nameAccount: false, password: true });
+        } else {
+            const params = {
+                nameAccount: value.nameAccount,
+                password: value.password,
+            };
+            const data = await authAPI.postLogin(params, setCookies);
+            setUserFirst(undefined);
+            if (!data) setErrText('Account is not exist or password wrong!');
         }
     };
     const handleInputFocus = (e: { target: { getAttribute: any } }) => {

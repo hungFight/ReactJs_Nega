@@ -8,32 +8,46 @@ import errorHandling from '../errorHandling/errorHandling';
 class AuthRequest {
     postLogin = async (
         params: { nameAccount: string; password: string },
-        setCookies: (name: 'tks' | 'k_user', value: any, options?: CookieSetOptions | undefined) => void,
+        setCookies?: (name: 'tks' | 'k_user', value: any, options?: CookieSetOptions | undefined) => void,
     ) => {
         try {
             const res = await http.post('/account/login', { params });
-            console.log(res);
+            console.log(res, setCookies);
 
-            if (res.data.user) {
-                const { id, accessToken } = res.data.user;
+            if (res.data) {
+                const { id, accessToken } = res.data;
                 const token = 'Bearer ' + accessToken;
-                setCookies('tks', token, {
-                    path: '/',
-                    secure: false,
-                    sameSite: 'strict',
-                    expires: new Date(new Date().getTime() + 30 * 86409000),
-                });
-                delete res.data?.user.accessToken;
-                setCookies('k_user', id, {
-                    path: '/',
-                    secure: false,
-                    sameSite: 'strict',
-                    expires: new Date(new Date().getTime() + 30 * 86409000),
-                });
+                if (setCookies) {
+                    console.log('cookie', setCookies);
+
+                    setCookies('tks', token, {
+                        path: '/',
+                        secure: false,
+                        sameSite: 'strict',
+                        expires: new Date(new Date().getTime() + 30 * 86409000),
+                    });
+                    delete res.data?.accessToken;
+                    setCookies('k_user', id, {
+                        path: '/',
+                        secure: false,
+                        sameSite: 'strict',
+                        expires: new Date(new Date().getTime() + 30 * 86409000),
+                    });
+                }
             }
             return res.data;
         } catch (error) {
-            console.log('login', error);
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    subLogin = async (nameAccount: string, password: string) => {
+        try {
+            const response = await http.post('/account/subLogin', { nameAccount, password });
+            return response.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     postSendOTP = async (params: { phoneMail: string | number }) => {
@@ -42,7 +56,8 @@ class AuthRequest {
             const response = await http.post(path, { params });
             return response;
         } catch (error) {
-            console.log('sendOTP', error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     postVerifyOTP = async (params: { phoneMail: string; otp: string }) => {
@@ -53,7 +68,8 @@ class AuthRequest {
 
             return res;
         } catch (error) {
-            console.log('sendOTP', error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     postRegister = async (params: {
@@ -67,7 +83,8 @@ class AuthRequest {
             const res = await http.post('/account/register', { params });
             return res?.data;
         } catch (error) {
-            console.log('register', error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
 
@@ -89,7 +106,8 @@ class AuthRequest {
             });
             return res.data;
         } catch (error) {
-            console.log(error, 'refresh');
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
 }

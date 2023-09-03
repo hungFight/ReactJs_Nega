@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 
 interface PropsBackGroundRedux {
     colorText: string;
@@ -29,12 +29,12 @@ const backgroundSlide = createSlice({
             let here = false;
             console.log(state.chats, ' state.chats');
 
-            state.chats.forEach((c) => {
+            current(state).chats.forEach((c) => {
                 if (c.id_other === action.payload.id_other) {
                     here = true;
                 }
             });
-            if (!here && state.chats.length <= 5) {
+            if (!here && current(state).chats.length <= 5) {
                 state.chats.push(action.payload);
                 console.log(state.chats.length, 'current(state.chat)');
             }

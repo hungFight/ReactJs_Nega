@@ -31,6 +31,7 @@ import { setPeople } from '~/redux/reload';
 import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
 import { PropsBgRD } from '~/redux/background';
+import ServerBusy from '~/utils/ServerBusy';
 
 //button
 // to = Link tag, href = a tag
@@ -109,8 +110,8 @@ const Header: React.FC<{
         if (!searchC) {
             console.log('ddddd');
             const res = await userAPI.getHistory();
-
-            setHistory(res);
+            const data = ServerBusy(res, dispatch);
+            setHistory(data);
         }
         console.log(searchC, '--');
     };

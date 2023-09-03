@@ -9,6 +9,7 @@ import { A, DivForm, DivLanguage, Perror, DivRegister, DivAccount } from './styl
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import { Input } from '~/reUsingComponents/styleComponents/styleDefault';
 import LogicLogin from './logicLogin';
+import { PropsUser } from 'src/App';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 interface InLogin {
     title: string;
@@ -30,7 +31,8 @@ export interface PropsLogin {
 const Login: React.FC<{
     data: PropsLogin;
     setWhatKind: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ data, setWhatKind }) => {
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+}> = ({ data, setWhatKind, setUserFirst }) => {
     const {
         colorBg,
         colorText,
@@ -54,7 +56,7 @@ const Login: React.FC<{
         handlelanguage,
         setShowPass,
         dispatch,
-    } = LogicLogin(data, setWhatKind);
+    } = LogicLogin(data, setWhatKind, setUserFirst);
     return (
         <>
             <DivForm>

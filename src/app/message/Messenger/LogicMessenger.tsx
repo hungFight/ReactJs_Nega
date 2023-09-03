@@ -5,14 +5,15 @@ import { socket } from 'src/mainPage/nextWeb';
 import { ClockCirclesI, LoadingI, MinusI, ProfileCircelI } from '~/assets/Icons/Icons';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { setOpenProfile } from '~/redux/hideShow';
-import { PropsReloadRD, setSession } from '~/redux/reload';
+import { PropsReloadRD, setDelIds, setSession } from '~/redux/reload';
 import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
+import ServerBusy from '~/utils/ServerBusy';
 
 const LogicMessenger = () => {
     const dispatch = useDispatch();
-    const roomChat = useSelector((state: PropsReloadRD) => state.reload.roomChat);
+    const { roomChat, delIds } = useSelector((state: PropsReloadRD) => state.reload);
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
     const userId = cookies.k_user;
     const token = cookies.tks;
@@ -29,14 +30,6 @@ const LogicMessenger = () => {
     const offset = useRef<number>(0);
     const preDelete = useRef<PropsRoomChat[]>([]);
     const idDeleted = useRef<string[]>([]);
-    const [delIds, setDelIds] = useState<{
-        _id: string;
-        deleted: {
-            id: string;
-            createdAt: string;
-            _id: string;
-        }[];
-    }>();
 
     const [moreBar, setMoreBar] = useState<{
         id_room: string;
@@ -58,12 +51,13 @@ const LogicMessenger = () => {
         async function fetchRoom() {
             setLoading(true);
             const res = await sendChatAPi.getRoom(limit, offset.current);
-            if (typeof res === 'string' && res === 'NeGA_off') {
+            const data = ServerBusy(res, dispatch);
+            if (typeof data === 'string' && data === 'NeGA_off') {
                 dispatch(setSession('The session expired! Please login again'));
             } else {
-                if (res) {
-                    setRooms(res);
-                    preDelete.current = res;
+                if (data) {
+                    setRooms(data);
+                    preDelete.current = data;
                 }
                 setLoading(false);
             }
@@ -104,6 +98,11 @@ const LogicMessenger = () => {
             setRooms([roomChat, ...newR]);
         }
     }, [roomChat]);
+    useEffect(() => {
+        if (delIds) {
+            setRooms((pre) => pre.filter((p) => p._id !== delIds._id));
+        }
+    }, [delIds]);
     // const debounce = useDebounce(searchUser, 500);
     // useEffect(() => {
     //     if (!searchUser) {
@@ -125,8 +124,21 @@ const LogicMessenger = () => {
     const handleDelete = async () => {
         setLoadDel(true);
         const res = await sendChatAPi.delete(moreBar.id_room);
-        if (res) {
-            setDelIds(res);
+        const data:
+            | {
+                  _id: string;
+                  deleted: {
+                      id: string;
+                      createdAt: string;
+                      _id: string;
+                  }[];
+              }
+            | undefined = ServerBusy(res, dispatch);
+
+        if (data) {
+            console.log('into delete');
+
+            dispatch(setDelIds(data));
             idDeleted.current.push(moreBar.id_room);
             setRooms((pre) => pre.filter((r) => r._id !== moreBar.id_room));
         }
@@ -136,13 +148,16 @@ const LogicMessenger = () => {
         console.log('Undo');
         setLoadDel(true);
         const res = await sendChatAPi.undo(moreBar.id_room);
-        if (res) {
-            setDelIds(undefined);
+        const data = ServerBusy(res, dispatch);
+
+        if (data) {
+            dispatch(setDelIds(undefined));
             idDeleted.current = idDeleted.current.filter((i) => i !== moreBar.id_room);
             setRooms(() => preDelete.current.filter((p) => !idDeleted.current.includes(p._id)));
         }
         setLoadDel(false);
     };
+
     const dataMore: {
         options: {
             id: number;
@@ -167,7 +182,7 @@ const LogicMessenger = () => {
             },
         ],
     };
-    if (rooms.some((r) => r._id === moreBar.id_room) && !delIds) {
+    if (rooms.some((r) => r._id === moreBar.id_room) && delIds?._id !== moreBar.id_room) {
         dataMore.options.push({
             id: 2,
             name: 'Delete',

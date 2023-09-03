@@ -9,6 +9,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
+import ServerBusy from '~/utils/ServerBusy';
 interface PropsData {
     avatar: any;
     birthday: string;
@@ -71,20 +72,22 @@ const Strangers: React.FC<{
         console.log(Array.from(ids), 'lll');
 
         const res = await peopleAPI.getStrangers(limit, Array.from(ids));
-        console.log(dataRef.current.length, rel, 'strangers', res, Array.from(ids));
-        res.map((f: { avatar: any; id: string }) => {
+        const dataR = ServerBusy(res, dispatch);
+
+        console.log(dataRef.current.length, rel, 'strangers', dataR, Array.from(ids));
+        dataR.map((f: { avatar: any; id: string }) => {
             ids.add(f.id);
             if (f.avatar) {
                 const av = CommonUtils.convertBase64(f.avatar);
                 f.avatar = av;
             }
         });
-        dataRef.current = [...(dataRef.current ?? []), ...res];
+        dataRef.current = [...(dataRef.current ?? []), ...dataR];
         if (!rel) {
             setData(dataRef.current);
             offsetRef.current += limit;
         } else {
-            setData(res);
+            setData(dataR);
             setLoading(false);
         }
         cRef.current = 1;
@@ -118,12 +121,13 @@ const Strangers: React.FC<{
                 idFriend: string;
             };
         } = await peopleAPI.setFriend(id);
+        const dataR = ServerBusy(res, dispatch);
 
         const newStranger = data?.filter((x: PropsData) => {
-            if (x.id === res.data.idFriend) {
-                x.id_f_user.idCurrentUser = res.data.idCurrentUser;
-                x.id_f_user.idFriend = res.data.idFriend;
-                x.id_f_user.createdAt = res.data.createdAt;
+            if (x.id === dataR.data.idFriend) {
+                x.id_f_user.idCurrentUser = dataR.data.idCurrentUser;
+                x.id_f_user.idFriend = dataR.data.idFriend;
+                x.id_f_user.createdAt = dataR.data.createdAt;
                 x.id_f_user.level = 1;
                 return x;
             } else {
@@ -134,12 +138,17 @@ const Strangers: React.FC<{
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         const res = await peopleAPI.delete(id, kindOf);
+        const dataR = ServerBusy(res, dispatch);
+
         const newStranger = data?.filter((x: PropsData) => {
             if (
-                (x.id_f_user.idCurrentUser === res.ok?.idCurrentUser && x.id_f_user.idFriend === res.ok?.idFriend) ||
-                (x.id_f_user.idFriend === res.ok?.idCurrentUser && x.id_f_user.idCurrentUser === res.ok?.idFriend) ||
-                (x.id_friend.idCurrentUser === res.ok?.idCurrentUser && x.id_friend.idFriend === res.ok?.idFriend) ||
-                (x.id_friend.idCurrentUser === res.ok?.idFriend && x.id_friend.idFriend === res.ok?.idCurrentUser)
+                (x.id_f_user.idCurrentUser === dataR.ok?.idCurrentUser &&
+                    x.id_f_user.idFriend === dataR.ok?.idFriend) ||
+                (x.id_f_user.idFriend === dataR.ok?.idCurrentUser &&
+                    x.id_f_user.idCurrentUser === dataR.ok?.idFriend) ||
+                (x.id_friend.idCurrentUser === dataR.ok?.idCurrentUser &&
+                    x.id_friend.idFriend === dataR.ok?.idFriend) ||
+                (x.id_friend.idCurrentUser === dataR.ok?.idFriend && x.id_friend.idFriend === dataR.ok?.idCurrentUser)
             ) {
                 x.id_f_user.idCurrentUser = null;
                 x.id_f_user.idFriend = null;
@@ -161,7 +170,8 @@ const Strangers: React.FC<{
     };
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
         const res = await peopleAPI.setConfirm(id, kindOf);
-        refresh(res);
+        const dataR = ServerBusy(res, dispatch);
+        refresh(dataR);
         function refresh(res: any) {
             if (res.ok === 1) {
                 const newStranger = data?.filter((x: PropsData) => {
@@ -188,7 +198,8 @@ const Strangers: React.FC<{
         } else {
             console.log('deleted', id);
             const res = await peopleAPI.delete(id, kindOf);
-            if (res) {
+            const dataR = ServerBusy(res, dispatch);
+            if (dataR) {
                 const newData: any = data?.filter((d: { id: string }) => d.id !== id);
                 setData(newData);
             }

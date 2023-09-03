@@ -84,7 +84,7 @@ const Notification: React.FC<{
             res.user = newData;
             if (res) setDataInfo(res);
         }
-        fetch();
+        // fetch();
         socket.on(`Request others?id=${userId}`, (msg: string) => {
             console.log('Received message id:', socket.id);
             console.log('Received message', JSON.parse(msg));

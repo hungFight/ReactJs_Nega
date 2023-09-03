@@ -20,7 +20,11 @@ const Message: React.FC<{
             }[]
         >
     >;
-}> = ({ dataUser, userOnline, setId_chats }) => {
+    id_chats: {
+        id_room: string | undefined;
+        id_other: string;
+    }[];
+}> = ({ dataUser, userOnline, setId_chats, id_chats }) => {
     const [width, setWidth] = useState<string>('');
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const elRef = useRef<any>();
@@ -63,6 +67,7 @@ const Message: React.FC<{
                 colorText={colorText}
                 colorBg={colorBg}
                 setId_chats={setId_chats}
+                id_chats={id_chats}
             />
         </DivMs>
     );

@@ -55,7 +55,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
 
     console.log(form);
     let fileAmount = 25;
-    const handleImageUpload = async (e: any, addMore?: boolean) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, addMore?: boolean) => {
         e.stopPropagation();
         console.log(addMore, 'addMore');
         setLoading(true);
@@ -66,65 +66,58 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
             maxSizeMB: 10,
         };
 
-        if (file.length < fileAmount) {
+        if (file && file.length < fileAmount) {
             for (let i = 0; i < file.length; i++) {
-                const newDa: any = await new Promise(async (resolve, reject) => {
-                    if (
-                        file[i].type.includes('video/mp4') ||
-                        file[i].type.includes('video/mov') ||
-                        file[i].type.includes('video/x-matroska')
-                    ) {
-                        const url = URL.createObjectURL(file[i]);
-                        const vid = document.createElement('video');
-                        // create url to use as the src of the video
-                        vid.src = url;
-                        // wait for duration to change from NaN to the actual duration
-                        // eslint-disable-next-line no-loop-func
-                        vid.ondurationchange = function () {
-                            console.log(vid.duration);
+                console.log('ffff');
 
-                            vid.duration <= 15
-                                ? resolve([
-                                      { link: url, type: 'video' },
-                                      { file: file[i], title: '' },
-                                  ])
-                                : dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
-                        };
-                    } else if (
-                        file[i].type.includes('image/jpg') ||
-                        file[i].type.includes('image/jpeg') ||
-                        file[i].type.includes('image/png')
-                    ) {
-                        try {
-                            if (Number((file.size / 1024 / 1024).toFixed(1)) <= 8) {
-                                uploadRef.current.push({ file: file[i], title: '' });
-                                uploadPreRef.current.push({ link: URL.createObjectURL(file), type: 'image' });
-                            } else {
-                                const compressedFile: any = await CommonUtils.compress(file[i]);
-                                const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
-                                if (sizeImage <= 8) {
-                                    resolve([
-                                        {
-                                            link: URL.createObjectURL(compressedFile),
-                                            type: 'image',
-                                        },
-                                        { file: compressedFile, title: '' },
-                                    ]);
-                                } else {
-                                    dispatch(setTrueErrorServer(`${sizeImage}MB big than our limit is 8MB`));
-                                }
-                            }
-                        } catch (error) {
-                            console.log(error);
+                if (
+                    file[i].type.includes('video/mp4') ||
+                    file[i].type.includes('video/mov') ||
+                    file[i].type.includes('video/x-matroska')
+                ) {
+                    const url = URL.createObjectURL(file[i]);
+                    const vid = document.createElement('video');
+                    // create url to use as the src of the video
+                    vid.src = url;
+                    // wait for duration to change from NaN to the actual duration
+                    // eslint-disable-next-line no-loop-func
+                    vid.ondurationchange = function () {
+                        if (vid.duration <= 15) {
+                            uploadPreRef.current.push({ link: url, type: 'video' });
+                            uploadRef.current.push({ file: file[i], title: '' });
+                        } else {
+                            dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
                         }
-                    } else {
-                        dispatch(setTrueErrorServer('This format is not support!'));
+                    };
+                } else if (
+                    file[i].type.includes('image/jpg') ||
+                    file[i].type.includes('image/jpeg') ||
+                    file[i].type.includes('image/png')
+                ) {
+                    try {
+                        if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= 8) {
+                            uploadRef.current.push({ file: file[i], title: '' });
+                            uploadPreRef.current.push({ link: URL.createObjectURL(file[i]), type: 'image' });
+                        } else {
+                            const compressedFile: any = await CommonUtils.compress(file[i]);
+                            const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
+                            if (sizeImage <= 8) {
+                                uploadPreRef.current.push({
+                                    link: URL.createObjectURL(compressedFile),
+                                    type: 'image',
+                                });
+                                uploadRef.current.push({ file: compressedFile, title: '' });
+                            } else {
+                                dispatch(setTrueErrorServer(`${sizeImage}MB big than our limit is 8MB`));
+                            }
+                        }
+                    } catch (error) {
+                        console.log(error);
                     }
-                });
+                } else {
+                    dispatch(setTrueErrorServer('This format is not support!'));
+                }
                 // console.log(newDa, 'newDa');
-
-                uploadPreRef.current.push(newDa[0]);
-                uploadRef.current.push(newDa[1]);
             }
             if (!addMore) {
                 setuploadPre(uploadPreRef.current);

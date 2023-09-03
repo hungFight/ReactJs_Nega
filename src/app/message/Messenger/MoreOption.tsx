@@ -28,7 +28,8 @@ const MoreOption: React.FC<{
             gender: number;
         }>
     >;
-}> = ({ dataMore, colorText, setMoreBar }) => {
+    setOpMore?: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ dataMore, colorText, setMoreBar, setOpMore }) => {
     return (
         <DivPos
             width="100%"
@@ -45,6 +46,7 @@ const MoreOption: React.FC<{
                         gender: 0,
                     });
                 }
+                if (setOpMore) setOpMore(false);
             }}
         >
             <Div
@@ -57,6 +59,7 @@ const MoreOption: React.FC<{
                     cursor: var(--pointer);
                     color: ${colorText};
                 `}
+                className="chatBar"
                 onClick={(e) => e.stopPropagation()}
             >
                 <Div wrap="wrap" css="justify-content: center; padding: 5px; border-bottom: 1px solid #444848cc;">

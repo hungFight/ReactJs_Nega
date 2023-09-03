@@ -8,13 +8,15 @@ import { DivPersonalPage } from '../styleNextWeb';
 import { DivBg, DivIntr, DivItems, DivOp, DivPerson, DivStories, InputChangeP } from './stypePersonal';
 import { offPersonalPage, setTrueErrorServer } from '../../app/redux/hideShow';
 import Title from './layout/Title';
-import { CheckI, CloseI, DotI, HeartI, HeartMI, ImageI, LoadingI, UndoI } from '~/assets/Icons/Icons';
+import { CheckI, CloseI, CopyI, DotI, HeartI, HeartMI, ImageI, LoadingI, UndoI } from '~/assets/Icons/Icons';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { PropsUser, PropsUserPer } from 'src/App';
 import EditP from './layout/EditP';
 import LogicView from './logicPersonal';
 
 interface PropsPer {
+    AllArray: PropsUserPer[];
+    setUserData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>;
     user: PropsUserPer;
     leng: number;
     colorText: string;
@@ -22,10 +24,30 @@ interface PropsPer {
     online: string[];
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
     userFirst: PropsUser;
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
 }
 
-const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, online, userFirst, setUserFirst }) => {
+const PersonalPage: React.FC<PropsPer> = ({
+    AllArray,
+    setUserData,
+    user,
+    leng = 1,
+    colorText,
+    colorBg,
+    online,
+    userFirst,
+    setUserFirst,
+    setId_chats,
+}) => {
     const [dataUser, setDataUser] = useState<PropsUserPer>(user);
+    const [editTitle, setEditTitle] = useState<boolean>(false);
     const {
         edit,
         setEdit,
@@ -33,7 +55,6 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
         valueName,
         setValueName,
         valueNickN,
-        setValueNickN,
         categories,
         setCategories,
         errText,
@@ -44,12 +65,10 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
         userId,
         handleChangeAvatar,
         handleNameU,
-        handleNickNameU,
         handleLoves,
         handleEdit,
         handleChangeText,
         handleVName,
-        handleVNickN,
         editDataText,
         lg,
         cssBg,
@@ -61,10 +80,10 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
         btss,
         btName,
         id_loved,
-        id_f_user,
-        id_friend,
+        userRequest,
+        userRequested,
         level,
-    } = LogicView(user, userFirst, setUserFirst, dataUser, setDataUser, leng, colorText, online);
+    } = LogicView(user, userFirst, setUserFirst, dataUser, setDataUser, leng, colorText, online, setId_chats);
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
         return (
             <Div width="196px" wrap="wrap" css="position: relative; @media(min-width: 600px){width: 250px}">
@@ -88,7 +107,10 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
     };
     const cssMoreAva = online.includes(dataUser.id) ? 'border: 1px solid #418a7a;' : 'border: 1px solid #696969;';
     console.log(cssAvatar + cssMoreAva, 'cssMoreAva');
-
+    const handleUndo = (e: { stopPropagation: () => void }) => {
+        e.stopPropagation();
+        setUserData((pre) => pre.filter((us) => us.id !== user.id));
+    };
     return (
         <Div id={`profiles${dataUser.id}`} css={css}>
             {(room.background || room.avatar) && (
@@ -104,7 +126,45 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
                     <UndoI />
                 </DivPos>
             )}
+            <DivPos
+                top="30px"
+                right="50%"
+                left="50%"
+                css="width: fit-content; translate: -50%; z-index: 1;  padding: 10px; border-radius: 5px; background-color: #1f1f20;"
+                color={colorText}
+                onClick={() => {
+                    navigator.clipboard.writeText(`${process.env.REACT_APP_ROUTE}profile?id=${user.id}`);
+                    AllArray.forEach((us) => {
+                        if (us.id === user.id) {
+                            document
+                                .getElementById(`profileCopyId=${user.id}`)
+                                ?.setAttribute('style', 'display: flex;');
+                        } else {
+                            document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
+                        }
+                    });
+                }}
+            >
+                <Div
+                    id={`profileCopyId=${user.id}`}
+                    display="none"
+                    css="color: #2aa02a; font-size: 22px; padding: 0 5px;"
+                >
+                    <CheckI />
+                </Div>
+                <P z="1.3rem" css="width: max-content;">
+                    profile?id={user.id}
+                </P>
+                <Div css="padding: 5px;">
+                    <CopyI />
+                </Div>
+            </DivPos>
 
+            {AllArray.length > 1 && (
+                <DivPos size="30px" top="20px" right="11px" color={colorText} onClick={handleUndo} css="z-index: 1;">
+                    <UndoI />
+                </DivPos>
+            )}
             <DivPerson>
                 <Div css={cssBg}>
                     {/* {user?.background && ( */}
@@ -197,9 +257,6 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
                             {valueName || dataUser.fullName}
                         </Hname>
                         {categories === 2 && inputChange(handleVName, valueName, user.fullName)}
-                        <P css="width: 100%; @media (min-width: 600px) {font-size: 1.3rem;}" z="1.2rem">
-                            {valueNickN || dataUser.nickName}
-                        </P>
                         {dataUser.id !== userId && (
                             <DivPos
                                 size="25px"
@@ -242,40 +299,44 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
                                 </P>
                             </DivPos>
                         )}
-                        {categories === 3 && inputChange(handleVNickN, valueNickN, user.nickName)}
                     </Div>
-                    {categories === 0 && userId === dataUser.id && (
-                        <DivPos
-                            size="25px"
-                            right="0"
-                            top="7px"
-                            css={`
-                                ${edit
-                                    ? 'width: 50px; background-color: #383838; border-radius: 5px !important; border: 1px solid #4b4848;'
-                                    : ''};
-                                @media (min-width: 450px) {
-                                    width: 50px;
-                                    top: 20px;
-                                    background-color: #383838;
-                                    border-radius: 5px;
-                                    border: 1px solid #4b4848;
-                                }
-                            `}
-                            onClick={handleEdit}
-                        >
-                            <DotI />
-                        </DivPos>
-                    )}
+                    {categories === 0 &&
+                        userFirst.id === dataUser.id &&
+                        userId === dataUser.id &&
+                        userId === userFirst.id && (
+                            <DivPos
+                                size="25px"
+                                right="0"
+                                top="7px"
+                                css={`
+                                    ${edit
+                                        ? 'width: 50px; background-color: #383838; border-radius: 5px !important; border: 1px solid #4b4848;'
+                                        : ''};
+                                    @media (min-width: 450px) {
+                                        width: 50px;
+                                        top: 20px;
+                                        background-color: #383838;
+                                        border-radius: 5px;
+                                        border: 1px solid #4b4848;
+                                    }
+                                `}
+                                onClick={handleEdit}
+                            >
+                                <DotI />
+                            </DivPos>
+                        )}
                     {edit && (
                         <EditP
                             editP={editDataText[lg]}
                             onClick={handleChangeAvatar}
                             onText={handleChangeText}
                             colorText={colorText}
+                            editTitle={editTitle}
+                            setEditTitle={setEditTitle}
                         />
                     )}
                 </DivPersonalPage>
-                {(categories === 2 || categories === 3) && (
+                {categories === 2 && (
                     <Div width="200px" css="margin: 55px auto 0; justify-content: space-evenly;">
                         <Buttons
                             text={[
@@ -296,7 +357,7 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
                                 {
                                     text: btName[lg].ok,
                                     css: cssBt + 'background-color: #214795;',
-                                    onClick: categories === 2 ? handleNameU : handleNickNameU,
+                                    onClick: handleNameU,
                                 },
                             ]}
                         >
@@ -327,15 +388,19 @@ const PersonalPage: React.FC<PropsPer> = ({ user, leng = 1, colorText, colorBg, 
                     </Div>
                 )}
                 <Title
+                    AllArray={AllArray}
                     id_loved={id_loved}
                     resTitle={resTitle}
-                    id_o={id_f_user}
-                    id_f={id_friend}
+                    id_o={userRequest}
+                    id_f={userRequested}
                     level={level}
                     colorText={colorText}
                     colorBg={colorBg}
-                    data={dataUser.id_m_user}
-                    status={dataUser.status}
+                    data={user}
+                    setData={setDataUser}
+                    status={dataUser.biography}
+                    editTitle={editTitle}
+                    setEditTitle={setEditTitle}
                 />
                 {/* <DivIntr>
                     <DivStories>

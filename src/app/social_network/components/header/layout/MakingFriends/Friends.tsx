@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { onChats } from '~/redux/background';
+import ServerBusy from '~/utils/ServerBusy';
 interface PropsFriends {
     avatar: any;
     birthday: string;
@@ -39,15 +40,16 @@ const Friends: React.FC<{ type: string }> = ({ type }) => {
         }
 
         const res = await peopleAPI.getFriends(offsetRef.current, limit, 'friends');
-        console.log('friends', res);
-        res.map((f: { avatar: string | undefined }) => {
+        const data = ServerBusy(res, dispatch);
+        console.log('friends', data);
+        data.map((f: { avatar: string | undefined }) => {
             if (f.avatar) {
                 const av = CommonUtils.convertBase64(f.avatar);
                 f.avatar = av;
             }
         });
-        if (res) {
-            dataRef.current = [...(dataRef.current ?? []), ...res];
+        if (data) {
+            dataRef.current = [...(dataRef.current ?? []), ...data];
             setData(dataRef.current);
             offsetRef.current += limit;
             setLoading(false);

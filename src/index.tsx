@@ -3,13 +3,51 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Globalestyle from './app/globalestyle';
+import jwt_decode from 'jwt-decode';
 import 'moment/locale/vi';
 import { Provider } from 'react-redux';
+import { onError } from '@apollo/client/link/error';
 import { store, persistor } from '~/redux/configStore';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+
+const client = new ApolloClient({
+    uri: 'http://localhost:3001/',
+    headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    },
+    cache: new InMemoryCache(),
+    credentials: 'include',
+    link: onError(({ networkError, operation, forward }) => {
+        console.log('check Refresh', document.cookie);
+        const date = new Date();
+        // const decodeToken: any = await jwt_decode(tokenN);
+
+        // if (decodeToken.exp < date.getTime() / 1000 + 5) {
+        //     console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
+
+        //     const data = await authHttpRequest.refreshToken();
+
+        //     console.log(data.newAccessToken, 'newAccessToken');
+
+        //     if (data) {
+        //         const newToken = 'Bearer ' + data.newAccessToken;
+        //         tokenN = newToken;
+        //         Cookies.set('tks', newToken, {
+        //             path: '/',
+        //             secure: false,
+        //             sameSite: 'strict',
+        //             expires: new Date(new Date().getTime() + 30 * 86409000),
+        //         });
+        //     }
+        // }
+    }),
+});
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -21,16 +59,18 @@ export const queryClient = new QueryClient({
 root.render(
     //<React.StrictMode>
     <Router>
-        <QueryClientProvider client={queryClient}>
-            <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
-                    <Globalestyle>
-                        <App />
-                    </Globalestyle>
-                    <ReactQueryDevtools initialIsOpen={false} />
-                </PersistGate>
-            </Provider>
-        </QueryClientProvider>
+        <ApolloProvider client={client}>
+            <QueryClientProvider client={queryClient}>
+                <Provider store={store}>
+                    <PersistGate loading={null} persistor={persistor}>
+                        <Globalestyle>
+                            <App />
+                        </Globalestyle>
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    </PersistGate>
+                </Provider>
+            </QueryClientProvider>
+        </ApolloProvider>
     </Router>,
     //  </React.StrictMode>,
 );

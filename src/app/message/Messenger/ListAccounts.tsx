@@ -38,24 +38,25 @@ moment.updateLocale('vi', {
         future: 'in %s',
         past: '%s',
         s: 'vừa xong',
-        ss: '%d giây trước',
-        m: '1p trước',
-        mm: '%dp trước',
-        h: '1h trước',
-        hh: '%dh trước',
-        d: '1ng trước',
-        dd: '%dng trước',
-        w: '1tn trước',
-        ww: '%dtn trước',
-        M: '1th trước',
-        MM: '%dth trước',
-        y: '1 năm trước',
-        yy: '%d năm trước',
+        ss: '%d giây',
+        m: '1p',
+        mm: '%dp',
+        h: '1h',
+        hh: '%dh',
+        d: '1ng',
+        dd: '%dng',
+        w: '1tn',
+        ww: '%dtn',
+        M: '1th',
+        MM: '%dth',
+        y: '1 năm',
+        yy: '%d năm',
     },
 });
 const ListAccounts: React.FC<{
     colorText: string;
     colorBg: number;
+
     setMoreBar: React.Dispatch<
         React.SetStateAction<{
             id_room: string;
@@ -75,7 +76,11 @@ const ListAccounts: React.FC<{
             }[]
         >
     >;
-}> = ({ colorText, colorBg, setMoreBar, data, userId, setId_chats }) => {
+    id_chats: {
+        id_room: string | undefined;
+        id_other: string;
+    }[];
+}> = ({ colorText, colorBg, setMoreBar, data, userId, setId_chats, id_chats }) => {
     const dispatch = useDispatch();
     const { userOnline, id_chat } = useSelector((state: any) => {
         return {
@@ -124,7 +129,7 @@ const ListAccounts: React.FC<{
                 }
             }
         });
-        if (seenBy.current && !check && !data.room.seenBy.includes(userId))
+        if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room._id !== userId)
             seenBy.current.setAttribute('style', 'color: #f0ffffde;');
     }, [data]);
 
@@ -147,17 +152,16 @@ const ListAccounts: React.FC<{
                         onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs, deleted: data.deleted })}
                         onTouchEnd={handleTouchEnd}
                         onClick={(e) => {
-                            dispatch(onChats({ id_room: data._id, id_other: rs.id }));
-                            setId_chats((pre) => {
-                                let check = false;
-                                pre.forEach((p) => {
-                                    if (p.id_other === id_chat.id_other) {
-                                        check = true;
-                                    }
-                                });
-                                if (!check) return [...pre, { id_room: data._id, id_other: rs.id }];
-                                return pre;
+                            let check = false;
+                            id_chats.forEach((p) => {
+                                if (p.id_other === id_chat.id_other) {
+                                    check = true;
+                                }
                             });
+                            if (!check) {
+                                dispatch(onChats({ id_room: data._id, id_other: rs.id }));
+                                setId_chats([...id_chats, { id_room: data._id, id_other: rs.id }]);
+                            }
                             if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
                         }}
                         width="100%"

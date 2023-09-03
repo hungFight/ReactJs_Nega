@@ -15,6 +15,7 @@ import {
     BsFillVolumeMuteFill,
     BsFillVolumeDownFill,
     BsFillCameraFill,
+    BsGenderTrans,
 } from 'react-icons/bs';
 import {
     IoImagesOutline,
@@ -23,6 +24,7 @@ import {
     IoLanguageOutline,
     IoArrowUndoCircleOutline,
     IoRemoveOutline,
+    IoCopy,
 } from 'react-icons/io5';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
 import { BiBullseye, BiDotsHorizontalRounded, BiLike, BiReset, BiSolidSquareRounded, BiUser } from 'react-icons/bi';
@@ -41,8 +43,18 @@ import {
     AiOutlineLike,
     AiOutlineLoading3Quarters,
     AiOutlineClockCircle,
+    AiFillFolderAdd,
 } from 'react-icons/ai';
-import { GiBurningBook, GiEarthAfricaEurope, GiEarthAmerica, GiEarthAsiaOceania, GiNewspaper } from 'react-icons/gi';
+import {
+    GiBurningBook,
+    GiClover,
+    GiCottonFlower,
+    GiEarthAfricaEurope,
+    GiEarthAmerica,
+    GiEarthAsiaOceania,
+    GiNewspaper,
+    GiStrong,
+} from 'react-icons/gi';
 import {
     MdWorkOutline,
     MdEmojiPeople,
@@ -57,15 +69,22 @@ import {
     MdNightlightRound,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
-import { FaPeopleArrows, FaAddressCard, FaUserFriends, FaBirthdayCake, FaRegSmileBeam } from 'react-icons/fa';
-import { RiChatPrivateFill, RiDragMoveFill, RiExchangeCnyFill, RiMailSendLine, RiTyphoonLine } from 'react-icons/ri';
+import { FaPeopleArrows, FaAddressCard, FaUserFriends, FaBirthdayCake, FaRegSmileBeam, FaSchool } from 'react-icons/fa';
+import {
+    RiAccountPinCircleFill,
+    RiChatPrivateFill,
+    RiDragMoveFill,
+    RiExchangeCnyFill,
+    RiMailSendLine,
+    RiTyphoonLine,
+} from 'react-icons/ri';
 import { TbArrowNarrowLeft, TbGenderFemale, TbGenderMale, TbGridDots, TbTextResize } from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
-import { VscPreview } from 'react-icons/vsc';
+import { VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import { CiHeart, CiPaperplane, CiSearch, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
-import { PiPlayFill } from 'react-icons/pi';
+import { PiFlowerLotusFill, PiPlayFill } from 'react-icons/pi';
 import { HiMiniPause } from 'react-icons/hi2';
 
 export const ImageI = () => <IoImagesOutline />;
@@ -126,6 +145,7 @@ export const StarI = () => <AiOutlineStar />;
 export const LocationI = () => <MdEditLocation />;
 export const GenderMaleI = () => <TbGenderMale />;
 export const GenderFemaleI = () => <TbGenderFemale />;
+export const GenderOtherI = () => <BsGenderTrans />;
 export const WorkingI = () => <MdOutlineWork />;
 export const BirthI = () => <FaBirthdayCake />;
 export const HeartMI = () => <AiFillHeart />;
@@ -151,3 +171,12 @@ export const EarthI = () => <GiEarthAsiaOceania />;
 export const LoadingCircleI = () => <AiOutlineLoading3Quarters />;
 export const MinusI = () => <IoRemoveOutline />;
 export const ClockCirclesI = () => <AiOutlineClockCircle />;
+export const AddFileI = () => <AiFillFolderAdd />;
+export const HobbyI = () => <GiClover />;
+export const StrengthI = () => <GiStrong />;
+export const FlowersI = () => <GiCottonFlower />;
+export const SchoolI = () => <FaSchool />;
+export const VerifyI = () => <VscVerifiedFilled />;
+export const AccountI = () => <RiAccountPinCircleFill />;
+export const PrivacyI = () => <RiChatPrivateFill />;
+export const CopyI = () => <IoCopy />;

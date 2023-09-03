@@ -1,15 +1,7 @@
+import { AxiosError } from 'axios';
 import refreshToken from '~/refreshToken/refreshToken';
+import errorHandling from '../errorHandling/errorHandling';
 class PeopleRequest {
-    getPeople = async (rl?: string) => {
-        try {
-            const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.get(`/SN/people/getPeopleAll?rl=${rl}`);
-            console.log(res, 'getPeople');
-            return res.data;
-        } catch (error) {
-            console.log(error);
-        }
-    };
     setFriend = async (id: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
@@ -18,16 +10,8 @@ class PeopleRequest {
             });
             return res.data;
         } catch (error) {
-            console.log(error, 'add Friend');
-        }
-    };
-    getfriendAll = async () => {
-        try {
-            const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.get('/SN/people/getFriendAll');
-            return res.data;
-        } catch (error) {
-            console.log(error, 'get FriendAll');
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     delete = async (id: string, kindOf?: string, per?: string) => {
@@ -36,7 +20,8 @@ class PeopleRequest {
             const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
             return res.data;
         } catch (error) {
-            console.log(error, 'delete');
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     setConfirm = async (id: string, kindOf?: string, atInfor?: boolean) => {
@@ -47,7 +32,8 @@ class PeopleRequest {
             });
             return res.data;
         } catch (error) {
-            console.log(error, 'delete');
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getStrangers = async (limit: number, ids: string[]) => {
@@ -61,7 +47,8 @@ class PeopleRequest {
             });
             return res.data;
         } catch (error) {
-            console.log(error, 'get Strangers');
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getFriends = async (offset: number, limit: number, type: string) => {
@@ -77,7 +64,8 @@ class PeopleRequest {
             });
             return res.data;
         } catch (error) {
-            console.log(error, 'get Strangers');
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
 }

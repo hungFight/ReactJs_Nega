@@ -6,35 +6,37 @@ import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 
 export interface PropsParamsById {
-    id?: string;
-    fullName?: string;
-    nickName?: string | null;
-    status?: string | null;
-    gender?: string;
-    background?: string | null;
-    avatar?: string | null;
-    admin?: string;
-    hobby?: string | null;
-    strengths?: string | null;
-    address?: string | null;
-    skill?: string | null;
-    birthDay?: string;
-    occupation?: string | null;
-    experience?: string | null;
-    createdAt?: string | null;
-    sn?: string;
-    l?: string;
-    w?: string;
-    as?: string;
-    more?: PropsParamsMores;
+    id?: boolean;
+    fullName?: boolean | string;
+    biography?: boolean | null;
+    gender?: boolean | number;
+    background?: boolean | null | string;
+    avatar?: boolean | null | string;
+    hobby?: boolean | null | string[];
+    birthday?: boolean | null | string;
+    schoolName?: boolean | null | string;
+    address?: boolean | null | string;
+    skill?: boolean | null | string[];
+    birthDay?: boolean | string;
+    occupation?: boolean | null | string;
+    experience?: boolean | null;
+    createdAt?: boolean | null;
+    active?: boolean;
+    firstPage?: boolean;
+    secondPage?: boolean;
+    thirdPage?: boolean;
+    mores?: PropsParamsMores;
 }
 interface PropsParamsMores {
-    position?: string;
-    star?: string;
-    love?: string;
-    visit?: string;
-    follow?: string;
-    following?: string;
+    followedAmount?: boolean;
+    followingAmount?: boolean;
+    friendAmount?: boolean;
+    loverAmount?: boolean | string;
+    position?: boolean;
+    star?: boolean;
+    language?: boolean | string[];
+    visitor?: boolean;
+    relationship?: boolean | string;
 }
 const cookies = new Cookies();
 class HttpRequestUser {
@@ -88,7 +90,8 @@ class HttpRequestUser {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     setLg = async (id: string, lg: string) => {
@@ -100,7 +103,8 @@ class HttpRequestUser {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     setAs = async (as: number) => {
@@ -111,7 +115,8 @@ class HttpRequestUser {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getNewMes = async () => {
@@ -120,7 +125,8 @@ class HttpRequestUser {
             const res = await Axios.get('/user/getNewMes');
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     delMessage = async () => {
@@ -129,13 +135,14 @@ class HttpRequestUser {
             const res = await Axios.get('/user/delMessage');
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     changesOne = async (id: string, value: any, params: PropsParamsById) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.patch('/user/changesOne', {
+            const res = await Axios.patch<string | number | Buffer>('/user/changesOne', {
                 params: {
                     id,
                     params,
@@ -144,7 +151,23 @@ class HttpRequestUser {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    changesMany = async (params: PropsParamsById, mores: PropsParamsMores) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.patch('/user/changesMany', {
+                params: {
+                    params,
+                    mores,
+                },
+            });
+            return res.data;
+        } catch (error) {
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     follow = async (id: string, follow?: string) => {
@@ -158,7 +181,8 @@ class HttpRequestUser {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     Unfollow = async (id: string, unfollow: string) => {
@@ -174,7 +198,8 @@ class HttpRequestUser {
 
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getMore = async (offset: number, limit: number) => {
@@ -190,7 +215,8 @@ class HttpRequestUser {
 
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     setHistory = async (data: { id: string; avatar: string; fullName: string; nickName: string; gender: number }) => {
@@ -202,7 +228,8 @@ class HttpRequestUser {
                 },
             });
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getHistory = async () => {
@@ -211,7 +238,8 @@ class HttpRequestUser {
             const res = await Axios.get('/user/getHistory');
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
 }

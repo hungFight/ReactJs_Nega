@@ -6,6 +6,16 @@ type PropsReLoad = {
     userOnline: string[];
     roomChat: PropsRoomChat | undefined;
     session: string;
+    delIds:
+        | {
+              _id: string;
+              deleted: {
+                  id: string;
+                  createdAt: string;
+                  _id: string;
+              }[];
+          }
+        | undefined;
 };
 export interface PropsReloadRD {
     reload: PropsReLoad;
@@ -15,6 +25,7 @@ const initialState: PropsReLoad = {
     userOnline: [],
     roomChat: undefined,
     session: '',
+    delIds: undefined,
 };
 const reloadPage = createSlice({
     name: 'reload',
@@ -33,7 +44,26 @@ const reloadPage = createSlice({
         setSession: (state, action: { payload: string }) => {
             state.session = action.payload;
         },
+        setDelIds: (
+            state,
+            action: {
+                payload:
+                    | {
+                          _id: string;
+                          deleted: {
+                              id: string;
+                              createdAt: string;
+                              _id: string;
+                          }[];
+                      }
+                    | undefined;
+            },
+        ) => {
+            console.log(action.payload, 'action.payload');
+
+            state.delIds = action.payload;
+        },
     },
 });
-export const { setPeople, setOnline, setRoomChat, setSession } = reloadPage.actions;
+export const { setPeople, setOnline, setRoomChat, setSession, setDelIds } = reloadPage.actions;
 export default reloadPage.reducer;

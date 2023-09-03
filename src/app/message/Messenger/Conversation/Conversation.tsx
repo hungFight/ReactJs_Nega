@@ -2,26 +2,23 @@ import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDef
 import { DivConversation, DivResultsConversation } from '../styleSed';
 import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, ClockCirclesI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { CallName, DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
 import { useEffect, useRef, useState } from 'react';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
-import LogicConversation from './LogicConver';
+import LogicConversation, { PropsChat } from './LogicConver';
 import { Player } from 'video-react';
 import { PropsUser } from 'src/App';
-import sendChatAPi from '~/restAPI/chatAPI';
-import CommonUtils from '~/utils/CommonUtils';
-import FileConversation from '../File';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
-import { PropsLanguage } from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
 import 'moment/locale/vi';
-import Languages from '~/reUsingComponents/languages';
 import { setOpenProfile } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
 import { offChats } from '~/redux/background';
 import MoreOption from '../MoreOption';
+import { setDelIds } from '~/redux/reload';
+import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
+import ServerBusy from '~/utils/ServerBusy';
 
 const Conversation: React.FC<{
     index: number;
@@ -39,8 +36,6 @@ const Conversation: React.FC<{
         id_other: string;
     }[];
 }> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat, id_chats }) => {
-    const { lg } = Languages();
-
     const {
         handleImageUpload,
         upload,
@@ -56,27 +51,38 @@ const Conversation: React.FC<{
         handleEmojiSelect,
         dispatch,
         conversation,
+        setConversation,
         userId,
         fetchChat,
         loading,
         cRef,
         opMore,
         setOpMore,
+        delIds,
+        lg,
+        ERef,
+        del,
+        check,
     } = LogicConversation(id_chat, dataFirst.id);
-    const ERef = useRef<any>();
-    const check = useRef<number>(0);
-
+    const [loadDel, setLoadDel] = useState<boolean>(false);
     useEffect(() => {
-        console.log(check.current, 'check');
         ERef.current.scrollTop = -check.current;
     }, [conversation]);
     useEffect(() => {
+        if (delIds && del.current) {
+            if (delIds._id === conversation?._id) {
+                dispatch(
+                    offChats(chat.filter((c) => c.id_other !== id_chat.id_other && c.id_room !== id_chat.id_room)),
+                );
+                del.current.remove();
+            }
+        }
         ERef.current.addEventListener('scroll', handleScroll);
         return () => {
             ERef.current?.removeEventListener('scroll', handleScroll);
         };
         // Optional: Call the observer's callback function immediately to get the initial scroll height
-    }, []);
+    }, [delIds]);
 
     const handleTime = (dateTime: string, type: string) => {
         if (type === 'hour') {
@@ -101,7 +107,7 @@ const Conversation: React.FC<{
     const handleScroll = () => {
         const { scrollTop, clientHeight, scrollHeight } = ERef.current;
         const scrollBottom = -scrollTop + clientHeight;
-        console.log(scrollBottom, scrollTop, clientHeight, scrollHeight);
+        console.log(scrollBottom, scrollTop, clientHeight, scrollHeight, check.current, loading);
         if (scrollBottom >= scrollHeight - 250 && !loading) {
             check.current = -scrollTop;
             if (cRef.current !== 2) fetchChat(true);
@@ -110,10 +116,46 @@ const Conversation: React.FC<{
 
     const handleProfile = () => {
         const id_oth: string[] = [];
-        conversation?.id_us.map((id) => {
+        conversation?.id_us.forEach((id) => {
             if (id !== userId) id_oth.push(id);
         });
         dispatch(setOpenProfile(id_oth));
+    };
+    const handleDelete = async () => {
+        setLoadDel(true);
+        if (conversation?._id) {
+            const res = await sendChatAPi.delete(conversation._id);
+            const data:
+                | {
+                      _id: string;
+                      deleted: {
+                          id: string;
+                          createdAt: string;
+                          _id: string;
+                      }[];
+                  }
+                | undefined = ServerBusy(res, dispatch);
+
+            if (data) {
+                dispatch(setDelIds(data));
+            }
+        }
+
+        setLoadDel(false);
+    };
+    const handleUndo = async () => {
+        console.log('Undo');
+        setLoadDel(true);
+        if (conversation?._id) {
+            const res = await sendChatAPi.undo(conversation._id);
+            const data: PropsChat | undefined = ServerBusy(res, dispatch);
+            if (data) {
+                cRef.current = 0;
+                dispatch(setDelIds(undefined));
+                setConversation({ ...data, user: conversation.user });
+            }
+        }
+        setLoadDel(false);
     };
     console.log(conversation, 'conversation');
     const dataMore: {
@@ -142,20 +184,43 @@ const Conversation: React.FC<{
                 icon: <ProfileCircelI />,
                 onClick: () => alert('hello'),
             },
-            {
-                id: 2,
-                name: conversation?.deleted?.some((d) => d.id === userId) ? 'Undo' : 'Delete',
-                icon: conversation?.deleted?.some((d) => d.id === userId) ? <ClockCirclesI /> : <MinusI />,
-                onClick: () => alert('hello'),
-            },
         ],
     };
+    if (conversation?.deleted?.some((c) => c.id === userId)) {
+        dataMore.options.push({
+            id: 2,
+            name: 'Undo',
+            load: loadDel,
+            icon: loadDel ? (
+                <DivLoading css="font-size: 12px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : (
+                <ClockCirclesI />
+            ),
+            onClick: () => handleUndo(),
+        });
+    }
+    if (conversation?.room[0]._id) {
+        dataMore.options.push({
+            id: 3,
+            name: 'Delete',
+            load: loadDel,
+            icon: loadDel ? (
+                <DivLoading css="font-size: 12px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : (
+                <MinusI />
+            ),
+            onClick: () => handleDelete(),
+        });
+    }
     return (
         <DivConversation
+            ref={del}
             height={chat.length > 2 ? '48% !important' : chat.length === 1 ? '100% !important' : ''}
             className="ofChats"
-            id={id_chat.id_other + id_chat.id_room}
-            aria-readonly={true}
         >
             <DivResultsConversation color="#e4e4e4">
                 <Div
@@ -175,10 +240,7 @@ const Conversation: React.FC<{
                         width="30px"
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center; cursor: var(--pointer)"
                         onClick={() => {
-                            const ofChat = document.querySelectorAll('.ofChats');
-                            const containChat = document.querySelector('.containChat');
-
-                            if (ofChat) {
+                            if (del.current) {
                                 dispatch(
                                     offChats(
                                         chat.filter(
@@ -186,7 +248,11 @@ const Conversation: React.FC<{
                                         ),
                                     ),
                                 );
-                                ofChat[index].remove();
+                                console.log(id_chats, 'no');
+                                const tt = id_chats.filter((i, indexI) => indexI !== index);
+                                console.log(id_chats, 'yes', tt);
+
+                                del.current.remove();
                             }
                         }}
                     >
@@ -366,7 +432,7 @@ const Conversation: React.FC<{
                     )}
                 </Div>
             </DivResultsConversation>
-            {opMore && <MoreOption dataMore={dataMore} colorText={colorText} />}
+            {opMore && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} />}
         </DivConversation>
     );
 };

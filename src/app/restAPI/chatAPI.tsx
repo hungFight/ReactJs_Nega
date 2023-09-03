@@ -39,7 +39,7 @@ class Messenger {
     send = async (formData: any) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsRoomChat>('/messenger/send', formData);
+            const res = await Axios.post<PropsRoomChat>('/messenger/sendChat', formData);
             return res.data;
         } catch (error) {
             console.log(error);
@@ -66,12 +66,12 @@ class Messenger {
         id_chat: { id_room: string | undefined; id_other: string },
         limit: number,
         offset: number,
-        of?: boolean,
+        moreChat?: boolean,
     ) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get<PropsChat>('/messenger/getChat', {
-                params: { id_room: id_chat.id_room, id_other: id_chat.id_other, limit, offset, of },
+                params: { id_room: id_chat.id_room, id_other: id_chat.id_other, limit, offset, moreChat },
             });
             return res.data;
         } catch (error) {
@@ -100,7 +100,7 @@ class Messenger {
     undo = async (id_room: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<boolean>('/messenger/undo', {
+            const res = await Axios.post<PropsChat>('/messenger/undo', {
                 params: { id_room },
             });
             return res.data;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ImageI } from '~/assets/Icons/Icons';
-import { Buttons, Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Buttons, Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
 const EditP: React.FC<{
@@ -8,12 +8,13 @@ const EditP: React.FC<{
     onClick: (e?: any, id?: number) => void;
     onText: (id: number) => Promise<void>;
     colorText: string;
-}> = ({ editP, onClick, onText, colorText }) => {
+    setEditTitle: React.Dispatch<React.SetStateAction<boolean>>;
+    editTitle: boolean;
+}> = ({ editP, onClick, onText, colorText, setEditTitle, editTitle }) => {
     const [more, setMore] = useState<number | null>(null);
 
     const handleMore = (e: any, id: number) => {
-        console.log(e.target.getAttribute('id'));
-
+        if (id === 4) setEditTitle(!editTitle);
         if (e.target.getAttribute('id') === 'edit') {
             if (id !== more) {
                 setMore(id);
@@ -40,6 +41,7 @@ const EditP: React.FC<{
                 wrap="wrap"
                 css="background-color: #252525; position: absolute; right: 55px; top: -14px; border-radius: 5px; z-index: 2;"
             >
+                <H3 css="width: 100%; text-align: center; font-size: 1.4rem; padding: 10px 5px 5px 5px;">Editor</H3>
                 {editP.map((ed) => (
                     <Div
                         key={ed.id}

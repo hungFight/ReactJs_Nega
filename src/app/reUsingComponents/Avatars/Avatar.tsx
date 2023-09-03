@@ -23,6 +23,7 @@ interface _Avatar {
     profile?: boolean;
     onTouchMove?: (args: any) => void;
     children?: React.ReactElement;
+    currentId?: string; // Is current profile's id
 }
 
 const Avatar = forwardRef((props: _Avatar, ref: any) => {
@@ -48,9 +49,9 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         css,
         profile = false,
         children,
+        currentId,
     } = props;
     const dispatch = useDispatch();
-    const [idUser] = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow.openProfile);
     const [avatar, setAvatar] = useState<boolean>(false);
     const [avatarFallback, setAvatarFallback] = useState<string>('');
     // useEffect(() => {
@@ -74,7 +75,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     };
 
     const handleOpentProfile = () => {
-        if (profile) dispatch(setOpenProfile([id]));
+        if (profile) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
     };
 
     return avatar ? (

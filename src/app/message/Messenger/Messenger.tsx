@@ -43,7 +43,11 @@ const Send: React.FC<{
             }[]
         >
     >;
-}> = ({ colorBg, colorText, dataUser, userOline, setId_chats }) => {
+    id_chats: {
+        id_room: string | undefined;
+        id_other: string;
+    }[];
+}> = ({ colorBg, colorText, dataUser, userOline, setId_chats, id_chats }) => {
     const {
         userId,
         rooms,
@@ -247,6 +251,7 @@ const Send: React.FC<{
                                     colorBg={colorBg}
                                     setMoreBar={setMoreBar}
                                     setId_chats={setId_chats}
+                                    id_chats={id_chats}
                                 />
                             ))
                         )}

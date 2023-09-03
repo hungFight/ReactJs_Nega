@@ -5,9 +5,10 @@ import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import TagProfle from './TagProfile';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
+import ServerBusy from '~/utils/ServerBusy';
 interface PropsYouSent {
     avatar: any;
     birthday: string;
@@ -17,6 +18,7 @@ interface PropsYouSent {
     nickName: string | undefined;
 }
 const Requested: React.FC<{ type: string }> = ({ type }) => {
+    const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
 
@@ -37,15 +39,17 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
             setLoading(true);
         }
         const res = await peopleAPI.getFriends(offsetRef.current, limit, 'yousent');
+        const dataR = ServerBusy(res, dispatch);
+
         console.log(type, res);
-        res.map((f: { avatar: string | undefined }) => {
+        dataR.map((f: { avatar: string | undefined }) => {
             if (f.avatar) {
                 const av = CommonUtils.convertBase64(f.avatar);
                 f.avatar = av;
             }
         });
-        if (res) {
-            dataRef.current = [...(dataRef.current ?? []), ...res];
+        if (dataR) {
+            dataRef.current = [...(dataRef.current ?? []), ...dataR];
             setData(dataRef.current);
             offsetRef.current += limit;
             setLoading(false);
@@ -68,7 +72,8 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         console.log('Abolish', kindOf, id);
         const res = await peopleAPI.delete(id, kindOf);
-        if (res) {
+        const dataR = ServerBusy(res, dispatch);
+        if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             setData(newData);
         }
@@ -76,9 +81,10 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
         const res = await peopleAPI.delete(id, kindOf);
-        if (res) {
+        const dataR = ServerBusy(res, dispatch);
+        if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
-            console.log('delete', res);
+            console.log('delete', dataR);
             setData(newData);
         }
     };

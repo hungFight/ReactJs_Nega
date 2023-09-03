@@ -1,11 +1,12 @@
 import styled from 'styled-components';
+import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
-export const Peye = styled.p`
+export const Peye = styled.p<{ top: string; right?: string }>`
     width: 30px;
     height: 30px;
     display: flex;
-    right: 10px;
-    top: ${(props: { top: string }) => props.top};
+    right: ${(props) => props.right || '10px'};
+    top: ${(props) => props.top};
     font-size: 20px;
     color: #aeaeae;
     align-items: center;
@@ -20,7 +21,7 @@ export const Htitle = styled.h3`
     position: relative;
 `;
 
-const Div = styled.div`
+const Div = styled.div<{ css?: string; bg?: string }>`
     width: 100px;
     height: 35px;
     margin: 28px auto 8px;
@@ -30,6 +31,7 @@ const Div = styled.div`
     overflow: hidden;
     color: #ddd8d8;
     position: relative;
+    ${(props) => props.css}
     @media (min-width: 400px) {
         /* padding: 5px 23px; */
     }
@@ -44,8 +46,7 @@ const Div = styled.div`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-image: ${(props: { bg?: string }) =>
-            props.bg || 'linear-gradient(270deg, transparent, #fcfcfc4d, #fdfcfc)'};
+        background-image: ${(props) => props.bg || 'linear-gradient(270deg, transparent, #fcfcfc4d, #fdfcfc)'};
         transform-origin: top left;
         animation: rotate 3s linear infinite;
         border-top-right-radius: 100%;
@@ -92,10 +93,15 @@ const Button = styled.button`
     cursor: pointer;
     color: var(--color-light);
 `;
-export const ButtonSubmit: React.FC<{ title: string; bg?: string }> = ({ title, bg }) => {
+export const ButtonSubmit: React.FC<{
+    title: string;
+    bg?: string;
+    css?: string;
+    onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+}> = ({ title, bg, css, onClick }) => {
     return (
         <>
-            <Div bg={bg}>
+            <Div bg={bg} css={css} onClick={onClick}>
                 <Button>{title}</Button>
             </Div>
         </>
@@ -203,4 +209,29 @@ export const DivLoading = styled.div`
 `;
 export const CallName = (gender: number) => {
     return gender === 0 ? 'Him' : gender === 1 ? 'Her' : 'Cuy';
+};
+const Form = styled.form`
+    width: 100%;
+    height: 100%;
+    label {
+        width: 100%;
+        height: 100%;
+    }
+`;
+export const UpLoadForm: React.FC<{
+    id: string;
+    colorText: string;
+    children: React.ReactNode;
+    submit: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ id, colorText, children, submit }) => {
+    return (
+        <>
+            <Form method="POST" encType="multipart/form-data">
+                <input id={id} type="file" name="file[]" hidden multiple onChange={submit} />
+                <Label htmlFor={id} color={colorText}>
+                    {children}
+                </Label>
+            </Form>
+        </>
+    );
 };

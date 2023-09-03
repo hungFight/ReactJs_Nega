@@ -10,6 +10,8 @@ import userAPI from '~/restAPI/userAPI';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import { onChats } from '~/redux/background';
+import ServerBusy from '~/utils/ServerBusy';
+import { Buffer } from 'buffer';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -28,6 +30,14 @@ export default function LogicView(
     leng: number,
     colorText: string,
     online: string[],
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >,
 ) {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
@@ -44,11 +54,11 @@ export default function LogicView(
     const [resTitle, setResTitle] = useState<{
         star: number;
         love: number;
-        viste: number;
+        visitor: number;
         followed: number;
         following: number;
-    }>({ star: 0, love: 0, viste: 0, followed: 0, following: 0 });
-    const [id_loved, setId_loved] = useState<string>(dataUser.id_loved_user.id_loved);
+    }>({ star: 0, love: 0, visitor: 0, followed: 0, following: 0 });
+    const [id_loved, setId_loved] = useState<string>(dataUser.isLoved[0]?.idIsLoved);
 
     const [room, setRoom] = useState<{ avatar: boolean; background: boolean }>({ avatar: false, background: false });
     const [edit, setEdit] = useState<boolean>(false);
@@ -58,14 +68,15 @@ export default function LogicView(
     const token = cookies.tks;
     const lg = currentPage === 1 ? language.sn : currentPage === 2 ? language.l : language.w;
 
-    const id_f_user = dataUser.id_f_user.idCurrentUser || dataUser.id_friend.idCurrentUser;
-    const id_friend = dataUser.id_friend.idFriend || dataUser.id_f_user.idFriend;
-    const id_fl = dataUser.id_flwing.id_following || dataUser.id_flwed.id_following;
-    const id_fled = dataUser.id_flwing.id_followed || dataUser.id_flwed.id_followed;
+    const userRequest = dataUser.userRequest[0]?.idRequest || dataUser.userIsRequested[0]?.idRequest;
+    const userRequested = dataUser.userRequest[0]?.idIsRequested || dataUser.userIsRequested[0]?.idIsRequested;
+    const level = dataUser.userRequest[0]?.level || dataUser.userIsRequested[0]?.level;
 
-    const level = dataUser.id_f_user.level || dataUser.id_friend.level;
-    const following = dataUser.id_flwing.flwing || dataUser.id_flwed.flwing;
-    const follwed = dataUser.id_flwing.flwed || dataUser.id_flwed.flwed;
+    const id_fl = dataUser.followings[0]?.idFollowing || dataUser.followed[0]?.idFollowing;
+    const id_fled = dataUser.followings[0]?.idIsFollowed || dataUser.followed[0]?.idIsFollowed;
+    const following = dataUser.followings[0]?.following || dataUser.followed[0]?.following;
+
+    const follwed = dataUser.followings[0]?.followed || dataUser.followed[0]?.followed;
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
         setEdit(false);
         const data = e?.target.files;
@@ -84,14 +95,17 @@ export default function LogicView(
                     const sizeImage = Number((file.size / 1024 / 1024).toFixed(1));
                     if (sizeImage <= 8) {
                         setLoading(true);
-                        const base64 = await CommonUtils.getBase64(file);
+                        const base64: any = await CommonUtils.getBase64(file);
+                        const buff = Buffer.from(base64);
                         const res = await userAPI.changesOne(
                             userId,
-                            base64,
+                            buff,
                             id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                         );
+                        const data = ServerBusy(res, dispatch);
+
                         console.log('number', res, id);
-                        if (res === 1) {
+                        if (data) {
                             setLoading(false);
                             if (id === 0) {
                                 setUserFirst({ ...userFirst, background: img });
@@ -117,8 +131,9 @@ export default function LogicView(
                     null,
                     id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                 );
-                console.log('number', res, id);
-                if (res === 1) {
+                const data = ServerBusy(res, dispatch);
+                console.log('number', data, id);
+                if (data === 1) {
                     setLoading(false);
                     if (id === 0) {
                         setUserFirst({ ...userFirst, background: null });
@@ -134,13 +149,17 @@ export default function LogicView(
     const handleNameU = async () => {
         if (valueName && valueName.length <= 30 && valueName !== userFirst.fullName) {
             setLoading(true);
-            const res = await userAPI.changesOne(userId, valueName, { fullName: 'fullName' });
+            const res = await userAPI.changesOne(userId, valueName, { fullName: 'fullName' }); // return new Name
+            const data = ServerBusy(res, dispatch);
             setLoading(false);
-            if (res === 1) {
-                setUserFirst({ ...userFirst, fullName: valueName });
+            console.log(data, 'change');
+
+            if (data === valueName) {
+                setUserFirst({ ...userFirst, fullName: data });
+                setDataUser({ ...dataUser, fullName: data });
                 setCategories(0);
             } else {
-                const dateT = moment(res, 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
+                const dateT = moment(data, 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
                 const textEr: { [en: string]: string; vi: string } = {
                     en: `You changed about ${dateT}. After a month you can keep change your name`,
                     vi: `Bạn đã thay đổi ${dateT}. Sau 1 tháng bạn mới có thể đổi lại lần nữa`,
@@ -149,24 +168,7 @@ export default function LogicView(
             }
         }
     };
-    const handleNickNameU = async () => {
-        if (valueNickN.length <= 30 && valueNickN !== userFirst.nickName) {
-            setLoading(true);
-            const res = await userAPI.changesOne(userId, valueNickN, { nickName: 'nickName' });
-            setLoading(false);
-            if (res === 1) {
-                setUserFirst({ ...userFirst, nickName: valueNickN });
-                setCategories(0);
-            } else {
-                setValueNickN('');
-                const textEr: { [en: string]: string; vi: string } = {
-                    en: `You changed 10 times in 1 month. After a month you can keep change your nick name`,
-                    vi: `Bạn đã thay đổi 10 lần trong 1 tháng rồi. Sau 1 tháng bạn mới có thể đổi lại 2 lần nữa`,
-                };
-                setErrText(textEr[lg]);
-            }
-        }
-    };
+
     const handleEdit = () => {
         setEdit(!edit);
     };
@@ -185,11 +187,7 @@ export default function LogicView(
             setValueName(e.target.value);
         }
     };
-    const handleVNickN = (e: any) => {
-        if (e.target.value.length <= 30) {
-            setValueNickN(e.target.value);
-        }
-    };
+
     const handleAddF = async (id: string) => {
         const res: {
             id_friend: string;
@@ -203,118 +201,91 @@ export default function LogicView(
             id: string;
             id_fl: string;
         } = await peopleAPI.setFriend(id, 'yes');
-        setDataUser({
-            ...dataUser,
-            id_friend: {
-                idCurrentUser: res.data.idCurrentUser,
-                idFriend: res.data.idFriend,
-                level: 1,
-                createdAt: res.data.createdAt,
-            },
-            id_flwed: {
-                ...dataUser.id_flwed,
-                flwed: 1,
-                flwing: 2,
-                id_followed: res.id,
-                id_following: res.id_fl,
-            },
-            id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-        });
-
+        const data = ServerBusy(res, dispatch);
+        dataUser.userIsRequested[0].idRequest = data.data.idRequest;
+        dataUser.userIsRequested[0].idIsRequested = data.data.idIsRequested;
+        dataUser.userIsRequested[0].level = 1;
+        dataUser.userIsRequested[0].createdAt = data.data.createdAt;
+        dataUser.followed[0] = {
+            ...dataUser.followed[0],
+            followed: 1,
+            following: 2,
+            idFollowing: data.id_fl,
+            idIsFollowed: data.id,
+        };
+        dataUser.mores[0].followedAmount = data.count_followed;
+        setDataUser(dataUser);
         console.log(res, 'addfriend');
     };
 
     const handleConfirm = async (id: string) => {
         if (id) {
             const res = await peopleAPI.setConfirm(id, 'friends', true);
-            if (res.ok === 1) {
-                setDataUser({
-                    ...dataUser,
-                    id_f_user: { ...dataUser.id_f_user, level: 2 },
-                    id_m_user: { ...dataUser.id_m_user, friends: res.count_friends },
-                });
+            const data = ServerBusy(res, dispatch);
+
+            if (data?.ok === 1) {
+                dataUser.userRequest[0].level = 2;
+                dataUser.mores[0].friendAmount = res.count_friends;
+                setDataUser(dataUser);
             }
         }
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         const res = await peopleAPI.delete(id, kindOf, 'yes');
-        console.log('Abolish', kindOf, res);
-        if (res) {
-            setDataUser({
-                ...dataUser,
-                id_friend: {
-                    idCurrentUser: null,
-                    idFriend: null,
-                    level: null,
-                    createdAt: null,
-                },
-                id_f_user: {
-                    idCurrentUser: null,
-                    idFriend: null,
-                    level: null,
-                    createdAt: null,
-                },
-                id_flwed: {
-                    updatedAt: null,
-                    createdAt: null,
-                    flwed: null,
-                    flwing: null,
-                    id_followed: null,
-                    id_following: null,
-                },
-                id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-            });
+        const data = ServerBusy(res, dispatch);
+
+        console.log('Abolish', kindOf, data);
+        if (data) {
+            dataUser.userIsRequested = [];
+            dataUser.userRequest = [];
+            dataUser.followings = [];
+            dataUser.followed = [];
+            dataUser.mores[0].followedAmount = data.count_followed;
+            setDataUser(dataUser);
         }
     };
     const handleMessenger = async (id: string) => {
         dispatch(onChats({ id_room: '', id_other: id }));
+        setId_chats((pre) => [...pre, { id_room: '', id_other: id }]);
         console.log('handleMessenger');
     };
     const handleFollower = async (id: string, follow?: string) => {
         console.log('handleFollowe', id);
         const res = await userAPI.follow(id, follow);
+        const data = ServerBusy(res, dispatch);
+
         console.log(res, 'followres');
-        if (res.ok === 1) {
-            if (dataUser.id_flwing.id_following) {
+        if (data?.ok === 1) {
+            if (dataUser.followings[0]?.following) {
                 if (res.follow === 'following') {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwing: { ...dataUser.id_flwing, flwing: 2 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+                    dataUser.followings[0].following = 2;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 } else {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwing: { ...dataUser.id_flwing, flwed: 2 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+                    dataUser.followings[0].followed = 2;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 }
-            } else if (dataUser.id_flwed.id_followed) {
-                if (res.follow === 'following') {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwed: { ...dataUser.id_flwed, flwing: 2 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+            } else if (dataUser.followed[0]?.followed) {
+                if (data.follow === 'following') {
+                    dataUser.followed[0].following = 2;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 } else {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwed: { ...dataUser.id_flwed, flwed: 2 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+                    dataUser.followed[0].followed = 2;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 }
             } else {
-                setDataUser({
-                    ...dataUser,
-                    id_flwed: {
-                        ...dataUser.id_flwed,
-                        flwed: 1,
-                        flwing: 2,
-                        id_followed: res.id,
-                        id_following: res.id_fl,
-                    },
-                    id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                });
+                dataUser.followed[0] = {
+                    ...dataUser.followed[0],
+                    followed: 1,
+                    following: 2,
+                    idIsFollowed: data.id,
+                    idFollowing: data.id_fl,
+                };
+                dataUser.mores[0].followedAmount = data.count_followed;
+                setDataUser(dataUser);
             }
         }
 
@@ -324,36 +295,30 @@ export default function LogicView(
     const handleUnFollower = async (id: string, unfollow: string) => {
         console.log('handleUnFollowe', id);
         const res = await userAPI.Unfollow(id, unfollow);
-        console.log(res);
+        const data = ServerBusy(res, dispatch);
 
-        if (res.ok === 1) {
-            if (dataUser.id_flwing.id_following) {
-                if (res.unfollow === 'following') {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwing: { ...dataUser.id_flwing, flwing: 1 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+        console.log(data);
+
+        if (data.ok === 1) {
+            if (dataUser.followings[0]?.following) {
+                if (data.unfollow === 'following') {
+                    dataUser.followings[0].following = 1;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 } else {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwing: { ...dataUser.id_flwing, flwed: 1 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+                    dataUser.followings[0].followed = 2;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 }
-            } else if (dataUser.id_flwed.id_followed) {
-                if (res.unfollow === 'following') {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwed: { ...dataUser.id_flwed, flwing: 1 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+            } else if (dataUser.followed[0]?.followed) {
+                if (data.unfollow === 'following') {
+                    dataUser.followed[0].following = 1;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 } else {
-                    setDataUser({
-                        ...dataUser,
-                        id_flwed: { ...dataUser.id_flwed, flwed: 1 },
-                        id_m_user: { ...dataUser.id_m_user, follow: res.count_flwe },
-                    });
+                    dataUser.followed[0].followed = 1;
+                    dataUser.mores[0].followedAmount = data.count_followed;
+                    setDataUser(dataUser);
                 }
             }
         }
@@ -397,13 +362,15 @@ export default function LogicView(
     };
     const handleLoves = async () => {
         if (id_loved !== userId) {
-            const res = await userAPI.changesOne(dataUser.id, '', { more: { love: 'love' } });
+            const res = await userAPI.changesOne(dataUser.id, '', { mores: { loverAmount: 'love' } });
+            const data = ServerBusy(res, dispatch);
+
             setId_loved(userId);
-            setDataUser({ ...dataUser, id_m_user: { ...dataUser.id_m_user, love: res } });
+            setDataUser({ ...dataUser, mores: [{ ...dataUser.mores[0], loverAmount: data }] });
         } else {
-            const res = await userAPI.changesOne(dataUser.id, '', { more: { love: 'unlove' } });
+            const data = await userAPI.changesOne(dataUser.id, '', { mores: { loverAmount: 'unLove' } });
             setId_loved('');
-            setDataUser({ ...dataUser, id_m_user: { ...dataUser.id_m_user, love: res } });
+            setDataUser({ ...dataUser, mores: [{ ...dataUser.mores[0], loverAmount: data }] });
         }
     };
     const editDataText: {
@@ -428,8 +395,8 @@ export default function LogicView(
                 id: 1,
             },
             { name: 'Full name', id: 2 },
-            { name: 'Nick name', id: 3 },
-            { name: 'Status', id: 4 },
+            { name: 'Biography', id: 3 },
+            { name: 'Information', id: 4 },
         ],
         vi: [
             {
@@ -449,8 +416,8 @@ export default function LogicView(
                 id: 1,
             },
             { name: 'Tên', id: 2 },
-            { name: 'Biệt danh', id: 3 },
-            { name: 'Dòng trạng thái', id: 4 },
+            { name: 'Dòng trạng thái', id: 3 },
+            { name: 'Thông tin bên dưới', id: 4 },
         ],
     };
     const cssBg = `width: 100%;
@@ -505,7 +472,7 @@ export default function LogicView(
             margin: 0 3px;
             width: 100%;
             height: 100%;
-            overflow-y: overlay;
+            position: relative;
             &::-webkit-scrollbar {
                 width: 0px;
             }
@@ -572,7 +539,7 @@ export default function LogicView(
         en: [
             {
                 name:
-                    id_f_user !== userId
+                    userRequest !== userId
                         ? level === 1
                             ? 'Confirm'
                             : level === 2
@@ -584,7 +551,7 @@ export default function LogicView(
                         ? 'Friend'
                         : 'Add Friend',
                 onClick: () =>
-                    id_f_user !== userId
+                    userRequest !== userId
                         ? level === 1
                             ? handleConfirm(dataUser.id)
                             : level === 2
@@ -613,7 +580,7 @@ export default function LogicView(
         vi: [
             {
                 name:
-                    id_f_user !== userId
+                    userRequest !== userId
                         ? level === 1
                             ? 'Chấp nhận'
                             : level === 2
@@ -625,7 +592,7 @@ export default function LogicView(
                         ? 'Bạn bè'
                         : 'Kêt bạn',
                 onClick: () =>
-                    id_f_user !== userId
+                    userRequest !== userId
                         ? level === 1
                             ? handleConfirm(dataUser.id)
                             : level === 2
@@ -673,7 +640,6 @@ export default function LogicView(
         valueName,
         setValueName,
         valueNickN,
-        setValueNickN,
         categories,
         setCategories,
         errText,
@@ -681,16 +647,13 @@ export default function LogicView(
         room,
         setRoom,
         resTitle,
-
         userId,
         handleChangeAvatar,
         handleNameU,
-        handleNickNameU,
         handleLoves,
         handleEdit,
         handleChangeText,
         handleVName,
-        handleVNickN,
         editDataText,
         lg,
         cssBg,
@@ -702,8 +665,8 @@ export default function LogicView(
         btss,
         btName,
         id_loved,
-        id_f_user,
-        id_friend,
+        userRequest,
+        userRequested,
         level,
     };
 }

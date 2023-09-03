@@ -5,12 +5,11 @@ export const DivTitleP = styled.div`
     display: flex;
     flex-wrap: wrap;
     margin: auto;
-    justify-content: space-evenly;
+    justify-content: space-between;
     margin-top: 50px;
-    box-shadow: 0 0 1px #949090;
     padding: 14px;
     border-radius: 5px;
-    background-color: #2b2c2c;
+    margin-bottom: 50px;
 `;
 export const DivSearch = styled.div`
     width: 100%;

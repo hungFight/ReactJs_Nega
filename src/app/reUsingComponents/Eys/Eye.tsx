@@ -14,8 +14,9 @@ interface PropsEye {
         check: number;
     };
     top: string;
+    right?: string;
 }
-const Eyes: React.FC<PropsEye> = ({ value, setShow, show, top }) => {
+const Eyes: React.FC<PropsEye> = ({ value, setShow, show, top, right }) => {
     console.log('eye', value);
 
     return (
@@ -23,11 +24,11 @@ const Eyes: React.FC<PropsEye> = ({ value, setShow, show, top }) => {
             {show.icon && (
                 <>
                     {show.check && value ? (
-                        <Peye onClick={() => setShow({ ...show, check: 0 })} top={top}>
+                        <Peye onClick={() => setShow({ ...show, check: 0 })} top={top} right={right}>
                             <EyemI />
                         </Peye>
                     ) : (
-                        <Peye onClick={() => setShow({ ...show, check: 1 })} top={top}>
+                        <Peye onClick={() => setShow({ ...show, check: 1 })} top={top} right={right}>
                             <EyedI />
                         </Peye>
                     )}

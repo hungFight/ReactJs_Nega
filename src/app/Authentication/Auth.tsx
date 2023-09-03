@@ -7,6 +7,7 @@ import { UndoIRegister } from '~/assets/Icons/Icons';
 import Verify from './Verify/Verify';
 import { PropsRegisterLanguage } from './Register/interfaceType';
 import ChangePassword from './ChangePassword/ChangePassword';
+import { PropsUser } from 'src/App';
 const DivBackground = styled.div`
     width: 100%;
     height: 100%;
@@ -22,13 +23,14 @@ export const Pnext = styled.p`
     top: 3px;
     display: flex;
 `;
-const Authentication: React.FC<{ dataLogin: PropsLogin; dataRegister: PropsRegisterLanguage }> = ({
-    dataLogin,
-    dataRegister,
-}) => {
-    const [enable, setEnable] = useState<boolean>(false);
+const Authentication: React.FC<{
+    dataLogin: PropsLogin;
+    dataRegister: PropsRegisterLanguage;
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+}> = ({ dataLogin, dataRegister, setUserFirst }) => {
+    const [enable, setEnable] = useState<boolean>(true);
     const [account, setAccount] = useState<string | number>('');
-    const [whatKind, setWhatKind] = useState<string>('');
+    const [whatKind, setWhatKind] = useState<string>('register');
     const [acc, setAcc] = useState<number>(0);
     const Next: ReactNode = (
         <Pnext
@@ -43,7 +45,15 @@ const Authentication: React.FC<{ dataLogin: PropsLogin; dataRegister: PropsRegis
 
     const Element = () => {
         if (whatKind === 'register') {
-            if (enable) return <Register acc={acc} dataRegister={dataRegister} account={account} Next={Next} />;
+            if (enable)
+                return (
+                    <Register
+                        acc={acc}
+                        dataRegister={dataRegister}
+                        account={'nguyentronghung05072003@gmail.com'}
+                        Next={Next}
+                    />
+                );
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else if (whatKind === 'changePassword') {
             if (enable)
@@ -57,7 +67,7 @@ const Authentication: React.FC<{ dataLogin: PropsLogin; dataRegister: PropsRegis
                 );
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else {
-            return <Login data={dataLogin} setWhatKind={setWhatKind} />;
+            return <Login data={dataLogin} setWhatKind={setWhatKind} setUserFirst={setUserFirst} />;
         }
     };
     return (

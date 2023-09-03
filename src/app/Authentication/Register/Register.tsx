@@ -97,7 +97,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
             const validateEmail = /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,5})+$/;
             setValuePhoneNumberEmail({ ...valuePhoneNumberEmail, icon: <EmailI /> });
 
-            if (validateEmail.test(valuePhoneNumberEmail.value) === true) {
+            if (validateEmail.test(valuePhoneNumberEmail.value)) {
                 setCheckPhoneNumberEmail({ ...checkPhoneNumberEmail, check: false });
             } else {
                 setCheckPhoneNumberEmail({
@@ -141,7 +141,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
         }
         setValuePassword({ ...valuePassword, password1: e.target.value });
         checkAllRef.current.password1 = false;
-        if (e.target.value === valuePassword.password2) {
+        if (e.target.value === valuePassword.password2 && e.target.value.length > 5) {
             setCheckPassword({ check: false, icon: '' });
             checkAllRef.current.password2 = false;
         } else {
@@ -158,7 +158,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
         } else {
             setShowPass2({ ...showPass2, icon: false });
         }
-        if (e.target.value === valuePassword.password1) {
+        if (e.target.value === valuePassword.password1 && e.target.value.length > 5) {
             setCheckPassword({ check: false, icon: '' });
         } else {
             setCheckPassword({ check: true, icon: messagePassword });
@@ -238,6 +238,8 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                 if (data.check === 1) {
                     setRegisterStatus({ title: data.result, status: false });
                 } else if (data.check === 3) {
+                    setRegisterStatus({ title: data.result, status: true });
+                } else if (data.check === 5) {
                     setRegisterStatus({ title: data.result, status: true });
                 }
             }

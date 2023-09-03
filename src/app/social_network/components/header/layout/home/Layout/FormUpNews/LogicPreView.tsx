@@ -47,6 +47,8 @@ import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
 import Circle from './ViewPostFrame/TypeFile/Circle';
 import { PropsPreViewFormHome } from './PreView';
 import axios from 'axios';
+import ServerBusy from '~/utils/ServerBusy';
+import { useDispatch } from 'react-redux';
 export default function LogicPreView(
     user: PropsUserHome,
     colorText: string,
@@ -113,6 +115,7 @@ export default function LogicPreView(
     include: boolean,
     setInclude: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
+    const dispatch = useDispatch();
     const [selectType, setSelectType] = useState<number>(0);
     // select children of swiper
     const [selectChild, setSelectChild] = useState<{ id: number; name: string }>({
@@ -235,6 +238,7 @@ export default function LogicPreView(
                     }
                     console.log('text', valueText, 'file', upload, 'fontFamily', font, Imotions);
                     res = await HomeAPI.setPost(formData);
+                    const dataR = ServerBusy(res, dispatch);
                     setLoading(false);
                     console.log(res, 'res');
                     // id_c = res.id_c;
@@ -268,6 +272,8 @@ export default function LogicPreView(
                             }
                         });
                         res = await HomeAPI.setPost(formData);
+                        const dataR = ServerBusy(res, dispatch);
+
                         setLoading(false);
                         //     console.log(res, 'res');
                     } else {
@@ -276,6 +282,8 @@ export default function LogicPreView(
                         }
                         console.log('text', valueText, 'file', upload, 'fontFamily', font, 'swiper', selectChild);
                         res = await HomeAPI.setPost(formData);
+                        const dataR = ServerBusy(res, dispatch);
+
                         setLoading(false);
                         console.log(res, 'res');
                     }
@@ -296,6 +304,8 @@ export default function LogicPreView(
                     formData.append('BgColor', bg);
                     formData.append('columnOfGrid', JSON.stringify(column));
                     res = await HomeAPI.setPost(formData);
+                    const dataRq = ServerBusy(res, dispatch);
+
                     setLoading(false);
                     break;
                 case 3:
@@ -304,6 +314,8 @@ export default function LogicPreView(
                     }
                     console.log('text', valueText, 'file', upload, 'fontFamily', font, Imotions);
                     res = await HomeAPI.setPost(formData);
+                    const dataRs = ServerBusy(res, dispatch);
+
                     console.log(res, 'res');
                     setLoading(false);
                     break;

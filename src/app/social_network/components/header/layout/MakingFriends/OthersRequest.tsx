@@ -5,10 +5,11 @@ import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import TagProfle from './TagProfile';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Requested from './Requested';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { DivResults } from './styleMakingFriends';
+import ServerBusy from '~/utils/ServerBusy';
 
 interface PropsOthers {
     avatar: any;
@@ -19,6 +20,7 @@ interface PropsOthers {
     nickName: string | undefined;
 }
 const Others: React.FC<{ type: string }> = ({ type }) => {
+    const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
     const [data, setData] = useState<PropsOthers[]>();
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
@@ -39,15 +41,17 @@ const Others: React.FC<{ type: string }> = ({ type }) => {
         }
 
         const res = await peopleAPI.getFriends(offsetRef.current, limit, 'others');
+        const data = ServerBusy(res, dispatch);
+
         console.log(type, res);
-        res.map((f: { avatar: string | undefined }) => {
+        data.map((f: { avatar: string | undefined }) => {
             if (f.avatar) {
                 const av = CommonUtils.convertBase64(f.avatar);
                 f.avatar = av;
             }
         });
-        if (res) {
-            dataRef.current = [...(dataRef.current ?? []), ...res];
+        if (data) {
+            dataRef.current = [...(dataRef.current ?? []), ...data];
             setData(dataRef.current);
             offsetRef.current += limit;
             setLoading(false);
@@ -71,8 +75,10 @@ const Others: React.FC<{ type: string }> = ({ type }) => {
     }, [reload]);
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
         const res = await peopleAPI.setConfirm(id, kindOf);
+        const dataR = ServerBusy(res, dispatch);
+
         console.log('confirm', kindOf, id, res);
-        refresh(res);
+        refresh(dataR);
         function refresh(res: any) {
             if (res.ok === 1) {
                 const newData = data?.filter((x: PropsOthers) => {
@@ -86,9 +92,10 @@ const Others: React.FC<{ type: string }> = ({ type }) => {
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
         const res = await peopleAPI.delete(id, kindOf);
-        if (res) {
+        const dataR = ServerBusy(res, dispatch);
+        if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
-            console.log('delete', res);
+            console.log('delete', dataR);
             setData(newData);
         }
     };

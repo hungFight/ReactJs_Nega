@@ -10,10 +10,11 @@ import styles from './search.module.scss';
 import Bar from '~/reUsingComponents/Bar/Bar';
 import { useCookies } from 'react-cookie';
 import { DivResults, DivSearch, Input } from './styleSearch';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import CommonUtils from '~/utils/CommonUtils';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import ServerBusy from '~/utils/ServerBusy';
 export interface PropsSearchTextSN {
     rec: string;
     menu: {
@@ -37,6 +38,7 @@ interface PropsSearch {
     }[];
 }
 const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText, title, history }) => {
+    const dispatch = useDispatch();
     const [cookies, setCookie] = useCookies(['tks']);
     const [searchUser, setSearchUser] = useState<string>('');
     const [searchUserMore, setSearchUserMore] = useState<string>('');
@@ -66,14 +68,14 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
         const fechApi = async () => {
             try {
                 const results = await userAPI.getByName(searchUser, cateMore, searchUserMore, {
-                    id: 'id',
-                    avatar: 'avatar',
-                    fullName: 'fullName',
-                    nickName: 'nickName',
-                    gender: 'gender',
+                    id: true,
+                    avatar: true,
+                    fullName: true,
+                    gender: true,
                 });
+                const data = ServerBusy(results, dispatch);
                 console.log(results, 'results');
-                results.map((result: any) => {
+                data.map((result: any) => {
                     if (result.avatar) result.avatar = CommonUtils.convertBase64(result.avatar);
                 });
                 setResultSearch(results);
@@ -81,13 +83,9 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                 console.log(err);
             }
         };
-        console.log('voooc');
-
         fechApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debounce1, debounce2]);
-    console.log('voo', debounce1, debounce2);
-
     useEffect(() => {
         if (history?.length > 0) setResultSearch(history);
     }, [history]);

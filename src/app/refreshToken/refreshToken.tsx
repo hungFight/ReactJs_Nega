@@ -5,6 +5,10 @@ import authHttpRequest from '~/restAPI/authAPI/authAPI';
 axios.defaults.withCredentials = true;
 const axiosJWT = axios.create({
     baseURL: process.env.REACT_APP_SPACESHIP,
+    headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    },
 });
 class refreshToken {
     private isInterceptorAttached: boolean = false;
@@ -25,10 +29,12 @@ class refreshToken {
 
                             if (decodeToken.exp < date.getTime() / 1000 + 5) {
                                 console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
+
                                 const data = await authHttpRequest.refreshToken();
+
                                 console.log(data.newAccessToken, 'newAccessToken');
 
-                                if (data) {
+                                if (data?.newAccessToken) {
                                     const newToken = 'Bearer ' + data.newAccessToken;
                                     tokenN = newToken;
                                     Cookies.set('tks', newToken, {

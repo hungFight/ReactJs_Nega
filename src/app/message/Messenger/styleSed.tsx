@@ -47,6 +47,11 @@ export const DivConversation = styled.div`
     border-radius: 5px;
     background-color: #202124;
     z-index: 8888;
+    position: relative;
+    .chatBar {
+        height: 100%;
+        overflow-y: overlay;
+    }
     * {
         font-family: ZenKaku, sans-serif;
     }

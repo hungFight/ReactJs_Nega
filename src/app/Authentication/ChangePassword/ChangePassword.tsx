@@ -8,12 +8,14 @@ import { Div, Input, P } from '~/reUsingComponents/styleComponents/styleDefault'
 import { Pmessage } from '../Register/styleRegister';
 import accountRequest from '~/restAPI/accounAPI';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { PropsChangeP } from './typeChangePassword';
+import { PropsAccount, PropsChangeP } from './typeChangePassword';
 import { useQuery } from '@tanstack/react-query';
 import { PropsBgRD } from '~/redux/background';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import ServerBusy from '~/utils/ServerBusy';
 
 const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, setEnable }) => {
+    const dispatch = useDispatch();
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const [id, setId] = useState<string>('');
@@ -83,11 +85,13 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
                                 password: value1,
                             };
                             const res = await accountRequest.changePassword(params);
-                            console.log(res);
+                            const data = ServerBusy(res, dispatch);
 
-                            if (res?.status === 1 || res?.status === 3) {
-                                if (res?.status === 1) setSuccess(true);
-                                setMessageStatus({ status: res.status === 1 ? true : false, message: res.message });
+                            console.log(data);
+
+                            if (data?.status === 1 || data?.status === 3) {
+                                if (data?.status === 1) setSuccess(true);
+                                setMessageStatus({ status: data.status === 1 ? true : false, message: data.message });
                             } else {
                                 window.location.reload();
                             }
@@ -99,8 +103,6 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
                             });
                         }
                     } else {
-                        console.log('sd');
-
                         setCheckValue({
                             ...checkValue,
                             message: 'The length Password must than 6 character!',
@@ -121,6 +123,7 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
         queryFn: () => accountRequest.getPhoneMail(params),
     });
     console.log(data, isLoading);
+    const datas: PropsAccount[] | undefined = ServerBusy(data, dispatch);
 
     const handleChangePass = useCallback((id: string) => {
         setId(id);
@@ -139,7 +142,7 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
             <form action="" onSubmit={handleSubmit}>
                 <DivChangePass>
                     <Htitle>Change Password</Htitle>
-                    {data?.map((data) => {
+                    {datas?.map((data) => {
                         if (data.id === id)
                             return (
                                 <div key={data.id}>
@@ -191,7 +194,7 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
             </form>
 
             <Div css="justify-content: center; margin: auto">
-                {data?.map((data) => (
+                {datas?.map((data) => (
                     <Div
                         key={data.id}
                         wrap="wrap"

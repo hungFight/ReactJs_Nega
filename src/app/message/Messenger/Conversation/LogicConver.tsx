@@ -1,8 +1,6 @@
-import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import userAPI from '~/restAPI/userAPI';
 import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import sendChatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
@@ -12,8 +10,11 @@ import { setTrueErrorServer } from '~/redux/hideShow';
 import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
 import Cookies from '~/utils/Cookies';
-import moment from 'moment';
-import { setRoomChat, setSession } from '~/redux/reload';
+import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
+import Languages from '~/reUsingComponents/languages';
+import { gql, useQuery } from '@apollo/client';
+import http from '~/utils/http';
+import ServerBusy from '~/utils/ServerBusy';
 
 export interface PropsChat {
     _id: string;
@@ -45,13 +46,20 @@ export interface PropsChat {
     deleted: {
         id: string;
         createdAt: string;
+        show: boolean;
     }[];
     createdAt: string;
 }
 export default function LogicConversation(id_chat: { id_room: string | undefined; id_other: string }, id_you: string) {
     const dispatch = useDispatch();
-    const { userId, token } = Cookies();
+    const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
 
+    const { userId, token } = Cookies();
+    const { lg } = Languages();
+
+    const ERef = useRef<any>();
+    const del = useRef<HTMLDivElement | null>(null);
+    const check = useRef<number>(0);
     const cRef = useRef<number>(0);
     const mRef = useRef<any>(0);
     const offset = useRef<number>(0);
@@ -79,63 +87,93 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
           }
         | undefined
     >();
-    async function fetchChat(of?: boolean) {
+    const GET_Phrase = gql`
+        query Get_Phrases($id: String!, $limit: Int!, $offset: Int!) {
+            chats(id_room: $id, limit: $limit, offset: $offset) {
+                _id
+                text {
+                    t
+                    icon
+                }
+                imageOrVideos {
+                    v
+                    icon
+                    _id
+                }
+                seenBy
+                createdAt
+            }
+        }
+    `;
+    // const { data, client } = useQuery(GET_Phrase, {
+    //     skip: conversation?._id ? false : true,
+    //     variables: {
+    //         id: conversation?._id,
+    //         limit: limit,
+    //         offset: offset.current,
+    //     },
+    // });
+    // console.log(data, 'GET_PHRASE');
+
+    async function fetchChat(moreChat?: boolean) {
         console.log('api');
 
         setLoading(true);
         cRef.current = 2;
-        const res = await sendChatAPi.getChat(id_chat, limit, offset.current, of);
-        if (typeof res === 'string' && res === 'NeGA_off') {
-            dispatch(setSession('The session expired! Please login again'));
-        } else {
-            if (res) {
-                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                    const modifiedData = { ...res };
-                    await Promise.all(
-                        modifiedData.room.map(
-                            async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
-                                await Promise.all(
-                                    rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
-                                        const buffer = await fileGridFS.getFile(fl.v);
-                                        const base64 = CommonUtils.convertBase64GridFS(buffer.file);
-                                        modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                    }),
-                                );
-                            },
-                        ),
-                    );
-                    resolve(modifiedData);
-                });
-                const a = CommonUtils.convertBase64(newData.user?.avatar);
-                if (a) newData.user.avatar = a;
+        const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat);
+        const data = ServerBusy(res, dispatch);
 
-                if (newData) {
-                    if (of) {
-                        cRef.current = 8;
-                        if (newData.room.length > 0 && chatRef.current) {
-                            chatRef.current = {
-                                ...chatRef.current,
-                                room: [...chatRef.current.room, ...newData.room],
-                            };
-                        }
-                    } else {
-                        chatRef.current = newData;
-                        cRef.current = 7;
+        if (res) {
+            const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                const modifiedData = { ...data };
+                console.log(modifiedData, data, 'modifiedData');
+
+                await Promise.all(
+                    modifiedData.room.map(
+                        async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
+                            await Promise.all(
+                                rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
+                                    const buffer = await fileGridFS.getFile(fl.v);
+                                    const base64 = CommonUtils.convertBase64GridFS(buffer.file);
+                                    modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                }),
+                            );
+                        },
+                    ),
+                );
+                resolve(modifiedData);
+            });
+            const a = CommonUtils.convertBase64(newData.user?.avatar);
+            if (a) newData.user.avatar = a;
+
+            if (newData) {
+                if (moreChat) {
+                    cRef.current = 8;
+                    if (newData.room.length > 0 && chatRef.current) {
+                        chatRef.current = {
+                            ...chatRef.current,
+                            room: [...chatRef.current.room, ...newData.room],
+                        };
                     }
-                    offset.current += limit;
+                } else {
+                    chatRef.current = newData;
+                    cRef.current = 7;
                 }
-                setConversation(chatRef.current);
+                offset.current += limit;
             }
+            setConversation(chatRef.current);
         }
 
         setLoading(false);
     }
+    const code = `${conversation?._id + '-' + conversation?.user.id}phrase`;
     useEffect(() => {
-        fetchChat();
-        socket.on(`${id_chat.id_room + '-' + id_chat.id_other}phrase`, async (d: string) => {
-            const data: PropsRoomChat = JSON.parse(d);
-            const newD: any = await new Promise(async (resolve, reject) => {
-                try {
+        if (code) {
+            socket.on(code, async (d: string) => {
+                console.log('yesss me');
+
+                const data: PropsRoomChat = JSON.parse(d);
+                const newD: any = await new Promise(async (resolve, reject) => {
                     await Promise.all(
                         data.room.imageOrVideos.map(async (d, index) => {
                             const buffer = await fileGridFS.getFile(d.v);
@@ -144,19 +182,19 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                         }),
                     );
                     resolve(data.room);
-                } catch (error) {
-                    reject(error);
-                }
+                });
+                const a = CommonUtils.convertBase64(data.user.avatar);
+                data.user.avatar = a;
+                data.users.push(data.user);
+                dispatch(setRoomChat(data));
+                setDataSent(newD);
+                console.log(newD, 'be sent by others');
             });
-            const a = CommonUtils.convertBase64(data.user.avatar);
-            data.user.avatar = a;
-            data.users.push(data.user);
-            dispatch(setRoomChat(data));
-            setDataSent(newD);
-            console.log(newD, 'be sent by others');
-        });
+        }
+    }, [code]);
+    useEffect(() => {
+        fetchChat();
     }, []);
-    console.log(conversation, 'con');
 
     useEffect(() => {
         if (dataSent) {
@@ -215,10 +253,13 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                 formData.append('files', fileUpload[i]);
             }
             const res = await sendChatAPI.send(formData);
-            if (res && conversation) {
+            const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
+
+            if (data && conversation) {
                 conversation.room[0].sending = false;
-                res.users.push(conversation.user);
-                dispatch(setRoomChat(res));
+                if (!conversation._id) conversation._id = data._id;
+                data.users.push(conversation.user);
+                dispatch(setRoomChat(data));
                 setFileUpload([]);
             }
         }
@@ -311,11 +352,17 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         handleEmojiSelect,
         dispatch,
         conversation,
+        setConversation,
         userId,
         fetchChat,
         loading,
         cRef,
         opMore,
         setOpMore,
+        delIds,
+        lg,
+        ERef,
+        del,
+        check,
     };
 }

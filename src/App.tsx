@@ -11,7 +11,7 @@ import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useStat
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
+import { InitialStateHideShow, setCurrentIdProfile, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
@@ -24,7 +24,7 @@ import { socket } from './mainPage/nextWeb';
 import { DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
 import userAPI from '~/restAPI/userAPI';
-import { PropsTitleP } from './mainPage/personalPage/layout/Title';
+import { PropsMores } from './mainPage/personalPage/layout/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
 import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
@@ -32,6 +32,11 @@ import { PropsBgRD } from '~/redux/background';
 import Images from '~/assets/images';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
 import { useNavigate } from 'react-router-dom';
+import refreshToken from '~/refreshToken/refreshToken';
+import http from '~/utils/http';
+import { useQuery, gql } from '@apollo/client';
+import { PropsChat } from '~/Message/Messenger/Conversation/LogicConver';
+import ServerBusy from '~/utils/ServerBusy';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -61,47 +66,76 @@ export interface PropsUserPer {
     avatar: any;
     fullName: string;
     nickName: string;
+    address: string;
     gender: number;
+    birthday: string;
     background: any;
-    status: string;
-    sn: string;
-    l: string;
-    w: string;
-    as: number;
-    id_f_user: {
-        createdAt: string | null;
-        idCurrentUser: string | null;
-        idFriend: string | null;
-        level: number | null;
-    };
-    id_friend: {
-        createdAt: string | null;
-        idCurrentUser: string | null;
-        idFriend: string | null;
-        level: number | null;
-    };
-    id_m_user: PropsTitleP;
-    id_flwing: {
-        flwed: number;
-        flwing: number;
-        id_followed: string;
-        id_following: string;
-        createdAt: string;
-        updatedAt: string;
-    };
-    id_flwed: {
-        flwing: number | null;
-        flwed: number | null;
-        id_following: string | null;
-        id_followed: string | null;
-        createdAt: string | null;
-        updatedAt: string | null;
-    };
-    id_loved_user: {
-        id_loved: string;
-    };
+    biography: string;
+    active: string;
+    occupation: string;
+    schoolName: string;
+    skill: string[];
+    hobby: string[];
+    firstPage: string;
+    secondPage: string;
+    thirdPage: string;
+    mores: PropsMores[] | [];
+    userRequest:
+        | {
+              id: string;
+              idRequest: string;
+              idIsRequested: string;
+              level: number;
+              createdAt: string;
+          }[]
+        | [];
+    userIsRequested:
+        | {
+              id: string;
+              idRequest: string;
+              idIsRequested: string;
+              level: number;
+              createdAt: string;
+          }[]
+        | [];
+    isLoved:
+        | {
+              id: string;
+              userId: string;
+              idIsLoved: string;
+              createdAt: string;
+          }[]
+        | [];
+    followings:
+        | {
+              id: string;
+              idFollowing: string;
+              idIsFollowed: string;
+              following: number;
+              followed: number;
+              createdAt: string;
+          }[]
+        | [];
+    followed:
+        | {
+              id: string;
+              idFollowing: string;
+              idIsFollowed: string;
+              following: number;
+              followed: number;
+              createdAt: string;
+          }[]
+        | [];
+    accountUser: {
+        account: {
+            id: string;
+            fullName: string;
+            avatar: string | null;
+            gender: number;
+            phoneNumberEmail: string;
+        };
+    }[];
 }
-
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
@@ -115,48 +149,66 @@ function App() {
     const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const { setting, personalPage } = useSelector((state: any) => state.hideShow);
-    const { userOnline, session } = useSelector((state: PropsReloadRD) => state.reload);
+    const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
     const [userData, setUserData] = useState<PropsUserPer[]>([]);
 
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [id_chats, setId_chats] = useState<{ id_room: string | undefined; id_other: string }[]>(chats);
     // messenger
+    const [id_chats, setId_chats] = useState<{ id_room: string | undefined; id_other: string }[]>(chats);
     const showChat = useRef<HTMLInputElement | null>(null);
-
+    const GET_USERDATA = gql`
+        query Get_dataWarning($id: String!) {
+            warningData(id: $id) {
+                id
+                message
+            }
+        }
+    `;
+    const { data } = useQuery(GET_USERDATA, {
+        variables: {
+            id: userId,
+        },
+        skip: !userId || !token,
+    });
+    console.log(data, 'GraphQL dat');
+    const handleCheck = useRef<boolean>(false);
     async function fetch(id: string | string[], first?: string) {
         if (!first) setLoading(true);
-        const res = await userAPI.getById(
+        const res: PropsUserPer[] | PropsUser = await userAPI.getById(
             id,
             {
-                id: 'id',
-                avatar: 'avatar',
-                background: 'background',
-                fullName: 'fullName',
-                nickName: 'nickName',
-                status: 'status',
-                gender: 'gender',
-                as: 'as',
-                sn: 'sn',
-                l: 'l',
-                w: 'w',
+                id: true,
+                avatar: true,
+                background: true,
+                fullName: true,
+                address: true,
+                biography: true,
+                birthday: true,
+                gender: true,
+                active: true,
+                hobby: true,
+                skill: true,
+                occupation: true,
+                schoolName: true,
+                firstPage: true,
+                secondPage: true,
+                thirdPage: true,
             },
             {
-                position: 'position',
-                star: 'star',
-                visit: 'visit',
+                position: true,
+                star: true,
+                visitor: true,
             },
             first,
         );
-        if (typeof res === 'string' && res === 'NeGA_off')
-            dispatch(setSession('The session expired! Please login again'));
-        console.log(res, 'resss');
+        const data: typeof res = ServerBusy(res, dispatch);
 
-        if (!Array.isArray(res)) {
-            setUserFirst(res);
+        if (!Array.isArray(data)) {
+            setUserFirst(data);
         } else {
             setLoading(false);
-            return res;
+            return data;
         }
     }
     console.log(userFirst, 'userFirst');
@@ -173,20 +225,48 @@ function App() {
     useEffect(() => {
         const search = async () => {
             const search = window.location.search;
-            if (search && openProfile.length === 0) {
+            if (search && openProfile.newProfile.length === 0) {
+                console.log('2222');
+
                 const ids = search.split('id=');
                 if (ids.length < 5 && ids.length > 0) {
                     const datas = await fetch(ids);
+                    console.log('personal', ids, datas);
                     if (datas) setUserData(datas);
                 }
             } else {
-                if (openProfile.length === 1) {
-                    const data = await fetch(openProfile);
-                    if (data) setUserData(data);
+                if (openProfile.newProfile.length === 1) {
+                    const data = await fetch(openProfile.newProfile);
+                    if (data)
+                        if (userData.length) {
+                            let check = false;
+                            userData.forEach((da) => {
+                                if (da.id === userId) check = true;
+                            });
+                            if (!check) {
+                                console.log('voos', data, userData);
+
+                                setUserData((pre) => [data[0], ...pre]);
+                            } else {
+                                setUserData((pre) => {
+                                    const newD = pre.filter((us) => us.id !== data[0].id);
+                                    return newD.map((us) => {
+                                        if (us.id === openProfile.currentId) {
+                                            return data[0];
+                                        } else {
+                                            return us;
+                                        }
+                                    });
+                                });
+                                console.log(userData, 'uuu');
+                            }
+                        } else {
+                            setUserData(data);
+                        }
                 }
             }
         };
-        if (userId && token) search();
+        if (userId && token && !handleCheck.current) search();
         socket.on(`${userId}roomChat`, async (dt: string) => {
             const data: PropsRoomChat = JSON.parse(dt);
             const eleDiv1 = document.createElement('div');
@@ -231,27 +311,30 @@ function App() {
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUserData([]);
-        dispatch(setOpenProfile([]));
+        handleCheck.current = true;
+        dispatch(setOpenProfile({ newProfile: [], currentId: '' }));
     };
 
     useEffect(() => {
-        if (userId && token) fetch(userId, 'only');
+        if (userId && token) {
+            fetch(userId, 'only');
+        }
     }, [userId]);
 
-    const leng = openProfile?.length;
+    const leng = userData.length;
     const css = `
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        z-index: 11;
-        overflow-y: overlay;
-        &::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-            border-radius: 0;
-        }
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            z-index: 11;
+            overflow-y: overlay;
+            &::-webkit-scrollbar {
+                width: 0px;
+                height: 0px;
+                border-radius: 0;
+            }
 
-`;
+    `;
 
     if (token && userId) {
         return (
@@ -268,15 +351,14 @@ function App() {
                 {session ? <ErrorBoundaries message={session} /> : ''}
                 {userFirst ? (
                     <>
-                        {!session ? (
-                            <>
-                                <Website openProfile={openProfile} dataUser={userFirst} setDataUser={setUserFirst} />
-                                <Message dataUser={userFirst} userOnline={userOnline} setId_chats={setId_chats} />
-                                {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
-                            </>
-                        ) : (
-                            ''
-                        )}
+                        <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} />
+                        <Message
+                            dataUser={userFirst}
+                            userOnline={userOnline}
+                            setId_chats={setId_chats}
+                            id_chats={id_chats}
+                        />
+                        {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
                         <Div
                             width="240px"
                             wrap="wrap"
@@ -296,15 +378,15 @@ function App() {
                             css="position: fixed; bottom: 0; right: 360px; z-index: 103; height: 93%; justify-content: space-around; overflow-y: overlay  "
                         >
                             {/* <Swiper
-                                slidesPerView={2}
-                                spaceBetween={30}
-                                centeredSlides={true}
-                                pagination={{
-                                    clickable: true,
-                                }}
-                                modules={[Pagination]}
-                                className="mySwiper"
-                            > */}
+                                    slidesPerView={2}
+                                    spaceBetween={30}
+                                    centeredSlides={true}
+                                    pagination={{
+                                        clickable: true,
+                                    }}
+                                    modules={[Pagination]}
+                                    className="mySwiper"
+                                > */}
                             {id_chats?.map((room, index) => (
                                 // <SwiperSlide key={index}>
                                 <Conversation
@@ -385,8 +467,10 @@ function App() {
                                         })}
                                     </Div>
                                 )}
-                                {userData?.map((data: any, index: number) => (
+                                {userData?.map((data, index, arr) => (
                                     <PersonalPage
+                                        AllArray={userData}
+                                        setUserData={setUserData}
                                         setUserFirst={setUserFirst}
                                         userFirst={userFirst}
                                         colorText={colorText}
@@ -395,6 +479,7 @@ function App() {
                                         online={userOnline}
                                         key={index}
                                         leng={leng}
+                                        setId_chats={setId_chats}
                                     />
                                 ))}
                                 <DivPos
@@ -433,6 +518,7 @@ function App() {
             }
         >
             <Authentication
+                setUserFirst={setUserFirst}
                 dataLogin={{ en: login.en, vi: login.vi }}
                 dataRegister={{ vi: register.vi, en: register.en }}
             />
