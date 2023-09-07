@@ -47,6 +47,9 @@ const hideShowSlice = createSlice({
         setOpenProfile: (state, action) => {
             state.openProfile = action.payload;
         },
+        setNewProfile: (state, action: { payload: string[] }) => {
+            state.openProfile.newProfile = action.payload;
+        },
         setCurrentIdProfile: (state, action) => {
             state.openProfile.currentId = action.payload;
         },
@@ -70,5 +73,6 @@ export const {
     setTrueErrorServer,
     setFalseErrorServer,
     setCurrentIdProfile,
+    setNewProfile,
 } = hideShowSlice.actions;
 export default hideShowSlice.reducer;

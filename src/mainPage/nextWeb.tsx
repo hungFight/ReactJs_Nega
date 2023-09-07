@@ -255,7 +255,7 @@ const Website: React.FC<{
                                     alt={dataUser.fullName}
                                     gender={dataUser.gender}
                                     radius="50%"
-                                    id={cookies.k_user}
+                                    id={dataUser.id}
                                     onTouchMove={handleTouchMove}
                                     css={`
                                         width: 40px;

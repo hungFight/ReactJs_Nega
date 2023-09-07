@@ -4,6 +4,7 @@ import { CookieSetOptions } from 'universal-cookie/cjs/types';
 import refreshToken from '~/refreshToken/refreshToken';
 import http from '~/utils/http';
 import errorHandling from '../errorHandling/errorHandling';
+import Cookies from 'js-cookie';
 
 class AuthRequest {
     postLogin = async (
@@ -41,10 +42,29 @@ class AuthRequest {
             return errorHandling(err);
         }
     };
-    subLogin = async (nameAccount: string, password: string) => {
+    subLogin = async (nameAccount: string, password: string, other?: string, id?: string) => {
         try {
-            const response = await http.post('/account/subLogin', { nameAccount, password });
-            return response.data;
+            const res = await http.post('/account/subLogin', { nameAccount, password, other, id });
+            if (res.data) {
+                const { id, accessToken } = res.data;
+                const token = 'Bearer ' + accessToken;
+                console.log('cookie');
+
+                Cookies.set('tks', token, {
+                    path: '/',
+                    secure: false,
+                    sameSite: 'strict',
+                    expires: new Date(new Date().getTime() + 30 * 86409000),
+                });
+                delete res.data?.accessToken;
+                Cookies.set('k_user', id, {
+                    path: '/',
+                    secure: false,
+                    sameSite: 'strict',
+                    expires: new Date(new Date().getTime() + 30 * 86409000),
+                });
+            }
+            return res.data;
         } catch (error) {
             const err = error as AxiosError;
             return errorHandling(err);

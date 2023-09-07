@@ -3,15 +3,16 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { PropsUser, PropsUserPer } from 'src/App';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
-import { setTrueErrorServer } from '~/redux/hideShow';
+import { InitialStateHideShow, setTrueErrorServer } from '~/redux/hideShow';
 import userAPI from '~/restAPI/userAPI';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import { onChats } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 import { Buffer } from 'buffer';
+import { LoadingI } from '~/assets/Icons/Icons';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -25,8 +26,6 @@ export default function LogicView(
     user: PropsUserPer,
     userFirst: PropsUser,
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>,
-    dataUser: PropsUserPer,
-    setDataUser: React.Dispatch<React.SetStateAction<PropsUserPer>>,
     leng: number,
     colorText: string,
     online: string[],
@@ -38,15 +37,19 @@ export default function LogicView(
             }[]
         >
     >,
+    setUserData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>,
+    index: number,
+    AllArray: PropsUserPer[],
 ) {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
+    const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const language = useSelector((state: PropsLanguage) => state.persistedReducer.language);
 
-    const [more, setMore] = useState<React.ReactElement | string>();
+    const [more, setMore] = useState<{ tx: React.ReactElement | string; r: string } | undefined>();
     const [valueName, setValueName] = useState<string>('');
     const [valueNickN, setValueNickN] = useState<string>('');
     const [categories, setCategories] = useState<number>(0);
@@ -58,25 +61,26 @@ export default function LogicView(
         followed: number;
         following: number;
     }>({ star: 0, love: 0, visitor: 0, followed: 0, following: 0 });
-    const [id_loved, setId_loved] = useState<string>(dataUser.isLoved[0]?.idIsLoved);
 
     const [room, setRoom] = useState<{ avatar: boolean; background: boolean }>({ avatar: false, background: false });
     const [edit, setEdit] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
+    const [loads, setLoads] = useState<{ friend: boolean; follow: boolean }>({ friend: false, follow: false });
 
-    const userId = cookies.k_user;
     const token = cookies.tks;
     const lg = currentPage === 1 ? language.sn : currentPage === 2 ? language.l : language.w;
 
-    const userRequest = dataUser.userRequest[0]?.idRequest || dataUser.userIsRequested[0]?.idRequest;
-    const userRequested = dataUser.userRequest[0]?.idIsRequested || dataUser.userIsRequested[0]?.idIsRequested;
-    const level = dataUser.userRequest[0]?.level || dataUser.userIsRequested[0]?.level;
+    const userRequest = user.userRequest[0]?.idRequest || user.userIsRequested[0]?.idRequest;
+    const userRequested = user.userRequest[0]?.idIsRequested || user.userIsRequested[0]?.idIsRequested;
+    const level = user.userRequest[0]?.level || user.userIsRequested[0]?.level;
 
-    const id_fl = dataUser.followings[0]?.idFollowing || dataUser.followed[0]?.idFollowing;
-    const id_fled = dataUser.followings[0]?.idIsFollowed || dataUser.followed[0]?.idIsFollowed;
-    const following = dataUser.followings[0]?.following || dataUser.followed[0]?.following;
+    const id_fl = user.followings[0]?.idFollowing || user.followed[0]?.idFollowing;
+    const id_fled = user.followings[0]?.idIsFollowed || user.followed[0]?.idIsFollowed;
+    const following = user.followings[0]?.following || user.followed[0]?.following;
 
-    const follwed = dataUser.followings[0]?.followed || dataUser.followed[0]?.followed;
+    const follwed = user.followings[0]?.followed || user.followed[0]?.followed;
+    console.log(user, 'userRequest');
+
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
         setEdit(false);
         const data = e?.target.files;
@@ -98,7 +102,7 @@ export default function LogicView(
                         const base64: any = await CommonUtils.getBase64(file);
                         const buff = Buffer.from(base64);
                         const res = await userAPI.changesOne(
-                            userId,
+                            userFirst.id,
                             buff,
                             id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                         );
@@ -109,10 +113,8 @@ export default function LogicView(
                             setLoading(false);
                             if (id === 0) {
                                 setUserFirst({ ...userFirst, background: img });
-                                setDataUser({ ...dataUser, background: img });
                             } else {
                                 setUserFirst({ ...userFirst, avatar: img });
-                                setDataUser({ ...dataUser, avatar: img });
                             }
                         }
 
@@ -123,11 +125,11 @@ export default function LogicView(
                 }
             }
         } else {
-            console.log('delete', id, data, dataUser.avatar);
-            if (dataUser.avatar || dataUser.background) {
+            console.log('delete', id, data, user.avatar);
+            if (user.avatar || user.background) {
                 setLoading(true);
                 const res = await userAPI.changesOne(
-                    userId,
+                    userFirst.id,
                     null,
                     id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                 );
@@ -137,10 +139,8 @@ export default function LogicView(
                     setLoading(false);
                     if (id === 0) {
                         setUserFirst({ ...userFirst, background: null });
-                        setDataUser({ ...dataUser, background: null });
                     } else {
                         setUserFirst({ ...userFirst, avatar: null });
-                        setDataUser({ ...dataUser, avatar: null });
                     }
                 }
             }
@@ -149,14 +149,13 @@ export default function LogicView(
     const handleNameU = async () => {
         if (valueName && valueName.length <= 30 && valueName !== userFirst.fullName) {
             setLoading(true);
-            const res = await userAPI.changesOne(userId, valueName, { fullName: 'fullName' }); // return new Name
+            const res = await userAPI.changesOne(userFirst.id, valueName, { fullName: 'fullName' }); // return new Name
             const data = ServerBusy(res, dispatch);
             setLoading(false);
             console.log(data, 'change');
 
             if (data === valueName) {
                 setUserFirst({ ...userFirst, fullName: data });
-                setDataUser({ ...dataUser, fullName: data });
                 setCategories(0);
             } else {
                 const dateT = moment(data, 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
@@ -173,10 +172,6 @@ export default function LogicView(
         setEdit(!edit);
     };
 
-    useEffect(() => {
-        setDataUser(user);
-    }, [user]);
-
     const handleChangeText = async (id: number) => {
         console.log('name', id);
         setEdit(false);
@@ -189,59 +184,91 @@ export default function LogicView(
     };
 
     const handleAddF = async (id: string) => {
+        setLoads({ ...loads, friend: true });
         const res: {
             id_friend: string;
             data: {
                 createdAt: string;
-                id: 79;
-                idCurrentUser: string;
-                idFriend: string;
+                id: number;
+                idIsRequested: string;
+                idRequest: string;
+                level: number;
+                updatedAt: string;
             };
-            count_flwe: number;
+            count_flw: number;
             id: string;
             id_fl: string;
         } = await peopleAPI.setFriend(id, 'yes');
-        const data = ServerBusy(res, dispatch);
-        dataUser.userIsRequested[0].idRequest = data.data.idRequest;
-        dataUser.userIsRequested[0].idIsRequested = data.data.idIsRequested;
-        dataUser.userIsRequested[0].level = 1;
-        dataUser.userIsRequested[0].createdAt = data.data.createdAt;
-        dataUser.followed[0] = {
-            ...dataUser.followed[0],
+        const data: typeof res = ServerBusy(res, dispatch);
+        console.log(data, 's');
+
+        user.userIsRequested[0] = {
+            ...data.data,
+        };
+        user.followed[0] = {
+            ...user.followed[0],
             followed: 1,
             following: 2,
             idFollowing: data.id_fl,
             idIsFollowed: data.id,
         };
-        dataUser.mores[0].followedAmount = data.count_followed;
-        setDataUser(dataUser);
-        console.log(res, 'addfriend');
+        user.mores[0].followedAmount = data.count_flw;
+        setUserData((pre) =>
+            pre.map((us) => {
+                if (us.id === user.id) return user;
+                return us;
+            }),
+        );
+        setLoads({ ...loads, friend: false });
+        console.log('addfriend');
     };
 
     const handleConfirm = async (id: string) => {
         if (id) {
             const res = await peopleAPI.setConfirm(id, 'friends', true);
-            const data = ServerBusy(res, dispatch);
+            const data: {
+                ok: {
+                    createdAt: string;
+                    id: number;
+                    idIsRequested: string;
+                    idRequest: string;
+                    level: number;
+                    updatedAt: string;
+                };
+            } = ServerBusy(res, dispatch);
 
-            if (data?.ok === 1) {
-                dataUser.userRequest[0].level = 2;
-                dataUser.mores[0].friendAmount = res.count_friends;
-                setDataUser(dataUser);
+            if (data) {
+                user.userRequest[0] = {
+                    ...data.ok,
+                };
+
+                user.mores[0].friendAmount = res.count_friends;
+                setUserData((pre) =>
+                    pre.map((us) => {
+                        if (us.id === user.id) return user;
+                        return us;
+                    }),
+                );
             }
         }
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         const res = await peopleAPI.delete(id, kindOf, 'yes');
         const data = ServerBusy(res, dispatch);
-
+        setMore(undefined);
         console.log('Abolish', kindOf, data);
         if (data) {
-            dataUser.userIsRequested = [];
-            dataUser.userRequest = [];
-            dataUser.followings = [];
-            dataUser.followed = [];
-            dataUser.mores[0].followedAmount = data.count_followed;
-            setDataUser(dataUser);
+            user.userIsRequested = [];
+            user.userRequest = [];
+            user.followings = [];
+            user.followed = [];
+            user.mores[0].followedAmount = data.count_flwe;
+            setUserData((pre) =>
+                pre.map((us) => {
+                    if (us.id === user.id) return user;
+                    return us;
+                }),
+            );
         }
     };
     const handleMessenger = async (id: string) => {
@@ -251,75 +278,186 @@ export default function LogicView(
     };
     const handleFollower = async (id: string, follow?: string) => {
         console.log('handleFollowe', id);
-        const res = await userAPI.follow(id, follow);
-        const data = ServerBusy(res, dispatch);
+        const res: {
+            count_flwe: number;
+            follow: string;
+            id: string;
+            id_fl: string;
+            ok: number;
+        } = await userAPI.follow(id, follow);
+        const data: typeof res = ServerBusy(res, dispatch);
 
         console.log(res, 'followres');
         if (data?.ok === 1) {
-            if (dataUser.followings[0]?.following) {
+            if (user.followings[0]?.following) {
                 if (res.follow === 'following') {
-                    dataUser.followings[0].following = 2;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followings[0].following = 2;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 } else {
-                    dataUser.followings[0].followed = 2;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followings[0].followed = 2;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 }
-            } else if (dataUser.followed[0]?.followed) {
+            } else if (user.followed[0]?.followed) {
                 if (data.follow === 'following') {
-                    dataUser.followed[0].following = 2;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followed[0].following = 2;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 } else {
-                    dataUser.followed[0].followed = 2;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followed[0].followed = 2;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 }
             } else {
-                dataUser.followed[0] = {
-                    ...dataUser.followed[0],
-                    followed: 1,
-                    following: 2,
-                    idIsFollowed: data.id,
-                    idFollowing: data.id_fl,
-                };
-                dataUser.mores[0].followedAmount = data.count_followed;
-                setDataUser(dataUser);
+                setUserData((pre) =>
+                    pre.map((us) => {
+                        if (us.id === user.id) {
+                            user.followed[0] = {
+                                ...user.followed[0],
+                                followed: 1,
+                                following: 2,
+                                idIsFollowed: data.id,
+                                idFollowing: data.id_fl,
+                            };
+                            user.mores[0].followedAmount = data.count_flwe;
+                            return user;
+                        }
+                        if (us.id === userFirst.id) {
+                            us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
+                            return us;
+                        }
+                        return us;
+                    }),
+                );
             }
         }
 
-        // dataUser({...dataUser, id_flwing: {...dataUser.id_flwed.}})
+        // dataUser({...dataUser, id_flwing: {...user.id_flwed.}})
     };
 
     const handleUnFollower = async (id: string, unfollow: string) => {
         console.log('handleUnFollowe', id);
-        const res = await userAPI.Unfollow(id, unfollow);
-        const data = ServerBusy(res, dispatch);
+        const res: {
+            count_flwe: number;
+            id: string;
+            id_fl: string;
+            ok: number;
+            unfollow: string;
+        } = await userAPI.Unfollow(id, unfollow);
+        const data: typeof res = ServerBusy(res, dispatch);
 
         console.log(data);
 
         if (data.ok === 1) {
-            if (dataUser.followings[0]?.following) {
+            if (user.followings[0]?.following) {
                 if (data.unfollow === 'following') {
-                    dataUser.followings[0].following = 1;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followings[0].following = 1;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 } else {
-                    dataUser.followings[0].followed = 2;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followings[0].followed = 2;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 }
-            } else if (dataUser.followed[0]?.followed) {
+            } else if (user.followed[0]?.followed) {
                 if (data.unfollow === 'following') {
-                    dataUser.followed[0].following = 1;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followed[0].following = 1;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 } else {
-                    dataUser.followed[0].followed = 1;
-                    dataUser.mores[0].followedAmount = data.count_followed;
-                    setDataUser(dataUser);
+                    user.followed[0].followed = 1;
+                    user.mores[0].followedAmount = data.count_flwe;
+                    setUserData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) return user;
+                            if (us.id === userFirst.id) {
+                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
+                                return us;
+                            }
+                            return us;
+                        }),
+                    );
                 }
+            } else {
+                setUserData((pre) =>
+                    pre.map((us) => {
+                        if (us.id === user.id) {
+                            user.followed[0].followed = 1;
+                            user.mores[0].followedAmount = data.count_flwe;
+                            return user;
+                        }
+                        if (us.id === userFirst.id) {
+                            us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
+                            return us;
+                        }
+
+                        return us;
+                    }),
+                );
             }
         }
     };
@@ -354,23 +492,47 @@ export default function LogicView(
                 </Div>
             </DivPos>
         );
+        //    more?.r && user.id === more.r ?//
         if (more) {
-            setMore('');
+            setMore(undefined);
         } else {
-            setMore(tx);
+            setMore({ tx, r: id });
         }
     };
     const handleLoves = async () => {
-        if (id_loved !== userId) {
-            const res = await userAPI.changesOne(dataUser.id, '', { mores: { loverAmount: 'love' } });
+        if (user.isLoved[0]?.userId !== userFirst.id) {
+            const res = await userAPI.changesOne(user.id, '', { mores: { loverAmount: 'love' } });
             const data = ServerBusy(res, dispatch);
 
-            setId_loved(userId);
-            setDataUser({ ...dataUser, mores: [{ ...dataUser.mores[0], loverAmount: data }] });
+            setUserData((pre) =>
+                pre.map((us) => {
+                    if (us.id === user.id) {
+                        return {
+                            ...us,
+                            mores: [{ ...us.mores[0], loverAmount: data.count_loves }],
+                            isLoved: [data.loverData],
+                        };
+                    }
+                    return us;
+                }),
+            );
+            console.log('data loved', user);
         } else {
-            const data = await userAPI.changesOne(dataUser.id, '', { mores: { loverAmount: 'unLove' } });
-            setId_loved('');
-            setDataUser({ ...dataUser, mores: [{ ...dataUser.mores[0], loverAmount: data }] });
+            const res = await userAPI.changesOne(user.id, '', { mores: { loverAmount: 'unLove' } });
+            const data = ServerBusy(res, dispatch);
+            setUserData((pre) =>
+                pre.map((us) => {
+                    if (us.id === user.id) {
+                        return {
+                            ...us,
+                            mores: [{ ...us.mores[0], loverAmount: data.count_loves }],
+                            isLoved: [],
+                        };
+                    }
+                    return us;
+                }),
+            );
+            console.log('data unloved', user);
         }
     };
     const editDataText: {
@@ -539,7 +701,7 @@ export default function LogicView(
         en: [
             {
                 name:
-                    userRequest !== userId
+                    userRequest !== userFirst.id
                         ? level === 1
                             ? 'Confirm'
                             : level === 2
@@ -551,36 +713,36 @@ export default function LogicView(
                         ? 'Friend'
                         : 'Add Friend',
                 onClick: () =>
-                    userRequest !== userId
+                    userRequest !== userFirst.id
                         ? level === 1
-                            ? handleConfirm(dataUser.id)
+                            ? handleConfirm(user.id)
                             : level === 2
-                            ? handleFriend(dataUser.id)
-                            : handleAddF(dataUser.id)
+                            ? handleFriend(user.id)
+                            : handleAddF(user.id)
                         : level === 1
-                        ? handleAbolish(dataUser.id)
+                        ? handleAbolish(user.id)
                         : level === 2
-                        ? handleFriend(dataUser.id)
-                        : handleAddF(dataUser.id),
+                        ? handleFriend(user.id)
+                        : handleAddF(user.id),
             },
             {
                 name: 'Messenger',
-                onClick: () => handleMessenger(dataUser.id),
+                onClick: () => handleMessenger(user.id),
             },
-            id_fl === userId
+            id_fl === userFirst.id
                 ? following === 1
-                    ? { name: 'Follow', onClick: () => handleFollower(dataUser.id) }
-                    : { name: 'Unfollow', onClick: () => handleUnFollower(dataUser.id, 'following') }
-                : id_fled === userId
+                    ? { name: 'Follow', onClick: () => handleFollower(user.id) }
+                    : { name: 'Unfollow', onClick: () => handleUnFollower(user.id, 'following') }
+                : id_fled === userFirst.id
                 ? follwed === 1
-                    ? { name: 'Follow', onClick: () => handleFollower(dataUser.id) }
-                    : { name: 'Unfollow', onClick: () => handleUnFollower(dataUser.id, 'followed') }
-                : { name: 'Follow', onClick: () => handleFollower(dataUser.id) },
+                    ? { name: 'Follow', onClick: () => handleFollower(user.id) }
+                    : { name: 'Unfollow', onClick: () => handleUnFollower(user.id, 'followed') }
+                : { name: 'Follow', onClick: () => handleFollower(user.id) },
         ],
         vi: [
             {
                 name:
-                    userRequest !== userId
+                    userRequest !== userFirst.id
                         ? level === 1
                             ? 'Chấp nhận'
                             : level === 2
@@ -592,45 +754,57 @@ export default function LogicView(
                         ? 'Bạn bè'
                         : 'Kêt bạn',
                 onClick: () =>
-                    userRequest !== userId
+                    userRequest !== userFirst.id
                         ? level === 1
-                            ? handleConfirm(dataUser.id)
+                            ? handleConfirm(user.id)
                             : level === 2
-                            ? handleFriend(dataUser.id)
-                            : handleAddF(dataUser.id)
+                            ? handleFriend(user.id)
+                            : handleAddF(user.id)
                         : level === 1
-                        ? handleAbolish(dataUser.id)
+                        ? handleAbolish(user.id)
                         : level === 2
-                        ? handleFriend(dataUser.id)
-                        : handleAddF(dataUser.id),
+                        ? handleFriend(user.id)
+                        : handleAddF(user.id),
             },
             {
                 name: 'Nhắn tin',
-                onClick: () => handleMessenger(dataUser.id),
+                onClick: () => handleMessenger(user.id),
             },
-            id_fl === userId
+            id_fl === userFirst.id
                 ? following === 1
-                    ? { name: 'Theo dõi', onClick: () => handleFollower(dataUser.id, 'following') }
-                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(dataUser.id, 'following') }
-                : id_fled === userId
+                    ? { name: 'Theo dõi', onClick: () => handleFollower(user.id, 'following') }
+                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(user.id, 'following') }
+                : id_fled === userFirst.id
                 ? follwed === 1
-                    ? { name: 'Theo dõi', onClick: () => handleFollower(dataUser.id, 'followed') }
-                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(dataUser.id, 'followed') }
-                : { name: 'Theo dõi', onClick: () => handleFollower(dataUser.id) },
+                    ? { name: 'Theo dõi', onClick: () => handleFollower(user.id, 'followed') }
+                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(user.id, 'followed') }
+                : { name: 'Theo dõi', onClick: () => handleFollower(user.id) },
         ],
     };
-    console.log(lg, buttons, 'here');
 
     const btss = [
-        { text: buttons[lg][0].name, css: cssBt + 'position: relative;', onClick: buttons[lg][0].onClick, tx: more },
+        {
+            text: buttons[lg][0].name,
+            css: cssBt + 'position: relative;',
+            onClick: buttons[lg][0].onClick,
+            tx: loads.friend ? (
+                <DivLoading css="width: auto; font-size: 15px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : (
+                more?.tx
+            ),
+        },
         { text: buttons[lg][1].name, css: cssBt, onClick: buttons[lg][1].onClick },
         { text: buttons[lg][2].name, css: cssBt, onClick: buttons[lg][2].onClick },
     ];
+    console.log(btss, 'here');
+
     const btName: { [en: string]: { del: string; ok: string }; vi: { del: string; ok: string } } = {
         en: { del: 'Cancel', ok: 'Change' },
         vi: { del: 'Huỷ bỏ', ok: 'Thay đổi' },
     };
-
+    const id_loved = user.isLoved[0]?.userId;
     return {
         edit,
         setEdit,
@@ -647,7 +821,6 @@ export default function LogicView(
         room,
         setRoom,
         resTitle,
-        userId,
         handleChangeAvatar,
         handleNameU,
         handleLoves,
@@ -668,5 +841,8 @@ export default function LogicView(
         userRequest,
         userRequested,
         level,
+        openProfile,
+        dispatch,
+        loads,
     };
 }

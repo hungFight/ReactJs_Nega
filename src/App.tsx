@@ -24,7 +24,7 @@ import { socket } from './mainPage/nextWeb';
 import { DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
 import userAPI from '~/restAPI/userAPI';
-import { PropsMores } from './mainPage/personalPage/layout/Title';
+import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
 import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
@@ -82,23 +82,33 @@ export interface PropsUserPer {
     mores: PropsMores[] | [];
     userRequest:
         | {
-              id: string;
+              id: number;
               idRequest: string;
               idIsRequested: string;
               level: number;
               createdAt: string;
+              updatedAt: string;
           }[]
         | [];
     userIsRequested:
         | {
-              id: string;
+              id: number;
               idRequest: string;
               idIsRequested: string;
               level: number;
               createdAt: string;
+              updatedAt: string;
           }[]
         | [];
     isLoved:
+        | {
+              id: string;
+              userId: string;
+              idIsLoved: string;
+              createdAt: string;
+          }[]
+        | [];
+    loved:
         | {
               id: string;
               userId: string;
@@ -148,9 +158,9 @@ function App() {
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
-    const { setting, personalPage } = useSelector((state: any) => state.hideShow);
+    const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
-    const [userData, setUserData] = useState<PropsUserPer[]>([]);
+    const [userData, setUsersData] = useState<PropsUserPer[]>([]);
 
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -195,14 +205,11 @@ function App() {
                 secondPage: true,
                 thirdPage: true,
             },
-            {
-                position: true,
-                star: true,
-                visitor: true,
-            },
+
             first,
         );
         const data: typeof res = ServerBusy(res, dispatch);
+        console.log(data, 'dfaf');
 
         if (!Array.isArray(data)) {
             setUserFirst(data);
@@ -232,7 +239,7 @@ function App() {
                 if (ids.length < 5 && ids.length > 0) {
                     const datas = await fetch(ids);
                     console.log('personal', ids, datas);
-                    if (datas) setUserData(datas);
+                    if (datas) setUsersData(datas);
                 }
             } else {
                 if (openProfile.newProfile.length === 1) {
@@ -246,9 +253,9 @@ function App() {
                             if (!check) {
                                 console.log('voos', data, userData);
 
-                                setUserData((pre) => [data[0], ...pre]);
+                                setUsersData((pre) => [data[0], ...pre]);
                             } else {
-                                setUserData((pre) => {
+                                setUsersData((pre) => {
                                     const newD = pre.filter((us) => us.id !== data[0].id);
                                     return newD.map((us) => {
                                         if (us.id === openProfile.currentId) {
@@ -261,12 +268,13 @@ function App() {
                                 console.log(userData, 'uuu');
                             }
                         } else {
-                            setUserData(data);
+                            setUsersData(data);
                         }
                 }
             }
         };
         if (userId && token && !handleCheck.current) search();
+        handleCheck.current = false;
         socket.on(`${userId}roomChat`, async (dt: string) => {
             const data: PropsRoomChat = JSON.parse(dt);
             const eleDiv1 = document.createElement('div');
@@ -310,7 +318,7 @@ function App() {
 
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
-        setUserData([]);
+        setUsersData([]);
         handleCheck.current = true;
         dispatch(setOpenProfile({ newProfile: [], currentId: '' }));
     };
@@ -335,6 +343,7 @@ function App() {
             }
 
     `;
+    console.log('id_cookie', userId);
 
     if (token && userId) {
         return (
@@ -470,7 +479,7 @@ function App() {
                                 {userData?.map((data, index, arr) => (
                                     <PersonalPage
                                         AllArray={userData}
-                                        setUserData={setUserData}
+                                        setUsersData={setUsersData}
                                         setUserFirst={setUserFirst}
                                         userFirst={userFirst}
                                         colorText={colorText}
@@ -478,10 +487,13 @@ function App() {
                                         user={data}
                                         online={userOnline}
                                         key={index}
+                                        index={index}
                                         leng={leng}
+                                        handleCheck={handleCheck}
                                         setId_chats={setId_chats}
                                     />
                                 ))}
+
                                 <DivPos
                                     position="fixed"
                                     size="30px"

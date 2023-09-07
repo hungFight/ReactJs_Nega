@@ -40,12 +40,11 @@ interface PropsParamsMores {
 }
 const cookies = new Cookies();
 class HttpRequestUser {
-    getById = async (id: string | string[], params: PropsParamsById, mores: PropsParamsMores, first?: string) => {
+    getById = async (id: string | string[], params: PropsParamsById, first?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsUserPer[] | PropsUser>('/user/getById', {
                 id: id,
-                mores,
                 first,
                 params: params,
             });
