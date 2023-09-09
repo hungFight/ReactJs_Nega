@@ -4,6 +4,7 @@ import { PropsUser, PropsUserPer } from 'src/App';
 import {
     BirthI,
     CloseI,
+    EarthI,
     FriendI,
     GenderFemaleI,
     GenderMaleI,
@@ -13,13 +14,15 @@ import {
     LanguageI,
     LocationI,
     PeopleI,
+    PrivacyI,
+    PrivateI,
     SchoolI,
     StarI,
     StrengthI,
     WorkingI,
 } from '~/assets/Icons/Icons';
 import { ButtonSubmit, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { Div, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, H3, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import userAPI from '~/restAPI/userAPI';
 import CommonUtils from '~/utils/CommonUtils';
@@ -43,6 +46,9 @@ const LogicTitle = (
     setEditTitle: React.Dispatch<React.SetStateAction<boolean>>,
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>,
     setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>,
+    userRequested: string | null,
+    level: number | null,
+    userFirst: PropsUser,
 ) => {
     const { mores } = data;
     const dispatch = useDispatch();
@@ -56,7 +62,7 @@ const LogicTitle = (
         key: string;
         value: string;
     }>();
-    const [userData, setUserData] = useState<
+    const [subAccountsData, setSubAccountsData] = useState<
         | {
               account: {
                   id: string;
@@ -113,36 +119,213 @@ const LogicTitle = (
             srcUp.current = upLoad;
         }
     };
+    function whoCanSee(key: string) {
+        return key === 'friends' && level === 2 ? true : key === 'only' ? false : key === 'everyone' ? true : false;
+    }
+
+    const [acPrivate, setAcPrivate] = useState<string>('');
+    const [privacy, setPrivacy] = useState<{
+        [position: string]: string;
+        address: string;
+        birthday: string;
+        relationship: string;
+        gender: string;
+        job: string;
+        schoolName: string;
+        occupation: string;
+        hobby: string;
+        skill: string;
+        language: string;
+        subAccount: string;
+        position: string;
+    }>(mores[0].privacy);
     const ob = {
-        address: { val: data.address, placeholder: 'Address', icon: <LocationI />, length: 240 },
-        gender: { val: Gender(data.gender).string, placeholder: 'Gender', icon: <GenderMaleI />, length: 1 },
-        birthday: { val: data.birthday, placeholder: 'Birthday', icon: <BirthI />, length: 10 },
-        relationship: { val: mores[0].relationship, placeholder: 'Relationship', icon: <HeartMI />, length: 20 },
-        occupation: { val: data.occupation, placeholder: 'Occupation', icon: <WorkingI />, length: 95 },
-        schoolName: { val: data.schoolName, placeholder: 'School Name', icon: <SchoolI />, length: 95 },
+        address: {
+            val: data.address,
+            placeholder: 'Address',
+            icon: <LocationI />,
+            length: 240,
+            private:
+                privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.address,
+        },
+        gender: {
+            val: Gender(data.gender).string,
+            placeholder: 'Gender',
+            icon: <GenderMaleI />,
+            length: 1,
+            private: privacy.gender === 'only' ? <PrivateI /> : privacy.gender === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.gender,
+        },
+        birthday: {
+            val: data.birthday,
+            placeholder: 'Birthday',
+            icon: <BirthI />,
+            length: 10,
+            private:
+                privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.birthday,
+        },
+        relationship: {
+            val: mores[0].relationship,
+            placeholder: 'Relationship',
+            icon: <HeartMI />,
+            length: 20,
+            private:
+                privacy.relationship === 'only' ? (
+                    <PrivateI />
+                ) : privacy.relationship === 'friends' ? (
+                    <FriendI />
+                ) : (
+                    <EarthI />
+                ),
+            letPrivate: mores[0].privacy.relationship,
+        },
+        occupation: {
+            val: data.occupation,
+            placeholder: 'Occupation',
+            icon: <WorkingI />,
+            length: 95,
+            private:
+                privacy.occupation === 'only' ? (
+                    <PrivateI />
+                ) : privacy.occupation === 'friends' ? (
+                    <FriendI />
+                ) : (
+                    <EarthI />
+                ),
+            letPrivate: mores[0].privacy.occupation,
+        },
+        schoolName: {
+            val: data.schoolName,
+            placeholder: 'School Name',
+            icon: <SchoolI />,
+            length: 95,
+            private:
+                privacy.schoolName === 'only' ? (
+                    <PrivateI />
+                ) : privacy.schoolName === 'friends' ? (
+                    <FriendI />
+                ) : (
+                    <EarthI />
+                ),
+            letPrivate: mores[0].privacy.schoolName,
+        },
     };
     const ar = {
-        hobby: { val: data.hobby ?? [], placeholder: 'Hobbies', icon: <HobbyI />, subVal: '' },
-        skill: { val: data.skill ?? [], placeholder: 'Skills', icon: <StrengthI />, subVal: '' },
-        language: { val: mores[0].language ?? [], placeholder: 'Languages', icon: <LanguageI />, subVal: '' },
+        hobby: {
+            val: data.hobby ?? [],
+            placeholder: 'Hobbies',
+            icon: <HobbyI />,
+            subVal: '',
+            private: privacy.hobby === 'only' ? <PrivateI /> : privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.hobby,
+        },
+        skill: {
+            val: data.skill ?? [],
+            placeholder: 'Skills',
+            icon: <StrengthI />,
+            subVal: '',
+            private: privacy.skill === 'only' ? <PrivateI /> : privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.skill,
+        },
+        language: {
+            val: mores[0].language ?? [],
+            placeholder: 'Languages',
+            icon: <LanguageI />,
+            subVal: '',
+            private:
+                privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.language,
+        },
     };
     const [ObjectRender, setObjectRender] = useState<{
-        [address: string]: { val: string; placeholder: string; icon: ReactElement; length: number };
-        gender: { val: string; placeholder: string; icon: ReactElement; length: number };
-        birthday: { val: string; placeholder: string; icon: ReactElement; length: number };
-        relationship: { val: string; placeholder: string; icon: ReactElement; length: number };
-        occupation: { val: string; placeholder: string; icon: ReactElement; length: number };
-        schoolName: { val: string; placeholder: string; icon: ReactElement; length: number };
+        [address: string]: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        gender: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        birthday: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        relationship: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        occupation: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        schoolName: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
     }>(ob);
     const [ArrayRender, setArrayRender] = useState<{
-        [hobby: string]: { val: string[]; placeholder: string; icon: ReactElement; subVal: string };
-        skill: { val: string[]; placeholder: string; icon: ReactElement; subVal: string };
-        language: { val: string[]; placeholder: string; icon: ReactElement; subVal: string };
+        [hobby: string]: {
+            val: string[];
+            placeholder: string;
+            icon: ReactElement;
+            subVal: string;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        skill: {
+            val: string[];
+            placeholder: string;
+            icon: ReactElement;
+            subVal: string;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        language: {
+            val: string[];
+            placeholder: string;
+            icon: ReactElement;
+            subVal: string;
+            private: ReactElement;
+            letPrivate: string;
+        };
     }>(ar);
 
-    console.log('title', data, ArrayRender, ObjectRender);
+    console.log('title', privacy, ObjectRender);
 
-    const renderInfo = (res: string, placeholder: string, icon: ReactElement, key: string, length: number) => {
+    const renderInfo = (
+        res: string,
+        placeholder: string,
+        icon: ReactElement,
+        key: string,
+        length: number,
+        privates: ReactElement,
+    ) => {
         return (
             <Div
                 key={key}
@@ -184,6 +367,7 @@ const LogicTitle = (
                             ? 'position: absolute; top: 37px; z-index: 1;'
                             : ''}
                     `}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {icon}
                 </Div>
@@ -274,43 +458,96 @@ const LogicTitle = (
                         )}
                     </>
                 )}
+                {editTitle && editValue !== key && (
+                    <DivPos
+                        top="-2px"
+                        right="5px"
+                        size="19px"
+                        css="padding: 5px; "
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (acPrivate === key) {
+                                setAcPrivate('');
+                            } else {
+                                setAcPrivate(key);
+                            }
+                        }}
+                    >
+                        <Div css="position: relative;">
+                            {acPrivate === key && (
+                                <Div css="position: absolute; right: 64px; top: -35px; flex-wrap: wrap; padding: 10px; border-radius: 5px; background-image: linear-gradient(45deg, #324b47, #000000eb); z-index: 1;">
+                                    <H3 css="font-size: 1.8rem; width: 100%; display: flex; align-items: center;">
+                                        {icon}
+                                        {' ' + key}
+                                    </H3>
+                                    <P
+                                        z="1.3rem"
+                                        css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                        onClick={() => setPrivacy({ ...privacy, [key]: 'only' })}
+                                    >
+                                        Only me!
+                                    </P>
+                                    <P
+                                        z="1.3rem"
+                                        css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                        onClick={() => setPrivacy({ ...privacy, [key]: 'friends' })}
+                                    >
+                                        Friend
+                                    </P>
+                                    <P
+                                        z="1.3rem"
+                                        css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                        onClick={() => setPrivacy({ ...privacy, [key]: 'everyone' })}
+                                    >
+                                        Everyone
+                                    </P>
+                                </Div>
+                            )}
+                            <Div
+                                css={`
+                                    &:hover {
+                                        color: #f3f3f3;
+                                    }
+                                    ${acPrivate === key ? 'color: #3db972;' : ''}
+                                `}
+                            >
+                                {privates}
+                            </Div>
+                        </Div>
+                    </DivPos>
+                )}
             </Div>
         );
     };
     let check = false;
-    if (data.address !== ObjectRender.address?.val) {
+    if (
+        data.address !== ObjectRender.address?.val ||
+        data.birthday !== ObjectRender.birthday?.val ||
+        data.occupation !== ObjectRender.occupation?.val ||
+        data.gender !== Gender(ObjectRender.gender?.val).number ||
+        data.schoolName !== ObjectRender.schoolName?.val ||
+        JSON.stringify(data.hobby) !== JSON.stringify(ArrayRender.hobby?.val) ||
+        JSON.stringify(data.skill) !== JSON.stringify(ArrayRender.skill?.val) ||
+        JSON.stringify(mores[0].language) !== JSON.stringify(ArrayRender.language?.val) ||
+        mores[0].relationship !== ObjectRender.relationship?.val ||
+        JSON.stringify(mores[0].privacy) !== JSON.stringify(privacy)
+    ) {
         check = true;
     }
-    if (data.birthday !== ObjectRender.birthday?.val) {
-        check = true;
-    }
-    if (data.occupation !== ObjectRender.occupation?.val) {
-        check = true;
-    }
-    if (data.gender !== Gender(ObjectRender.gender?.val).number) {
-        check = true;
-    }
-    if (data.schoolName !== ObjectRender.schoolName?.val) {
-        check = true;
-    }
-    if (JSON.stringify(data.hobby) !== JSON.stringify(ArrayRender.hobby?.val)) {
-        check = true;
-    }
-    if (JSON.stringify(data.skill) !== JSON.stringify(ArrayRender.skill?.val)) {
-        check = true;
-    }
-    if (JSON.stringify(mores[0].language) !== JSON.stringify(ArrayRender.language?.val)) {
-        check = true;
-    }
-    if (mores[0].relationship !== ObjectRender.relationship?.val) {
-        check = true;
-    }
+
     useEffect(() => {
         setObjectRender(ob);
         setArrayRender(ar);
-        setUserData(data.accountUser);
-    }, [data]);
-    const renderArrayInfo = (res: string[], placeholder: string, icon: ReactElement, key: string) => {
+        // setPrivacy(privacies);
+        setSubAccountsData(data.accountUser);
+    }, [data, privacy]);
+    const renderArrayInfo = (
+        res: string[],
+        placeholder: string,
+        icon: ReactElement,
+        key: string,
+        privates: ReactElement,
+    ) => {
         return (
             <Div
                 key={key}
@@ -342,6 +579,7 @@ const LogicTitle = (
                         margin-right: 2px;
                         ${editValue === key && editTitle ? 'position: absolute; top: 37px;' : ''}
                     `}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {icon}
                 </Div>
@@ -464,10 +702,69 @@ const LogicTitle = (
                         )}
                     </Div>
                 )}
+                {editTitle && editValue !== key && (
+                    <DivPos
+                        top="-2px"
+                        right="5px"
+                        size="19px"
+                        css="padding: 5px; &:hover{color: #f3f3f3;}"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (acPrivate === key) {
+                                setAcPrivate('');
+                            } else {
+                                setAcPrivate(key);
+                            }
+                        }}
+                    >
+                        <Div css="position: relative;">
+                            {acPrivate === key && (
+                                <Div css="position: absolute; right: 64px; top: -35px; flex-wrap: wrap; padding: 10px; border-radius: 5px; background-image: linear-gradient(45deg, #324b47, #000000eb); z-index: 1;">
+                                    <H3 css="font-size: 1.8rem; width: 100%; display: flex; align-items: center;">
+                                        {icon}
+                                        {' ' + key}
+                                    </H3>
+                                    <P
+                                        z="1.3rem"
+                                        css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                        onClick={() => setPrivacy({ ...privacy, [key]: 'only' })}
+                                    >
+                                        Only me!
+                                    </P>
+                                    <P
+                                        z="1.3rem"
+                                        css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                        onClick={() => setPrivacy({ ...privacy, [key]: 'friends' })}
+                                    >
+                                        Friend
+                                    </P>
+                                    <P
+                                        z="1.3rem"
+                                        css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                        onClick={() => setPrivacy({ ...privacy, [key]: 'everyone' })}
+                                    >
+                                        Everyone
+                                    </P>
+                                </Div>
+                            )}
+                            <Div
+                                css={`
+                                    &:hover {
+                                        color: #f3f3f3;
+                                    }
+                                    ${acPrivate === key ? 'color: #3db972;' : ''}
+                                `}
+                            >
+                                {privates}
+                            </Div>
+                        </Div>
+                    </DivPos>
+                )}
             </Div>
         );
     };
     const handleEdit = async () => {
+        setLoading(true);
         let checks = false;
         const paramsUser: {
             address?: string;
@@ -478,6 +775,13 @@ const LogicTitle = (
             hobby?: string[];
             skill?: string[];
         } = {};
+        const privacyF: typeof privacy = privacy;
+        Object.keys(privacy).map((key) => {
+            if (privacy[key] !== mores[0].privacy[key]) {
+                checks = true;
+            }
+        });
+
         if (data.address !== ObjectRender.address?.val) {
             paramsUser.address = ObjectRender.address?.val;
             checks = true;
@@ -516,7 +820,13 @@ const LogicTitle = (
             checks = true;
         }
         if (checks && check) {
-            const res: { countUser: number; countMores: number } = await userAPI.changesMany(paramsUser, paramsMores);
+            console.log(privacyF, 'privacyF');
+
+            const res: { countUser: number; countMores: number } = await userAPI.changesMany(
+                paramsUser,
+                paramsMores,
+                privacyF,
+            );
             if (res.countUser || res.countMores) {
                 setUsersData((pre) =>
                     pre.map((us) => {
@@ -524,7 +834,7 @@ const LogicTitle = (
                             return {
                                 ...data,
                                 ...paramsUser,
-                                mores: [{ ...data.mores[0], ...paramsMores }],
+                                mores: [{ ...data.mores[0], ...paramsMores, privacy: privacyF }],
                             };
                         }
                         return us;
@@ -533,12 +843,13 @@ const LogicTitle = (
                 setEditTitle(false);
             }
         }
+        setLoading(false);
     };
     const handleLogin = async (id?: string, phoneOrEmail?: string, other?: string) => {
         const preId = data.id;
         if (other) {
             if (id && phoneOrEmail && pass?.val) {
-                const res = await authAPI.subLogin(phoneOrEmail, pass.val, other, id);
+                const res = await authAPI.subLogin(phoneOrEmail, pass.val, other, id); // account's id is logging in
                 if (res) {
                     setUserFirst(res);
                     setUsersData((pre) => {
@@ -573,6 +884,9 @@ const LogicTitle = (
                 }
             }
         } else {
+            subAccountsData.forEach((us) => {
+                // if(us.account.id === id)
+            });
             if (login.userName && login.password) {
                 const res: {
                     account: {
@@ -587,20 +901,23 @@ const LogicTitle = (
                     res.account.avatar = CommonUtils.convertBase64(res.account.avatar);
                 }
                 console.log(res, 'sub');
-                if (res) setUserData([...(userData ?? []), res]);
+                if (res) setSubAccountsData([...(subAccountsData ?? []), res]);
                 if (!res) {
                     setError(res);
                 } else {
                     setError('ok');
                 }
-                console.log(userData, 'login');
+                console.log(subAccountsData, 'login');
             }
         }
     };
-    console.log(userData, 'login');
-    const handleSubAccounts = (id: string) => {
-        setSubAccount(true);
-        // handleLogin(sub.id, sub.phoneNumberEmail, 'other')
+    console.log(subAccountsData, 'login');
+
+    const handleDelSubAc = async (id: string, phoneOREmail: string) => {
+        if (id && phoneOREmail) {
+            const res = await userAPI.delSubAccount(id, phoneOREmail);
+            if (res) setSubAccountsData((pre) => pre.filter((sub) => sub.account.id !== id));
+        }
     };
     return {
         srcUp,
@@ -608,8 +925,8 @@ const LogicTitle = (
         setLogin,
         valUpdate,
         setValUpdate,
-        userData,
-        setUserData,
+        subAccountsData,
+        setSubAccountsData,
         error,
         setError,
         showPass,
@@ -630,7 +947,7 @@ const LogicTitle = (
         renderArrayInfo,
         handleEdit,
         handleLogin,
-        handleSubAccounts,
+
         itemsP,
         setEditValue,
         check,
@@ -640,6 +957,12 @@ const LogicTitle = (
         pass,
         setPass,
         dispatch,
+        handleDelSubAc,
+        acPrivate,
+        setAcPrivate,
+        privacy,
+        setPrivacy,
+        whoCanSee,
     };
 };
 export default LogicTitle;

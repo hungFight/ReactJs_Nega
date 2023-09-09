@@ -106,11 +106,11 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
-    setAs = async (as: number) => {
+    setActive = async (active: boolean) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.patch('/user/setAs', {
-                as: as,
+            const res = await Axios.patch('/user/setActive', {
+                active,
             });
             return res.data;
         } catch (error) {
@@ -138,6 +138,16 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
+    delSubAccount = async (id: string, phoneOrEmail: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post('/user/delSubAccount', { id, phoneOrEmail });
+            return res.data;
+        } catch (error) {
+            const err: any = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
     changesOne = async (id: string, value: any, params: PropsParamsById) => {
         try {
             const Axios = refreshToken.axiosJWTs();
@@ -154,13 +164,31 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
-    changesMany = async (params: PropsParamsById, mores: PropsParamsMores) => {
+    changesMany = async (
+        params: PropsParamsById,
+        mores: PropsParamsMores,
+        privacy: {
+            [position: string]: string;
+            address: string;
+            birthday: string;
+            relationship: string;
+            gender: string;
+            job: string;
+            schoolName: string;
+            occupation: string;
+            hobby: string;
+            skill: string;
+            language: string;
+            subAccount: string;
+        },
+    ) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/changesMany', {
                 params: {
                     params,
                     mores,
+                    privacy,
                 },
             });
             return res.data;

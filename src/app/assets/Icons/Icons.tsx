@@ -67,6 +67,7 @@ import {
     MdOutlineWork,
     MdOutlineTitle,
     MdNightlightRound,
+    MdOutlineExpandMore,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
 import { FaPeopleArrows, FaAddressCard, FaUserFriends, FaBirthdayCake, FaRegSmileBeam, FaSchool } from 'react-icons/fa';
@@ -180,3 +181,4 @@ export const VerifyI = () => <VscVerifiedFilled />;
 export const AccountI = () => <RiAccountPinCircleFill />;
 export const PrivacyI = () => <RiChatPrivateFill />;
 export const CopyI = () => <IoCopy />;
+export const ExpandI = () => <MdOutlineExpandMore />;

@@ -55,11 +55,11 @@ export interface PropsUser {
     nickName: string;
     gender: number;
     background: any;
-    status: string;
-    sn: string;
-    l: string;
-    w: string;
-    as: number;
+    biography: string;
+    firstPage: string;
+    secondPage: string;
+    thirdPage: string;
+    active: boolean;
 }
 export interface PropsUserPer {
     id: string;

@@ -44,26 +44,27 @@ class AuthRequest {
     };
     subLogin = async (nameAccount: string, password: string, other?: string, id?: string) => {
         try {
-            const res = await http.post('/account/subLogin', { nameAccount, password, other, id });
-            if (res.data) {
-                const { id, accessToken } = res.data;
-                const token = 'Bearer ' + accessToken;
-                console.log('cookie');
+            const res = await http.post('/account/subLogin', { nameAccount, password, id });
+            if (other)
+                if (res.data) {
+                    const { id, accessToken } = res.data;
+                    const token = 'Bearer ' + accessToken;
+                    console.log('cookie');
 
-                Cookies.set('tks', token, {
-                    path: '/',
-                    secure: false,
-                    sameSite: 'strict',
-                    expires: new Date(new Date().getTime() + 30 * 86409000),
-                });
-                delete res.data?.accessToken;
-                Cookies.set('k_user', id, {
-                    path: '/',
-                    secure: false,
-                    sameSite: 'strict',
-                    expires: new Date(new Date().getTime() + 30 * 86409000),
-                });
-            }
+                    Cookies.set('tks', token, {
+                        path: '/',
+                        secure: false,
+                        sameSite: 'strict',
+                        expires: new Date(new Date().getTime() + 30 * 86409000),
+                    });
+                    delete res.data?.accessToken;
+                    Cookies.set('k_user', id, {
+                        path: '/',
+                        secure: false,
+                        sameSite: 'strict',
+                        expires: new Date(new Date().getTime() + 30 * 86409000),
+                    });
+                }
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

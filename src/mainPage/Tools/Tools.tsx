@@ -14,22 +14,22 @@ const cookies = new Cookies();
 const Tools: React.FC<{
     colorText: string;
     colorBg: number;
-    as: number;
+    active: boolean;
     userId: string;
     dataUser: PropsUser;
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
-}> = ({ colorText, colorBg, as, userId, dataUser, setDataUser }) => {
+}> = ({ colorText, colorBg, active, userId, dataUser, setDataUser }) => {
     const [status, setStatus] = useState<React.ReactNode>(null);
-    const [onOff, setOnOff] = useState<React.ReactElement>(() => (as === 1 ? <OnlineI /> : <OfflineI />));
+    const [onOff, setOnOff] = useState<React.ReactElement>(() => (active ? <OnlineI /> : <OfflineI />));
     const handleChange = async (o: { name: string }) => {
-        const res = await HttpRequestUser.setAs(o.name === 'online' ? 1 : 0);
+        const res = await HttpRequestUser.setActive(o.name === 'online');
         console.log(res, o, 'res here');
-        if (res === 1) {
+        if (res) {
             if (o.name === 'online') {
-                setDataUser({ ...dataUser, as: 1 });
+                setDataUser({ ...dataUser, active: true });
                 setOnOff(<OnlineI />);
             } else {
-                setDataUser({ ...dataUser, as: 0 });
+                setDataUser({ ...dataUser, active: false });
                 setOnOff(<OfflineI />);
             }
         }
@@ -44,7 +44,11 @@ const Tools: React.FC<{
                 setStatus(
                     <Div css="width: 100%; background-color: #202023;padding: 7px; font-size: 25px">
                         {res.map((o, index) => (
-                            <Div key={index} css="padding: 4px; cursor: var(--pointer)" onClick={() => handleChange(o)}>
+                            <Div
+                                key={index}
+                                css="padding: 4px; cursor: var(--pointer); &:hover{color: aliceblue;}"
+                                onClick={() => handleChange(o)}
+                            >
                                 {o.icon}
                             </Div>
                         ))}

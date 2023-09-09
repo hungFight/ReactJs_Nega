@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { PropsUser, PropsUserPer } from 'src/App';
@@ -12,7 +12,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import { onChats } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 import { Buffer } from 'buffer';
-import { LoadingI } from '~/assets/Icons/Icons';
+import { ExpandI, LoadingI } from '~/assets/Icons/Icons';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -37,7 +37,7 @@ export default function LogicView(
             }[]
         >
     >,
-    setUserData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>,
+    setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>,
     index: number,
     AllArray: PropsUserPer[],
 ) {
@@ -49,7 +49,7 @@ export default function LogicView(
     const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const language = useSelector((state: PropsLanguage) => state.persistedReducer.language);
 
-    const [more, setMore] = useState<{ tx: React.ReactElement | string; r: string } | undefined>();
+    const [more, setMore] = useState<boolean>(false);
     const [valueName, setValueName] = useState<string>('');
     const [valueNickN, setValueNickN] = useState<string>('');
     const [categories, setCategories] = useState<number>(0);
@@ -79,6 +79,8 @@ export default function LogicView(
     const following = user.followings[0]?.following || user.followed[0]?.following;
 
     const follwed = user.followings[0]?.followed || user.followed[0]?.followed;
+
+    const DivRef = useRef<HTMLDivElement | null>(null);
     console.log(user, 'userRequest');
 
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
@@ -113,8 +115,24 @@ export default function LogicView(
                             setLoading(false);
                             if (id === 0) {
                                 setUserFirst({ ...userFirst, background: img });
+                                setUsersData((pre) =>
+                                    pre.map((us) => {
+                                        if (us.id === userFirst.id) {
+                                            us.background = img;
+                                        }
+                                        return us;
+                                    }),
+                                );
                             } else {
                                 setUserFirst({ ...userFirst, avatar: img });
+                                setUsersData((pre) =>
+                                    pre.map((us) => {
+                                        if (us.id === userFirst.id) {
+                                            us.avatar = img;
+                                        }
+                                        return us;
+                                    }),
+                                );
                             }
                         }
 
@@ -182,7 +200,7 @@ export default function LogicView(
             setValueName(e.target.value);
         }
     };
-
+    const loadsRef = useRef<boolean>(false);
     const handleAddF = async (id: string) => {
         setLoads({ ...loads, friend: true });
         const res: {
@@ -213,7 +231,7 @@ export default function LogicView(
             idIsFollowed: data.id,
         };
         user.mores[0].followedAmount = data.count_flw;
-        setUserData((pre) =>
+        setUsersData((pre) =>
             pre.map((us) => {
                 if (us.id === user.id) return user;
                 return us;
@@ -243,7 +261,7 @@ export default function LogicView(
                 };
 
                 user.mores[0].friendAmount = res.count_friends;
-                setUserData((pre) =>
+                setUsersData((pre) =>
                     pre.map((us) => {
                         if (us.id === user.id) return user;
                         return us;
@@ -253,9 +271,10 @@ export default function LogicView(
         }
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
+        setLoads({ ...loads, friend: true });
+
         const res = await peopleAPI.delete(id, kindOf, 'yes');
         const data = ServerBusy(res, dispatch);
-        setMore(undefined);
         console.log('Abolish', kindOf, data);
         if (data) {
             user.userIsRequested = [];
@@ -263,13 +282,15 @@ export default function LogicView(
             user.followings = [];
             user.followed = [];
             user.mores[0].followedAmount = data.count_flwe;
-            setUserData((pre) =>
+            user.mores[0].friendAmount = user.mores[0].friendAmount - 1;
+            setUsersData((pre) =>
                 pre.map((us) => {
                     if (us.id === user.id) return user;
                     return us;
                 }),
             );
         }
+        setLoads({ ...loads, friend: false });
     };
     const handleMessenger = async (id: string) => {
         dispatch(onChats({ id_room: '', id_other: id }));
@@ -277,6 +298,7 @@ export default function LogicView(
         console.log('handleMessenger');
     };
     const handleFollower = async (id: string, follow?: string) => {
+        setLoads({ ...loads, follow: true });
         console.log('handleFollowe', id);
         const res: {
             count_flwe: number;
@@ -293,7 +315,7 @@ export default function LogicView(
                 if (res.follow === 'following') {
                     user.followings[0].following = 2;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -306,7 +328,7 @@ export default function LogicView(
                 } else {
                     user.followings[0].followed = 2;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -321,7 +343,7 @@ export default function LogicView(
                 if (data.follow === 'following') {
                     user.followed[0].following = 2;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -334,7 +356,7 @@ export default function LogicView(
                 } else {
                     user.followed[0].followed = 2;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -346,7 +368,7 @@ export default function LogicView(
                     );
                 }
             } else {
-                setUserData((pre) =>
+                setUsersData((pre) =>
                     pre.map((us) => {
                         if (us.id === user.id) {
                             user.followed[0] = {
@@ -368,11 +390,11 @@ export default function LogicView(
                 );
             }
         }
-
-        // dataUser({...dataUser, id_flwing: {...user.id_flwed.}})
+        setLoads({ ...loads, follow: false });
     };
 
     const handleUnFollower = async (id: string, unfollow: string) => {
+        setLoads({ ...loads, follow: true });
         console.log('handleUnFollowe', id);
         const res: {
             count_flwe: number;
@@ -390,7 +412,7 @@ export default function LogicView(
                 if (data.unfollow === 'following') {
                     user.followings[0].following = 1;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -403,7 +425,7 @@ export default function LogicView(
                 } else {
                     user.followings[0].followed = 2;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -418,7 +440,7 @@ export default function LogicView(
                 if (data.unfollow === 'following') {
                     user.followed[0].following = 1;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -431,7 +453,7 @@ export default function LogicView(
                 } else {
                     user.followed[0].followed = 1;
                     user.mores[0].followedAmount = data.count_flwe;
-                    setUserData((pre) =>
+                    setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) return user;
                             if (us.id === userFirst.id) {
@@ -443,7 +465,7 @@ export default function LogicView(
                     );
                 }
             } else {
-                setUserData((pre) =>
+                setUsersData((pre) =>
                     pre.map((us) => {
                         if (us.id === user.id) {
                             user.followed[0].followed = 1;
@@ -460,43 +482,17 @@ export default function LogicView(
                 );
             }
         }
+        setLoads({ ...loads, follow: false });
     };
 
-    const handleFriend = async (id: string) => {
-        console.log('handleFriend');
-        const tx = (
-            <DivPos
-                css={`
-                    width: 100%;
-                    height: 200px;
-                    padding: 5px 0;
-                    left: 0;
-                    top: 40px;
-                    border-radius: 5px;
-                    background-color: #383838;
-                    align-items: baseline;
-                `}
-            >
-                <Div
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleAbolish(id);
-                    }}
-                    css={`
-                        width: 100%;
-                        justify-content: center;
-                        padding: 5px;
-                    `}
-                >
-                    Huỷ kết bạn
-                </Div>
-            </DivPos>
-        );
-        //    more?.r && user.id === more.r ?//
-        if (more) {
-            setMore(undefined);
-        } else {
-            setMore({ tx, r: id });
+    const handleFriend = async (e: string | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (typeof e !== 'string') {
+            e.stopPropagation();
+            if (!more) {
+                setMore(true);
+            } else {
+                setMore(false);
+            }
         }
     };
     const handleLoves = async () => {
@@ -504,7 +500,7 @@ export default function LogicView(
             const res = await userAPI.changesOne(user.id, '', { mores: { loverAmount: 'love' } });
             const data = ServerBusy(res, dispatch);
 
-            setUserData((pre) =>
+            setUsersData((pre) =>
                 pre.map((us) => {
                     if (us.id === user.id) {
                         return {
@@ -520,7 +516,7 @@ export default function LogicView(
         } else {
             const res = await userAPI.changesOne(user.id, '', { mores: { loverAmount: 'unLove' } });
             const data = ServerBusy(res, dispatch);
-            setUserData((pre) =>
+            setUsersData((pre) =>
                 pre.map((us) => {
                     if (us.id === user.id) {
                         return {
@@ -655,7 +651,7 @@ export default function LogicView(
             width: 118px;
             justify-content: center;
             align-items: center;
-            padding: 5px;
+            padding: 7px 5px;
             font-size: 1.3rem;
             margin: 0 5px;
             background-color: #383838;
@@ -694,9 +690,52 @@ export default function LogicView(
                     : ''
             }
             `;
+    const empty = () => {};
+    const tx = (
+        <DivPos
+            ref={DivRef}
+            css={`
+                width: 100%;
+                left: 0;
+                top: 40px;
+                height: 0;
+                border-radius: 5px;
+                background-color: #383838;
+                align-items: baseline;
+                transition: all 0.2s linear;
+                ${more ? ' height: 200px; padding: 5px 0; div{display: flex}' : ''}
+            `}
+        >
+            <Div>
+                <Div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleAbolish(user.id);
+                    }}
+                    display="none"
+                    css={`
+                        width: 100%;
+                        justify-content: center;
+                        padding: 5px;
+                        &:hover {
+                            color: #e9e9e9;
+                        }
+                    `}
+                >
+                    Huỷ kết bạn
+                </Div>
+            </Div>
+        </DivPos>
+    );
     const buttons: {
-        [en: string]: { name: string; onClick: (id: string) => Promise<void> | void }[];
-        vi: { name: string; onClick: (id: string) => Promise<void> | void }[];
+        [en: string]: {
+            name: string;
+            onClick: (id: string | React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<void> | void;
+        }[];
+        vi: {
+            name: string;
+            onClick: (id: string | React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<void> | void;
+        }[];
     } = {
         en: [
             {
@@ -712,17 +751,17 @@ export default function LogicView(
                         : level === 2
                         ? 'Friend'
                         : 'Add Friend',
-                onClick: () =>
+                onClick: (e) =>
                     userRequest !== userFirst.id
                         ? level === 1
                             ? handleConfirm(user.id)
                             : level === 2
-                            ? handleFriend(user.id)
+                            ? handleFriend(e)
                             : handleAddF(user.id)
                         : level === 1
                         ? handleAbolish(user.id)
                         : level === 2
-                        ? handleFriend(user.id)
+                        ? handleFriend(e)
                         : handleAddF(user.id),
             },
             {
@@ -753,17 +792,17 @@ export default function LogicView(
                         : level === 2
                         ? 'Bạn bè'
                         : 'Kêt bạn',
-                onClick: () =>
+                onClick: (e) =>
                     userRequest !== userFirst.id
                         ? level === 1
                             ? handleConfirm(user.id)
                             : level === 2
-                            ? handleFriend(user.id)
+                            ? handleFriend(e)
                             : handleAddF(user.id)
                         : level === 1
                         ? handleAbolish(user.id)
                         : level === 2
-                        ? handleFriend(user.id)
+                        ? handleFriend(e)
                         : handleAddF(user.id),
             },
             {
@@ -785,18 +824,48 @@ export default function LogicView(
     const btss = [
         {
             text: buttons[lg][0].name,
-            css: cssBt + 'position: relative;',
+            css:
+                cssBt +
+                `position: relative; ${
+                    ['Thu hồi', 'Abolish'].includes(buttons[lg][0].name)
+                        ? 'background-color: #813737;'
+                        : ['Chấp nhận', 'Confirm'].includes(buttons[lg][0].name)
+                        ? 'background-color: #236164b3;'
+                        : ['Friend', 'Bạn bè'].includes(buttons[lg][0].name)
+                        ? 'background-color: #175089de;'
+                        : ''
+                }`,
             onClick: buttons[lg][0].onClick,
             tx: loads.friend ? (
                 <DivLoading css="width: auto; font-size: 15px; margin: 0;">
                     <LoadingI />
                 </DivLoading>
+            ) : ['Friend', 'Bạn bè'].includes(buttons[lg][0].name) ? (
+                <>
+                    <Div css="font-size: 17px;">
+                        <ExpandI />
+                    </Div>
+                    {tx}
+                </>
             ) : (
-                more?.tx
+                ''
             ),
         },
-        { text: buttons[lg][1].name, css: cssBt, onClick: buttons[lg][1].onClick },
-        { text: buttons[lg][2].name, css: cssBt, onClick: buttons[lg][2].onClick },
+        {
+            text: buttons[lg][1].name,
+            css: cssBt,
+            onClick: buttons[lg][1].onClick,
+        },
+        {
+            text: buttons[lg][2].name,
+            css: cssBt,
+            onClick: buttons[lg][2].onClick,
+            tx: loads.follow ? (
+                <DivLoading css="width: auto; font-size: 15px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : null,
+        },
     ];
     console.log(btss, 'here');
 
@@ -844,5 +913,6 @@ export default function LogicView(
         openProfile,
         dispatch,
         loads,
+        setMore,
     };
 }

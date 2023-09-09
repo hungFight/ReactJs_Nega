@@ -88,6 +88,7 @@ const PersonalPage: React.FC<PropsPer> = ({
         openProfile,
         dispatch,
         loads,
+        setMore,
     } = LogicView(user, userFirst, setUserFirst, leng, colorText, online, setId_chats, setUsersData, index, AllArray);
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
         return (
@@ -120,7 +121,7 @@ const PersonalPage: React.FC<PropsPer> = ({
         dispatch(setNewProfile(newPr));
     };
     return (
-        <Div id={`profiles${user.id}`} css={css}>
+        <Div id={`profiles${user.id}`} css={css} onClick={() => setMore(false)}>
             {(room.background || room.avatar) && (
                 <DivPos
                     position="fixed"
@@ -180,7 +181,9 @@ const PersonalPage: React.FC<PropsPer> = ({
                         <Img
                             src={user.background}
                             alt={user?.fullName}
-                            onClick={() => setRoom({ ...room, background: true })}
+                            onClick={() => {
+                                if (!room.background) setRoom({ ...room, background: true });
+                            }}
                         />
                     )}
                     {/* )} */}
@@ -190,7 +193,12 @@ const PersonalPage: React.FC<PropsPer> = ({
             </div> */}
 
                 <DivPersonalPage width="90%" height="44px" margin="auto" css={cssDivPersonalPage}>
-                    <Div css={cssAvatar + cssMoreAva} onClick={() => setRoom({ ...room, avatar: true })}>
+                    <Div
+                        css={cssAvatar + cssMoreAva}
+                        onClick={() => {
+                            if (!room.avatar) setRoom({ ...room, avatar: true });
+                        }}
+                    >
                         <Avatar
                             src={user.avatar}
                             alt={user.fullName}
@@ -400,7 +408,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                     id_loved={id_loved}
                     resTitle={resTitle}
                     id_o={userRequest}
-                    id_f={userRequested}
+                    userRequested={userRequested}
                     level={level}
                     colorText={colorText}
                     colorBg={colorBg}

@@ -86,7 +86,7 @@ const Website: React.FC<{
         });
     }, []);
     useEffect(() => {
-        if (dataUser.as !== 0) {
+        if (dataUser.active) {
             socket.emit('sendId', userId);
             socket.on('user connectedd', (re) => {
                 console.log(`connected`, JSON.parse(re));
@@ -308,7 +308,7 @@ const Website: React.FC<{
                                         />
                                     </DivAvatar>
                                     <HfullName color={colorText}>{dataUser.fullName}</HfullName>
-                                    <Pstatus color={colorText}>{dataUser.status}</Pstatus>
+                                    <Pstatus color={colorText}>{dataUser.biography}</Pstatus>
                                 </DivPersonalPage>
                                 <DivChangeColorBG>
                                     <Background dispatch={dispatch} />
@@ -332,7 +332,7 @@ const Website: React.FC<{
                                                             userId={userId}
                                                             colorText={colorText}
                                                             colorBg={colorBg}
-                                                            as={dataUser.as}
+                                                            active={dataUser.active}
                                                         />,
                                                     )
                                                 }
