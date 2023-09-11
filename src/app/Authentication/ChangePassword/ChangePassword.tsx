@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { PropsBgRD } from '~/redux/background';
 import { useDispatch, useSelector } from 'react-redux';
 import ServerBusy from '~/utils/ServerBusy';
+import { useCookies } from 'react-cookie';
 
 const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, setEnable }) => {
     const dispatch = useDispatch();

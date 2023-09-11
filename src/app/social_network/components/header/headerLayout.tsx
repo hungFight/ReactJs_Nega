@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { routeheaders } from '~/routes/routeSocialNetwork/routes';
 
@@ -58,8 +58,7 @@ const Header: React.FC<{
 }> = ({ dataText, dataUser }) => {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
-    const token = cookies.tks;
-    const userId = cookies.k_user;
+    const cRef = useRef<number>(0);
 
     const [searchC, setSearchC] = useState<boolean>(false);
     const [history, setHistory] = useState<
@@ -257,9 +256,13 @@ const Header: React.FC<{
                             color={colorText}
                             onClick={() => setBorder('people')}
                             onDoubleClick={() => {
+                                cRef.current = 0;
                                 dispatch(setPeople(Math.random()));
                             }}
-                            onTouchStart={() => dispatch(setPeople(Math.random()))}
+                            onTouchStart={() => {
+                                cRef.current = 0;
+                                dispatch(setPeople(Math.random()));
+                            }}
                         />
                         <Div
                             width="40px"
@@ -333,6 +336,7 @@ const Header: React.FC<{
                         path={path}
                         element={
                             <Component
+                                cRef={cRef}
                                 home={home.children}
                                 friendsT={friends.children}
                                 dataUser={dataUser}

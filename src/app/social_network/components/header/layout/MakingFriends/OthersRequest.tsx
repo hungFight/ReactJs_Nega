@@ -17,13 +17,12 @@ interface PropsOthers {
     fullName: string;
     gender: number;
     id: string;
-    nickName: string | undefined;
 }
 const Others: React.FC<{ type: string }> = ({ type }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
     const [data, setData] = useState<PropsOthers[]>();
-    const [cookies, setCookies] = useCookies(['tks', 'k_user']);
+
     const [loading, setLoading] = useState<boolean>(false);
     const limit: number = 1;
 

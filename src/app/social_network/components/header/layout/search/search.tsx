@@ -39,7 +39,7 @@ interface PropsSearch {
 }
 const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText, title, history }) => {
     const dispatch = useDispatch();
-    const [cookies, setCookie] = useCookies(['tks']);
+
     const [searchUser, setSearchUser] = useState<string>('');
     const [searchUserMore, setSearchUserMore] = useState<string>('');
     const [cateMore, setCateMore] = useState<string>('');

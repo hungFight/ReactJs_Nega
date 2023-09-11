@@ -44,6 +44,7 @@ interface PropsHome {
 const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
+
     const [include, setInclude] = useState<boolean>(false); // show imotion of icon
     const [dataPosts, setDataPosts] = useState<PropsDataPosts[]>([]);
     const offset = useRef<number>(0);

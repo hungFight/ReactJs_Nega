@@ -16,37 +16,31 @@ interface PropsData {
     fullName: string;
     gender: number;
     id: string;
-    nickName: string;
-    id_f_user: {
-        idCurrentUser: string | null;
-        idFriend: string | null;
-        level: number | null;
-        createdAt: string | null;
-    };
-    id_friend: {
-        idCurrentUser: string | null;
-        idFriend: string | null;
-        level: number | null;
-        createdAt: string | null;
-    };
-    id_r_user: {
-        id_user: string | null;
-        id_relative: string | null;
-        title: string | null;
-        really: number | null;
-        createdAt: string | null;
-    };
-    id_relative: {
-        id_user: string | null;
-        id_relative: string | null;
-        title: string | null;
-        really: number | null;
-        createdAt: string | null;
-    };
+    userRequest:
+        | {
+              id: number;
+              idRequest: string;
+              idIsRequested: string;
+              level: number;
+              createdAt: string;
+              updatedAt?: string;
+          }[]
+        | [];
+    userIsRequested:
+        | {
+              id: number;
+              idRequest: string;
+              idIsRequested: string;
+              level: number;
+              createdAt: string;
+              updatedAt?: string;
+          }[]
+        | [];
 }
 const Strangers: React.FC<{
     type: string;
-}> = ({ type = 'stranggers' }) => {
+    cRef: React.MutableRefObject<number>;
+}> = ({ type = 'strangers', cRef }) => {
     const dispatch = useDispatch();
     const [data, setData] = useState<PropsData[] | undefined>();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
@@ -58,25 +52,20 @@ const Strangers: React.FC<{
     const userId = cookies.k_user;
     const eleRef = useRef<any>();
     const dataRef = useRef<any>([]);
-    const cRef = useRef<number>(0);
-    const ids: any = new Set();
 
-    const fetch = async (rel: boolean) => {
+    const fetch = async (rel: string) => {
         cRef.current = 1;
         if (rel) {
-            ids.clear();
             dataRef.current = [];
             cRef.current = 3;
             setLoading(true);
         }
-        console.log(Array.from(ids), 'lll');
 
-        const res = await peopleAPI.getStrangers(limit, Array.from(ids));
+        const res = await peopleAPI.getStrangers(limit, rel);
         const dataR = ServerBusy(res, dispatch);
 
-        console.log(dataRef.current.length, rel, 'strangers', dataR, Array.from(ids));
+        console.log(dataRef.current.length, rel, 'strangers', dataR);
         dataR.map((f: { avatar: any; id: string }) => {
-            ids.add(f.id);
             if (f.avatar) {
                 const av = CommonUtils.convertBase64(f.avatar);
                 f.avatar = av;
@@ -91,8 +80,8 @@ const Strangers: React.FC<{
             setLoading(false);
         }
         cRef.current = 1;
+        console.log(dataRef.current, rel, 'data', cRef);
     };
-    console.log(dataRef.current, data, 'data');
 
     const handleScroll = () => {
         const { scrollTop, clientHeight, scrollHeight } = eleRef.current;
@@ -100,11 +89,17 @@ const Strangers: React.FC<{
 
         if (scrollTop + clientHeight >= scrollHeight - 20 && !loading) {
             console.log(cRef.current);
-            if (cRef.current !== 3) fetch(false);
+            if (cRef.current !== 3) fetch('');
         }
     };
     useEffect(() => {
-        if (type === 'strangers' || cRef.current === 0) fetch(true);
+        console.log(cRef, 'cRef');
+
+        if (type === 'strangers' && cRef.current === 0) {
+            fetch('ok');
+        } else {
+            fetch('');
+        }
         eleRef.current.addEventListener('scroll', handleScroll);
         return () => {
             eleRef.current?.removeEventListener('scroll', handleScroll);
@@ -117,18 +112,21 @@ const Strangers: React.FC<{
             data: {
                 createdAt: string;
                 id: 79;
-                idCurrentUser: string;
-                idFriend: string;
+                idIsRequested: string;
+                idRequest: string;
             };
         } = await peopleAPI.setFriend(id);
-        const dataR = ServerBusy(res, dispatch);
+        const dataR: typeof res = ServerBusy(res, dispatch);
 
         const newStranger = data?.filter((x: PropsData) => {
-            if (x.id === dataR.data.idFriend) {
-                x.id_f_user.idCurrentUser = dataR.data.idCurrentUser;
-                x.id_f_user.idFriend = dataR.data.idFriend;
-                x.id_f_user.createdAt = dataR.data.createdAt;
-                x.id_f_user.level = 1;
+            if (x.id === dataR.data.idIsRequested) {
+                x.userRequest[0] = {
+                    id: dataR.data.id,
+                    idRequest: dataR.data.idRequest,
+                    idIsRequested: dataR.data.idIsRequested,
+                    createdAt: dataR.data.createdAt,
+                    level: 1,
+                };
                 return x;
             } else {
                 return x;
@@ -137,33 +135,40 @@ const Strangers: React.FC<{
         setData(newStranger);
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const res = await peopleAPI.delete(id, kindOf);
-        const dataR = ServerBusy(res, dispatch);
+        const res: {
+            ok: {
+                createdAt: string;
+                id: number;
+                idIsRequested: string;
+                idRequest: string;
+                level: number;
+                updatedAt: string;
+            };
+        } = await peopleAPI.delete(id, kindOf);
+        const dataR: typeof res = ServerBusy(res, dispatch);
 
-        const newStranger = data?.filter((x: PropsData) => {
-            if (
-                (x.id_f_user.idCurrentUser === dataR.ok?.idCurrentUser &&
-                    x.id_f_user.idFriend === dataR.ok?.idFriend) ||
-                (x.id_f_user.idFriend === dataR.ok?.idCurrentUser &&
-                    x.id_f_user.idCurrentUser === dataR.ok?.idFriend) ||
-                (x.id_friend.idCurrentUser === dataR.ok?.idCurrentUser &&
-                    x.id_friend.idFriend === dataR.ok?.idFriend) ||
-                (x.id_friend.idCurrentUser === dataR.ok?.idFriend && x.id_friend.idFriend === dataR.ok?.idCurrentUser)
-            ) {
-                x.id_f_user.idCurrentUser = null;
-                x.id_f_user.idFriend = null;
-                x.id_f_user.level = null;
-                x.id_f_user.createdAt = null;
-                x.id_friend.idCurrentUser = null;
-                x.id_friend.idFriend = null;
-                x.id_friend.level = null;
-                x.id_friend.createdAt = null;
-                return x;
-            } else {
-                return x;
-            }
-        });
-        setData(newStranger);
+        if (dataR) {
+            const newStranger = data?.filter((x: PropsData) => {
+                if (
+                    (x.userRequest.length || x.userIsRequested.length) &&
+                    ((x.userRequest[0].idRequest === dataR.ok.idRequest &&
+                        x.userRequest[0].idIsRequested === dataR.ok.idIsRequested) ||
+                        (x.userRequest[0].idIsRequested === dataR.ok.idRequest &&
+                            x.userRequest[0].idRequest === dataR.ok.idIsRequested) ||
+                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest &&
+                            x.userIsRequested[0].idIsRequested === dataR.ok.idRequest) ||
+                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest &&
+                            x.userIsRequested[0].idIsRequested === dataR.ok.idIsRequested))
+                ) {
+                    x.userRequest = [];
+                    x.userIsRequested = [];
+                    return x;
+                } else {
+                    return x;
+                }
+            });
+            setData(newStranger);
+        }
     };
     const handleMessenger = (id: string) => {
         console.log('messenger', id);
@@ -176,11 +181,11 @@ const Strangers: React.FC<{
             if (res.ok === 1) {
                 const newStranger = data?.filter((x: PropsData) => {
                     if (
-                        (x.id_f_user.idCurrentUser === res.id_fr && x.id_f_user.idFriend === userId) ||
-                        (x.id_friend.idCurrentUser === res.id_fr && x.id_friend.idFriend === userId)
+                        (x.userRequest[0].idRequest === res.id_fr && x.userRequest[0].idIsRequested === userId) ||
+                        (x.userIsRequested[0].idRequest === res.id_fr && x.userIsRequested[0].idIsRequested === userId)
                     ) {
-                        if (x.id_f_user.level) x.id_f_user.level = 2;
-                        if (x.id_friend.level) x.id_friend.level = 2;
+                        if (x.userRequest[0].level) x.userRequest[0].level = 2;
+                        if (x.userIsRequested[0].level) x.userIsRequested[0].level = 2;
                         return x;
                     } else {
                         return x;
@@ -244,9 +249,9 @@ const Strangers: React.FC<{
 
                 {data?.map((vl) => {
                     const buttons = [];
-                    const idU = vl.id_friend?.idCurrentUser || vl.id_f_user?.idCurrentUser;
-                    const idFr = vl.id_f_user?.idFriend || vl.id_friend?.idFriend;
-                    const level = vl.id_friend?.level || vl.id_f_user?.level;
+                    const idU = vl.userIsRequested[0]?.idRequest || vl.userRequest[0]?.idRequest;
+                    const idFr = vl.userRequest[0]?.idIsRequested || vl.userIsRequested[0]?.idIsRequested;
+                    const level = vl.userIsRequested[0]?.level || vl.userRequest[0]?.level;
 
                     if (level === 2 || level === 2) {
                         buttons.push({

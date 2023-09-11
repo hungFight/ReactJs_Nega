@@ -25,9 +25,10 @@ interface PropsMakingFriends {
     colorText: string;
     colorBg: number;
     dataUser?: PropsUserPeople;
+    cRef: React.MutableRefObject<number>;
 }
 
-const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colorBg, dataUser }) => {
+const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colorBg, dataUser, cRef }) => {
     const [type, setType] = useState<string>(() => window.location.href.split('#')[1] || 'strangers');
     const lRef = useRef<any>();
     const menu = friendsT.menu;
@@ -71,7 +72,7 @@ const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colo
                         }
                     `}
                 >
-                    <Strangers type={type} />
+                    <Strangers type={type} cRef={cRef} />
                     <Friends type={type} />
                     <Requested type={type} />
                     <Others type={type} />

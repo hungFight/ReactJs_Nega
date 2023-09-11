@@ -14,9 +14,8 @@ import ServerBusy from '~/utils/ServerBusy';
 const LogicMessenger = () => {
     const dispatch = useDispatch();
     const { roomChat, delIds } = useSelector((state: PropsReloadRD) => state.reload);
-    const [cookies, setCookies] = useCookies(['k_user', 'tks']);
+    const [cookies, setCookies, _del] = useCookies(['k_user', 'tks']);
     const userId = cookies.k_user;
-    const token = cookies.tks;
 
     const [rooms, setRooms] = useState<PropsRoomChat[]>([]);
     const [roomNew, setRoomNew] = useState<PropsRoomChat>();

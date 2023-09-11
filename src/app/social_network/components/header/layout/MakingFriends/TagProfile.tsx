@@ -9,7 +9,6 @@ interface PropsTagP {
     data: {
         id: string;
         fullName: string;
-        nickName: string | undefined;
         avatar: string | undefined;
         gender: number;
     };
@@ -77,9 +76,6 @@ const TagProfile: React.FC<PropsTagP> = ({
                     onClick={() => handlePlPage(data.id)}
                 >
                     <Hname>{data.fullName}</Hname>
-                    <P css="font-size: 1.2rem; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; height: 20px;">
-                        {data.nickName}
-                    </P>
                 </Div>
             </Div>
             {button && (

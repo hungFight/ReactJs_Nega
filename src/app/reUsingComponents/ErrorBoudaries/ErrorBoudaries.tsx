@@ -11,7 +11,7 @@ const ErrorBoundaries: React.FC<{
 }> = ({ message }) => {
     const dispatch = useDispatch();
     const [c, s, removeCookies] = useCookies(['k_user', 'tks']);
-    const login = message === 'NeGA_off' ? true : false;
+    const login = message === 'The session expired! Please login again' ? true : false;
     return (
         <DivMessage>
             <P

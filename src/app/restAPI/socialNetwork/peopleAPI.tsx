@@ -36,13 +36,13 @@ class PeopleRequest {
             return errorHandling(err);
         }
     };
-    getStrangers = async (limit: number, ids: string[]) => {
+    getStrangers = async (limit: number, rel?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.get('/SN/people/getStrangers', {
                 params: {
                     limit,
-                    ids,
+                    rel,
                 },
             });
             return res.data;

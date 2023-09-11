@@ -49,6 +49,7 @@ import { PropsPreViewFormHome } from './PreView';
 import axios from 'axios';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
 export default function LogicPreView(
     user: PropsUserHome,
     colorText: string,
@@ -117,6 +118,7 @@ export default function LogicPreView(
 ) {
     const dispatch = useDispatch();
     const [selectType, setSelectType] = useState<number>(0);
+
     // select children of swiper
     const [selectChild, setSelectChild] = useState<{ id: number; name: string }>({
         id: 1,

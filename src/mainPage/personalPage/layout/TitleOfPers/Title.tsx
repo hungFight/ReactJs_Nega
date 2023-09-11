@@ -251,7 +251,6 @@ const Title: React.FC<{
                     </Div>
                 )}
             </Div>
-
             <Div
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
@@ -361,13 +360,6 @@ const Title: React.FC<{
                         ((ObjectRender[key].val && !editTitle) || editTitle) &&
                         (whoCanSee(ObjectRender[key].letPrivate) || userFirst.id === data.id)
                     ) {
-                        console.log(
-                            ObjectRender[key].letPrivate,
-                            level,
-                            whoCanSee(ObjectRender[key].letPrivate) || userFirst.id === data.id,
-                            '111',
-                        );
-
                         return renderInfo(
                             ObjectRender[key].val,
                             ObjectRender[key].placeholder,

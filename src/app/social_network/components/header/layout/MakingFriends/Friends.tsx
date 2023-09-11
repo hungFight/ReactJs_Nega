@@ -16,7 +16,6 @@ interface PropsFriends {
     fullName: string;
     gender: number;
     id: string;
-    nickName: string | undefined;
 }
 const Friends: React.FC<{ type: string }> = ({ type }) => {
     const dispatch = useDispatch();

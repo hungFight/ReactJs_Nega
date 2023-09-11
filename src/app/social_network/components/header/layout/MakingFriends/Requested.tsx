@@ -15,12 +15,10 @@ interface PropsYouSent {
     fullName: string;
     gender: number;
     id: string;
-    nickName: string | undefined;
 }
 const Requested: React.FC<{ type: string }> = ({ type }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
-    const [cookies, setCookies] = useCookies(['tks', 'k_user']);
 
     const [loading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<PropsYouSent[]>();

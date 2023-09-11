@@ -37,6 +37,7 @@ import http from '~/utils/http';
 import { useQuery, gql } from '@apollo/client';
 import { PropsChat } from '~/Message/Messenger/Conversation/LogicConver';
 import ServerBusy from '~/utils/ServerBusy';
+import { useCookies } from 'react-cookie';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -153,6 +154,8 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
+    const [_c, _set, _del] = useCookies(['tks', 'k_user']);
+
     const dispatch = useDispatch();
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);

@@ -30,6 +30,7 @@ import Gender from '~/utils/Gender';
 import handleFileUpload from '~/utils/handleFileUpload';
 import Cookies from '~/utils/Cookies';
 import { useCookies } from 'react-cookie';
+import ServerBusy from '~/utils/ServerBusy';
 
 const LogicTitle = (
     colorText: string,
@@ -52,7 +53,6 @@ const LogicTitle = (
 ) => {
     const { mores } = data;
     const dispatch = useDispatch();
-    const [_, setCookies] = useCookies();
 
     const [src, setSrc] = useState<{ type: string; file: string }[]>([]);
     const srcUp = useRef<{ file: Blob; type: string }[]>([]);
@@ -538,9 +538,8 @@ const LogicTitle = (
     useEffect(() => {
         setObjectRender(ob);
         setArrayRender(ar);
-        // setPrivacy(privacies);
         setSubAccountsData(data.accountUser);
-    }, [data, privacy]);
+    }, [data]);
     const renderArrayInfo = (
         res: string[],
         placeholder: string,
@@ -822,11 +821,12 @@ const LogicTitle = (
         if (checks && check) {
             console.log(privacyF, 'privacyF');
 
-            const res: { countUser: number; countMores: number } = await userAPI.changesMany(
+            const resF: { countUser: number; countMores: number } = await userAPI.changesMany(
                 paramsUser,
                 paramsMores,
                 privacyF,
             );
+            const res = ServerBusy(resF, dispatch);
             if (res.countUser || res.countMores) {
                 setUsersData((pre) =>
                     pre.map((us) => {
