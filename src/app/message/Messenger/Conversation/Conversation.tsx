@@ -119,7 +119,7 @@ const Conversation: React.FC<{
         conversation?.id_us.forEach((id) => {
             if (id !== userId) id_oth.push(id);
         });
-        dispatch(setOpenProfile(id_oth));
+        dispatch(setOpenProfile({ newProfile: id_oth, currentId: '' }));
     };
     const handleDelete = async () => {
         setLoadDel(true);

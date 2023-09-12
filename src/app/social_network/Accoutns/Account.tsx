@@ -15,7 +15,6 @@ const Account: React.FC<{
         id: string;
         avatar: string;
         fullName: string;
-        nickName: string;
         gender: number;
     }[];
     location: string;
@@ -24,13 +23,7 @@ const Account: React.FC<{
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
     const token = cookies.tks;
     const userId = cookies.k_user;
-    const handleHistory = async (res: {
-        id: string;
-        avatar: string;
-        fullName: string;
-        nickName: string;
-        gender: number;
-    }) => {
+    const handleHistory = async (res: { id: string; avatar: string; fullName: string; gender: number }) => {
         const result = await userAPI.setHistory(res);
         console.log('sss');
     };
@@ -42,8 +35,7 @@ const Account: React.FC<{
                     onClick={(e) => {
                         e.stopPropagation();
                         handleHistory(res);
-                        dispatch(setOpenProfile([res.id]));
-                        window.history.replaceState(null, 'perspnalPage', `/${location}/profile?id=${res.id}`);
+                        dispatch(setOpenProfile({ newProfile: [res.id], currentId: '' }));
                     }}
                     className={clsx(styles.userSearch)}
                 >
@@ -52,8 +44,6 @@ const Account: React.FC<{
                     </div>
                     <div className={clsx(styles.title)}>
                         <h5 className={clsx(styles.fullname)}>{res.fullName}</h5>
-
-                        {res.nickName && <p className={clsx(styles.nickname)}>{res.nickName}</p>}
                     </div>
                 </div>
             ))}

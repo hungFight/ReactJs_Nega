@@ -33,7 +33,6 @@ interface PropsSearch {
         id: string;
         avatar: string;
         fullName: string;
-        nickName: string;
         gender: number;
     }[];
 }
@@ -48,7 +47,6 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
             id: string;
             avatar: string;
             fullName: string;
-            nickName: string;
             gender: number;
         }[]
     >(history);
@@ -115,7 +113,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
     ];
     const handleSearchMore = (id: number, name: string) => {
         setPlaceholder(name);
-        if (id === 1) setCateMore('nickName');
+        if (id === 1) setCateMore('address');
     };
 
     const handleMore = () => {
@@ -177,6 +175,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                 <>
                     <DivResults bg={colorBg === 1 ? '#292a2d;' : ''}>
                         <Div wrap="wrap" css="margin-bottom: 6px; box-shadow: 0 0 3px rgb(31 29 29);">
+                            {/* search more here */}
                             <Div
                                 width="100%"
                                 css="margin: 2px 5px; align-items: center; justify-content: space-between"
@@ -195,7 +194,6 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                                 </Div>
                             </Div>
                             {more}
-
                             {/* {dataText.menu.map((res) => (
                                 <Div
                                     css={`

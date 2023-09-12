@@ -17,6 +17,7 @@ interface PropsOthers {
     fullName: string;
     gender: number;
     id: string;
+    nickName: string | undefined;
 }
 const Others: React.FC<{ type: string }> = ({ type }) => {
     const dispatch = useDispatch();

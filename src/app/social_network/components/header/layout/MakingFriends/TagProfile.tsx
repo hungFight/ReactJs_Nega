@@ -33,7 +33,7 @@ const TagProfile: React.FC<PropsTagP> = ({
     const dispatch = useDispatch();
     const handlePlPage = (id: string) => {
         if (profile) {
-            dispatch(setOpenProfile([id]));
+            dispatch(setOpenProfile({ newProfile: [id] }));
         }
     };
 

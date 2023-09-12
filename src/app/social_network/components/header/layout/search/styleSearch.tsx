@@ -24,11 +24,14 @@ export const DivResults = styled.div`
     width: 320px;
     height: 611px;
     top: 45px;
-    left: -5px;
+    left: -60px;
     position: absolute;
     background: ${(props: { bg: string }) => props.bg};
     transition: var(--transition-03s);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     z-index: 9999;
+    @media (min-width: 430px) {
+        left: -5px;
+    }
 `;

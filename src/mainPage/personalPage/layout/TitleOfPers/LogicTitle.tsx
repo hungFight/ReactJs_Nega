@@ -130,14 +130,12 @@ const LogicTitle = (
         birthday: string;
         relationship: string;
         gender: string;
-        job: string;
         schoolName: string;
         occupation: string;
         hobby: string;
         skill: string;
         language: string;
         subAccount: string;
-        position: string;
     }>(mores[0].privacy);
     const ob = {
         address: {
@@ -539,7 +537,7 @@ const LogicTitle = (
         setObjectRender(ob);
         setArrayRender(ar);
         setSubAccountsData(data.accountUser);
-    }, [data]);
+    }, [data, privacy]);
     const renderArrayInfo = (
         res: string[],
         placeholder: string,

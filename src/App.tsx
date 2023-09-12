@@ -208,7 +208,19 @@ function App() {
                 secondPage: true,
                 thirdPage: true,
             },
-
+            {
+                position: true,
+                star: true,
+                loverAmount: true,
+                friendAmount: true,
+                visitorAmount: true,
+                followedAmount: true,
+                followingAmount: true,
+                relationship: true,
+                language: true,
+                createdAt: true,
+                privacy: true,
+            },
             first,
         );
         const data: typeof res = ServerBusy(res, dispatch);

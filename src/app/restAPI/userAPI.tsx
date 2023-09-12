@@ -38,15 +38,29 @@ interface PropsParamsMores {
     visitor?: boolean;
     relationship?: boolean | string;
 }
+interface PropsMoresGetting {
+    position?: boolean;
+    star?: boolean;
+    loverAmount?: boolean;
+    friendAmount?: boolean;
+    visitorAmount?: boolean;
+    followedAmount?: boolean;
+    followingAmount?: boolean;
+    relationship?: boolean;
+    language?: boolean;
+    privacy: boolean;
+    createdAt?: boolean;
+}
 const cookies = new Cookies();
 class HttpRequestUser {
-    getById = async (id: string | string[], params: PropsParamsById, first?: string) => {
+    getById = async (id: string | string[], params: PropsParamsById, mores: PropsMoresGetting, first?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsUserPer[] | PropsUser>('/user/getById', {
                 id: id,
                 first,
                 params: params,
+                mores,
             });
             console.log(res, 'res');
             if (Array.isArray(res.data)) {
@@ -173,7 +187,6 @@ class HttpRequestUser {
             birthday: string;
             relationship: string;
             gender: string;
-            job: string;
             schoolName: string;
             occupation: string;
             hobby: string;
@@ -246,7 +259,7 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
-    setHistory = async (data: { id: string; avatar: string; fullName: string; nickName: string; gender: number }) => {
+    setHistory = async (data: { id: string; avatar: string; fullName: string; gender: number }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setHistory', {

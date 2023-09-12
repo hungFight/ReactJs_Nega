@@ -703,6 +703,7 @@ export default function LogicView(
                 background-color: #383838;
                 align-items: baseline;
                 transition: all 0.2s linear;
+                z-index: 2;
                 ${more ? ' height: 200px; padding: 5px 0; div{display: flex}' : ''}
             `}
         >

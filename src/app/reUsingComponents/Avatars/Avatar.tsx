@@ -75,7 +75,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     };
 
     const handleOpentProfile = () => {
-        if (profile) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
+        if (profile && id) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
     };
 
     return avatar ? (

@@ -177,7 +177,7 @@ const LogicMessenger = () => {
                 id: 1,
                 name: 'View Profile',
                 icon: <ProfileCircelI />,
-                onClick: () => dispatch(setOpenProfile([moreBar.id])),
+                onClick: () => dispatch(setOpenProfile({ newProfile: [moreBar.id] })),
             },
         ],
     };

@@ -250,7 +250,7 @@ const Notification: React.FC<{
                                                                 text-decoration: underline;
                                                             }
                                                         `}
-                                                        onClick={() => dispatch(setOpenProfile([v.id]))}
+                                                        onClick={() => dispatch(setOpenProfile({ newProfile: [v.id] }))}
                                                     >
                                                         {v.fullName + ' '}
                                                     </Strong>

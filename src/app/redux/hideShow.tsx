@@ -5,7 +5,7 @@ export interface InitialStateHideShow {
     personalPage: boolean;
     openProfile: {
         newProfile: string[];
-        currentId: string;
+        currentId?: string;
     };
     errorServer: {
         check: boolean;
@@ -44,7 +44,7 @@ const hideShowSlice = createSlice({
             state.personalPage = false;
             state.setting = false;
         },
-        setOpenProfile: (state, action) => {
+        setOpenProfile: (state, action: { payload: { newProfile: string[]; currentId?: string } }) => {
             state.openProfile = action.payload;
         },
         setNewProfile: (state, action: { payload: string[] }) => {

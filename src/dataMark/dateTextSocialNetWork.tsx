@@ -40,7 +40,7 @@ export const socialnetwork = {
                         {
                             id: 1,
                             title: 'Tìm kiếm',
-                            children: [{ name: 'Nick-name', id: 1 }],
+                            children: [{ name: 'Địa chỉ', id: 1 }],
                         },
                         {
                             id: 2,
@@ -129,7 +129,7 @@ export const socialnetwork = {
                         {
                             id: 1,
                             title: 'Search-more',
-                            children: [{ name: 'Nick-name', id: 1 }],
+                            children: [{ name: 'Address', id: 1 }],
                         },
                         {
                             id: 2,
