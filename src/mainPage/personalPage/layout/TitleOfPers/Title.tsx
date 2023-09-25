@@ -385,7 +385,7 @@ const Title: React.FC<{
                 `}
             >
                 {Object.keys(ArrayRender).map((key) => {
-                    if ((ArrayRender[key].val.length && !editTitle) || editTitle) {
+                    if ((ArrayRender[key].val?.length && !editTitle) || editTitle) {
                         return renderArrayInfo(
                             ArrayRender[key].val,
                             ArrayRender[key].placeholder,

@@ -5,10 +5,16 @@ interface bar {
     css: string;
     rotate?: string;
     top?: string;
+    onMouseMove?: (e: any) => void;
+    onMouseDown?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onMouseUp?: () => void;
 }
-const Bar: React.FC<bar> = ({ onClick, css, top, rotate }) => {
+const Bar: React.FC<bar> = ({ onClick, css, top, rotate, onMouseMove, onMouseDown, onMouseUp }) => {
     const props = {
         onClick,
+        onMouseMove,
+        onMouseDown,
+        onMouseUp,
     };
     const cssC = `
                 position: absolute;

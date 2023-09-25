@@ -16,6 +16,7 @@ import {
     BsFillVolumeDownFill,
     BsFillCameraFill,
     BsGenderTrans,
+    BsBalloon,
 } from 'react-icons/bs';
 import {
     IoImagesOutline,
@@ -182,3 +183,4 @@ export const AccountI = () => <RiAccountPinCircleFill />;
 export const PrivacyI = () => <RiChatPrivateFill />;
 export const CopyI = () => <IoCopy />;
 export const ExpandI = () => <MdOutlineExpandMore />;
+export const BalloonI = () => <BsBalloon />;

@@ -40,14 +40,15 @@ export const DivResults = styled.div`
         }
     }
 `;
-export const DivConversation = styled.div`
+export const DivConversation = styled.div<{ css?: string; height?: string }>`
     width: 100%;
-    height: ${(props: { height?: string }) => props.height || '100%'};
+    height: ${(props) => props.height || '100%'};
     border: 1px solid #1b1a1a;
     border-radius: 5px;
     background-color: #202124;
     z-index: 8888;
     position: relative;
+    ${(props) => props.css}
     .chatBar {
         height: 100%;
         overflow-y: overlay;
@@ -57,12 +58,6 @@ export const DivConversation = styled.div`
     }
     @media (min-width: 360px) {
         width: 360px;
-    }
-    @media (max-width: 1080px) {
-        height: 48%;
-    }
-    @media (min-width: 1080px) {
-        height: 100%;
     }
 `;
 export const DivResultsConversation = styled.div`

@@ -108,7 +108,6 @@ const LogicTitle = (
     ];
     const handlePosition = async (id: number) => {
         const res = await userAPI.getMore(offset.current, limit);
-
         setPosition(id);
     };
     const handleAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,7 +136,57 @@ const LogicTitle = (
         language: string;
         subAccount: string;
     }>(mores[0].privacy);
-    const ob = {
+
+    const [ObjectRender, setObjectRender] = useState<{
+        [address: string]: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        gender: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        birthday: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        relationship: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        occupation: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+        schoolName: {
+            val: string;
+            placeholder: string;
+            icon: ReactElement;
+            length: number;
+            private: ReactElement;
+            letPrivate: string;
+        };
+    }>({
         address: {
             val: data.address,
             placeholder: 'Address',
@@ -209,84 +258,7 @@ const LogicTitle = (
                 ),
             letPrivate: mores[0].privacy.schoolName,
         },
-    };
-    const ar = {
-        hobby: {
-            val: data.hobby ?? [],
-            placeholder: 'Hobbies',
-            icon: <HobbyI />,
-            subVal: '',
-            private: privacy.hobby === 'only' ? <PrivateI /> : privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
-            letPrivate: mores[0].privacy.hobby,
-        },
-        skill: {
-            val: data.skill ?? [],
-            placeholder: 'Skills',
-            icon: <StrengthI />,
-            subVal: '',
-            private: privacy.skill === 'only' ? <PrivateI /> : privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
-            letPrivate: mores[0].privacy.skill,
-        },
-        language: {
-            val: mores[0].language ?? [],
-            placeholder: 'Languages',
-            icon: <LanguageI />,
-            subVal: '',
-            private:
-                privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
-            letPrivate: mores[0].privacy.language,
-        },
-    };
-    const [ObjectRender, setObjectRender] = useState<{
-        [address: string]: {
-            val: string;
-            placeholder: string;
-            icon: ReactElement;
-            length: number;
-            private: ReactElement;
-            letPrivate: string;
-        };
-        gender: {
-            val: string;
-            placeholder: string;
-            icon: ReactElement;
-            length: number;
-            private: ReactElement;
-            letPrivate: string;
-        };
-        birthday: {
-            val: string;
-            placeholder: string;
-            icon: ReactElement;
-            length: number;
-            private: ReactElement;
-            letPrivate: string;
-        };
-        relationship: {
-            val: string;
-            placeholder: string;
-            icon: ReactElement;
-            length: number;
-            private: ReactElement;
-            letPrivate: string;
-        };
-        occupation: {
-            val: string;
-            placeholder: string;
-            icon: ReactElement;
-            length: number;
-            private: ReactElement;
-            letPrivate: string;
-        };
-        schoolName: {
-            val: string;
-            placeholder: string;
-            icon: ReactElement;
-            length: number;
-            private: ReactElement;
-            letPrivate: string;
-        };
-    }>(ob);
+    });
     const [ArrayRender, setArrayRender] = useState<{
         [hobby: string]: {
             val: string[];
@@ -312,8 +284,133 @@ const LogicTitle = (
             private: ReactElement;
             letPrivate: string;
         };
-    }>(ar);
-
+    }>({
+        hobby: {
+            val: data.hobby ?? [],
+            placeholder: 'Hobbies',
+            icon: <HobbyI />,
+            subVal: '',
+            private: privacy.hobby === 'only' ? <PrivateI /> : privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.hobby,
+        },
+        skill: {
+            val: data.skill ?? [],
+            placeholder: 'Skills',
+            icon: <StrengthI />,
+            subVal: '',
+            private: privacy.skill === 'only' ? <PrivateI /> : privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.skill,
+        },
+        language: {
+            val: mores[0].language ?? [],
+            placeholder: 'Languages',
+            icon: <LanguageI />,
+            subVal: '',
+            private:
+                privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.language,
+        },
+    });
+    const ob = {
+        address: {
+            val: ObjectRender.address.val,
+            placeholder: 'Address',
+            icon: <LocationI />,
+            length: 240,
+            private:
+                privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.address,
+        },
+        gender: {
+            val: ObjectRender.gender.val,
+            placeholder: 'Gender',
+            icon: <GenderMaleI />,
+            length: 1,
+            private: privacy.gender === 'only' ? <PrivateI /> : privacy.gender === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.gender,
+        },
+        birthday: {
+            val: ObjectRender.birthday.val,
+            placeholder: 'Birthday',
+            icon: <BirthI />,
+            length: 10,
+            private:
+                privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.birthday,
+        },
+        relationship: {
+            val: ObjectRender.relationship.val,
+            placeholder: 'Relationship',
+            icon: <HeartMI />,
+            length: 20,
+            private:
+                privacy.relationship === 'only' ? (
+                    <PrivateI />
+                ) : privacy.relationship === 'friends' ? (
+                    <FriendI />
+                ) : (
+                    <EarthI />
+                ),
+            letPrivate: mores[0].privacy.relationship,
+        },
+        occupation: {
+            val: ObjectRender.occupation.val,
+            placeholder: 'Occupation',
+            icon: <WorkingI />,
+            length: 95,
+            private:
+                privacy.occupation === 'only' ? (
+                    <PrivateI />
+                ) : privacy.occupation === 'friends' ? (
+                    <FriendI />
+                ) : (
+                    <EarthI />
+                ),
+            letPrivate: mores[0].privacy.occupation,
+        },
+        schoolName: {
+            val: ObjectRender.schoolName.val,
+            placeholder: 'School Name',
+            icon: <SchoolI />,
+            length: 95,
+            private:
+                privacy.schoolName === 'only' ? (
+                    <PrivateI />
+                ) : privacy.schoolName === 'friends' ? (
+                    <FriendI />
+                ) : (
+                    <EarthI />
+                ),
+            letPrivate: mores[0].privacy.schoolName,
+        },
+    };
+    const ar = {
+        hobby: {
+            val: ArrayRender.hobby.val,
+            placeholder: 'Hobbies',
+            icon: <HobbyI />,
+            subVal: '',
+            private: privacy.hobby === 'only' ? <PrivateI /> : privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.hobby,
+        },
+        skill: {
+            val: ArrayRender.skill.val,
+            placeholder: 'Skills',
+            icon: <StrengthI />,
+            subVal: '',
+            private: privacy.skill === 'only' ? <PrivateI /> : privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.skill,
+        },
+        language: {
+            val: ArrayRender.language.val,
+            placeholder: 'Languages',
+            icon: <LanguageI />,
+            subVal: '',
+            private:
+                privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
+            letPrivate: mores[0].privacy.language,
+        },
+    };
     console.log('title', privacy, ObjectRender);
 
     const renderInfo = (
@@ -519,6 +616,7 @@ const LogicTitle = (
     };
     let check = false;
     if (
+        //check previvous data has the same with new data?
         data.address !== ObjectRender.address?.val ||
         data.birthday !== ObjectRender.birthday?.val ||
         data.occupation !== ObjectRender.occupation?.val ||
@@ -537,7 +635,151 @@ const LogicTitle = (
         setObjectRender(ob);
         setArrayRender(ar);
         setSubAccountsData(data.accountUser);
-    }, [data, privacy]);
+    }, [privacy]);
+    useEffect(() => {
+        const obs = {
+            address: {
+                val: data.address,
+                placeholder: 'Address',
+                icon: <LocationI />,
+                length: 240,
+                private:
+                    mores[0].privacy.address === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.address === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.address,
+            },
+            gender: {
+                val: Gender(data.gender).string,
+                placeholder: 'Gender',
+                icon: <GenderMaleI />,
+                length: 1,
+                private:
+                    mores[0].privacy.gender === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.gender === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.gender,
+            },
+            birthday: {
+                val: data.birthday,
+                placeholder: 'Birthday',
+                icon: <BirthI />,
+                length: 10,
+                private:
+                    mores[0].privacy.birthday === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.birthday === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.birthday,
+            },
+            relationship: {
+                val: mores[0].relationship,
+                placeholder: 'Relationship',
+                icon: <HeartMI />,
+                length: 20,
+                private:
+                    mores[0].privacy.relationship === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.relationship === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.relationship,
+            },
+            occupation: {
+                val: data.occupation,
+                placeholder: 'Occupation',
+                icon: <WorkingI />,
+                length: 95,
+                private:
+                    mores[0].privacy.occupation === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.occupation === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.occupation,
+            },
+            schoolName: {
+                val: data.schoolName,
+                placeholder: 'School Name',
+                icon: <SchoolI />,
+                length: 95,
+                private:
+                    mores[0].privacy.schoolName === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.schoolName === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.schoolName,
+            },
+        };
+        const ars = {
+            hobby: {
+                val: data.hobby,
+                placeholder: 'Hobbies',
+                icon: <HobbyI />,
+                subVal: '',
+                private:
+                    mores[0].privacy.hobby === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.hobby === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.hobby,
+            },
+            skill: {
+                val: data.skill,
+                placeholder: 'Skills',
+                icon: <StrengthI />,
+                subVal: '',
+                private:
+                    mores[0].privacy.skill === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.skill === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.skill,
+            },
+            language: {
+                val: mores[0].language,
+                placeholder: 'Languages',
+                icon: <LanguageI />,
+                subVal: '',
+                private:
+                    mores[0].privacy.language === 'only' ? (
+                        <PrivateI />
+                    ) : mores[0].privacy.language === 'friends' ? (
+                        <FriendI />
+                    ) : (
+                        <EarthI />
+                    ),
+                letPrivate: mores[0].privacy.language,
+            },
+        };
+        setObjectRender(obs);
+        setArrayRender(ars);
+        setSubAccountsData(data.accountUser);
+    }, [data]);
     const renderArrayInfo = (
         res: string[],
         placeholder: string,

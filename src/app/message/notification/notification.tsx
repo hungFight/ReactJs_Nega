@@ -125,7 +125,7 @@ const Notification: React.FC<{
     console.log(dataInfo, dataTest);
     const handleConfirm = async (id: string) => {
         if (id) {
-            const res = await peopleAPI.setConfirm(id, 'friends', true);
+            const res = await peopleAPI.setConfirm(id, 'friends');
             if (res.ok === 1) {
                 const newData = dataInfo.user.filter((x) => {
                     if (x.id === res.id_fr) {

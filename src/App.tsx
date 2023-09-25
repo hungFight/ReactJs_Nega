@@ -66,7 +66,6 @@ export interface PropsUserPer {
     id: string;
     avatar: any;
     fullName: string;
-    nickName: string;
     address: string;
     gender: number;
     birthday: string;
@@ -168,7 +167,8 @@ function App() {
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
     // messenger
-    const [id_chats, setId_chats] = useState<{ id_room: string | undefined; id_other: string }[]>(chats);
+    const [id_chats, setId_chats] =
+        useState<{ id_room: string | undefined; id_other: string; top?: number; left?: number }[]>(chats);
     const showChat = useRef<HTMLInputElement | null>(null);
     const GET_USERDATA = gql`
         query Get_dataWarning($id: String!) {
@@ -235,6 +235,8 @@ function App() {
     }
     console.log(userFirst, 'userFirst');
     console.log(userData, 'userData');
+    const ListEl = useRef<NodeListOf<Element>>();
+    const timeouts = useRef<NodeJS.Timeout[]>([]);
     function expire(eleDiv1s: NodeListOf<Element>) {
         for (let i = eleDiv1s.length - 1; i >= 0; i--) {
             const timeOut = setTimeout(() => {
@@ -242,6 +244,7 @@ function App() {
                 Array.from(eleDiv1s)[i].remove();
                 return () => clearTimeout(timeOut);
             }, 5000);
+            timeouts.current.push(timeOut);
         }
     }
     useEffect(() => {
@@ -270,16 +273,12 @@ function App() {
 
                                 setUsersData((pre) => [data[0], ...pre]);
                             } else {
-                                setUsersData((pre) => {
-                                    const newD = pre.filter((us) => us.id !== data[0].id);
-                                    return newD.map((us) => {
-                                        if (us.id === openProfile.currentId) {
-                                            return data[0];
-                                        } else {
-                                            return us;
-                                        }
-                                    });
-                                });
+                                const newD = userData.filter((us) => us.id !== data[0].id);
+                                console.log(newD, 'newD', data);
+
+                                const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
+                                console.log(r, 'rrrss');
+                                setUsersData([...r]);
                                 console.log(userData, 'uuu');
                             }
                         } else {
@@ -315,7 +314,7 @@ function App() {
             eleH3.innerText = data.user.fullName;
             eleDiv3.className = 'showChatDiv3';
             eleP.className = 'showChatTitle';
-            eleP.innerText = data.room.text.t;
+            eleP.innerText = '... ' + data.room.text.t;
             elePState.className = 'showChatPState';
             elePState.innerText = 'Vừa xong';
             //Add
@@ -327,10 +326,19 @@ function App() {
             eleDiv1.appendChild(eleDiv2);
             if (showChat.current) showChat.current.insertAdjacentElement('beforeend', eleDiv1);
             const eleDiv1s = document.querySelectorAll('.showChatDiv1');
+            console.log('789', data);
+            ListEl.current = eleDiv1s;
             expire(eleDiv1s);
         });
     }, [openProfile]);
-
+    const handleStopClearing = () => {
+        // stop clearing the show message
+        timeouts.current.forEach((t) => clearTimeout(t));
+        console.log('Stop clearing', timeouts);
+    };
+    const handleClear = () => {
+        if (ListEl.current) expire(ListEl.current);
+    };
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setUsersData([]);
@@ -358,7 +366,7 @@ function App() {
             }
 
     `;
-    console.log('id_cookie', userId);
+    console.log('id_cookie', userId, userData);
 
     if (token && userId) {
         return (
@@ -375,7 +383,12 @@ function App() {
                 {session ? <ErrorBoundaries message={session} /> : ''}
                 {userFirst ? (
                     <>
-                        <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} />
+                        <Website
+                            openProfile={openProfile.newProfile}
+                            dataUser={userFirst}
+                            setDataUser={setUserFirst}
+                            setId_chats={setId_chats}
+                        />
                         <Message
                             dataUser={userFirst}
                             userOnline={userOnline}
@@ -391,43 +404,29 @@ function App() {
                                 position: absolute;
                                 top: 57px;
                                 right: 50px;
-                                z-index: 1;
+                                z-index: 9999;
                                 transition: all 1s linear;
                             `}
+                            onMouseEnter={handleStopClearing}
+                            onMouseLeave={handleClear}
                         ></Div>
-
-                        <Div
-                            wrap="wrap"
-                            className="containChat"
-                            css="position: fixed; bottom: 0; right: 360px; z-index: 103; height: 93%; justify-content: space-around; overflow-y: overlay  "
-                        >
-                            {/* <Swiper
-                                    slidesPerView={2}
-                                    spaceBetween={30}
-                                    centeredSlides={true}
-                                    pagination={{
-                                        clickable: true,
-                                    }}
-                                    modules={[Pagination]}
-                                    className="mySwiper"
-                                > */}
-                            {id_chats?.map((room, index) => (
-                                // <SwiperSlide key={index}>
-                                <Conversation
-                                    key={index}
-                                    index={index}
-                                    colorText={colorText}
-                                    colorBg={colorBg}
-                                    id_chat={room}
-                                    currentPage={currentPage}
-                                    dataFirst={userFirst}
-                                    chat={chats}
-                                    id_chats={id_chats}
-                                />
-                                // </SwiperSlide>
-                            ))}
-                            {/* </Swiper> */}
-                        </Div>
+                        {/* show message from messenger */}
+                        {id_chats?.map((room, index) => (
+                            <Conversation
+                                key={index}
+                                index={index}
+                                colorText={colorText}
+                                colorBg={colorBg}
+                                id_chat={room}
+                                currentPage={currentPage}
+                                dataFirst={userFirst}
+                                chat={chats}
+                                id_chats={id_chats}
+                                top={room.top}
+                                left={room.left}
+                            />
+                            // </>
+                        ))}
                         {loading && (
                             <Div
                                 width="100%"
@@ -448,7 +447,6 @@ function App() {
                                 </DivLoading>
                             </Div>
                         )}
-
                         {userData?.length > 0 && (
                             <DivContainer
                                 width="100%"

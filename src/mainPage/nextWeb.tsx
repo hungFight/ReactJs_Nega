@@ -8,6 +8,7 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Button from '~/reUsingComponents/Buttoms/ListButton/Buttons';
 import ListWebBar from './listWebBar/listWebBar';
 import {
+    BalloonI,
     BookI,
     DotI,
     EarthI,
@@ -46,7 +47,7 @@ import { changeThree } from '~/redux/languageRD';
 import Progress from '~/reUsingComponents/Progress/Progress';
 import { io } from 'socket.io-client';
 import Tools from './Tools/Tools';
-import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Profile from './profiles/profile';
 import NextListWeb from './listWebs/ListWebs';
 import PeopleRequest from '~/restAPI/socialNetwork/peopleAPI';
@@ -61,7 +62,15 @@ const Website: React.FC<{
     openProfile: string[];
     dataUser: PropsUser;
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
-}> = ({ openProfile, dataUser, setDataUser }) => {
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ openProfile, dataUser, setDataUser, setId_chats }) => {
     const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
@@ -271,6 +280,35 @@ const Website: React.FC<{
                                     `}
                                 />
                             )}
+                            <Div
+                                css={`
+                                    width: 50px;
+                                    height: 50px;
+                                    position: fixed;
+                                    top: 195px;
+                                    right: 5px;
+                                    font-size: 50px;
+                                    z-index: 88;
+                                    cursor: var(--pointer);
+                                    color: ${colorText};
+                                `}
+                            >
+                                <Div
+                                    css={`
+                                        position: relative;
+                                        img {
+                                            width: 57%;
+                                            height: 59%;
+                                            position: absolute;
+                                            top: 2px;
+                                            right: 10px;
+                                        }
+                                    `}
+                                >
+                                    <BalloonI />
+                                    <Img src={dataUser.avatar} alt={dataUser.fullName} radius="50%" />
+                                </Div>
+                            </Div>
                             <CurrentPageL
                                 currentPage={currentPage}
                                 listPage={optionWebsite}
@@ -279,6 +317,7 @@ const Website: React.FC<{
                                     fullName: dataUser.fullName,
                                     gender: dataUser.gender,
                                 }}
+                                setId_chats={setId_chats}
                             />
                         </Suspense>
                         {!optionWebsite && (

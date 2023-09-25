@@ -243,7 +243,7 @@ export default function LogicView(
 
     const handleConfirm = async (id: string) => {
         if (id) {
-            const res = await peopleAPI.setConfirm(id, 'friends', true);
+            const res = await peopleAPI.setConfirm(id, 'friends', 'personal');
             const data: {
                 ok: {
                     createdAt: string;
@@ -252,18 +252,54 @@ export default function LogicView(
                     idRequest: string;
                     level: number;
                     updatedAt: string;
+                    userRequest: {
+                        address: string;
+                        birthday: string;
+                        biography: string;
+                        gender: number;
+                        hobby: string[];
+                        skill: string[];
+                        occupation: string;
+                        schoolName: string;
+                        mores: {
+                            id: string;
+                            position: string;
+                            star: number;
+                            loverAmount: number;
+                            friendAmount: number;
+                            visitorAmount: number;
+                            followedAmount: number;
+                            followingAmount: number;
+                            relationship: string;
+                            language: string[];
+                            privacy: {
+                                [position: string]: string;
+                                address: string;
+                                birthday: string;
+                                relationship: string;
+                                gender: string;
+                                schoolName: string;
+                                occupation: string;
+                                hobby: string;
+                                skill: string;
+                                language: string;
+                                subAccount: string;
+                            };
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
                 };
             } = ServerBusy(res, dispatch);
 
             if (data) {
+                // du lieu chua chinh xac khi tra ve
                 user.userRequest[0] = {
                     ...data.ok,
                 };
-
-                user.mores[0].friendAmount = res.count_friends;
                 setUsersData((pre) =>
                     pre.map((us) => {
-                        if (us.id === user.id) return user;
+                        if (us.id === id) return { ...user, ...data.ok.userRequest };
                         return us;
                     }),
                 );
@@ -273,7 +309,7 @@ export default function LogicView(
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         setLoads({ ...loads, friend: true });
 
-        const res = await peopleAPI.delete(id, kindOf, 'yes');
+        const res = await peopleAPI.delete(id, kindOf, 'personal');
         const data = ServerBusy(res, dispatch);
         console.log('Abolish', kindOf, data);
         if (data) {
@@ -423,7 +459,7 @@ export default function LogicView(
                         }),
                     );
                 } else {
-                    user.followings[0].followed = 2;
+                    user.followings[0].followed = 1;
                     user.mores[0].followedAmount = data.count_flwe;
                     setUsersData((pre) =>
                         pre.map((us) => {

@@ -26,9 +26,17 @@ interface PropsMakingFriends {
     colorBg: number;
     dataUser?: PropsUserPeople;
     cRef: React.MutableRefObject<number>;
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
 }
 
-const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colorBg, dataUser, cRef }) => {
+const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colorBg, dataUser, cRef, setId_chats }) => {
     const [type, setType] = useState<string>(() => window.location.href.split('#')[1] || 'strangers');
     const lRef = useRef<any>();
     const menu = friendsT.menu;
@@ -73,7 +81,7 @@ const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colo
                     `}
                 >
                     <Strangers type={type} cRef={cRef} />
-                    <Friends type={type} />
+                    <Friends type={type} setId_chats={setId_chats} />
                     <Requested type={type} />
                     <Others type={type} />
                     {/* <Strangers type={type} />

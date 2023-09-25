@@ -257,8 +257,10 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
 
             if (data && conversation) {
-                conversation.room[0].sending = false;
-                if (!conversation._id) conversation._id = data._id;
+                conversation.room.map((r) => {
+                    if (r.sending) r.sending = false;
+                });
+                if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);
                 dispatch(setRoomChat(data));
                 setFileUpload([]);

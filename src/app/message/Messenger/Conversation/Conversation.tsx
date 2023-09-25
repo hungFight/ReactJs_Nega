@@ -1,11 +1,22 @@
 import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
-import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, ClockCirclesI } from '~/assets/Icons/Icons';
+import {
+    DotI,
+    CameraI,
+    ProfileCircelI,
+    SendOPTI,
+    UndoI,
+    LoadingI,
+    MinusI,
+    ClockCirclesI,
+    BalloonI,
+    MoveI,
+} from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import LogicConversation, { PropsChat } from './LogicConver';
 import { Player } from 'video-react';
@@ -14,11 +25,13 @@ import moment from 'moment';
 import 'moment/locale/vi';
 import { setOpenProfile } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
-import { offChats } from '~/redux/background';
+import { PropsBgRD, offChats, setBalloon, setTopLeft } from '~/redux/background';
 import MoreOption from '../MoreOption';
 import { setDelIds } from '~/redux/reload';
 import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
+import Bar from '~/reUsingComponents/Bar/Bar';
+import { useSelector } from 'react-redux';
 
 const Conversation: React.FC<{
     index: number;
@@ -35,7 +48,10 @@ const Conversation: React.FC<{
         id_room: string | undefined;
         id_other: string;
     }[];
-}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat, id_chats }) => {
+    css?: string;
+    top?: number;
+    left?: number;
+}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat, id_chats, css, top, left }) => {
     const {
         handleImageUpload,
         upload,
@@ -64,6 +80,52 @@ const Conversation: React.FC<{
         del,
         check,
     } = LogicConversation(id_chat, dataFirst.id);
+    const chats = useSelector((state: PropsBgRD) => state.persistedReducer.background.chats);
+    const [moves, setMoves] = useState<string[]>([]);
+    const [mouse, setMouse] = useState<boolean>(false);
+    const xRef = useRef<number | null>(null);
+    const yRef = useRef<number | null>(null);
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (conversation?._id || conversation?.user.id)
+            if (moves.some((m) => m === conversation?._id || m === conversation?.user.id)) {
+                const ls = document.querySelectorAll('.ofChats');
+                Array.from(ls).forEach((s) => {
+                    console.log(s.getAttribute('id') === del.current?.getAttribute('id'));
+
+                    if (s.getAttribute('id') === del.current?.getAttribute('id')) {
+                        s.setAttribute('style', 'z-index: 999');
+                    } else {
+                        s.setAttribute('style', 'z-index: 99');
+                    }
+                });
+                // if (del.current) del.current.style.zIndex = '999';
+                setMouse(true);
+            }
+    };
+    const handleMouseUp = () => {
+        // if (del.current) del.current.style.zIndex = '99';
+        if (yRef.current && xRef.current) dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
+        setMouse(false);
+    };
+    const handleTouchMoveRoomChat = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (mouse && del.current) {
+            const x = e.clientX;
+            const y = e.clientY;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            if (del.current) {
+                if (viewportWidth - 10 >= x && x >= 19) {
+                    xRef.current = x - 200;
+                    del.current.style.left = `${x - 200}px`;
+                }
+                if (viewportHeight - 10 >= y && y >= 24) {
+                    yRef.current = y - 200;
+                    del.current.style.top = `${y - 200}px`;
+                }
+            }
+        }
+        // Đặt vị trí cho phần tử
+    };
     const [loadDel, setLoadDel] = useState<boolean>(false);
     useEffect(() => {
         ERef.current.scrollTop = -check.current;
@@ -182,13 +244,55 @@ const Conversation: React.FC<{
                 id: 1,
                 name: 'View Profile',
                 icon: <ProfileCircelI />,
-                onClick: () => alert('hello'),
+                onClick: () => {
+                    if (conversation?.user.id) dispatch(setOpenProfile({ newProfile: [conversation?.user.id] }));
+                },
+            },
+            {
+                id: 2,
+                name: 'Balloon',
+                icon: <BalloonI />,
+                onClick: () => {
+                    if (id_chat && !moves.some((m) => m === conversation?._id || m === conversation?.user.id))
+                        dispatch(setBalloon({ id_other: id_chat.id_other, id_room: id_chat.id_room }));
+                },
+            },
+            {
+                id: 5,
+                name: `Move ${
+                    moves.some((m) => m === conversation?._id || m === conversation?.user.id) ? ' stop' : ''
+                }`,
+                icon: <MoveI />,
+                onClick: () => {
+                    let checkM = false;
+                    if (conversation?._id) {
+                        moves.forEach((m) => {
+                            if (m === conversation?._id) checkM = true;
+                        });
+                        if (checkM) {
+                            setMoves((pre) => pre.filter((m) => m !== conversation._id));
+                        } else {
+                            setMoves([...moves, conversation?._id]);
+                        }
+                    } else if (conversation?.user.id) {
+                        moves.forEach((m) => {
+                            if (m === conversation.user.id) checkM = true;
+                        });
+                        if (checkM) {
+                            setMoves((pre) => pre.filter((m) => m !== conversation.user.id));
+                        } else {
+                            setMoves([...moves, conversation.user.id]);
+                        }
+                    }
+                },
             },
         ],
     };
+    console.log(moves, 'moves');
+
     if (conversation?.deleted?.some((c) => c.id === userId)) {
         dataMore.options.push({
-            id: 2,
+            id: 3,
             name: 'Undo',
             load: loadDel,
             icon: loadDel ? (
@@ -203,7 +307,7 @@ const Conversation: React.FC<{
     }
     if (conversation?.room[0]._id) {
         dataMore.options.push({
-            id: 3,
+            id: 4,
             name: 'Delete',
             load: loadDel,
             icon: loadDel ? (
@@ -216,11 +320,22 @@ const Conversation: React.FC<{
             onClick: () => handleDelete(),
         });
     }
+
     return (
         <DivConversation
             ref={del}
-            height={chat.length > 2 ? '48% !important' : chat.length === 1 ? '100% !important' : ''}
+            height="400px"
             className="ofChats"
+            id={`ofChatId${index}`}
+            css={`
+                position: fixed;
+                top: ${(yRef.current || top || 329) + 'px'};
+                left: ${(xRef.current || left || 185 * (index >= 1 ? index + index : index) + 8) + 'px'};
+                z-index: 99;
+            `}
+            onMouseMove={(e) => handleTouchMoveRoomChat(e)}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
         >
             <DivResultsConversation color="#e4e4e4">
                 <Div
@@ -234,6 +349,7 @@ const Conversation: React.FC<{
                         left: 0;
                         background-color: #202124;
                         z-index: 1;
+                        user-select: none;
                     `}
                 >
                     <Div
@@ -267,7 +383,7 @@ const Conversation: React.FC<{
                             css="min-width: 30px; width: 30px; height: 30px; margin-right: 5px;"
                         />
                         <Hname>{conversation?.user.fullName}</Hname>
-                        <Div onClick={() => setOpMore(!opMore)}>
+                        <Div onClick={() => setOpMore(!opMore)} onMouseMove={(e) => e.stopPropagation()}>
                             <DotI />
                         </Div>
                     </Div>
@@ -279,7 +395,7 @@ const Conversation: React.FC<{
                     css={`
                         flex-direction: column-reverse;
                         padding-bottom: 10px;
-                        ${emoji ? 'height: 150px;' : `height:${chat.length > 2 ? '90%' : '95%'};`}
+                        ${emoji ? 'height: 150px;' : `height:${chat.length > 2 ? '90%' : '90%'};`}
                         overflow-y: overlay;
                         scroll-behavior: smooth;
                         padding-right: 5px;

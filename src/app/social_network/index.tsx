@@ -44,7 +44,15 @@ const Socialnetwork: React.FC<{
         en: InNetWork;
     };
     dataUser: { avatar: string; fullName: string; gender: number };
-}> = ({ data, dataUser }) => {
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ data, dataUser, setId_chats }) => {
     const language = useSelector((state: PropsLanguage) => state.persistedReducer.language.sn);
     const [lg, setLg] = useState<string>(language);
     const { header, sett } = data[lg];
@@ -66,6 +74,7 @@ const Socialnetwork: React.FC<{
                     location: header.location,
                 }}
                 dataUser={dataUser}
+                setId_chats={setId_chats}
             />
             <Settingcbl dataO={sett.data} setLg={setLg} LgNow={lg} turnSetting={turnSetting} />
         </>

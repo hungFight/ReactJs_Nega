@@ -24,11 +24,11 @@ class PeopleRequest {
             return errorHandling(err);
         }
     };
-    setConfirm = async (id: string, kindOf?: string, atInfor?: boolean) => {
+    setConfirm = async (id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.patch('/SN/people/setConfirm', {
-                params: { id_req: id, kindOf: kindOf, atInfor },
+                params: { id_req: id, kindOf: kindOf, per },
             });
             return res.data;
         } catch (error) {

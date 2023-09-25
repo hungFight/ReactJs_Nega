@@ -55,7 +55,15 @@ export interface PropsSN {
 const Header: React.FC<{
     dataText: PropsSN;
     dataUser: { avatar: string; fullName: string; gender: number };
-}> = ({ dataText, dataUser }) => {
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ dataText, dataUser, setId_chats }) => {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
     const cRef = useRef<number>(0);
@@ -342,6 +350,7 @@ const Header: React.FC<{
                                 dataUser={dataUser}
                                 colorBg={colorBg}
                                 colorText={colorText}
+                                setId_chats={setId_chats}
                             />
                         }
                     />

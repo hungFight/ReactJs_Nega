@@ -9,11 +9,19 @@ interface PropsCPage {
     currentPage: number;
     listPage: boolean;
     dataUser: { avatar: string; fullName: string; gender: number };
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
 }
-const currentPageL: React.FC<PropsCPage> = ({ currentPage, listPage, dataUser }) => {
+const currentPageL: React.FC<PropsCPage> = ({ currentPage, listPage, dataUser, setId_chats }) => {
     if (listPage) {
         return currentPage === 1 ? (
-            <Socialnetwork data={socialnetwork} dataUser={dataUser} />
+            <Socialnetwork data={socialnetwork} dataUser={dataUser} setId_chats={setId_chats} />
         ) : currentPage === 2 ? (
             <Study />
         ) : (

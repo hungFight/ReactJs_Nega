@@ -17,7 +17,17 @@ interface PropsFriends {
     gender: number;
     id: string;
 }
-const Friends: React.FC<{ type: string }> = ({ type }) => {
+const Friends: React.FC<{
+    type: string;
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+            }[]
+        >
+    >;
+}> = ({ type, setId_chats }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
 
@@ -72,6 +82,7 @@ const Friends: React.FC<{ type: string }> = ({ type }) => {
     }, [reload]);
     const handleMessenger = (id: string) => {
         dispatch(onChats({ id_room: undefined, id_other: id }));
+        setId_chats((pre) => [...pre, { id_room: undefined, id_other: id }]);
     };
     const css = `    display: flex;
             align-items: center;
