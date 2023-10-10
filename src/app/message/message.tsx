@@ -6,7 +6,6 @@ import { DivMs } from './styleMessage';
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PropsUser } from 'src/App';
-import Conversation from './Messenger/Conversation/Conversation';
 import { PropsBgRD } from '~/redux/background';
 
 const Message: React.FC<{

@@ -21,7 +21,7 @@ interface PropsDivMs {
 }
 export const DivMs = styled.div<PropsDivMs>`
     width: ${(props: { width: string }) => props.width || '100px'};
-    position: fixed;
+    position: absolute;
     right: 2px;
     top: ${(props: { top: string }) => props.top};
     z-index: 12;

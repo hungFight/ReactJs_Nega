@@ -1,4 +1,4 @@
-import { Div, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
 import {
     DotI,
@@ -11,13 +11,14 @@ import {
     ClockCirclesI,
     BalloonI,
     MoveI,
+    PlusI,
 } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
 import { memo, useEffect, useRef, useState } from 'react';
-import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import LogicConversation, { PropsChat } from './LogicConver';
 import { Player } from 'video-react';
 import { PropsUser } from 'src/App';
@@ -51,7 +52,35 @@ const Conversation: React.FC<{
     css?: string;
     top?: number;
     left?: number;
-}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat, id_chats, css, top, left }) => {
+    permanent: {
+        index: number;
+        id: string;
+    };
+    setId_chats: React.Dispatch<
+        React.SetStateAction<
+            {
+                id_room: string | undefined;
+                id_other: string;
+                top?: number | undefined;
+                left?: number | undefined;
+            }[]
+        >
+    >;
+}> = ({
+    index,
+    colorText,
+    colorBg,
+    dataFirst,
+    id_chat,
+    currentPage,
+    chat,
+    id_chats,
+    css,
+    top,
+    left,
+    permanent,
+    setId_chats,
+}) => {
     const {
         handleImageUpload,
         upload,
@@ -79,10 +108,12 @@ const Conversation: React.FC<{
         ERef,
         del,
         check,
+        textarea,
     } = LogicConversation(id_chat, dataFirst.id);
     const chats = useSelector((state: PropsBgRD) => state.persistedReducer.background.chats);
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<boolean>(false);
+
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -113,8 +144,10 @@ const Conversation: React.FC<{
             const y = e.clientY;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
+
             if (del.current) {
                 if (viewportWidth - 10 >= x && x >= 19) {
+                    console.log('move');
                     xRef.current = x - 200;
                     del.current.style.left = `${x - 200}px`;
                 }
@@ -158,11 +191,13 @@ const Conversation: React.FC<{
         }
     };
     const handleWatchMore = (e: any) => {
-        e.stopPropagation();
-        if (e.target.getAttribute('class').includes('chatTime')) {
-            e.target.classList.remove('chatTime');
-        } else {
-            e.target.classList.add('chatTime');
+        // e.stopPropagation();
+        if (e) {
+            if (e?.getAttribute('class').includes('chatTime')) {
+                e.classList.remove('chatTime');
+            } else {
+                e.classList.add('chatTime');
+            }
         }
     };
 
@@ -320,15 +355,31 @@ const Conversation: React.FC<{
             onClick: () => handleDelete(),
         });
     }
+    const handleOnKeyup = (e: any) => {
+        if (e.key === 'Enter') {
+            handleSend(conversation?._id, conversation?.user.id);
+        } else {
+            e.target.setAttribute('style', 'height: auto');
+            if (e.key === 'Backspace') {
+                e.target.setAttribute(
+                    'style',
+                    `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`,
+                );
+            } else {
+                e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
+            }
+        }
+    };
 
     return (
         <DivConversation
             ref={del}
-            height="400px"
+            height="530px"
             className="ofChats"
             id={`ofChatId${index}`}
             css={`
-                position: fixed;
+                margin-right: 5px;
+                ${yRef.current || top || mouse ? 'position: fixed;' : ''}
                 top: ${(yRef.current || top || 329) + 'px'};
                 left: ${(xRef.current || left || 185 * (index >= 1 ? index + index : index) + 8) + 'px'};
                 z-index: 99;
@@ -348,8 +399,7 @@ const Conversation: React.FC<{
                         top: 10px;
                         left: 0;
                         background-color: #202124;
-                        z-index: 1;
-                        user-select: none;
+                        z-index: 3;
                     `}
                 >
                     <Div
@@ -360,13 +410,11 @@ const Conversation: React.FC<{
                                 dispatch(
                                     offChats(
                                         chat.filter(
-                                            (c) => c.id_other !== id_chat.id_other && c.id_room !== id_chat.id_room,
+                                            (c) =>
+                                                c.id_other !== conversation?.user.id && c.id_room !== conversation?._id,
                                         ),
                                     ),
                                 );
-                                console.log(id_chats, 'no');
-                                const tt = id_chats.filter((i, indexI) => indexI !== index);
-                                console.log(id_chats, 'yes', tt);
 
                                 del.current.remove();
                             }
@@ -393,6 +441,7 @@ const Conversation: React.FC<{
                     ref={ERef}
                     width="100%"
                     css={`
+                        margin-top: 22px;
                         flex-direction: column-reverse;
                         padding-bottom: 10px;
                         ${emoji ? 'height: 150px;' : `height:${chat.length > 2 ? '90%' : '90%'};`}
@@ -412,7 +461,7 @@ const Conversation: React.FC<{
                         }
                     `}
                     onScroll={() => handleScroll}
-                    onClick={() => setEmoji(false)}
+                    // onClick={() => setEmoji(false)}
                 >
                     {conversation?.room.map((rc, index, arr) => {
                         return (
@@ -423,6 +472,7 @@ const Conversation: React.FC<{
                                 userId={userId}
                                 handleWatchMore={handleWatchMore}
                                 ERef={ERef}
+                                del={del}
                                 handleTime={handleTime}
                                 user={conversation.user}
                             />
@@ -448,11 +498,37 @@ const Conversation: React.FC<{
                     )}
                 </Div>
                 <Div
-                    width="100%"
+                    width="96%"
                     wrap="wrap"
-                    css=" height: auto; align-items: center; justify-content: center; background-color:#202124;; div#emojiCon{width: 100%}"
+                    css={`
+                        border-radius: 5px;
+                        height: auto;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #202124;
+                        position: absolute;
+                        left: 8px;
+                        bottom: 9px;
+                        z-index: 1;
+                        padding-top: 9px;
+                        div#emojiCon {
+                            width: 100%;
+                        }
+                    `}
                 >
-                    <Div width="100%" wrap="wrap" css="position: relative;">
+                    {emoji && (
+                        <div id="emojiCon">
+                            <Picker
+                                locale="en"
+                                set="facebook"
+                                emojiVersion={14}
+                                data={dataEmoji}
+                                theme={colorBg === 1 ? 'dark' : 'light'}
+                                onEmojiSelect={handleEmojiSelect}
+                            />
+                        </div>
+                    )}
+                    <Div width="100%" wrap="wrap" css="position: relative; height: auto;">
                         {upload.length > 0 && (
                             <Div
                                 width="100%"
@@ -465,6 +541,8 @@ const Conversation: React.FC<{
                                     border-radius: 5px;
                                     background-color: transparent;
                                     box-shadow: 0 0 5px #7d7c7c;
+                                    background-color: #292929c4;
+                                    padding: 5px;
                                 `}
                             >
                                 {upload.map((item, index) => (
@@ -472,10 +550,9 @@ const Conversation: React.FC<{
                                         key={item.link}
                                         css={`
                                             min-width: 79px;
-                                            width: 79px;
                                             border-radius: 5px;
                                             border: 1px solid #4e4e4e;
-                                            flex-grow: 1;
+                                            ${upload.length === 1 ? 'width: 150px;' : 'width: 79px; flex-grow: 1;'}
                                         `}
                                         onTouchMove={handleTouchMove}
                                         onTouchStart={handleTouchStart}
@@ -490,65 +567,87 @@ const Conversation: React.FC<{
                                 ))}
                             </Div>
                         )}
-                        <Div width="100%" css="height: 40px; align-items: center ; justify-content: space-around; ">
-                            <Div css="font-size: 20px;" onClick={() => setEmoji(!emoji)}>
+                        <Div // inserting bar of chat
+                            width="100%"
+                            css={`
+                                height: auto;
+                                align-items: center;
+                                justify-content: space-around;
+                            `}
+                        >
+                            <Div
+                                css={`
+                                    cursor: var(--pointer);
+                                `}
+                                onClick={() => setEmoji(!emoji)}
+                            >
                                 🙂
                             </Div>
 
                             <Div
                                 width="34px !important"
-                                css="font-size: 21px; color: #869ae7; height: 100%; align-items: center; justify-content: center;"
+                                css={`
+                                    color: #869ae7;
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding: 5px;
+                                    cursor: var(--pointer);
+                                `}
                             >
                                 <form method="post" encType="multipart/form-data" id="formss">
                                     <input
-                                        id="uploadCon"
+                                        id={conversation?._id + 'uploadCon'}
                                         type="file"
                                         name="file[]"
                                         onChange={handleImageUpload}
                                         multiple
                                         hidden
                                     />
-                                    <Label htmlFor="uploadCon" color={colorText}>
+                                    <Label htmlFor={conversation?._id + 'uploadCon'} color={colorText}>
                                         <CameraI />
                                     </Label>
                                 </form>
                             </Div>
-                            <Input
-                                width="180px; height: 30px"
-                                padding="4px 29px 4px 8px;"
-                                margin="0"
-                                border="1px solid #484643 !important;"
-                                radius="50px; font-size: 1.3rem"
-                                background="rgb(255 255 255 / 6%)"
+
+                            <Textarea
+                                ref={textarea}
                                 color={colorText}
                                 placeholder="Send"
                                 value={value}
-                                onChange={(e) => setValue(e.target.value)}
+                                bg="rgb(255 255 255 / 6%)"
+                                css={`
+                                    width: 100%;
+                                    height: 33px;
+                                    margin: 0;
+                                    padding: 5px 10px;
+                                    border-radius: 10px;
+                                    font-size: 1.4rem !important;
+                                    overflow-y: overlay;
+                                    &:disabled {
+                                        background-color: #f2f2f2; /* Set a background color */
+                                        cursor: not-allowed; /* Change cursor to "not-allowed" */
+                                        color: #888; /* Change text color to a subdued gray */
+                                    }
+                                `}
+                                onKeyUp={(e) => handleOnKeyup(e)}
+                                onChange={(e) => {
+                                    console.log(e.target.value, 'enter');
+                                    if (!e.target.value) setValue(e.target.value);
+                                    if (e.target.value.trim()) setValue(e.target.value);
+                                }}
                             />
                             <Div
                                 width="34px"
                                 css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
-                                onClick={(e) => handleSend(e, conversation?._id, conversation?.user.id)}
+                                onClick={(e) => handleSend(conversation?._id, conversation?.user.id)}
                             >
                                 <SendOPTI />
                             </Div>
                         </Div>
                     </Div>
-                    {emoji && (
-                        <div id="emojiCon">
-                            <Picker
-                                locale="en"
-                                set="facebook"
-                                emojiVersion={14}
-                                data={dataEmoji}
-                                theme={colorBg === 1 ? 'dark' : 'light'}
-                                onEmojiSelect={handleEmojiSelect}
-                            />
-                        </div>
-                    )}
                 </Div>
+                {opMore && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} />}
             </DivResultsConversation>
-            {opMore && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} />}
         </DivConversation>
     );
 };

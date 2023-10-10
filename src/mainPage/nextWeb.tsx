@@ -269,7 +269,7 @@ const Website: React.FC<{
                                     css={`
                                         width: 40px;
                                         height: 40px;
-                                        position: fixed;
+                                        position: absolute;
                                         top: ${(yRef.current || 134) + 'px'};
                                         left: ${(xRef.current || 'unset') + 'px'};
                                         right: 7px;

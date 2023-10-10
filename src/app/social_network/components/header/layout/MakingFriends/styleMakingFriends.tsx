@@ -47,10 +47,7 @@ export const DivResults = styled.div`
     min-width: 100%;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: center;
+    display: block;
     overflow-y: overlay;
     right: 0;
     padding: 10px;
@@ -62,6 +59,12 @@ export const DivResults = styled.div`
             height: 10px;
             border-radius: 0;
         }
+    }
+    @media (min-width: 769px) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: center;
     }
 `;
 interface PropsInput {

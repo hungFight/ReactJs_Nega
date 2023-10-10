@@ -58,6 +58,9 @@ html *::-webkit-scrollbar-track {
 }
 #root {
     height: var(--background);
+    background-color: #292a2d;
+    display: flex;
+    justify-content: center;
 }
 @font-face {
     font-family: Raleway Straight;

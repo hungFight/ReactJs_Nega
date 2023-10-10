@@ -82,12 +82,13 @@ const ListAccounts: React.FC<{
     }[];
 }> = ({ colorText, colorBg, setMoreBar, data, userId, setId_chats, id_chats }) => {
     const dispatch = useDispatch();
-    const { userOnline, id_chat } = useSelector((state: any) => {
+    const { userOnline } = useSelector((state: any) => {
         return {
             userOnline: state.reload.userOnline,
-            id_chat: state.persistedReducer.background.chats,
         };
     });
+    const { chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+
     const { lg } = Languages();
     const seenBy = useRef<HTMLDivElement | null>(null);
 
@@ -118,7 +119,7 @@ const ListAccounts: React.FC<{
     useEffect(() => {
         // check have you seen this chat?
         let check = false;
-        id_chat.forEach((i: { id_room: any; id_other: string }) => {
+        chats.forEach((i: { id_room: any; id_other: string }) => {
             if (i.id_room) {
                 if (i.id_room === data._id) {
                     check = true;
@@ -152,16 +153,13 @@ const ListAccounts: React.FC<{
                         onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs, deleted: data.deleted })}
                         onTouchEnd={handleTouchEnd}
                         onClick={(e) => {
-                            let check = false;
-                            id_chats.forEach((p) => {
-                                if (p.id_other === id_chat.id_other) {
-                                    check = true;
+                            dispatch(onChats({ id_room: data._id, id_other: rs.id }));
+                            setId_chats((pre) => {
+                                if (!chats.some((p) => p.id_room === data._id || p.id_other === rs.id)) {
+                                    return [...pre, { id_room: data._id, id_other: rs.id }];
                                 }
+                                return pre;
                             });
-                            if (!check) {
-                                dispatch(onChats({ id_room: data._id, id_other: rs.id }));
-                                setId_chats([...id_chats, { id_room: data._id, id_other: rs.id }]);
-                            }
                             if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
                         }}
                         width="100%"

@@ -8,7 +8,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
-import { onChats } from '~/redux/background';
+import { PropsBgRD, onChats } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 interface PropsFriends {
     avatar: any;
@@ -30,6 +30,7 @@ const Friends: React.FC<{
 }> = ({ type, setId_chats }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
+    const { chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const [loading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<PropsFriends[]>();
@@ -82,7 +83,12 @@ const Friends: React.FC<{
     }, [reload]);
     const handleMessenger = (id: string) => {
         dispatch(onChats({ id_room: undefined, id_other: id }));
-        setId_chats((pre) => [...pre, { id_room: undefined, id_other: id }]);
+        setId_chats((pre) => {
+            if (!chats.some((p) => p.id_other === id)) {
+                return [...pre, { id_room: undefined, id_other: id }];
+            }
+            return pre;
+        });
     };
     const css = `    display: flex;
             align-items: center;
@@ -128,7 +134,7 @@ const Friends: React.FC<{
                             width: 185px;
                             padding: 5px;
                             border: 1px solid #414141;
-                            margin: 10px;
+                            margin: 10px auto;
                             transition: all 0.2s linear;
                             position: relative;
                             &:hover {
@@ -136,6 +142,7 @@ const Friends: React.FC<{
                             }
                             @media (min-width: 480px) {
                                 width: 306px;
+                                margin: 10px;
                             }
                             @media (min-width: 769px) {
                                 width: 190px;

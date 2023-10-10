@@ -66,7 +66,6 @@ root.render(
                         <Globalestyle>
                             <App />
                         </Globalestyle>
-                        <ReactQueryDevtools initialIsOpen={false} />
                     </PersistGate>
                 </Provider>
             </QueryClientProvider>

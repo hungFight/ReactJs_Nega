@@ -15,6 +15,7 @@ export const DivContainer = styled.div`
 `;
 
 export const DivMainPage = styled.div`
+    width: 100%;
     height: 100%;
     transition: var(--transition-03s);
 `;

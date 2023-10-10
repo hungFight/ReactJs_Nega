@@ -415,6 +415,7 @@ const PreviewPost: React.FC<{
                             <TextAreaPre
                                 ref={textA}
                                 value={valueText}
+                                onInput={() => console.log('okkkk')}
                                 css={`
                                     padding: 5px;
                                     color: ${colorText};

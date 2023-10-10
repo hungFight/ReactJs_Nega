@@ -101,6 +101,8 @@ interface PropsDiv {
     css?: string;
     width?: string;
     display?: string;
+    justify?: string;
+    align?: string;
 }
 export const Div = styled.div<PropsDiv>`
     width: ${(props) => props.width};
@@ -116,4 +118,12 @@ export const Ol = styled.ol`
 `;
 export const Li = styled.li`
     ${(props: { css?: string }) => props.css}
+`;
+export const DivFlex = styled.div<PropsDiv>`
+    width: ${(props) => props.width || '100%'};
+    display: ${(props) => props.display || 'flex'};
+    flex-wrap: ${(props) => props.wrap || 'none'};
+    justify-content: ${(props) => props.justify || 'center'};
+    align-items: ${(props) => props.align || 'center'};
+    ${(props) => props.css}
 `;

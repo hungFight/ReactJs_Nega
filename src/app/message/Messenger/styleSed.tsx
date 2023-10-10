@@ -47,7 +47,6 @@ export const DivConversation = styled.div<{ css?: string; height?: string }>`
     border-radius: 5px;
     background-color: #202124;
     z-index: 8888;
-    position: relative;
     ${(props) => props.css}
     .chatBar {
         height: 100%;

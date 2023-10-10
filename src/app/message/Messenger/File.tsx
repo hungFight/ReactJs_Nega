@@ -3,18 +3,21 @@ import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
-const FileConversation: React.FC<{ type?: string; v: string; icon: string; ERef: any }> = ({
-    type = '',
-    v,
-    icon,
-    ERef,
-}) => {
+const FileConversation: React.FC<{
+    del: React.MutableRefObject<HTMLDivElement | null>;
+    type?: string;
+    v: string;
+    icon: string;
+    ERef: any;
+}> = ({ type = '', v, icon, ERef, del }) => {
     const handleRoom = (e: any) => {
         e.stopPropagation();
         if (e.target.getAttribute('class').includes('roomOfChat')) {
             e.target.classList.remove('roomOfChat');
+            del.current?.setAttribute('style', 'z-index: 99');
         } else {
             e.target.classList.add('roomOfChat');
+            del.current?.setAttribute('style', 'z-index: 100');
         }
     };
     return (

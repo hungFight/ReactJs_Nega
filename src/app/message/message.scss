@@ -1,16 +1,12 @@
-.messages {
-}
 .send,
 .notification {
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--color-icon);
-
     padding: 2px;
     position: relative;
     border-radius: 50%;
-
     width: 35px;
     height: 35px;
     cursor: var(--pointer);

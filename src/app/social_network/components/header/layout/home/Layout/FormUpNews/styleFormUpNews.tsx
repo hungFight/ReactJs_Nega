@@ -98,6 +98,7 @@ interface PorpsTextarea {
     bg?: string;
     font?: string;
     BoBg?: string;
+    css?: string;
 }
 
 export const Textarea = styled.textarea<PorpsTextarea>`
@@ -116,6 +117,7 @@ export const Textarea = styled.textarea<PorpsTextarea>`
     color: ${(props) => props.color};
     background-color: ${(props) => props.bg};
     font-family: ${(props) => props.font}, sans-serif;
+    ${(props) => props.css}
     &::placeholder {
         color: white;
     }

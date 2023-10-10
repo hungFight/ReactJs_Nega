@@ -57,7 +57,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
 
     const { userId, token } = Cookies();
     const { lg } = Languages();
-
+    const textarea = useRef<HTMLTextAreaElement | null>(null);
     const ERef = useRef<any>();
     const del = useRef<HTMLDivElement | null>(null);
     const check = useRef<number>(0);
@@ -115,7 +115,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     //     },
     // });
     // console.log(data, 'GET_PHRASE');
-
+    //get image
     async function fetchChat(moreChat?: boolean) {
         console.log('api');
 
@@ -223,15 +223,12 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     const handleTouchEnd = () => {
         clearTimeout(time);
     };
-    const handleSend = async (
-        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        id_room: string | undefined,
-        id_other: string | undefined,
-    ) => {
-        if (value || upload.length > 0) {
+    const handleSend = async (id_room: string | undefined, id_other: string | undefined) => {
+        if (value.trim() || upload.length > 0) {
+            textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
             const images = upload.map((i) => {
-                return { v: i.link, type: 'image', icon: '', _id: String(Math.random()) };
+                return { v: i.link, type: 'image', icon: '', _id: String(Math.random()) }; // get key for _id
             });
             const chat: any = {
                 createdAt: DateTime(),
@@ -248,8 +245,6 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             formData.append('value', value);
             if (id_room) formData.append('id_room', id_room);
             if (id_other) formData.append('id_others', id_other);
-            console.log(id_room, 'id_room here ne!');
-
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
             }
@@ -262,8 +257,9 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                 });
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);
-                dispatch(setRoomChat(data));
                 setFileUpload([]);
+                setupload([]);
+                dispatch(setRoomChat(data));
             }
         }
     };
@@ -367,5 +363,6 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         ERef,
         del,
         check,
+        textarea,
     };
 }

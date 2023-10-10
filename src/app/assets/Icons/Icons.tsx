@@ -82,7 +82,7 @@ import {
 } from 'react-icons/ri';
 import { TbArrowNarrowLeft, TbGenderFemale, TbGenderMale, TbGridDots, TbTextResize } from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
-import { VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
+import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import { CiHeart, CiPaperplane, CiSearch, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
@@ -184,3 +184,4 @@ export const PrivacyI = () => <RiChatPrivateFill />;
 export const CopyI = () => <IoCopy />;
 export const ExpandI = () => <MdOutlineExpandMore />;
 export const BalloonI = () => <BsBalloon />;
+export const PlusI = () => <VscAdd />;

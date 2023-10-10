@@ -128,6 +128,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                     size="30px"
                     top="20px"
                     right="12px"
+                    css="z-index: 1;"
                     index={8888}
                     color={colorText}
                     onClick={() => setRoom({ avatar: false, background: false })}

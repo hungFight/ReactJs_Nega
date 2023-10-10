@@ -3,9 +3,10 @@ import { PropsChat } from './LogicConver';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const ItemsRoom: React.FC<{
+    del: React.MutableRefObject<HTMLDivElement | null>;
     rc: {
         _id: string;
         text: {
@@ -33,7 +34,8 @@ const ItemsRoom: React.FC<{
         fullName: string;
         gender: number;
     };
-}> = ({ rc, index, userId, handleWatchMore, ERef, handleTime, user }) => {
+}> = ({ rc, index, userId, handleWatchMore, ERef, handleTime, user, del }) => {
+    const elWatChTime = useRef<HTMLDivElement | null>(null);
     return (
         <>
             {rc._id === userId ? (
@@ -48,9 +50,13 @@ const ItemsRoom: React.FC<{
                                 display: block;
                             }
                         }
+                        p {
+                            z-index: 1;
+                        }
                     `}
                 >
                     <Div
+                        ref={elWatChTime}
                         display="block"
                         className="noTouch"
                         css={`
@@ -69,6 +75,10 @@ const ItemsRoom: React.FC<{
                                 <P
                                     z="1.4rem"
                                     css="width: fit-content; margin: 0; padding: 2px 12px 4px; border-radius: 7px; border-top-left-radius: 13px; border-bottom-left-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleWatchMore(elWatChTime.current);
+                                    }}
                                 >
                                     {rc.text.t}
                                 </P>
@@ -89,7 +99,7 @@ const ItemsRoom: React.FC<{
                                             top: 0;
                                             left: 0;
                                             background-color: #171718;
-                                            z-index: 1;
+                                            z-index: 9999;
                                             img {
                                                 object-fit: contain;
                                             }
@@ -104,6 +114,7 @@ const ItemsRoom: React.FC<{
                                             v={fl.v}
                                             icon={fl.icon}
                                             ERef={ERef}
+                                            del={del}
                                         />
                                     ))}
                                 </Div>
@@ -197,6 +208,10 @@ const ItemsRoom: React.FC<{
                                 <P
                                     z="1.4rem"
                                     css="width: fit-content; padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleWatchMore(elWatChTime.current);
+                                    }}
                                 >
                                     {rc.text.t}
                                 </P>
@@ -215,7 +230,7 @@ const ItemsRoom: React.FC<{
                                                 top: 0;
                                                 left: 0;
                                                 background-color: #171718;
-                                                z-index: 1;
+                                                z-index: 9999;
                                                 img {
                                                     object-fit: contain;
                                                 }
@@ -228,6 +243,7 @@ const ItemsRoom: React.FC<{
                                                 key={fl.v + index}
                                                 type={fl?.type}
                                                 v={fl.v}
+                                                del={del}
                                                 icon={fl.icon}
                                                 ERef={ERef}
                                             />
