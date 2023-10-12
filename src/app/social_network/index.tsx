@@ -53,8 +53,7 @@ const Socialnetwork: React.FC<{
         >
     >;
 }> = ({ data, dataUser, setId_chats }) => {
-    const language = useSelector((state: PropsLanguage) => state.persistedReducer.language.sn);
-    const [lg, setLg] = useState<string>(language);
+    const lg = useSelector((state: PropsLanguage) => state.persistedReducer.language.sn);
     const { header, sett } = data[lg];
 
     const turnSetting = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow?.setting);
@@ -76,7 +75,7 @@ const Socialnetwork: React.FC<{
                 dataUser={dataUser}
                 setId_chats={setId_chats}
             />
-            <Settingcbl dataO={sett.data} setLg={setLg} LgNow={lg} turnSetting={turnSetting} />
+            <Settingcbl dataO={sett.data} LgNow={lg} turnSetting={turnSetting} />
         </>
     );
 };

@@ -35,7 +35,7 @@ const MoreOption: React.FC<{
             width="100%"
             bottom="0"
             left="0"
-            css="height: 100%; div,p{user-select: none;} z-index: 1; background-color: #29292900; border-radius: 0; align-items: flex-end;"
+            css="height: 100%; background-color: #212121cc; height: 98%; div,p{user-select: none;} z-index: 1; background-color: #29292900; border-radius: 0; align-items: flex-end;"
             onClick={() => {
                 if (setMoreBar) {
                     setMoreBar({
@@ -58,6 +58,16 @@ const MoreOption: React.FC<{
                     background-color: #181919;
                     cursor: var(--pointer);
                     color: ${colorText};
+                    animation: chatMoveOP 0.5s linear;
+                    position: relative;
+                    @keyframes chatMoveOP {
+                        0% {
+                            bottom: -436px;
+                        }
+                        100% {
+                            bottom: 0px;
+                        }
+                    }
                 `}
                 className="chatBar"
                 onClick={(e) => e.stopPropagation()}

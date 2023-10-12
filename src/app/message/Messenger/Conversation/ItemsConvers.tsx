@@ -3,7 +3,9 @@ import { PropsChat } from './LogicConver';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { DotI } from '~/assets/Icons/Icons';
+import { PropsUser } from 'src/App';
 
 const ItemsRoom: React.FC<{
     del: React.MutableRefObject<HTMLDivElement | null>;
@@ -34,11 +36,42 @@ const ItemsRoom: React.FC<{
         fullName: string;
         gender: number;
     };
-}> = ({ rc, index, userId, handleWatchMore, ERef, handleTime, user, del }) => {
+    timeS: string;
+    setOptions: React.Dispatch<
+        React.SetStateAction<
+            | {
+                  id: string;
+                  text: string;
+                  imageOrVideos: {
+                      v: string;
+                      type?: string | undefined;
+                      icon: string;
+                      _id: string;
+                  }[];
+              }
+            | undefined
+        >
+    >;
+    options:
+        | {
+              id: string;
+              text: string;
+              imageOrVideos: {
+                  v: string;
+                  type?: string | undefined;
+                  icon: string;
+                  _id: string;
+              }[];
+          }
+        | undefined;
+    dataFirst: PropsUser;
+}> = ({ rc, index, userId, handleWatchMore, ERef, handleTime, user, del, timeS, setOptions, options, dataFirst }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
+
     return (
         <>
-            {rc._id === userId ? (
+            <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>
+            {rc._id === dataFirst.id ? (
                 <Div
                     width="100%"
                     css={`
@@ -46,6 +79,11 @@ const ItemsRoom: React.FC<{
                         margin-bottom: 8px;
                         justify-content: right;
                         .chatTime {
+                            &:hover {
+                                #showDotAtRoomChat {
+                                    display: none;
+                                }
+                            }
                             .dateTime {
                                 display: block;
                             }
@@ -67,11 +105,46 @@ const ItemsRoom: React.FC<{
                             `&::after {display: block; content: ''; width: 100%; height: ${
                                 rc.imageOrVideos.length > 0 ? '10%' : '100%'
                             }; position: absolute; top: 0;left: 0;}`}
+                            &:hover {
+                                #showDotAtRoomChat {
+                                    display: flex;
+                                }
+                            }
                         `}
                         onClick={handleWatchMore}
                     >
+                        <Div
+                            display="none"
+                            id="showDotAtRoomChat"
+                            css={`
+                                position: absolute;
+                                width: 100%;
+                                left: -35px;
+                                top: 1px;
+                                padding-left: 4px;
+                                border-radius: 5px;
+                                font-size: 25px;
+                                z-index: 10;
+                                cursor: var(--pointer);
+                            `}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                            }}
+                        >
+                            <Div
+                                onClick={() =>
+                                    setOptions({
+                                        id: rc._id,
+                                        text: rc.text.t,
+                                        imageOrVideos: rc.imageOrVideos,
+                                    })
+                                }
+                            >
+                                <DotI />
+                            </Div>
+                        </Div>
                         {rc.text.t && (
-                            <Div css="justify-content: end;">
+                            <Div css="justify-content: end; z-index: 11;">
                                 <P
                                     z="1.4rem"
                                     css="width: fit-content; margin: 0; padding: 2px 12px 4px; border-radius: 7px; border-top-left-radius: 13px; border-bottom-left-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
@@ -143,7 +216,7 @@ const ItemsRoom: React.FC<{
                                     <>
                                         <P
                                             className="dateTime"
-                                            css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -105px; top: 5px;"
+                                            css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -138px; top: 5px;"
                                         >
                                             {handleTime(rc.createdAt, 'date')}
                                         </P>
@@ -268,7 +341,7 @@ const ItemsRoom: React.FC<{
                                 <>
                                     <P
                                         className="dateTime"
-                                        css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; right: -105px; top: 5px;"
+                                        css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; right: -138px; top: 5px;"
                                     >
                                         {handleTime(rc.createdAt, 'date')}
                                     </P>

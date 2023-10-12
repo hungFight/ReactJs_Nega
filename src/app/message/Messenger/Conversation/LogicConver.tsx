@@ -16,6 +16,7 @@ import { gql, useQuery } from '@apollo/client';
 import http from '~/utils/http';
 import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
+import moment from 'moment';
 
 export interface PropsChat {
     _id: string;
@@ -88,6 +89,17 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
           }
         | undefined
     >();
+    // display conversation's one day
+    const date1 = useRef<moment.Moment | null>(null);
+
+    // if (date1.isBefore(date2)) {
+    //     console.log('date1 is before date2');
+    // }
+
+    // if (date1.isAfter(date2)) {
+    //     console.log('date1 is after date2');
+    // }
+
     const GET_Phrase = gql`
         query Get_Phrases($id: String!, $limit: Int!, $offset: Int!) {
             chats(id_room: $id, limit: $limit, offset: $offset) {
@@ -164,7 +176,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             }
             setConversation(chatRef.current);
         }
-
+        date1.current = moment(conversation?.room[0].createdAt);
         setLoading(false);
     }
     const code = `${conversation?._id + '-' + conversation?.user.id}phrase`;
@@ -248,6 +260,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
             }
+            setupload([]);
             const res = await sendChatAPI.send(formData);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
 
@@ -258,7 +271,6 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);
                 setFileUpload([]);
-                setupload([]);
                 dispatch(setRoomChat(data));
             }
         }
@@ -364,5 +376,6 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         del,
         check,
         textarea,
+        date1,
     };
 }

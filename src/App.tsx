@@ -27,7 +27,7 @@ import userAPI from '~/restAPI/userAPI';
 import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
-import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
+import { PropsReloadRD, } from '~/redux/reload';
 import { PropsBgRD } from '~/redux/background';
 import Images from '~/assets/images';
 import { PropsRoomChat } from '~/restAPI/chatAPI';

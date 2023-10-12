@@ -28,10 +28,9 @@ const css3 = `
     `;
 const Settingcbl: React.FC<{
     dataO: PropsSetting;
-    setLg: React.Dispatch<React.SetStateAction<string>>;
     LgNow: string;
     turnSetting: boolean;
-}> = ({ dataO, setLg, LgNow, turnSetting }) => {
+}> = ({ dataO, LgNow, turnSetting }) => {
     const datas = dataO.data;
     const showHideSettingn = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow?.setting);
     const [cookies, setCookie, removeCookie] = useCookies(['tks', 'k_user']);
@@ -51,12 +50,8 @@ const Settingcbl: React.FC<{
         if (checkLg.current !== lg) {
             const res = await HttpRequestUser.setLg(k_user, lg);
             console.log('laggggg', res);
-            dispatch(changeSN(lg));
-
-            if (res === 1) {
-                checkLg.current = lg;
-                setLg(lg);
-            }
+            dispatch(changeSN(res));
+            checkLg.current = lg;
         }
     };
     const css1 = `

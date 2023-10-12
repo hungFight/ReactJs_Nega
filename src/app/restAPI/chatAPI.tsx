@@ -108,5 +108,17 @@ class Messenger {
             console.log(error);
         }
     };
+    delChatAll = async (roomId: string, chatId: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post<PropsChat>('/messenger/delChatAll', {
+                roomId,
+                chatId,
+            });
+            return res.data;
+        } catch (error) {
+            console.log(error);
+        }
+    };
 }
 export default new Messenger();
