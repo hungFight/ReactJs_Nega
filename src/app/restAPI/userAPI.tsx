@@ -282,5 +282,15 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
+    getActiveStatus = async (id_other?: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.get('/user/getActiveStatus', { params: { id_other } });
+            return res.data;
+        } catch (error) {
+            const err: any = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
 }
 export default new HttpRequestUser();

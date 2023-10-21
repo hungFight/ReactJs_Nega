@@ -1,22 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { Buffer } from 'buffer';
 import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import sendChatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
+import { v4 as uuidv4 } from 'uuid';
 
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
 import Cookies from '~/utils/Cookies';
-import { PropsReloadRD, setRoomChat, setSession } from '~/redux/reload';
+import { PropsReloadRD, setRoomChat } from '~/redux/reload';
 import Languages from '~/reUsingComponents/languages';
-import { gql, useQuery } from '@apollo/client';
-import http from '~/utils/http';
 import ServerBusy from '~/utils/ServerBusy';
-import { useCookies } from 'react-cookie';
 import moment from 'moment';
+import { useQuery } from '@tanstack/react-query';
+import userAPI from '~/restAPI/userAPI';
 
 export interface PropsChat {
     _id: string;
@@ -31,6 +31,7 @@ export interface PropsChat {
     background: string;
     room: {
         _id: string;
+        id: string;
         text: {
             t: string;
             icon: string;
@@ -52,7 +53,11 @@ export interface PropsChat {
     }[];
     createdAt: string;
 }
-export default function LogicConversation(id_chat: { id_room: string | undefined; id_other: string }, id_you: string) {
+export default function LogicConversation(
+    id_chat: { id_room: string | undefined; id_other: string },
+    id_you: string,
+    userOnline: string[],
+) {
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
 
@@ -67,6 +72,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     const offset = useRef<number>(0);
     const fileRef = useRef<any>([]);
     const limit = 20;
+    const emptyRef = useRef<boolean>(false);
 
     const [value, setValue] = useState<string>('');
     const [emoji, setEmoji] = useState<boolean>(false);
@@ -77,6 +83,8 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     const [upload, setupload] = useState<{ link: any; type: string }[]>([]);
     const uploadRef = useRef<{ link: string; type: string }[]>([]);
     const chatRef = useRef<PropsChat>();
+    const [wch, setWch] = useState<string | undefined>('');
+    const rr = useRef<string>('');
 
     const [conversation, setConversation] = useState<PropsChat>();
     const [dataSent, setDataSent] = useState<
@@ -86,11 +94,13 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
               seenBy: string[];
               text: { t: string; icon: string };
               _id: string;
+              id: string;
           }
         | undefined
     >();
     // display conversation's one day
     const date1 = useRef<moment.Moment | null>(null);
+    const [writingBy, setWritingBy] = useState<{ length: number; id: string } | undefined>();
 
     // if (date1.isBefore(date2)) {
     //     console.log('date1 is before date2');
@@ -100,91 +110,87 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
     //     console.log('date1 is after date2');
     // }
 
-    const GET_Phrase = gql`
-        query Get_Phrases($id: String!, $limit: Int!, $offset: Int!) {
-            chats(id_room: $id, limit: $limit, offset: $offset) {
-                _id
-                text {
-                    t
-                    icon
-                }
-                imageOrVideos {
-                    v
-                    icon
-                    _id
-                }
-                seenBy
-                createdAt
-            }
-        }
-    `;
-    // const { data, client } = useQuery(GET_Phrase, {
-    //     skip: conversation?._id ? false : true,
-    //     variables: {
-    //         id: conversation?._id,
-    //         limit: limit,
-    //         offset: offset.current,
-    //     },
-    // });
-    // console.log(data, 'GET_PHRASE');
+    const { data } = useQuery({
+        queryKey: [
+            `getActiveStatus: ${conversation?.user.id}`,
+            userOnline.includes(conversation?.user.id ?? 'default'),
+        ],
+        staleTime: 60 * 1000,
+        queryFn: async () => {
+            const res = await userAPI.getActiveStatus(conversation?.user.id);
+            const da: string = ServerBusy(res, dispatch);
+            return da;
+        },
+        enabled: !userOnline.includes(conversation?.user.id ?? 'default')
+            ? conversation?.user.id
+                ? true
+                : false
+            : false,
+    });
     //get image
     async function fetchChat(moreChat?: boolean) {
-        console.log('api');
+        if (!emptyRef.current) {
+            const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
+            const dataC = ServerBusy(res, dispatch);
 
-        setLoading(true);
-        cRef.current = 2;
-        const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat);
-        const data = ServerBusy(res, dispatch);
+            if (!dataC.room.length) emptyRef.current = true;
+            if (dataC) {
+                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                    const modifiedData = { ...dataC };
+                    await Promise.all(
+                        modifiedData.room?.map(
+                            async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
+                                await Promise.all(
+                                    rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
+                                        const buffer = await fileGridFS.getFile(fl.v);
+                                        const base64 = CommonUtils.convertBase64GridFS(buffer.file);
+                                        modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                    }),
+                                );
+                            },
+                        ),
+                    );
+                    resolve(modifiedData);
+                });
+                const a = CommonUtils.convertBase64(newData.user?.avatar);
+                if (a) newData.user.avatar = a;
 
-        if (res) {
-            const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                const modifiedData = { ...data };
-                console.log(modifiedData, data, 'modifiedData');
-
-                await Promise.all(
-                    modifiedData.room.map(
-                        async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
-                            await Promise.all(
-                                rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
-                                    const buffer = await fileGridFS.getFile(fl.v);
-                                    const base64 = CommonUtils.convertBase64GridFS(buffer.file);
-                                    modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                }),
-                            );
-                        },
-                    ),
-                );
-                resolve(modifiedData);
-            });
-            const a = CommonUtils.convertBase64(newData.user?.avatar);
-            if (a) newData.user.avatar = a;
-
-            if (newData) {
-                if (moreChat) {
-                    cRef.current = 8;
-                    if (newData.room.length > 0 && chatRef.current) {
-                        chatRef.current = {
-                            ...chatRef.current,
-                            room: [...chatRef.current.room, ...newData.room],
-                        };
+                if (newData) {
+                    if (moreChat) {
+                        cRef.current = 8;
+                        if (newData.room.length > 0 && chatRef.current) {
+                            chatRef.current = {
+                                ...chatRef.current,
+                                room: [...chatRef.current.room, ...newData.room],
+                            };
+                        }
+                    } else {
+                        chatRef.current = newData;
+                        cRef.current = 7;
                     }
-                } else {
-                    chatRef.current = newData;
-                    cRef.current = 7;
+                    offset.current += limit;
                 }
-                offset.current += limit;
+                setConversation(chatRef.current);
             }
-            setConversation(chatRef.current);
+            date1.current = moment(conversation?.room[0]?.createdAt);
         }
-        date1.current = moment(conversation?.room[0].createdAt);
+
         setLoading(false);
     }
-    const code = `${conversation?._id + '-' + conversation?.user.id}phrase`;
+    const code = `${conversation?._id + '-' + conversation?.user.id}phrase_chatRoom`;
     useEffect(() => {
         if (code) {
+            socket.on(`phrase_chatRoom_response_${conversation?._id}_${id_you}`, (res) => {
+                setWch(res);
+            });
+            socket.on(
+                `user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`,
+                (res: { length: number; id: string }) => {
+                    console.log(res, 'senn');
+                    setWritingBy(res);
+                },
+            );
             socket.on(code, async (d: string) => {
-                console.log('yesss me');
-
                 const data: PropsRoomChat = JSON.parse(d);
                 const newD: any = await new Promise(async (resolve, reject) => {
                     await Promise.all(
@@ -201,7 +207,6 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                 data.users.push(data.user);
                 dispatch(setRoomChat(data));
                 setDataSent(newD);
-                console.log(newD, 'be sent by others');
             });
         }
     }, [code]);
@@ -239,6 +244,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         if (value.trim() || upload.length > 0) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
+            const id_ = uuidv4();
             const images = upload.map((i) => {
                 return { v: i.link, type: 'image', icon: '', _id: String(Math.random()) }; // get key for _id
             });
@@ -248,7 +254,8 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
                 seenBy: [],
                 text: { t: value, icon: '' },
                 sending: true,
-                _id: userId,
+                id: userId,
+                _id: id_,
             };
             if (conversation) conversation.room.unshift(chat);
             uploadRef.current = [];
@@ -256,6 +263,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             const formData = new FormData();
             formData.append('value', value);
             if (id_room) formData.append('id_room', id_room);
+            if (id_) formData.append('id_', id_);
             if (id_other) formData.append('id_others', id_other);
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i]);
@@ -265,6 +273,7 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
 
             if (data && conversation) {
+                rr.current = '';
                 conversation.room.map((r) => {
                     if (r.sending) r.sending = false;
                 });
@@ -377,5 +386,12 @@ export default function LogicConversation(id_chat: { id_room: string | undefined
         check,
         textarea,
         date1,
+        data,
+        emptyRef,
+        wch,
+        setWch,
+        rr,
+        writingBy,
+        setWritingBy,
     };
 }

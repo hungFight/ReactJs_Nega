@@ -1,30 +1,16 @@
-import { memo, useEffect, useRef } from 'react';
-import React, { useState } from 'react';
+import { memo } from 'react';
+import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Pagination, EffectCoverflow } from 'swiper';
+import { Pagination } from 'swiper';
 import 'swiper/css/effect-coverflow';
 
-import clsx from 'clsx';
-import {
-    CloseI,
-    SendI,
-    MoveI,
-    UndoI,
-    BeforeI,
-    ProfileI,
-    ProfileCircelI,
-    LoadingI,
-    MinusI,
-    CheckI,
-    ClockCirclesI,
-} from '~/assets/Icons/Icons';
+import { CloseI, SendI, UndoI, LoadingI } from '~/assets/Icons/Icons';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import useDebounce from '~/reUsingComponents/hook/useDebounce';
 import { DivIconMs } from '../styleMessage';
 import { DivResults, DivSend } from './styleSed';
-import { Div, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivPost } from '~/social_network/components/Header/layout/Home/styleHome';
+import { Div, Input } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import ListAccounts from './ListAccounts';
 import MoreOption from './MoreOption';
@@ -66,7 +52,7 @@ const Send: React.FC<{
             {!send && (
                 <Hovertitle Tags={DivIconMs} title="Send" size="23px" color={colorText} onClick={handleShowHide}>
                     <SendI />
-                    <p className={clsx('miss')}>+</p>
+                    <p>+</p>
                 </Hovertitle>
             )}
             {send && (
@@ -244,7 +230,7 @@ const Send: React.FC<{
                         ) : (
                             rooms.map((r) => (
                                 <ListAccounts
-                                    key={r._id + r.room._id}
+                                    key={r._id + r.room.id}
                                     data={r}
                                     userId={userId}
                                     colorText={colorText}

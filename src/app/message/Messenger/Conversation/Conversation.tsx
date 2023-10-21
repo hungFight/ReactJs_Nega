@@ -1,4 +1,4 @@
-import { Div, DivFlex, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
 import {
     DotI,
@@ -11,20 +11,15 @@ import {
     ClockCirclesI,
     BalloonI,
     MoveI,
-    PlusI,
-    RedeemI,
-    PinI,
-    DelAllI,
-    DelSelfI,
-    ReportI,
-    ChangeChatI,
-    RemoveCircleI,
+    TyOnlineI,
+    PenI,
+    EraserI,
 } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import LogicConversation, { PropsChat } from './LogicConver';
 import { Player } from 'video-react';
@@ -36,11 +31,12 @@ import ItemsRoom from './ItemsConvers';
 import { PropsBgRD, offChats, setBalloon, setTopLeft } from '~/redux/background';
 import MoreOption from '../MoreOption';
 import { setDelIds } from '~/redux/reload';
-import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
+import sendChatAPi from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
-import Bar from '~/reUsingComponents/Bar/Bar';
 import { useSelector } from 'react-redux';
-import FileConversation from '../File';
+import OptionForItem from './OptionForItem';
+import moments from '~/utils/moment';
+import { socket } from 'src/mainPage/nextWeb';
 
 const Conversation: React.FC<{
     index: number;
@@ -74,6 +70,7 @@ const Conversation: React.FC<{
             }[]
         >
     >;
+    userOnline: string[];
 }> = ({
     index,
     colorText,
@@ -88,6 +85,7 @@ const Conversation: React.FC<{
     left,
     permanent,
     setId_chats,
+    userOnline,
 }) => {
     const {
         handleImageUpload,
@@ -118,7 +116,14 @@ const Conversation: React.FC<{
         check,
         textarea,
         date1,
-    } = LogicConversation(id_chat, dataFirst.id);
+        data,
+        emptyRef,
+        wch,
+        setWch,
+        rr,
+        writingBy,
+        setWritingBy,
+    } = LogicConversation(id_chat, dataFirst.id, userOnline);
     const chats = useSelector((state: PropsBgRD) => state.persistedReducer.background.chats);
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<boolean>(false);
@@ -126,7 +131,7 @@ const Conversation: React.FC<{
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (conversation?._id || conversation?.user.id)
+        if ((conversation?._id || conversation?.user.id) && moves.includes(conversation?.user.id))
             if (moves.some((m) => m === conversation?._id || m === conversation?.user.id)) {
                 const ls = document.querySelectorAll('.ofChats');
                 Array.from(ls).forEach((s) => {
@@ -143,9 +148,11 @@ const Conversation: React.FC<{
             }
     };
     const handleMouseUp = () => {
-        // if (del.current) del.current.style.zIndex = '99';
-        if (yRef.current && xRef.current) dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
-        setMouse(false);
+        if (conversation && moves.includes(conversation?.user.id)) {
+            if (yRef.current && xRef.current)
+                dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
+            setMouse(false);
+        }
     };
     const handleTouchMoveRoomChat = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (mouse && del.current) {
@@ -201,6 +208,8 @@ const Conversation: React.FC<{
     };
     const handleWatchMore = (e: any) => {
         // e.stopPropagation();
+        console.log(e);
+
         if (e) {
             if (e?.getAttribute('class').includes('chatTime')) {
                 e.classList.remove('chatTime');
@@ -211,13 +220,15 @@ const Conversation: React.FC<{
     };
 
     const handleScroll = () => {
-        const { scrollTop, clientHeight, scrollHeight } = ERef.current;
-        const scrollBottom = -scrollTop + clientHeight;
-        console.log(scrollBottom, scrollTop, clientHeight, scrollHeight, check.current, loading);
-        if (scrollBottom >= scrollHeight - 250 && !loading) {
-            check.current = -scrollTop;
-            if (cRef.current !== 2) {
-                fetchChat(true);
+        if (!emptyRef.current) {
+            const { scrollTop, clientHeight, scrollHeight } = ERef.current;
+            const scrollBottom = -scrollTop + clientHeight;
+            console.log(scrollBottom, scrollTop, clientHeight, scrollHeight, check.current, loading);
+            if (scrollBottom >= scrollHeight - 250 && !loading) {
+                check.current = -scrollTop;
+                if (cRef.current !== 2) {
+                    fetchChat(true);
+                }
             }
         }
     };
@@ -338,7 +349,6 @@ const Conversation: React.FC<{
             },
         ],
     };
-    console.log(moves, 'moves');
 
     if (conversation?.deleted?.some((c) => c.id === userId)) {
         dataMore.options.push({
@@ -355,7 +365,7 @@ const Conversation: React.FC<{
             onClick: () => handleUndo(),
         });
     }
-    if (conversation?.room[0]._id) {
+    if (conversation?.room[0]?.id) {
         dataMore.options.push({
             id: 4,
             name: 'Delete',
@@ -399,133 +409,24 @@ const Conversation: React.FC<{
           }
         | undefined
     >(undefined);
-    console.log(optionsForItem, 'options');
-    const optionsForItemData: {
-        [en: string]: {
-            id: number;
-            icon: JSX.Element;
-            color: string;
-            title: string;
-            top: string;
-            onClick: () => void;
-        }[];
-        vi: {
-            id: number;
-            icon: JSX.Element;
-            color: string;
-            title: string;
-            top: string;
-            onClick: () => void;
-        }[];
-    } = {
-        en: [
-            {
-                id: 1,
-                icon: <DelAllI />,
-                color: '#67b5f8',
-                title: 'Remove both side can not see this text',
-                top: '-80px',
-                onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        // id room and user
-                        const res = await sendChatAPi.delChatAll(conversation._id, optionsForItem.id);
-                    }
-                },
-            },
-            {
-                id: 2,
-                icon: <DelSelfI />,
-                color: '#67b5f8',
-                title: 'Remove only you can not see this text',
-                top: '-80px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 3,
-                icon: <ChangeChatI />,
-                color: '',
-                title: 'Change this text and others still can see your changing',
-                top: '-100px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 4,
-                icon: <PinI />,
-                color: '#d0afaf',
-                title: 'Pin',
-                top: '-40px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 5,
-                icon: <RedeemI />,
-                color: '#73b3eb',
-                title: 'Redeem',
-                top: '-40px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-        ],
-        vi: [
-            {
-                id: 1,
-                icon: <DelAllI />,
-                color: '#67b5f8',
-                title: 'Khi xoá cả 2 bên sẽ đều không nhìn thấy tin nhắn này',
-                top: '-100px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 2,
-                icon: <DelSelfI />,
-                color: '#67b5f8',
-                title: 'Khi xoá thi chỉ mình bạn không nhìn thấy tin nhắn này',
-                top: '-100px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 3,
-                icon: <ChangeChatI />,
-                color: '',
-                title: 'Khi thay đổi tin nhắn người khác sẽ biết ban đã thay đổi',
-                top: '-98px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 4,
-                icon: <PinI />,
-                color: '#d0afaf',
-                title: 'Gim',
-                top: '-40px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-            {
-                id: 5,
-                icon: <RedeemI />,
-                color: '#73b3eb',
-                title: 'Thu hồi',
-                top: '-40px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
-        ],
-    };
+    console.log(
+        writingBy,
+        'writingBy',
+        writingBy && writingBy.id === conversation?.user.id,
+        writingBy?.id,
+        conversation?.user.id,
+    );
+    const Dot: number[] = [];
+    const eraser = useRef<number>(0);
+
+    if (writingBy) {
+        for (let i = 1; i <= writingBy.length; i++) {
+            Dot.push(i);
+        }
+    }
+    const era = Dot.length < eraser.current;
+    eraser.current = Dot.length;
+    const Time = data ? moments().FromNow(data, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg) : '';
     return (
         <DivConversation
             ref={del}
@@ -545,277 +446,13 @@ const Conversation: React.FC<{
         >
             <DivResultsConversation color="#e4e4e4">
                 {optionsForItem && (
-                    <Div
-                        width="100%"
-                        wrap="wrap"
-                        css={`
-                            position: absolute;
-                            left: 0;
-                            height: 91%;
-                            background-color: #191919e6;
-                            z-index: 999;
-                            bottom: 0;
-                            justify-content: center;
-                            padding: 10px;
-                            overflow: hidden;
-                        `}
-                        onClick={() => setOptions(undefined)}
-                    >
-                        <Div
-                            width="2px"
-                            css={`
-                                position: absolute;
-                                top: 1px;
-                                left: 54px;
-                                font-size: 30px;
-                                cursor: var(--pointer);
-                                height: 30px;
-                                z-index: 1;
-                                background-color: #898787;
-                            `}
-                        ></Div>
-                        <Div
-                            css={`
-                                position: absolute;
-                                top: 30px;
-                                left: 40px;
-                                font-size: 30px;
-                                z-index: 1;
-                                cursor: var(--pointer);
-                            `}
-                            onClick={() => setOptions(undefined)}
-                        >
-                            <RemoveCircleI />
-                        </Div>
-                        <Div
-                            wrap="wrap"
-                            display="block"
-                            width="100%"
-                            css={`
-                                height: 50%;
-                                position: relative;
-                                animation: chatMove 0.5s linear;
-                                @keyframes chatMove {
-                                    0% {
-                                        right: -180px;
-                                    }
-                                    100% {
-                                        right: 0px;
-                                    }
-                                }
-                            `}
-                        >
-                            {optionsForItem.text && (
-                                <Div
-                                    css="justify-content: end; width: 100%; align-items: baseline; "
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <P
-                                        z="1.4rem"
-                                        css="width: fit-content; margin: 0; padding: 2px 12px 4px; border-radius: 7px; border-top-left-radius: 13px; border-bottom-left-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        {optionsForItem.text}
-                                    </P>
-                                </Div>
-                            )}
-                            {optionsForItem.imageOrVideos.length > 0 && (
-                                <Div
-                                    width="100%"
-                                    css={`
-                                        height: ${optionsForItem.text ? '90%' : '100%'};
-                                        width: 100%;
-                                        align-items: center;
-                                        padding: 10px;
-                                    `}
-                                >
-                                    <Div
-                                        width="100%"
-                                        wrap="wrap"
-                                        css={`
-                                            height: 97%;
-                                            overflow-y: overlay;
-                                            border-radius: 5px;
-                                            position: relative;
-                                            padding: 1px;
-                                            justify-content: right;
-                                            .roomOfChat {
-                                                position: fixed;
-                                                width: 100%;
-                                                height: 100%;
-                                                top: 0;
-                                                left: 0;
-                                                background-color: #171718;
-                                                z-index: 9999;
-                                                img {
-                                                    object-fit: contain;
-                                                }
-                                            }
-                                            div {
-                                                flex-grow: 0 !important;
-                                                height: 50%;
-                                                border: 2px solid #686767;
-                                            }
-                                        `}
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        {optionsForItem.imageOrVideos.map((fl, index) => (
-                                            <FileConversation
-                                                key={fl._id}
-                                                type={fl?.type}
-                                                v={fl.v}
-                                                icon={fl.icon}
-                                                ERef={ERef}
-                                                del={del}
-                                            />
-                                        ))}
-                                    </Div>
-                                </Div>
-                            )}
-                        </Div>
-                        <Div
-                            width="100%"
-                            css={`
-                                margin: 5px 0;
-                                justify-content: right;
-                                padding: 0 5px;
-                                animation: chatMove 0.5s linear;
-                                @keyframes chatMove {
-                                    0% {
-                                        right: -348px;
-                                    }
-                                    100% {
-                                        right: 0px;
-                                    }
-                                }
-                            `}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <Div
-                                css={`
-                                    font-size: 1.4rem;
-                                    padding: 2px 8px;
-                                    background-color: #4b4b4b;
-                                    border-radius: 5px;
-                                    cursor: var(--pointer);
-                                `}
-                            >
-                                Reply
-                            </Div>
-                        </Div>
-                        <Div
-                            width="100%"
-                            css={`
-                                height: 40%;
-                                background-color: #060606c9;
-                                border-radius: 5px;
-                                padding: 8px;
-                                position: relative;
-                                animation: chatMove 0.5s linear;
-                                @keyframes chatMove {
-                                    0% {
-                                        right: -348px;
-                                    }
-                                    100% {
-                                        right: 0px;
-                                    }
-                                }
-                                .MoveOpChat {
-                                    p {
-                                        display: block;
-                                    }
-                                    font-size: 43px;
-                                    top: -8px;
-                                }
-                            `}
-                            onTouchStart={(e: any) => {
-                                e.target.classList.add('MoveOpChat');
-                            }}
-                            onTouchEnd={(e: any) => {
-                                const el = document.querySelectorAll('.MoveOpChat');
-                                Array.from(el).map((r) => {
-                                    if (r.getAttribute('class')?.includes('MoveOpChat')) {
-                                        r.classList.remove('MoveOpChat');
-                                    }
-                                });
-                            }}
-                            onTouchMove={(e) => {
-                                const touches = e.touches;
-                                console.log(touches);
-
-                                // Kiểm tra tọa độ của ngón tay đầu tiên trong danh sách
-                                if (touches.length > 0) {
-                                    const firstTouch = touches[0];
-                                    const x = firstTouch.clientX;
-                                    const y = firstTouch.clientY;
-                                    console.log(x, y);
-
-                                    // Kiểm tra xem tọa độ (x, y) thuộc về phần tử nào
-                                    const element = document.elementFromPoint(x, y);
-                                    const el = document.querySelectorAll('.MoveOpChat');
-                                    Array.from(el).map((r) => {
-                                        if (r.getAttribute('class')?.includes('MoveOpChat') && r !== element) {
-                                            r.classList.remove('MoveOpChat');
-                                        }
-                                    });
-                                    if (element) {
-                                        element.classList.add('MoveOpChat');
-                                        console.log('Đang di chuyển qua phần tử:', element);
-                                    }
-                                    // Bây giờ, "element" chứa thông tin về phần tử mà ngón tay đang di chuyển qua
-                                }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {optionsForItemData[lg].map((o) => (
-                                <Div
-                                    key={o.id}
-                                    css={`
-                                        position: relative;
-                                        margin: 4px;
-                                        height: fit-content;
-                                        font-size: 25px;
-                                        padding: 2px;
-                                        color: ${o.color};
-                                        svg {
-                                            pointer-events: none;
-                                        }
-                                        cursor: var(--pointer);
-                                        @media (min-width: 767px) {
-                                            &:hover {
-                                                p {
-                                                    display: block;
-                                                }
-                                            }
-                                        }
-                                    `}
-                                    onClick={o.onClick}
-                                >
-                                    {o.icon}
-                                    <P
-                                        z="1.3rem"
-                                        css={`
-                                            display: none;
-                                            position: absolute;
-                                            width: 100px;
-                                            padding: 3px;
-                                            background-color: #434444;
-                                            border-radius: 5px;
-                                            text-align: center;
-                                            left: 50%;
-                                            right: 50%;
-                                            translate: -50%;
-                                            top: ${o.top};
-                                        `}
-                                    >
-                                        {o.title}
-                                    </P>
-                                </Div>
-                            ))}
-                        </Div>
-                    </Div>
+                    <OptionForItem
+                        setOptions={setOptions}
+                        ERef={ERef}
+                        del={del}
+                        optionsForItem={optionsForItem}
+                        conversation={conversation}
+                    />
                 )}
                 <Div
                     width="100%"
@@ -831,7 +468,7 @@ const Conversation: React.FC<{
                     `}
                 >
                     <Div
-                        width="30px"
+                        width="30px" // delete chat box
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center; cursor: var(--pointer)"
                         onClick={() => {
                             if (del.current) {
@@ -843,14 +480,13 @@ const Conversation: React.FC<{
                                         ),
                                     ),
                                 );
-
                                 del.current.remove();
                             }
                         }}
                     >
                         <UndoI />
                     </Div>
-                    <Div width="85%" css="align-items: center;">
+                    <Div width="85%" css="align-items: center; position: relative">
                         <Avatar
                             src={conversation?.user.avatar}
                             alt={conversation?.user.fullName}
@@ -858,7 +494,30 @@ const Conversation: React.FC<{
                             radius="50%"
                             css="min-width: 30px; width: 30px; height: 30px; margin-right: 5px;"
                         />
-                        <Hname>{conversation?.user.fullName}</Hname>
+                        {userOnline.includes(conversation?.user.id ?? '') && (
+                            <Div
+                                css={`
+                                    font-size: 11px;
+                                    position: absolute;
+                                    bottom: 0;
+                                    left: 21px;
+                                    color: #3b993b;
+                                `}
+                            >
+                                <TyOnlineI />
+                            </Div>
+                        )}
+                        <Div width="98%" wrap="wrap">
+                            <Hname>{conversation?.user.fullName}</Hname>
+                            {Time && (
+                                <Div>
+                                    <Div css="color: #db4141; font-size: 8px; align-items: center; margin-right: 2px;">
+                                        <TyOnlineI />
+                                    </Div>
+                                    <P z="1rem">{Time}</P>
+                                </Div>
+                            )}
+                        </Div>
                         <Div onClick={() => setOpMore(!opMore)} onMouseMove={(e) => e.stopPropagation()}>
                             <DotI />
                         </Div>
@@ -872,9 +531,9 @@ const Conversation: React.FC<{
                         margin-top: 22px;
                         flex-direction: column-reverse;
                         padding-bottom: 10px;
-                        ${emoji ? 'height: 150px;' : `height:${chat.length > 2 ? '90%' : '90%'};`}
                         overflow-y: overlay;
                         scroll-behavior: smooth;
+                        height: 91%;
                         padding-right: 5px;
                         transition: all 0.5s linear;
                         @media (max-width: 768px) {
@@ -885,12 +544,65 @@ const Conversation: React.FC<{
                             }
                         }
                         @media (max-width: 1080px) {
-                            height: 90%;
+                            height: 91%;
                         }
                     `}
                     onScroll={() => handleScroll}
                     // onClick={() => setEmoji(false)}
                 >
+                    {writingBy && writingBy?.length > 0 && (
+                        <Div
+                            display="block"
+                            className="noTouch"
+                            css={`
+                                position: relative;
+                                justify-content: left;
+                                align-items: center;
+                            `}
+                        >
+                            <Div css="width: fit-content;justify-content: left; z-index: 11; position: relative;transition: 1s linear;">
+                                <Avatar
+                                    src={conversation?.user.avatar}
+                                    alt={conversation?.user.fullName}
+                                    gender={conversation?.user.gender}
+                                    radius="50%"
+                                    css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
+                                />{' '}
+                                <Div css="width: fit-content; padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;">
+                                    {Dot.map((f) => (
+                                        <Div
+                                            key={f}
+                                            css={`
+                                                animation: writingChat 1s linear;
+                                                @keyframes writingChat {
+                                                    0% {
+                                                        width: 0%;
+                                                    }
+                                                    50% {
+                                                        width: 8%;
+                                                    }
+                                                    100% {
+                                                        width: 16%;
+                                                    }
+                                                }
+                                            `}
+                                        >
+                                            <MinusI />
+                                        </Div>
+                                    ))}
+                                    <Div
+                                        css={`
+                                            position: absolute;
+                                            right: -2px;
+                                            top: -6px;
+                                        `}
+                                    >
+                                        {era ? <EraserI /> : <PenI />}
+                                    </Div>
+                                </Div>
+                            </Div>
+                        </Div>
+                    )}
                     {conversation?.room.map((rc, index, arr) => {
                         let timeS = '';
                         const mn = moment(arr[index].createdAt);
@@ -911,16 +623,20 @@ const Conversation: React.FC<{
                                 timeS={timeS}
                                 rc={rc}
                                 index={index}
-                                userId={userId}
+                                archetype={arr}
                                 handleWatchMore={handleWatchMore}
                                 ERef={ERef}
                                 del={del}
                                 handleTime={handleTime}
                                 user={conversation.user}
                                 dataFirst={dataFirst}
+                                wch={wch}
+                                setWch={setWch}
+                                rr={rr}
                             />
                         );
                     })}
+
                     {loading ? (
                         <DivLoading>
                             <LoadingI />
@@ -952,7 +668,7 @@ const Conversation: React.FC<{
                         position: absolute;
                         left: 8px;
                         bottom: 9px;
-                        z-index: 1;
+                        z-index: 20;
                         padding-top: 9px;
                         div#emojiCon {
                             width: 100%;
@@ -1075,6 +791,11 @@ const Conversation: React.FC<{
                                 onKeyUp={(e) => handleOnKeyup(e)}
                                 onChange={(e) => {
                                     console.log(e.target.value, 'enter');
+                                    socket.emit(`user_${conversation?.user.id}_in_roomChat_personal_writing`, {
+                                        roomId: conversation?._id,
+                                        id_other: dataFirst.id,
+                                        value: e.target.value.length,
+                                    });
                                     if (!e.target.value) setValue(e.target.value);
                                     if (e.target.value.trim()) setValue(e.target.value);
                                 }}

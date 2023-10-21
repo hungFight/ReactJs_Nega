@@ -10,6 +10,7 @@ import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from 
 import CommonUtils from '~/utils/CommonUtils';
 
 interface _Avatar {
+    className?: string;
     idH?: string;
     id?: string;
     src?: any;
@@ -28,6 +29,7 @@ interface _Avatar {
 
 const Avatar = forwardRef((props: _Avatar, ref: any) => {
     const {
+        className,
         idH,
         id,
         src,
@@ -81,7 +83,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     return avatar ? (
         <FaUserCircle />
     ) : (
-        <DivImg id={idH} width={width} css={css} {...events} ref={ref}>
+        <DivImg id={idH} width={width} css={css} {...events} ref={ref} className={className}>
             {children}
             <Img
                 src={src || Fallback || avatarFallback}

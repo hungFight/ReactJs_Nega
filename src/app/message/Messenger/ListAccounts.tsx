@@ -130,7 +130,7 @@ const ListAccounts: React.FC<{
                 }
             }
         });
-        if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room._id !== userId)
+        if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room?.id !== userId)
             seenBy.current.setAttribute('style', 'color: #f0ffffde;');
     }, [data]);
 
@@ -138,7 +138,7 @@ const ListAccounts: React.FC<{
         <>
             {data.users.map((rs) => {
                 const who =
-                    data.room._id === userId
+                    data.room?.id === userId
                         ? 'You: '
                         : rs.gender === 0
                         ? 'Him: '

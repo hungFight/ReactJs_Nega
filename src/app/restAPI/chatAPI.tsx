@@ -4,7 +4,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 export interface PropsRoomChat {
-    _id: any;
+    _id: string;
     id_us: string[];
     background: string;
     miss: number;
@@ -22,6 +22,7 @@ export interface PropsRoomChat {
     };
     room: {
         _id: string;
+        id: string;
         text: { icon: string; t: string };
         imageOrVideos: { v: string; icon: string; _id: string }[];
         seenBy: string[];
@@ -66,12 +67,21 @@ class Messenger {
         id_chat: { id_room: string | undefined; id_other: string },
         limit: number,
         offset: number,
-        moreChat?: boolean,
+        moreChat: boolean = false,
+        id_room?: string,
     ) => {
+        console.log(id_room, 'id_room', moreChat);
+
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get<PropsChat>('/messenger/getChat', {
-                params: { id_room: id_chat.id_room, id_other: id_chat.id_other, limit, offset, moreChat },
+                params: {
+                    id_room: id_chat.id_room ? id_chat.id_room : id_room,
+                    id_other: id_chat.id_other,
+                    limit,
+                    offset,
+                    moreChat,
+                },
             });
             return res.data;
         } catch (error) {

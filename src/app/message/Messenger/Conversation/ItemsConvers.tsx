@@ -6,27 +6,28 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useEffect, useRef, useState } from 'react';
 import { DotI } from '~/assets/Icons/Icons';
 import { PropsUser } from 'src/App';
-
+type PropsRc = {
+    _id: string;
+    id: string;
+    text: {
+        t: string;
+        icon: string;
+    };
+    imageOrVideos: {
+        v: string;
+        type?: string | undefined;
+        icon: string;
+        _id: string;
+    }[];
+    sending?: boolean | undefined;
+    seenBy: string[];
+    createdAt: string;
+};
 const ItemsRoom: React.FC<{
     del: React.MutableRefObject<HTMLDivElement | null>;
-    rc: {
-        _id: string;
-        text: {
-            t: string;
-            icon: string;
-        };
-        imageOrVideos: {
-            v: string;
-            type?: string | undefined;
-            icon: string;
-            _id: string;
-        }[];
-        sending?: boolean | undefined;
-        seenBy: string[];
-        createdAt: string;
-    };
+    rc: PropsRc;
     index: number;
-    userId: string;
+    archetype: PropsRc[];
     handleWatchMore: (e: any) => void;
     ERef: React.MutableRefObject<any>;
     handleTime: (dateTime: string, type: string) => string;
@@ -65,19 +66,50 @@ const ItemsRoom: React.FC<{
           }
         | undefined;
     dataFirst: PropsUser;
-}> = ({ rc, index, userId, handleWatchMore, ERef, handleTime, user, del, timeS, setOptions, options, dataFirst }) => {
+    wch: string | undefined;
+    setWch: React.Dispatch<React.SetStateAction<string | undefined>>;
+    rr: React.MutableRefObject<string>;
+}> = ({
+    rc,
+    index,
+    archetype,
+    handleWatchMore,
+    ERef,
+    handleTime,
+    user,
+    del,
+    timeS,
+    setOptions,
+    options,
+    dataFirst,
+    wch,
+    setWch,
+    rr,
+}) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
+    console.log('Item', wch);
+    if (rc.id === dataFirst.id && !wch) {
+        if (rc.seenBy.includes(user.id) && !rr.current) {
+            rr.current = rc._id;
+        } else {
+            if (archetype[index + 1]?.seenBy.includes(user.id) && !rc?.seenBy.includes(user.id)) {
+                rr.current = archetype[index + 1]?._id;
+            }
+        }
+    }
+    if (wch) rr.current = '';
 
     return (
         <>
             <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>
-            {rc._id === dataFirst.id ? (
+            {rc.id === dataFirst.id ? (
                 <Div
                     width="100%"
                     css={`
                         padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
                         margin-bottom: 8px;
                         justify-content: right;
+                        position: relative;
                         .chatTime {
                             &:hover {
                                 #showDotAtRoomChat {
@@ -111,7 +143,6 @@ const ItemsRoom: React.FC<{
                                 }
                             }
                         `}
-                        onClick={handleWatchMore}
                     >
                         <Div
                             display="none"
@@ -144,7 +175,7 @@ const ItemsRoom: React.FC<{
                             </Div>
                         </Div>
                         {rc.text.t && (
-                            <Div css="justify-content: end; z-index: 11;">
+                            <Div css="justify-content: end; z-index: 11; position: relative;">
                                 <P
                                     z="1.4rem"
                                     css="width: fit-content; margin: 0; padding: 2px 12px 4px; border-radius: 7px; border-top-left-radius: 13px; border-bottom-left-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
@@ -193,6 +224,7 @@ const ItemsRoom: React.FC<{
                                 </Div>
                             </Div>
                         )}
+
                         {rc?.sending ? (
                             <P z="1rem" css="text-align: end;">
                                 sending...
@@ -216,7 +248,7 @@ const ItemsRoom: React.FC<{
                                     <>
                                         <P
                                             className="dateTime"
-                                            css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -138px; top: 5px;"
+                                            css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -153px; top: 5px;"
                                         >
                                             {handleTime(rc.createdAt, 'date')}
                                         </P>
@@ -228,9 +260,46 @@ const ItemsRoom: React.FC<{
                                         </P>
                                     </>
                                 )}
+                                {rc.seenBy.includes(user.id) && (
+                                    <Avatar
+                                        className="dateTime"
+                                        src={user.avatar}
+                                        alt=""
+                                        gender={user.gender}
+                                        radius="50%"
+                                        css={`
+                                            display: none;
+                                            width: 15px;
+                                            height: 15px;
+                                            position: absolute;
+                                            bottom: 12px;
+                                            left: -5px;
+                                            z-index: 1;
+                                        `}
+                                    />
+                                )}
                             </>
                         )}
                     </Div>
+                    {(wch === rc._id || rr.current === rc._id) && (
+                        <Avatar
+                            src={user.avatar}
+                            alt={user.fullName}
+                            gender={user.gender}
+                            radius="50%"
+                            css={`
+                                min-width: 17px;
+                                width: 15px;
+                                height: 15px;
+                                margin-right: 4px;
+                                margin-top: 3px;
+                                position: absolute;
+                                right: -10px;
+                                z-index: 11;
+                                bottom: 0;
+                            `}
+                        />
+                    )}
                 </Div>
             ) : (
                 <Div
@@ -244,6 +313,7 @@ const ItemsRoom: React.FC<{
                     `}
                 >
                     <Div
+                        ref={elWatChTime}
                         css={`
                             ${rc.imageOrVideos.length < 1 ? 'display: flex;' : ''}
                             position: relative;
@@ -275,7 +345,6 @@ const ItemsRoom: React.FC<{
                                     rc.imageOrVideos.length > 0 ? '10%' : '100%'
                                 }; position: absolute; top: 0;left: 0;}`}
                             `}
-                            onClick={handleWatchMore}
                         >
                             {rc.text.t && (
                                 <P
@@ -341,7 +410,7 @@ const ItemsRoom: React.FC<{
                                 <>
                                     <P
                                         className="dateTime"
-                                        css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; right: -138px; top: 5px;"
+                                        css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; right: -153px; top: 5px;"
                                     >
                                         {handleTime(rc.createdAt, 'date')}
                                     </P>

@@ -3,15 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import Cookies from '~/utils/Cookies';
 
 import { Buffer } from 'buffer';
-// Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper';
-import React, { RefObject, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { InitialStateHideShow, setCurrentIdProfile, setOpenProfile } from './app/redux/hideShow';
+import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataMark/dataLogin';
 import { register } from './dataMark/dataRegister';
@@ -27,15 +24,11 @@ import userAPI from '~/restAPI/userAPI';
 import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
-import { PropsReloadRD, } from '~/redux/reload';
+import { PropsReloadRD } from '~/redux/reload';
 import { PropsBgRD } from '~/redux/background';
 import Images from '~/assets/images';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
-import { useNavigate } from 'react-router-dom';
-import refreshToken from '~/refreshToken/refreshToken';
-import http from '~/utils/http';
 import { useQuery, gql } from '@apollo/client';
-import { PropsChat } from '~/Message/Messenger/Conversation/LogicConver';
 import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
 
@@ -424,6 +417,7 @@ function App() {
                                         const permanent = { index: index + 1, id: room.id_room || room.id_other };
                                         return (
                                             <Conversation
+                                                userOnline={userOnline}
                                                 key={index}
                                                 index={index}
                                                 colorText={colorText}

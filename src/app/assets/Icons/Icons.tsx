@@ -72,7 +72,15 @@ import {
     MdReport,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
-import { FaPeopleArrows, FaAddressCard, FaUserFriends, FaBirthdayCake, FaRegSmileBeam, FaSchool } from 'react-icons/fa';
+import {
+    FaPeopleArrows,
+    FaAddressCard,
+    FaUserFriends,
+    FaBirthdayCake,
+    FaRegSmileBeam,
+    FaSchool,
+    FaPencilAlt,
+} from 'react-icons/fa';
 import {
     RiAccountPinCircleFill,
     RiChatPrivateFill,
@@ -87,7 +95,7 @@ import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
-import { PiFlowerLotusFill, PiPlayFill } from 'react-icons/pi';
+import { PiEraserThin, PiFlowerLotusFill, PiPlayFill } from 'react-icons/pi';
 import { HiMiniPause } from 'react-icons/hi2';
 
 export const ImageI = () => <IoImagesOutline />;
@@ -193,3 +201,5 @@ export const DelAllI = () => <MdGroupRemove />;
 export const ReportI = () => <MdReport />;
 export const ChangeChatI = () => <LiaExchangeAltSolid />;
 export const RemoveCircleI = () => <CiCircleRemove />;
+export const PenI = () => <FaPencilAlt />;
+export const EraserI = () => <PiEraserThin />;

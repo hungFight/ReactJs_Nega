@@ -35,7 +35,7 @@ const MoreOption: React.FC<{
             width="100%"
             bottom="0"
             left="0"
-            css="height: 100%; background-color: #212121cc; height: 98%; div,p{user-select: none;} z-index: 1; background-color: #29292900; border-radius: 0; align-items: flex-end;"
+            css="height: 100%; background-color: #212121cc; height: 98%; div,p{user-select: none;} z-index: 100; background-color: #29292900; border-radius: 0; align-items: flex-end;"
             onClick={() => {
                 if (setMoreBar) {
                     setMoreBar({
