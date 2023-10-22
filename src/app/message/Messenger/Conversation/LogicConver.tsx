@@ -36,6 +36,7 @@ export interface PropsChat {
             t: string;
             icon: string;
         };
+        length?: number;
         imageOrVideos: {
             v: string;
             type?: string;
@@ -130,6 +131,7 @@ export default function LogicConversation(
     //get image
     async function fetchChat(moreChat?: boolean) {
         if (!emptyRef.current) {
+            cRef.current = 2;
             const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
             const dataC = ServerBusy(res, dispatch);
 
@@ -186,7 +188,6 @@ export default function LogicConversation(
             socket.on(
                 `user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`,
                 (res: { length: number; id: string }) => {
-                    console.log(res, 'senn');
                     setWritingBy(res);
                 },
             );
@@ -207,6 +208,7 @@ export default function LogicConversation(
                 data.users.push(data.user);
                 dispatch(setRoomChat(data));
                 setDataSent(newD);
+                setWritingBy(undefined);
             });
         }
     }, [code]);
@@ -215,11 +217,38 @@ export default function LogicConversation(
     }, []);
 
     useEffect(() => {
-        if (dataSent) {
-            conversation?.room.unshift(dataSent);
+        if (dataSent && !writingBy) {
+            if (conversation?.room.some((r) => r.length)) {
+                conversation?.room.map((r) => {
+                    if (r.length) {
+                        // other is writing
+                        r._id = dataSent._id;
+                        r.id = dataSent.id;
+                        r.text = dataSent.text;
+                        r.seenBy = dataSent.seenBy;
+                        r.imageOrVideos = dataSent.imageOrVideos;
+                        r.createdAt = dataSent.createdAt;
+                        r.length = undefined;
+                    }
+                });
+            } else {
+                conversation?.room.unshift(dataSent);
+            }
+
             setDataSent(undefined);
         }
-    }, [dataSent]);
+        if (writingBy && !conversation?.room.some((r) => r.length)) {
+            const chat: any = {
+                createdAt: DateTime(),
+                imageOrVideos: [],
+                seenBy: [],
+                length: writingBy.length,
+                id: writingBy.id,
+                _id: '',
+            };
+            conversation?.room.unshift(chat);
+        }
+    }, [dataSent, writingBy]);
     useEffect(() => {
         return clearInterval(mRef.current);
     }, [mRef.current]);

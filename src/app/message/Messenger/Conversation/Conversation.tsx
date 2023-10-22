@@ -227,6 +227,7 @@ const Conversation: React.FC<{
             if (scrollBottom >= scrollHeight - 250 && !loading) {
                 check.current = -scrollTop;
                 if (cRef.current !== 2) {
+                    // wait for another request
                     fetchChat(true);
                 }
             }
@@ -550,62 +551,9 @@ const Conversation: React.FC<{
                     onScroll={() => handleScroll}
                     // onClick={() => setEmoji(false)}
                 >
-                    {writingBy && writingBy?.length > 0 && (
-                        <Div
-                            display="block"
-                            className="noTouch"
-                            css={`
-                                position: relative;
-                                justify-content: left;
-                                align-items: center;
-                            `}
-                        >
-                            <Div css="width: fit-content;justify-content: left; z-index: 11; position: relative;transition: 1s linear;">
-                                <Avatar
-                                    src={conversation?.user.avatar}
-                                    alt={conversation?.user.fullName}
-                                    gender={conversation?.user.gender}
-                                    radius="50%"
-                                    css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
-                                />{' '}
-                                <Div css="width: fit-content; padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;">
-                                    {Dot.map((f) => (
-                                        <Div
-                                            key={f}
-                                            css={`
-                                                animation: writingChat 1s linear;
-                                                @keyframes writingChat {
-                                                    0% {
-                                                        width: 0%;
-                                                    }
-                                                    50% {
-                                                        width: 8%;
-                                                    }
-                                                    100% {
-                                                        width: 16%;
-                                                    }
-                                                }
-                                            `}
-                                        >
-                                            <MinusI />
-                                        </Div>
-                                    ))}
-                                    <Div
-                                        css={`
-                                            position: absolute;
-                                            right: -2px;
-                                            top: -6px;
-                                        `}
-                                    >
-                                        {era ? <EraserI /> : <PenI />}
-                                    </Div>
-                                </Div>
-                            </Div>
-                        </Div>
-                    )}
                     {conversation?.room.map((rc, index, arr) => {
                         let timeS = '';
-                        const mn = moment(arr[index].createdAt);
+                        const mn = moment(arr[index].createdAt); //show time for every day
                         if (
                             mn.diff(date1.current, 'days') < 1 &&
                             date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')
@@ -614,6 +562,90 @@ const Conversation: React.FC<{
                             date1.current = mn;
                         } else {
                             timeS = '';
+                        }
+
+                        if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD'))
+                            timeS = '';
+
+                        if (rc?.length && rc?.length > 0) {
+                            return (
+                                <Div
+                                    key={rc._id}
+                                    display="block"
+                                    className="noTouch"
+                                    css={`
+                                        position: relative;
+                                        justify-content: left;
+                                        align-items: center;
+                                        margin-bottom: 20px;
+                                    `}
+                                >
+                                    <Div css="width: 70%;justify-content: left; z-index: 11; transition: 1s linear; position: relative;">
+                                        <P
+                                            z="1rem"
+                                            css={`
+                                                position: absolute;
+                                                bottom: -15px;
+                                                left: 25px;
+                                            `}
+                                        >
+                                            Han is writing...
+                                        </P>
+                                        <Avatar
+                                            src={conversation?.user.avatar}
+                                            alt={conversation?.user.fullName}
+                                            gender={conversation?.user.gender}
+                                            radius="50%"
+                                            css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
+                                        />{' '}
+                                        <Div
+                                            wrap="wrap"
+                                            css=" padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
+                                        >
+                                            {Dot.map((f, index) => (
+                                                <Div key={f} css=" position: relative;">
+                                                    <Div
+                                                        width="12px"
+                                                        css={`
+                                                            animation: writingChat 0.5s linear;
+                                                            @keyframes writingChat {
+                                                                0% {
+                                                                    width: 0px;
+                                                                }
+                                                                50% {
+                                                                    width: 6px;
+                                                                }
+                                                                100% {
+                                                                    width: 12px;
+                                                                }
+                                                            }
+                                                        `}
+                                                    >
+                                                        <MinusI />
+                                                    </Div>
+                                                    {index + 1 === Dot.length && (
+                                                        <Div
+                                                            css={`
+                                                                position: absolute;
+                                                                right: -14px;
+                                                                top: -9px;
+                                                                animation: writingChatPen 0.5s linear;
+                                                                @keyframes writingChatPen {
+                                                                    100% {
+                                                                        right: -14px;
+                                                                    }
+                                                                }
+                                                            `}
+                                                        >
+                                                            {era ? <EraserI /> : <PenI />}
+                                                        </Div>
+                                                    )}
+                                                </Div>
+                                            ))}
+                                        </Div>
+                                    </Div>
+                                </Div>
+                            );
                         }
                         return (
                             <ItemsRoom
