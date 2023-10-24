@@ -415,25 +415,30 @@ function App() {
                                 <Div css="position: relative;">
                                     {id_chats?.map((room, index) => {
                                         const permanent = { index: index + 1, id: room.id_room || room.id_other };
-                                        return (
-                                            <Conversation
-                                                userOnline={userOnline}
-                                                key={index}
-                                                index={index}
-                                                colorText={colorText}
-                                                colorBg={colorBg}
-                                                id_chat={room}
-                                                currentPage={currentPage}
-                                                dataFirst={userFirst}
-                                                chat={chats}
-                                                id_chats={id_chats}
-                                                top={room.top}
-                                                left={room.left}
-                                                permanent={permanent}
-                                                setId_chats={setId_chats}
-                                            />
-                                            // </>
-                                        );
+                                        if (
+                                            chats.some(
+                                                (c) => c.id_room === room.id_room && c.id_other === room.id_other,
+                                            )
+                                        )
+                                            return (
+                                                <Conversation
+                                                    userOnline={userOnline}
+                                                    key={index}
+                                                    index={index}
+                                                    colorText={colorText}
+                                                    colorBg={colorBg}
+                                                    id_chat={room}
+                                                    currentPage={currentPage}
+                                                    dataFirst={userFirst}
+                                                    chat={chats}
+                                                    id_chats={id_chats}
+                                                    top={room.top}
+                                                    left={room.left}
+                                                    permanent={permanent}
+                                                    setId_chats={setId_chats}
+                                                />
+                                                // </>
+                                            );
                                     })}
                                 </Div>
                             </Div>

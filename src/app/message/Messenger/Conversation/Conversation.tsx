@@ -124,7 +124,6 @@ const Conversation: React.FC<{
         writingBy,
         setWritingBy,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
-    const chats = useSelector((state: PropsBgRD) => state.persistedReducer.background.chats);
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<boolean>(false);
 
@@ -481,7 +480,7 @@ const Conversation: React.FC<{
                                         ),
                                     ),
                                 );
-                                del.current.remove();
+                                // del.current.remove();
                             }
                         }}
                     >

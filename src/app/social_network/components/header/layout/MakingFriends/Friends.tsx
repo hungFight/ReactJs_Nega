@@ -84,7 +84,7 @@ const Friends: React.FC<{
     const handleMessenger = (id: string) => {
         dispatch(onChats({ id_room: undefined, id_other: id }));
         setId_chats((pre) => {
-            if (!chats.some((p) => p.id_other === id)) {
+            if (!chats.some((p) => p.id_other === id) && !pre.some((p) => p.id_other === id)) {
                 return [...pre, { id_room: undefined, id_other: id }];
             }
             return pre;

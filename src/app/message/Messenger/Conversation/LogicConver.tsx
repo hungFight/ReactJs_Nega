@@ -17,6 +17,7 @@ import ServerBusy from '~/utils/ServerBusy';
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import userAPI from '~/restAPI/userAPI';
+import { PropsBgRD } from '~/redux/background';
 
 export interface PropsChat {
     _id: string;
@@ -61,6 +62,7 @@ export default function LogicConversation(
 ) {
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
+    const { chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const { userId, token } = Cookies();
     const { lg } = Languages();
@@ -179,10 +181,12 @@ export default function LogicConversation(
 
         setLoading(false);
     }
+
     const code = `${conversation?._id + '-' + conversation?.user.id}phrase_chatRoom`;
     useEffect(() => {
         if (code) {
             socket.on(`phrase_chatRoom_response_${conversation?._id}_${id_you}`, (res) => {
+                console.log('in_roomChat_personal_receive_and_saw con');
                 setWch(res);
             });
             socket.on(
@@ -191,8 +195,16 @@ export default function LogicConversation(
                     setWritingBy(res);
                 },
             );
+
             socket.on(code, async (d: string) => {
-                const data: PropsRoomChat = JSON.parse(d);
+                const { id, data }: { id: string; data: PropsRoomChat } = JSON.parse(d);
+                const codeS = `user_${id}_in_roomChat_personal_receive_and_saw`;
+
+                socket.emit(codeS, {
+                    userIdReceived: id_you,
+                    idSent: id,
+                    idChat: data.room._id,
+                });
                 const newD: any = await new Promise(async (resolve, reject) => {
                     await Promise.all(
                         data.room.imageOrVideos.map(async (d, index) => {
@@ -211,9 +223,21 @@ export default function LogicConversation(
                 setWritingBy(undefined);
             });
         }
+        return () => {
+            socket.off(`phrase_chatRoom_response_${conversation?._id}_${id_you}`);
+            socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
+            socket.off(code);
+        };
     }, [code]);
     useEffect(() => {
         fetchChat();
+        socket.on(
+            `user_${id_you}_in_roomChat_personal_receive_and_saw_other`, // display that user has been received and seen
+            (data: { userIdReceived: string; idSent: string; idChat: string }) => {
+                console.log(data, 'userIdReceived');
+                setWch(data.idChat);
+            },
+        );
     }, []);
 
     useEffect(() => {
