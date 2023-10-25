@@ -397,6 +397,7 @@ const Conversation: React.FC<{
     };
     const [optionsForItem, setOptions] = useState<
         | {
+              _id: string;
               id: string;
               text: string;
               imageOrVideos:
@@ -464,7 +465,7 @@ const Conversation: React.FC<{
                         top: 10px;
                         left: 0;
                         background-color: #202124;
-                        z-index: 3;
+                        z-index: 13;
                     `}
                 >
                     <Div

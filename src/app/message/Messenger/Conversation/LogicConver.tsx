@@ -133,6 +133,8 @@ export default function LogicConversation(
     //get image
     async function fetchChat(moreChat?: boolean) {
         if (!emptyRef.current) {
+            setLoading(true);
+
             cRef.current = 2;
             const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
             const dataC = ServerBusy(res, dispatch);

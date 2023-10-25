@@ -74,6 +74,7 @@ const OptionType: React.FC<{
             width="100%"
             wrap="wrap"
             css={`
+                margin: 8px 0;
                 align-items: center;
                 color: ${colorText};
             `}

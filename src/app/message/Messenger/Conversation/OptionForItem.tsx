@@ -4,11 +4,13 @@ import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import { PropsChat } from './LogicConver';
 import Languages from '~/reUsingComponents/languages';
+import chatAPI from '~/restAPI/chatAPI';
 
 const OptionForItem: React.FC<{
     setOptions: (
         value: React.SetStateAction<
             | {
+                  _id: string;
                   id: string;
                   text: string;
                   imageOrVideos: {
@@ -22,6 +24,7 @@ const OptionForItem: React.FC<{
         >,
     ) => void;
     optionsForItem: {
+        _id: string;
         id: string;
         text: string;
         imageOrVideos: {
@@ -64,8 +67,8 @@ const OptionForItem: React.FC<{
                 top: '-80px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
-                        // id room and user
-                        // const res = await sendChatAPi.delChatAll(conversation._id, optionsForItem.id);
+                        //  id room and chat
+                        const res = await chatAPI.delChatAll(conversation._id, optionsForItem._id, optionsForItem.id);
                     }
                 },
             },
@@ -118,7 +121,10 @@ const OptionForItem: React.FC<{
                 title: 'Khi xoá cả 2 bên sẽ đều không nhìn thấy tin nhắn này',
                 top: '-100px',
                 onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                    if (conversation && optionsForItem) {
+                        //  id room and chat
+                        const res = await chatAPI.delChatAll(conversation._id, optionsForItem._id, optionsForItem.id);
+                    }
                 },
             },
             {

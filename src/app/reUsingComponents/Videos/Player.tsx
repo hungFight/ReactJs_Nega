@@ -147,7 +147,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src
                         <Div onClick={handleVolume}> {volume ? <VolumeOnI /> : <VolumeOffI />}</Div>
                         <Div
                             width="0px"
-                            css="margin-left: 5px; align-items: center; cursor: var(--pointer); position: absolute; transform: rotateZ(270deg); top: -4px; left: 6px; "
+                            css="top: -14px; left: 6px; margin-left: 5px; align-items: center; cursor: var(--pointer); position: absolute; transform: rotateZ(270deg); height: 32px; "
                         >
                             <Input
                                 ref={progress}

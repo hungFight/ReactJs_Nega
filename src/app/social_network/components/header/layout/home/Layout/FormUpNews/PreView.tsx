@@ -499,7 +499,8 @@ const PreviewPost: React.FC<{
                                 `}
                                 onTouchStart={handleShowI}
                                 onTouchEnd={handleClearI}
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                     if (showI) {
                                         setShowI(undefined);
                                     } else {

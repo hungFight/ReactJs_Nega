@@ -4,7 +4,7 @@ import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useEffect, useRef, useState } from 'react';
-import { DotI } from '~/assets/Icons/Icons';
+import { DotI, GarbageI } from '~/assets/Icons/Icons';
 import { PropsUser } from 'src/App';
 type PropsRc = {
     _id: string;
@@ -19,9 +19,11 @@ type PropsRc = {
         icon: string;
         _id: string;
     }[];
+    delete?: string;
     sending?: boolean | undefined;
     seenBy: string[];
     createdAt: string;
+    updatedAt?: string;
 };
 const ItemsRoom: React.FC<{
     del: React.MutableRefObject<HTMLDivElement | null>;
@@ -41,6 +43,7 @@ const ItemsRoom: React.FC<{
     setOptions: React.Dispatch<
         React.SetStateAction<
             | {
+                  _id: string;
                   id: string;
                   text: string;
                   imageOrVideos: {
@@ -55,6 +58,7 @@ const ItemsRoom: React.FC<{
     >;
     options:
         | {
+              _id: string;
               id: string;
               text: string;
               imageOrVideos: {
@@ -144,47 +148,67 @@ const ItemsRoom: React.FC<{
                             }
                         `}
                     >
-                        <Div
-                            display="none"
-                            id="showDotAtRoomChat"
-                            css={`
-                                position: absolute;
-                                width: 100%;
-                                left: -35px;
-                                top: 1px;
-                                padding-left: 4px;
-                                border-radius: 5px;
-                                font-size: 25px;
-                                z-index: 10;
-                                cursor: var(--pointer);
-                            `}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                            }}
-                        >
+                        {!rc?.delete && (
                             <Div
-                                onClick={() =>
-                                    setOptions({
-                                        id: rc._id,
-                                        text: rc.text.t,
-                                        imageOrVideos: rc.imageOrVideos,
-                                    })
-                                }
+                                display="none"
+                                id="showDotAtRoomChat"
+                                css={`
+                                    position: absolute;
+                                    width: 100%;
+                                    left: -35px;
+                                    top: 1px;
+                                    padding-left: 4px;
+                                    border-radius: 5px;
+                                    font-size: 25px;
+                                    z-index: 10;
+                                    cursor: var(--pointer);
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
                             >
-                                <DotI />
+                                <Div
+                                    onClick={() => {
+                                        setOptions({
+                                            _id: rc._id,
+                                            id: rc.id,
+                                            text: rc.text.t,
+                                            imageOrVideos: rc.imageOrVideos,
+                                        });
+                                    }}
+                                >
+                                    <DotI />
+                                </Div>
                             </Div>
-                        </Div>
-                        {rc.text.t && (
+                        )}
+
+                        {(rc.text.t || rc?.delete) && (
                             <Div css="justify-content: end; z-index: 11; position: relative;">
                                 <P
-                                    z="1.4rem"
-                                    css="width: fit-content; margin: 0; padding: 2px 12px 4px; border-radius: 7px; border-top-left-radius: 13px; border-bottom-left-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
+                                    z={rc?.delete ? '1.2rem' : '1.4rem'}
+                                    css={`
+                                        width: fit-content;
+                                        margin: 0;
+                                        padding: 2px 12px 4px;
+                                        border-radius: 7px;
+                                        border-top-left-radius: 13px;
+                                        border-bottom-left-radius: 13px;
+                                        display: flex;
+                                        align-items: center;
+                                        background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
+                                        border: 1px solid #4e4d4b;
+                                        svg {
+                                            margin-right: 3px;
+                                        }
+                                    `}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleWatchMore(elWatChTime.current);
                                     }}
                                 >
                                     {rc.text.t}
+                                    {rc?.delete && <GarbageI />}
+                                    {rc?.delete && "You've deleted"}
                                 </P>
                             </Div>
                         )}
@@ -252,6 +276,14 @@ const ItemsRoom: React.FC<{
                                         >
                                             {handleTime(rc.createdAt, 'date')}
                                         </P>
+                                        {rc?.updatedAt && (
+                                            <P
+                                                className="dateTime"
+                                                css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -175px; top: 18px;"
+                                            >
+                                                Deleted on {handleTime(rc?.updatedAt, 'date')}
+                                            </P>
+                                        )}
                                         <P
                                             className="dateTime"
                                             css="display: none; width: 100%; font-size: 1rem; margin-right: 5px; text-align: right;"
@@ -310,6 +342,11 @@ const ItemsRoom: React.FC<{
                         justify-content: left;
                         align-items: center;
                         margin-bottom: 8px;
+                        .chatTime {
+                            .dateTime {
+                                display: block;
+                            }
+                        }
                     `}
                 >
                     <Div
@@ -319,11 +356,6 @@ const ItemsRoom: React.FC<{
                             position: relative;
                             justify-content: left;
                             ${rc.imageOrVideos.length > 0 ? 'flex-grow: 1;' : ''}
-                            .chatTime {
-                                .dateTime {
-                                    display: block;
-                                }
-                            }
                         `}
                     >
                         <Avatar
@@ -345,17 +377,35 @@ const ItemsRoom: React.FC<{
                                     rc.imageOrVideos.length > 0 ? '10%' : '100%'
                                 }; position: absolute; top: 0;left: 0;}`}
                             `}
+                            onClick={(e) => {
+                                console.log('hello');
+                                e.stopPropagation();
+
+                                handleWatchMore(elWatChTime.current);
+                            }}
                         >
-                            {rc.text.t && (
+                            {' '}
+                            {(rc.text.t || rc?.delete) && (
                                 <P
-                                    z="1.4rem"
-                                    css="width: fit-content; padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleWatchMore(elWatChTime.current);
-                                    }}
+                                    z={rc?.delete ? '1.2rem' : '1.4rem'}
+                                    css={`
+                                        width: fit-content;
+                                        padding: 2px 12px 4px;
+                                        border-radius: 7px;
+                                        border-top-right-radius: 13px;
+                                        display: flex;
+                                        align-items: center;
+                                        border-bottom-right-radius: 13px;
+                                        background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
+                                        border: 1px solid #4e4d4b;
+                                        svg {
+                                            margin-right: 3px;
+                                        }
+                                    `}
                                 >
                                     {rc.text.t}
+                                    {rc?.delete && <GarbageI />}
+                                    {rc?.delete && `${user.fullName} has deleted`}
                                 </P>
                             )}
                             {rc.imageOrVideos.length > 0 && (
@@ -410,10 +460,33 @@ const ItemsRoom: React.FC<{
                                 <>
                                     <P
                                         className="dateTime"
-                                        css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; right: -153px; top: 5px;"
+                                        css={`
+                                            display: none;
+                                            font-size: 1rem;
+                                            margin-left: 5px;
+                                            position: absolute;
+                                            right: -89px;
+                                            top: 5px;
+                                            ${rc?.delete && 'right: -55px; top: 31px;'}
+                                        `}
                                     >
                                         {handleTime(rc.createdAt, 'date')}
                                     </P>
+                                    {rc?.updatedAt && (
+                                        <P
+                                            className="dateTime"
+                                            css={`
+                                                display: none;
+                                                font-size: 1rem;
+                                                margin-left: 5px;
+                                                position: absolute;
+                                                right: -122px;
+                                                top: 44px;
+                                            `}
+                                        >
+                                            Deleted on {handleTime(rc?.updatedAt, 'date')}
+                                        </P>
+                                    )}
                                     <P
                                         className="dateTime"
                                         css="display: none; width: 100%; font-size: 1rem; margin-left: 5px; text-align: left;"

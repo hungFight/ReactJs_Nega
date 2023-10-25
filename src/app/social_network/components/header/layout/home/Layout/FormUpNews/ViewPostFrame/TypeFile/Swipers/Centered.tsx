@@ -84,7 +84,7 @@ const Centered: React.FC<{
     return (
         <Div
             width="100%"
-            wrap="wrap"
+            display="block"
             css="height: 100%; .mySwiper{ width: 100%; margin: 5px; img{ user-select: none;}}"
         >
             {step !== 0 && (

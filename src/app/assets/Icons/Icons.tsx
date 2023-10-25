@@ -84,6 +84,7 @@ import {
 import {
     RiAccountPinCircleFill,
     RiChatPrivateFill,
+    RiDeleteBin6Line,
     RiDragMoveFill,
     RiExchangeCnyFill,
     RiMailSendLine,
@@ -203,3 +204,4 @@ export const ChangeChatI = () => <LiaExchangeAltSolid />;
 export const RemoveCircleI = () => <CiCircleRemove />;
 export const PenI = () => <FaPencilAlt />;
 export const EraserI = () => <PiEraserThin />;
+export const GarbageI = () => <RiDeleteBin6Line />;

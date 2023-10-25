@@ -374,10 +374,13 @@ function App() {
                 }
             >
                 <Div
-                    width="1536px"
+                    width="100%"
                     css={`
                         justify-content: center;
                         position: relative;
+                        @media (min-width: 1536px) {
+                            width: 1536px;
+                        }
                     `}
                 >
                     {session ? <ErrorBoundaries message={session} /> : ''}

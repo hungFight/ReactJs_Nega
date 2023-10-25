@@ -59,6 +59,8 @@ const Dynamic: React.FC<{
                     img.addEventListener('load', function () {
                         var imageHeight = img.naturalHeight;
                         var imageWidth = img.naturalWidth;
+                        console.log(imageHeight, imageWidth, 'imageWidths');
+
                         if (imageHeight - imageWidth > 300) {
                             setHeightI('600px');
                         }
