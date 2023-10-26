@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Player } from 'video-react';
+import { ImageI } from '~/assets/Icons/Icons';
+import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
@@ -9,7 +11,8 @@ const FileConversation: React.FC<{
     v: string;
     icon: string;
     ERef: any;
-}> = ({ type = '', v, icon, ERef, del }) => {
+    who?: string;
+}> = ({ type = '', v, icon, ERef, del, who }) => {
     const handleRoom = (e: any) => {
         e.stopPropagation();
         if (e.target.getAttribute('class').includes('roomOfChat')) {
@@ -20,6 +23,8 @@ const FileConversation: React.FC<{
             del.current?.setAttribute('style', 'z-index: 100');
         }
     };
+    console.log(type.search('image/') >= 0, type.search('image/'), type, 'check file');
+
     return (
         <Div
             css={`
@@ -29,6 +34,7 @@ const FileConversation: React.FC<{
                 border: 2px solid #202124;
                 flex-grow: 1;
                 position: relative;
+                justify-content: ${who === 'you' ? 'right' : 'left'};
                 &::after {
                     display: block;
                     content: '';
@@ -41,7 +47,33 @@ const FileConversation: React.FC<{
             `}
             onClick={handleRoom}
         >
-            <Img id="roomImageChat" src={v} radius="5px" onClick={(e) => e.stopPropagation()} />
+            {v.includes('exist') ? (
+                <P
+                    z="1.2rem"
+                    css={`
+                        width: fit-content;
+                        margin: 0;
+                        padding: 2px 12px 4px;
+                        border-radius: 7px;
+                        border-top-left-radius: 13px;
+                        border-bottom-left-radius: 13px;
+                        display: flex;
+                        align-items: center;
+                        background-color: #1d1c1c;
+                        border: 1px solid #4e4d4b;
+                        svg {
+                            margin-right: 3px;
+                        }
+                    `}
+                >
+                    <ImageI />
+                    {v}
+                </P>
+            ) : type.search('image/') >= 0 ? (
+                <Img id="roomImageChat" src={v} radius="5px" onClick={(e) => e.stopPropagation()} />
+            ) : (
+                <Player src={v} />
+            )}
         </Div>
     );
 };

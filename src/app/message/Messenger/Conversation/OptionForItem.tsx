@@ -5,6 +5,8 @@ import FileConversation from '../File';
 import { PropsChat } from './LogicConver';
 import Languages from '~/reUsingComponents/languages';
 import chatAPI from '~/restAPI/chatAPI';
+import ServerBusy from '~/utils/ServerBusy';
+import { useDispatch } from 'react-redux';
 
 const OptionForItem: React.FC<{
     setOptions: (
@@ -39,7 +41,7 @@ const OptionForItem: React.FC<{
     conversation: PropsChat | undefined;
 }> = ({ setOptions, optionsForItem, ERef, del, conversation }) => {
     const { lg } = Languages();
-
+    const dispatch = useDispatch();
     const optionsForItemData: {
         [en: string]: {
             id: number;
@@ -68,7 +70,14 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         //  id room and chat
-                        const res = await chatAPI.delChatAll(conversation._id, optionsForItem._id, optionsForItem.id);
+                        const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
+                        console.log(id_file, 'id_file', optionsForItem);
+                        const res = await chatAPI.delChatAll(
+                            conversation._id,
+                            optionsForItem._id,
+                            optionsForItem.id,
+                            id_file,
+                        );
                     }
                 },
             },
@@ -79,7 +88,9 @@ const OptionForItem: React.FC<{
                 title: 'Remove only you can not see this text',
                 top: '-80px',
                 onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                    if (conversation && optionsForItem) {
+                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
+                    }
                 },
             },
             {
@@ -123,7 +134,16 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         //  id room and chat
-                        const res = await chatAPI.delChatAll(conversation._id, optionsForItem._id, optionsForItem.id);
+                        const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
+                        console.log(id_file, 'id_file', optionsForItem);
+
+                        const res = await chatAPI.delChatAll(
+                            conversation._id,
+                            optionsForItem._id,
+                            optionsForItem.id,
+                            id_file,
+                        );
+                        const data: typeof res = ServerBusy(res, dispatch);
                     }
                 },
             },
@@ -134,7 +154,9 @@ const OptionForItem: React.FC<{
                 title: 'Khi xoá thi chỉ mình bạn không nhìn thấy tin nhắn này',
                 top: '-100px',
                 onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                    if (conversation && optionsForItem) {
+                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
+                    }
                 },
             },
             {

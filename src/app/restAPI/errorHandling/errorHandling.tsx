@@ -7,6 +7,8 @@ const errorHandling = (error: AxiosError) => {
     if (error.response) {
         const data: any = error.response.data;
         const res = error.response;
+        console.log(data, 'data Error', res);
+
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         if ((data.status === 0 || data.errorAny === 0) && error.response.status !== 500) {

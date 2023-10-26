@@ -83,8 +83,8 @@ export default function LogicConversation(
     const [loading, setLoading] = useState<boolean>(false);
     const [opMore, setOpMore] = useState<boolean>(false);
     const [fileUpload, setFileUpload] = useState<any>([]);
-    const [upload, setupload] = useState<{ link: any; type: string }[]>([]);
-    const uploadRef = useRef<{ link: string; type: string }[]>([]);
+    const [upload, setupload] = useState<{ _id: string; link: any; type: string }[]>([]);
+    const uploadRef = useRef<{ _id: string; link: string; type: string }[]>([]);
     const chatRef = useRef<PropsChat>();
     const [wch, setWch] = useState<string | undefined>('');
     const rr = useRef<string>('');
@@ -145,13 +145,29 @@ export default function LogicConversation(
                     const modifiedData = { ...dataC };
                     await Promise.all(
                         modifiedData.room?.map(
-                            async (rr: { imageOrVideos: { v: string; icon: string }[] }, index1: number) => {
+                            async (
+                                rr: { imageOrVideos: { _id: string; v: string; icon: string; type: string }[] },
+                                index1: number,
+                            ) => {
                                 await Promise.all(
-                                    rr.imageOrVideos.map(async (fl: { v: string; icon: string }, index2: number) => {
-                                        const buffer = await fileGridFS.getFile(fl.v);
-                                        const base64 = CommonUtils.convertBase64GridFS(buffer.file);
-                                        modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                    }),
+                                    rr.imageOrVideos.map(
+                                        async (
+                                            fl: { _id: string; v: string; icon: string; type: string },
+                                            index2: number,
+                                        ) => {
+                                            const data = await fileGridFS.getFile(fl.v, fl?.type);
+                                            const buffer = ServerBusy(data, dispatch);
+                                            if (data?.message === 'File not found') {
+                                                modifiedData.room[index1].imageOrVideos[index2].v =
+                                                    data?.type?.search('image/') >= 0
+                                                        ? "Image doesn't exist"
+                                                        : "Video doesn't exist";
+                                            } else {
+                                                const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                            }
+                                        },
+                                    ),
                                 );
                             },
                         ),
@@ -299,10 +315,10 @@ export default function LogicConversation(
         if (value.trim() || upload.length > 0) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
-            const id_ = uuidv4();
             const images = upload.map((i) => {
-                return { v: i.link, type: 'image', icon: '', _id: String(Math.random()) }; // get key for _id
+                return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
             });
+            const id_ = uuidv4();
             const chat: any = {
                 createdAt: DateTime(),
                 imageOrVideos: images,
@@ -320,8 +336,10 @@ export default function LogicConversation(
             if (id_room) formData.append('id_room', id_room);
             if (id_) formData.append('id_', id_);
             if (id_other) formData.append('id_others', id_other);
+            console.log(fileUpload, 'fileUpload');
+
             for (let i = 0; i < fileUpload.length; i++) {
-                formData.append('files', fileUpload[i]);
+                formData.append('files', fileUpload[i], fileUpload[i]._id); // assign file and _id of the file upload
             }
             setupload([]);
             const res = await sendChatAPI.send(formData);
@@ -351,12 +369,9 @@ export default function LogicConversation(
 
         if (files.length > 0 && files.length < fileAmount) {
             for (let i = 0; i < files.length; i++) {
+                const _id = uuidv4();
                 const file = files[i];
-                if (
-                    file.type.includes('video/mp4') ||
-                    file.type.includes('video/mov') ||
-                    file.type.includes('video/x-matroska')
-                ) {
+                if (file.type === 'video/mp4' || file.type === 'video/mov' || file.type === 'video/x-matroska') {
                     const url = URL.createObjectURL(file);
                     const vid = document.createElement('video');
                     // create url to use as the src of the video
@@ -365,29 +380,33 @@ export default function LogicConversation(
                     // eslint-disable-next-line no-loop-func
                     vid.ondurationchange = function () {
                         console.log(vid.duration);
-
-                        vid.duration <= 15
-                            ? uploadRef.current.push({ link: url, type: 'video' })
-                            : dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
+                        if (vid.duration <= 15) {
+                            file._id = _id;
+                            uploadRef.current.push({ _id, link: url, type: file.type });
+                            fileRef.current.push(file);
+                        } else {
+                            dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
+                        }
                     };
-                } else if (
-                    file.type.includes('image/jpg') ||
-                    file.type.includes('image/jpeg') ||
-                    file.type.includes('image/png')
-                ) {
+                } else if (file.type === 'image/jpg' || file.type === 'image/jpeg' || file.type === 'image/png') {
                     try {
                         console.log((file.size / 1024 / 1024).toFixed(1), 'not compress');
                         if (Number((file.size / 1024 / 1024).toFixed(1)) <= 8) {
                             // const base64: any = await CommonUtils.getBase64(file);
+                            file._id = _id; // _id flow setupload's _id
                             fileRef.current.push(file);
-                            uploadRef.current.push({ link: URL.createObjectURL(file), type: 'image' });
+                            uploadRef.current.push({ _id, link: URL.createObjectURL(file), type: file.type });
                         } else {
                             const compressedFile: any = await CommonUtils.compress(file);
                             console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
                             console.log(`compressedFile size ${(compressedFile.size / 1024 / 1024).toFixed(1)} MB`); // smaller than maxSizeMB
                             const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
                             if (sizeImage <= 8) {
-                                uploadRef.current.push({ link: URL.createObjectURL(compressedFile), type: 'image' });
+                                uploadRef.current.push({
+                                    _id,
+                                    link: URL.createObjectURL(compressedFile),
+                                    type: file.type,
+                                });
                             } else {
                                 dispatch(setTrueErrorServer(`${sizeImage}MB big than our limit is 8MB`));
                             }

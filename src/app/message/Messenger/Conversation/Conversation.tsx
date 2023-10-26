@@ -19,7 +19,7 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
-import { useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import LogicConversation, { PropsChat } from './LogicConver';
 import { Player } from 'video-react';
@@ -410,6 +410,11 @@ const Conversation: React.FC<{
           }
         | undefined
     >(undefined);
+    const [changeText, setChangeText] = useState<ReactElement>(
+        <Div>
+            <Textarea placeholder="Change text" />
+        </Div>,
+    );
     console.log(
         writingBy,
         'writingBy',
@@ -749,10 +754,10 @@ const Conversation: React.FC<{
                                         onTouchStart={handleTouchStart}
                                         onTouchEnd={handleTouchEnd}
                                     >
-                                        {item.type === 'image' ? (
+                                        {item.type.search('image/') >= 0 ? (
                                             <Img src={item.link} radius="5px" />
                                         ) : (
-                                            item.type === 'video' && <Player key={item.link} src={item.link} />
+                                            <Player key={item.link} src={item.link} />
                                         )}
                                     </Div>
                                 ))}

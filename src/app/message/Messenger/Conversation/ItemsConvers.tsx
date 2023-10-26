@@ -105,234 +105,237 @@ const ItemsRoom: React.FC<{
 
     return (
         <>
-            <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>
+            {rc?.delete !== dataFirst.id && <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>}
             {rc.id === dataFirst.id ? (
-                <Div
-                    width="100%"
-                    css={`
-                        padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
-                        margin-bottom: 8px;
-                        justify-content: right;
-                        position: relative;
-                        .chatTime {
-                            &:hover {
-                                #showDotAtRoomChat {
-                                    display: none;
-                                }
-                            }
-                            .dateTime {
-                                display: block;
-                            }
-                        }
-                        p {
-                            z-index: 1;
-                        }
-                    `}
-                >
+                rc?.delete !== dataFirst.id && (
                     <Div
-                        ref={elWatChTime}
-                        display="block"
-                        className="noTouch"
+                        width="100%"
                         css={`
-                            position: relative;
+                            padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
+                            margin-bottom: 8px;
                             justify-content: right;
-                            ${rc.imageOrVideos.length < 1 ? 'display: block;' : 'flex-grow: 1;'}
-                            ${rc.text.t &&
-                            `&::after {display: block; content: ''; width: 100%; height: ${
-                                rc.imageOrVideos.length > 0 ? '10%' : '100%'
-                            }; position: absolute; top: 0;left: 0;}`}
-                            &:hover {
-                                #showDotAtRoomChat {
-                                    display: flex;
+                            position: relative;
+                            .chatTime {
+                                &:hover {
+                                    #showDotAtRoomChat {
+                                        display: none;
+                                    }
                                 }
+                                .dateTime {
+                                    display: block;
+                                }
+                            }
+                            p {
+                                z-index: 1;
                             }
                         `}
                     >
-                        {!rc?.delete && (
-                            <Div
-                                display="none"
-                                id="showDotAtRoomChat"
-                                css={`
-                                    position: absolute;
-                                    width: 100%;
-                                    left: -35px;
-                                    top: 1px;
-                                    padding-left: 4px;
-                                    border-radius: 5px;
-                                    font-size: 25px;
-                                    z-index: 10;
-                                    cursor: var(--pointer);
-                                `}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                }}
-                            >
-                                <Div
-                                    onClick={() => {
-                                        setOptions({
-                                            _id: rc._id,
-                                            id: rc.id,
-                                            text: rc.text.t,
-                                            imageOrVideos: rc.imageOrVideos,
-                                        });
-                                    }}
-                                >
-                                    <DotI />
-                                </Div>
-                            </Div>
-                        )}
-
-                        {(rc.text.t || rc?.delete) && (
-                            <Div css="justify-content: end; z-index: 11; position: relative;">
-                                <P
-                                    z={rc?.delete ? '1.2rem' : '1.4rem'}
-                                    css={`
-                                        width: fit-content;
-                                        margin: 0;
-                                        padding: 2px 12px 4px;
-                                        border-radius: 7px;
-                                        border-top-left-radius: 13px;
-                                        border-bottom-left-radius: 13px;
+                        <Div
+                            ref={elWatChTime}
+                            display="block"
+                            className="noTouch"
+                            css={`
+                                position: relative;
+                                justify-content: right;
+                                ${rc.imageOrVideos.length < 1 ? 'display: block;' : 'flex-grow: 1;'}
+                                ${rc.text.t &&
+                                `&::after {display: block; content: ''; width: 100%; height: ${
+                                    rc.imageOrVideos.length > 0 ? '10%' : '100%'
+                                }; position: absolute; top: 0;left: 0;}`}
+                            &:hover {
+                                    #showDotAtRoomChat {
                                         display: flex;
-                                        align-items: center;
-                                        background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
-                                        border: 1px solid #4e4d4b;
-                                        svg {
-                                            margin-right: 3px;
-                                        }
+                                    }
+                                }
+                            `}
+                        >
+                            {!rc?.delete && (
+                                <Div
+                                    display="none"
+                                    id="showDotAtRoomChat"
+                                    css={`
+                                        position: absolute;
+                                        width: 100%;
+                                        left: -35px;
+                                        top: 1px;
+                                        padding-left: 4px;
+                                        border-radius: 5px;
+                                        font-size: 25px;
+                                        z-index: 10;
+                                        cursor: var(--pointer);
                                     `}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleWatchMore(elWatChTime.current);
                                     }}
                                 >
-                                    {rc.text.t}
-                                    {rc?.delete && <GarbageI />}
-                                    {rc?.delete && "You've deleted"}
-                                </P>
-                            </Div>
-                        )}
-                        {rc.imageOrVideos.length > 0 && (
-                            <Div css=" align-items: end; flex-grow: 1;">
-                                <Div
-                                    width="100%"
-                                    wrap="wrap"
-                                    css={`
-                                        position: relative;
-                                        justify-content: end;
-                                        .roomOfChat {
-                                            position: fixed;
-                                            width: 100%;
-                                            height: 100%;
-                                            top: 0;
-                                            left: 0;
-                                            background-color: #171718;
-                                            z-index: 9999;
-                                            img {
-                                                object-fit: contain;
-                                            }
-                                        }
-                                        ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
-                                    `}
-                                >
-                                    {rc.imageOrVideos.map((fl, index) => (
-                                        <FileConversation
-                                            key={fl._id}
-                                            type={fl?.type}
-                                            v={fl.v}
-                                            icon={fl.icon}
-                                            ERef={ERef}
-                                            del={del}
-                                        />
-                                    ))}
-                                </Div>
-                            </Div>
-                        )}
-
-                        {rc?.sending ? (
-                            <P z="1rem" css="text-align: end;">
-                                sending...
-                            </P>
-                        ) : (
-                            <>
-                                {rc.imageOrVideos.length > 0 ? (
-                                    <P
-                                        css={`
-                                            display: ${!rc.text.t ? 'block' : 'none'};
-                                            width: 100%;
-                                            font-size: 1rem;
-                                            margin-right: 5px;
-                                            text-align: right;
-                                        `}
-                                        className="dateTime"
+                                    <Div
+                                        onClick={() => {
+                                            setOptions({
+                                                _id: rc._id,
+                                                id: rc.id,
+                                                text: rc.text.t,
+                                                imageOrVideos: rc.imageOrVideos,
+                                            });
+                                        }}
                                     >
-                                        {handleTime(rc.createdAt, 'hour')}, {handleTime(rc.createdAt, 'date')}
+                                        <DotI />
+                                    </Div>
+                                </Div>
+                            )}
+
+                            {(rc.text.t || rc?.delete) && (
+                                <Div css="justify-content: end; z-index: 11; position: relative;">
+                                    <P
+                                        z={rc?.delete ? '1.2rem' : '1.4rem'}
+                                        css={`
+                                            width: fit-content;
+                                            margin: 0;
+                                            padding: 2px 12px 4px;
+                                            border-radius: 7px;
+                                            border-top-left-radius: 13px;
+                                            border-bottom-left-radius: 13px;
+                                            display: flex;
+                                            align-items: center;
+                                            background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
+                                            border: 1px solid #4e4d4b;
+                                            svg {
+                                                margin-right: 3px;
+                                            }
+                                        `}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleWatchMore(elWatChTime.current);
+                                        }}
+                                    >
+                                        {rc.text.t}
+                                        {rc?.delete && <GarbageI />}
+                                        {rc?.delete && "You've deleted"}
                                     </P>
-                                ) : (
-                                    <>
+                                </Div>
+                            )}
+                            {rc.imageOrVideos.length > 0 && (
+                                <Div css=" align-items: end; flex-grow: 1;">
+                                    <Div
+                                        width="100%"
+                                        wrap="wrap"
+                                        css={`
+                                            position: relative;
+                                            justify-content: end;
+                                            .roomOfChat {
+                                                position: fixed;
+                                                width: 100%;
+                                                height: 100%;
+                                                top: 0;
+                                                left: 0;
+                                                background-color: #171718;
+                                                z-index: 9999;
+                                                img {
+                                                    object-fit: contain;
+                                                }
+                                            }
+                                            ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
+                                        `}
+                                    >
+                                        {rc.imageOrVideos.map((fl, index) => (
+                                            <FileConversation
+                                                key={fl._id}
+                                                type={fl?.type}
+                                                v={fl.v}
+                                                icon={fl.icon}
+                                                ERef={ERef}
+                                                del={del}
+                                                who="you"
+                                            />
+                                        ))}
+                                    </Div>
+                                </Div>
+                            )}
+
+                            {rc?.sending ? (
+                                <P z="1rem" css="text-align: end;">
+                                    sending...
+                                </P>
+                            ) : (
+                                <>
+                                    {rc.imageOrVideos.length > 0 ? (
                                         <P
+                                            css={`
+                                                display: ${!rc.text.t ? 'block' : 'none'};
+                                                width: 100%;
+                                                font-size: 1rem;
+                                                margin-right: 5px;
+                                                text-align: right;
+                                            `}
                                             className="dateTime"
-                                            css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -153px; top: 5px;"
                                         >
-                                            {handleTime(rc.createdAt, 'date')}
+                                            {handleTime(rc.createdAt, 'hour')}, {handleTime(rc.createdAt, 'date')}
                                         </P>
-                                        {rc?.updatedAt && (
+                                    ) : (
+                                        <>
                                             <P
                                                 className="dateTime"
-                                                css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -175px; top: 18px;"
+                                                css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -153px; top: 5px;"
                                             >
-                                                Deleted on {handleTime(rc?.updatedAt, 'date')}
+                                                {handleTime(rc.createdAt, 'date')}
                                             </P>
-                                        )}
-                                        <P
+                                            {rc?.updatedAt && (
+                                                <P
+                                                    className="dateTime"
+                                                    css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -175px; top: 18px;"
+                                                >
+                                                    Deleted on {handleTime(rc?.updatedAt, 'date')}
+                                                </P>
+                                            )}
+                                            <P
+                                                className="dateTime"
+                                                css="display: none; width: 100%; font-size: 1rem; margin-right: 5px; text-align: right;"
+                                            >
+                                                {handleTime(rc.createdAt, 'hour')}
+                                            </P>
+                                        </>
+                                    )}
+                                    {rc.seenBy.includes(user.id) && (
+                                        <Avatar
                                             className="dateTime"
-                                            css="display: none; width: 100%; font-size: 1rem; margin-right: 5px; text-align: right;"
-                                        >
-                                            {handleTime(rc.createdAt, 'hour')}
-                                        </P>
-                                    </>
-                                )}
-                                {rc.seenBy.includes(user.id) && (
-                                    <Avatar
-                                        className="dateTime"
-                                        src={user.avatar}
-                                        alt=""
-                                        gender={user.gender}
-                                        radius="50%"
-                                        css={`
-                                            display: none;
-                                            width: 15px;
-                                            height: 15px;
-                                            position: absolute;
-                                            bottom: 12px;
-                                            left: -5px;
-                                            z-index: 1;
-                                        `}
-                                    />
-                                )}
-                            </>
+                                            src={user.avatar}
+                                            alt=""
+                                            gender={user.gender}
+                                            radius="50%"
+                                            css={`
+                                                display: none;
+                                                width: 15px;
+                                                height: 15px;
+                                                position: absolute;
+                                                bottom: 12px;
+                                                left: -5px;
+                                                z-index: 1;
+                                            `}
+                                        />
+                                    )}
+                                </>
+                            )}
+                        </Div>
+                        {(wch === rc._id || rr.current === rc._id) && (
+                            <Avatar
+                                src={user.avatar}
+                                alt={user.fullName}
+                                gender={user.gender}
+                                radius="50%"
+                                css={`
+                                    min-width: 17px;
+                                    width: 15px;
+                                    height: 15px;
+                                    margin-right: 4px;
+                                    margin-top: 3px;
+                                    position: absolute;
+                                    right: -10px;
+                                    z-index: 11;
+                                    bottom: 0;
+                                `}
+                            />
                         )}
                     </Div>
-                    {(wch === rc._id || rr.current === rc._id) && (
-                        <Avatar
-                            src={user.avatar}
-                            alt={user.fullName}
-                            gender={user.gender}
-                            radius="50%"
-                            css={`
-                                min-width: 17px;
-                                width: 15px;
-                                height: 15px;
-                                margin-right: 4px;
-                                margin-top: 3px;
-                                position: absolute;
-                                right: -10px;
-                                z-index: 11;
-                                bottom: 0;
-                            `}
-                        />
-                    )}
-                </Div>
+                )
             ) : (
                 <Div
                     key={rc.text.t + index}
@@ -384,10 +387,9 @@ const ItemsRoom: React.FC<{
                                 handleWatchMore(elWatChTime.current);
                             }}
                         >
-                            {' '}
-                            {(rc.text.t || rc?.delete) && (
+                            {(rc.text.t || rc?.delete === 'all') && (
                                 <P
-                                    z={rc?.delete ? '1.2rem' : '1.4rem'}
+                                    z={rc?.delete === 'all' ? '1.2rem' : '1.4rem'}
                                     css={`
                                         width: fit-content;
                                         padding: 2px 12px 4px;
@@ -396,7 +398,7 @@ const ItemsRoom: React.FC<{
                                         display: flex;
                                         align-items: center;
                                         border-bottom-right-radius: 13px;
-                                        background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
+                                        background-color: ${rc?.delete === 'all' ? '#1d1c1c' : '#353636'};
                                         border: 1px solid #4e4d4b;
                                         svg {
                                             margin-right: 3px;
@@ -404,8 +406,8 @@ const ItemsRoom: React.FC<{
                                     `}
                                 >
                                     {rc.text.t}
-                                    {rc?.delete && <GarbageI />}
-                                    {rc?.delete && `${user.fullName} has deleted`}
+                                    {rc?.delete === 'all' && <GarbageI />}
+                                    {rc?.delete === 'all' && `${user.fullName} has deleted`}
                                 </P>
                             )}
                             {rc.imageOrVideos.length > 0 && (
@@ -438,6 +440,7 @@ const ItemsRoom: React.FC<{
                                                 del={del}
                                                 icon={fl.icon}
                                                 ERef={ERef}
+                                                who="other"
                                             />
                                         ))}
                                     </Div>

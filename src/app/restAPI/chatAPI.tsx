@@ -43,7 +43,8 @@ class Messenger {
             const res = await Axios.post<PropsRoomChat>('/messenger/sendChat', formData);
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     getRoom = async (limit: number, offset: number) => {
@@ -104,7 +105,8 @@ class Messenger {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
     undo = async (id_room: string) => {
@@ -115,20 +117,37 @@ class Messenger {
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
-    delChatAll = async (roomId: string, chatId: string, userId: string) => {
+    delChatAll = async (roomId: string, chatId: string, userId: string, id_file: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>('/messenger/delChatAll', {
                 roomId,
                 chatId,
                 userId,
+                id_file,
             });
             return res.data;
         } catch (error) {
-            console.log(error);
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    delChatSelf = async (roomId: string, chatId: string, userId: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post<PropsChat>('/messenger/delChatSelf', {
+                roomId,
+                chatId,
+                userId,
+            });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
         }
     };
 }
