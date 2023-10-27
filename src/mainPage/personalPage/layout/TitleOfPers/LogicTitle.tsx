@@ -113,9 +113,9 @@ const LogicTitle = (
     const handleAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files;
         if (file) {
-            const { getFilesToPre, upLoad } = await handleFileUpload(file, 10, 8, 10, dispatch);
-            setSrc(getFilesToPre);
-            srcUp.current = upLoad;
+            const { getFilesToPrePer, upLoadPer } = handleFileUpload(file, 10, 8, 10, dispatch, 'per');
+            setSrc(getFilesToPrePer);
+            srcUp.current = upLoadPer;
         }
     };
     function whoCanSee(key: string) {

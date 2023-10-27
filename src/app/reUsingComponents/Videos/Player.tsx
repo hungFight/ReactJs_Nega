@@ -16,7 +16,12 @@ import {
     VolumeOnI,
 } from '~/assets/Icons/Icons';
 
-const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src, step, height }) => {
+const Player: React.FC<{ src: string; step?: number; height?: string; radius?: string }> = ({
+    src,
+    step,
+    height,
+    radius,
+}) => {
     const video = useRef<any>();
     const progress = useRef<any>();
     const [showTime, setShowTime] = useState<number>(0);
@@ -212,7 +217,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src
             `}
             onClick={() => setOpt(false)}
         >
-            <Video src={src} ref={video} onClick={handlePlay} />
+            <Video src={src} ref={video} onClick={handlePlay} style={{ borderRadius: radius }} />
             <DivControls className="controls" onClick={(e) => e.stopPropagation()}>
                 <Div
                     width="100%"

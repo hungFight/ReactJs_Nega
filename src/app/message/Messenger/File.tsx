@@ -50,7 +50,7 @@ const FileConversation: React.FC<{
             `}
             onClick={handleRoom}
         >
-            {v.includes('exist') ? (
+            {v?.search('exist') >= 0 ? (
                 <P
                     z="1.2rem"
                     css={`
@@ -78,7 +78,7 @@ const FileConversation: React.FC<{
             ) : image ? (
                 <Img id="roomImageChat" src={v} radius="5px" onClick={(e) => e.stopPropagation()} />
             ) : (
-                <Player src={v} />
+                <Player src={v} radius="5px" />
             )}
         </Div>
     );

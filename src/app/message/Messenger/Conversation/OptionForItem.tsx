@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI } from '~/assets/Icons/Icons';
+import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI } from '~/assets/Icons/Icons';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import { PropsChat } from './LogicConver';
@@ -7,6 +7,7 @@ import Languages from '~/reUsingComponents/languages';
 import chatAPI from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
+import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
 const OptionForItem: React.FC<{
     setOptions: (
@@ -413,7 +414,7 @@ const OptionForItem: React.FC<{
                 onTouchMove={(e) => handleTouchMoveM(e)}
                 onClick={(e) => e.stopPropagation()}
             >
-                {optionsForItemData[lg].map((o) => (
+                {/* {optionsForItemData[lg].map((o) => (
                     <Div
                         key={o.id}
                         css={`
@@ -457,7 +458,7 @@ const OptionForItem: React.FC<{
                             {o.title}
                         </P>
                     </Div>
-                ))}
+                ))} */}
             </Div>
         </Div>
     );

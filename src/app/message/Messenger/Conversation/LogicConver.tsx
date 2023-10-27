@@ -18,6 +18,7 @@ import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
 import userAPI from '~/restAPI/userAPI';
 import { PropsBgRD } from '~/redux/background';
+import handleFileUpload from '~/utils/handleFileUpload';
 
 export interface PropsChat {
     _id: string;
@@ -73,7 +74,6 @@ export default function LogicConversation(
     const cRef = useRef<number>(0);
     const mRef = useRef<any>(0);
     const offset = useRef<number>(0);
-    const fileRef = useRef<any>([]);
     const limit = 20;
     const emptyRef = useRef<boolean>(false);
 
@@ -84,7 +84,6 @@ export default function LogicConversation(
     const [opMore, setOpMore] = useState<boolean>(false);
     const [fileUpload, setFileUpload] = useState<any>([]);
     const [upload, setupload] = useState<{ _id: string; link: any; type: string }[]>([]);
-    const uploadRef = useRef<{ _id: string; link: string; type: string }[]>([]);
     const chatRef = useRef<PropsChat>();
     const [wch, setWch] = useState<string | undefined>('');
     const rr = useRef<string>('');
@@ -217,6 +216,7 @@ export default function LogicConversation(
             socket.on(code, async (d: string) => {
                 const { id, data }: { id: string; data: PropsRoomChat } = JSON.parse(d);
                 const codeS = `user_${id}_in_roomChat_personal_receive_and_saw`;
+                console.log(data, 'ddd');
 
                 socket.emit(codeS, {
                     userIdReceived: id_you,
@@ -226,8 +226,10 @@ export default function LogicConversation(
                 const newD: any = await new Promise(async (resolve, reject) => {
                     await Promise.all(
                         data.room.imageOrVideos.map(async (d, index) => {
-                            const buffer = await fileGridFS.getFile(d.v);
-                            const base64 = CommonUtils.convertBase64GridFS(buffer.file);
+                            console.log('hey');
+
+                            const buffer = await fileGridFS.getFile(d._id);
+                            const base64 = CommonUtils.convertBase64GridFS(buffer);
                             data.room.imageOrVideos[index].v = base64;
                         }),
                     );
@@ -329,8 +331,6 @@ export default function LogicConversation(
                 _id: id_,
             };
             if (conversation) conversation.room.unshift(chat);
-            uploadRef.current = [];
-            fileRef.current = [];
             const formData = new FormData();
             formData.append('value', value);
             if (id_room) formData.append('id_room', id_room);
@@ -359,76 +359,10 @@ export default function LogicConversation(
     };
 
     const handleImageUpload = async (e: any) => {
-        uploadRef.current = [];
-        fileRef.current = [];
         const files = e.target.files;
-        const options = {
-            maxSizeMB: 10,
-        };
-        let fileAmount = 15;
-
-        if (files.length > 0 && files.length < fileAmount) {
-            for (let i = 0; i < files.length; i++) {
-                const _id = uuidv4();
-                const file = files[i];
-                if (file.type === 'video/mp4' || file.type === 'video/mov' || file.type === 'video/x-matroska') {
-                    const url = URL.createObjectURL(file);
-                    const vid = document.createElement('video');
-                    // create url to use as the src of the video
-                    vid.src = url;
-                    // wait for duration to change from NaN to the actual duration
-                    // eslint-disable-next-line no-loop-func
-                    vid.ondurationchange = function () {
-                        console.log(vid.duration);
-                        if (vid.duration <= 15) {
-                            file._id = _id;
-                            uploadRef.current.push({ _id, link: url, type: file.type });
-                            fileRef.current.push(file);
-                        } else {
-                            dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
-                        }
-                    };
-                } else if (file.type === 'image/jpg' || file.type === 'image/jpeg' || file.type === 'image/png') {
-                    try {
-                        console.log((file.size / 1024 / 1024).toFixed(1), 'not compress');
-                        if (Number((file.size / 1024 / 1024).toFixed(1)) <= 8) {
-                            // const base64: any = await CommonUtils.getBase64(file);
-                            file._id = _id; // _id flow setupload's _id
-                            fileRef.current.push(file);
-                            uploadRef.current.push({ _id, link: URL.createObjectURL(file), type: file.type });
-                        } else {
-                            const compressedFile: any = await CommonUtils.compress(file);
-                            console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-                            console.log(`compressedFile size ${(compressedFile.size / 1024 / 1024).toFixed(1)} MB`); // smaller than maxSizeMB
-                            const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
-                            if (sizeImage <= 8) {
-                                uploadRef.current.push({
-                                    _id,
-                                    link: URL.createObjectURL(compressedFile),
-                                    type: file.type,
-                                });
-                            } else {
-                                dispatch(setTrueErrorServer(`${sizeImage}MB big than our limit is 8MB`));
-                            }
-                        }
-                    } catch (error) {
-                        console.log(error);
-                    }
-                } else {
-                    dispatch(setTrueErrorServer('This format is not support!'));
-                }
-            }
-            const time = setInterval(() => {
-                if (uploadRef.current.length > 0) {
-                    setFileUpload(fileRef.current);
-                    setupload(uploadRef.current);
-                }
-                console.log('no');
-            }, 1000);
-            mRef.current = time;
-        } else {
-            dispatch(setTrueErrorServer(`You can only select ${fileAmount} file at most!`));
-        }
+        const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        setFileUpload(upLoad);
+        setupload(getFilesToPre);
     };
 
     return {
