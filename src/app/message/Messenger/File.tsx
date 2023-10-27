@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Player } from 'video-react';
 import { ImageI } from '~/assets/Icons/Icons';
+import Player from '~/reUsingComponents/Videos/Player';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
@@ -13,17 +13,20 @@ const FileConversation: React.FC<{
     ERef: any;
     who?: string;
 }> = ({ type = '', v, icon, ERef, del, who }) => {
+    const image = type.search('image/') >= 0;
     const handleRoom = (e: any) => {
-        e.stopPropagation();
-        if (e.target.getAttribute('class').includes('roomOfChat')) {
-            e.target.classList.remove('roomOfChat');
-            del.current?.setAttribute('style', 'z-index: 99');
-        } else {
-            e.target.classList.add('roomOfChat');
-            del.current?.setAttribute('style', 'z-index: 100');
+        if (image) {
+            e.stopPropagation();
+            if (e.target.getAttribute('class').includes('roomOfChat')) {
+                e.target.classList.remove('roomOfChat');
+                del.current?.setAttribute('style', 'z-index: 99');
+            } else {
+                e.target.classList.add('roomOfChat');
+                del.current?.setAttribute('style', 'z-index: 100');
+            }
         }
     };
-    console.log(type.search('image/') >= 0, type.search('image/'), type, 'check file');
+    console.log(image, type.search('image/'), type, 'check file');
 
     return (
         <Div
@@ -64,12 +67,15 @@ const FileConversation: React.FC<{
                         svg {
                             margin-right: 3px;
                         }
+                        div {
+                            z-index: 1;
+                        }
                     `}
                 >
                     <ImageI />
                     {v}
                 </P>
-            ) : type.search('image/') >= 0 ? (
+            ) : image ? (
                 <Img id="roomImageChat" src={v} radius="5px" onClick={(e) => e.stopPropagation()} />
             ) : (
                 <Player src={v} />

@@ -184,7 +184,13 @@ const ItemsRoom: React.FC<{
                             )}
 
                             {(rc.text.t || rc?.delete) && (
-                                <Div css="justify-content: end; z-index: 11; position: relative;">
+                                <Div
+                                    css="justify-content: end; z-index: 11; position: relative;"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleWatchMore(elWatChTime.current);
+                                    }}
+                                >
                                     <P
                                         z={rc?.delete ? '1.2rem' : '1.4rem'}
                                         css={`
@@ -202,10 +208,6 @@ const ItemsRoom: React.FC<{
                                                 margin-right: 3px;
                                             }
                                         `}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleWatchMore(elWatChTime.current);
-                                        }}
                                     >
                                         {rc.text.t}
                                         {rc?.delete && <GarbageI />}
@@ -382,9 +384,10 @@ const ItemsRoom: React.FC<{
                             `}
                             onClick={(e) => {
                                 console.log('hello');
-                                e.stopPropagation();
-
-                                handleWatchMore(elWatChTime.current);
+                                if (rc.imageOrVideos.length) {
+                                    e.stopPropagation();
+                                    handleWatchMore(elWatChTime.current);
+                                }
                             }}
                         >
                             {(rc.text.t || rc?.delete === 'all') && (

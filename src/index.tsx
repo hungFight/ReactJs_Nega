@@ -63,7 +63,7 @@ root.render(
             <QueryClientProvider client={queryClient}>
                 <Provider store={store}>
                     <PersistGate loading={null} persistor={persistor}>
-                        <ReactQueryDevtools />
+                        {/* <ReactQueryDevtools /> */}
                         <Globalestyle>
                             <App />
                         </Globalestyle>

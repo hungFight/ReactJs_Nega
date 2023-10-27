@@ -42,6 +42,8 @@ import {
     AiOutlineLoading3Quarters,
     AiOutlineClockCircle,
     AiFillFolderAdd,
+    AiFillFastBackward,
+    AiFillFastForward,
 } from 'react-icons/ai';
 import {
     GiBurningBook,
@@ -50,6 +52,7 @@ import {
     GiEarthAfricaEurope,
     GiEarthAmerica,
     GiEarthAsiaOceania,
+    GiForwardSun,
     GiNewspaper,
     GiPin,
     GiStrong,
@@ -70,6 +73,8 @@ import {
     MdPersonRemoveAlt1,
     MdGroupRemove,
     MdReport,
+    MdShutterSpeed,
+    MdGroups2,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
 import {
@@ -205,3 +210,8 @@ export const RemoveCircleI = () => <CiCircleRemove />;
 export const PenI = () => <FaPencilAlt />;
 export const EraserI = () => <PiEraserThin />;
 export const GarbageI = () => <RiDeleteBin6Line />;
+export const FastBackI = () => <AiFillFastBackward />;
+export const FastForwardI = () => <AiFillFastForward />;
+export const SpeedI = () => <MdShutterSpeed />;
+export const ForwardI = () => <GiForwardSun />;
+export const GroupPeopleI = () => <MdGroups2 />;

@@ -6,9 +6,10 @@ export const Video = styled.video`
     cursor: var(--pointer);
 `;
 export const DivControls = styled.div`
-    width: 100%;
+    width: 98%;
     height: 30px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-evenly;
     position: absolute;
     color: #cbcbcb;

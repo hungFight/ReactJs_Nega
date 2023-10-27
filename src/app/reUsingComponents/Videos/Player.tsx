@@ -1,7 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
-import { Div, P } from '../styleComponents/styleDefault';
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { Div, DivFlex, P } from '../styleComponents/styleDefault';
 import { DivControls, Input, Progress, Video } from './styleVideos';
-import { FullScreenI, PauseI, PlayI, VolumeOffI, VolumeOnI } from '~/assets/Icons/Icons';
+import {
+    FastBackI,
+    FastForwardI,
+    ForwardI,
+    FullScreenI,
+    GroupPeopleI,
+    PauseI,
+    PlayI,
+    ScreenI,
+    SettingI,
+    SpeedI,
+    VolumeOffI,
+    VolumeOnI,
+} from '~/assets/Icons/Icons';
 
 const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src, step, height }) => {
     const video = useRef<any>();
@@ -12,24 +25,34 @@ const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src
     const [play, setPlay] = useState<boolean>(false);
     const [volume, setVolume] = useState<boolean>(true);
     const [fullScreen, setFullScreen] = useState<boolean>(false);
+    const [opt, setOpt] = useState<boolean>(false);
+
     const [showControls, setShowControls] = useState<boolean>(false);
     useEffect(() => {
+        if (progress.current) progress.current.value = 0;
+        console.log(progress.current, 'progress.current');
+
         video.current.volume = 1;
-        progress.current.value = 0;
-        progress.current.style.backgroundSize = 0;
+        video.current.addEventListener('loadedmetadata', function () {
+            // Once the metadata is loaded, you can get the video duration
+            setShowTime(Math.round(video.current.duration));
+            // video.current.playbackRate = 0.5;
+            // Now you have the duration of the video in seconds
+            console.log('Video duration: ' + video.current.duration + ' seconds');
+        });
+
         video.current.addEventListener('timeupdate', function () {
             const currentTime = video.current.currentTime;
             const duration = video.current.duration;
             setCurrentTime(Math.round(currentTime));
-            if (!showTime) setShowTime(Math.round(duration));
             const prog = (currentTime / duration) * 100;
-            if (progress.current) {
-                progress.current.value = prog;
-                const min = progress.current.min;
-                const max = progress.current.max;
-                const val = progress.current.value;
-                progress.current.style.backgroundSize = ((val - min) * 100) / (max - min) + '% 100%';
-            }
+            progress.current.value = prog;
+            const min = progress.current.min;
+            const max = progress.current.max;
+            const val = progress.current.value;
+            console.log(val, 'val');
+
+            progress.current.style.backgroundSize = ((val - min) * 100) / (max - min) + '% 100%';
             if (prog === 100) setPlay(false);
         });
     }, []);
@@ -108,6 +131,68 @@ const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src
             e.target.style.backgroundSize = ((val - min) * 100) / (max - min) + '% 100%';
         }
     };
+    const [speed, setSpeed] = useState<{ id: number; val: number }>({ id: 3, val: 1 });
+    const [forward, setForward] = useState<{ id: number; val: number }>({ id: 2, val: 10 });
+    const options: {
+        id: number;
+        name: string;
+        title: ReactElement | string;
+        bg: number;
+        icon: ReactElement;
+        type?: string;
+        onClick: (v: { id: number; val: number }) => void;
+        data: { id: number; val: number; text?: string }[];
+    }[] = [
+        {
+            id: 1,
+            title: <SpeedI />,
+            name: 'Speed',
+            bg: speed.id,
+            icon: <SpeedI />,
+            onClick: (v: { id: number; val: number }) => {
+                video.current.playbackRate = v.val;
+                setSpeed(v);
+            },
+            data: [
+                { id: 1, val: 0.5 },
+                { id: 2, val: 0.75 },
+                { id: 3, val: 1, text: 'Normal' },
+                { id: 4, val: 1.25 },
+                { id: 5, val: 1.5 },
+                { id: 6, val: 1.75 },
+                { id: 7, val: 2 },
+            ],
+        },
+        {
+            id: 2,
+            name: 'Forward',
+            bg: forward.id,
+            onClick: (v: { id: number; val: number }) => setForward(v),
+            title: (
+                <DivFlex width="auto" css="margin-right: 5px;">
+                    <DivFlex width="auto" css="font-size: 20px; cursor: var(--pointer)">
+                        <FastBackI />
+                    </DivFlex>
+                    <DivFlex width="auto" css="font-size: 20px; cursor: var(--pointer)">
+                        <FastForwardI />
+                    </DivFlex>
+                </DivFlex>
+            ),
+            icon: <ForwardI />,
+            type: 's',
+            data: [
+                { id: 1, val: 5 },
+                { id: 2, val: 10 },
+                { id: 3, val: 15 },
+                { id: 4, val: 20 },
+                { id: 5, val: 25 },
+                { id: 6, val: 30 },
+            ],
+        },
+        { id: 3, onClick: () => {}, bg: 1, name: 'Group', title: 'Group', icon: <GroupPeopleI />, data: [] },
+    ];
+    console.log(speed, forward);
+
     return (
         <Div
             width="100%"
@@ -116,58 +201,99 @@ const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src
                 justify-content: center;
                 position: relative;
                 overflow: hidden;
+                z-index: 1;
+                user-select: none;
                 &:hover {
                     .controls {
                         bottom: 0;
                     }
                 }
-                /* ${fullScreen && 'position: fixed; top: 0; left: 0; z-index: 999; height: 100%;'} */
+                ${fullScreen && 'position: fixed; top: 0; left: 0; z-index: 999; height: 100%;'}
             `}
+            onClick={() => setOpt(false)}
         >
             <Video src={src} ref={video} onClick={handlePlay} />
             <DivControls className="controls" onClick={(e) => e.stopPropagation()}>
                 <Div
-                    display="none"
-                    width="58px"
+                    width="100%"
                     css={`
-                        justify-content: space-evenly;
+                        align-items: center;
+                        cursor: var(--pointer);
+                        position: relative;
                         @media (min-width: 768px) {
-                            display: flex;
+                            width: 98%;
                         }
                     `}
                 >
-                    <Div
-                        width="30px"
-                        css="font-size: 20px; height: 100%; justify-content: center; align-items: center; cursor: var(--pointer);"
-                        onClick={handlePlay}
+                    <DivFlex
+                        width="auto"
+                        css={`
+                            position: absolute;
+                            top: -22px;
+                            right: 0px;
+                            cursor: var(--pointer);
+                        `}
+                        onClick={() => setOpt(!opt)}
                     >
-                        {play ? <PauseI /> : <PlayI />}
-                    </Div>
-                    <Div css="align-items: center; position: relative; font-size: 25px; &:hover{input{width: 100px}}">
-                        <Div onClick={handleVolume}> {volume ? <VolumeOnI /> : <VolumeOffI />}</Div>
-                        <Div
-                            width="0px"
-                            css="top: -14px; left: 6px; margin-left: 5px; align-items: center; cursor: var(--pointer); position: absolute; transform: rotateZ(270deg); height: 32px; "
-                        >
-                            <Input
-                                ref={progress}
-                                bgImage="linear-gradient(rgb(44 45 45),rgb(49 49 49))"
-                                type="range"
-                                min="0"
-                                max="100"
-                                css="height: 10px"
-                                onChange={handleProgressVolume}
-                            />
-                        </Div>
-                    </Div>
-                </Div>
-                <Div
-                    width="100%"
-                    css="align-items: center; cursor: var(--pointer); @media(min-width: 768px){width: 70%;}"
-                >
+                        <SettingI />
+                        {opt && (
+                            <Div
+                                width="100px"
+                                display="block"
+                                css="position: absolute; top: -89px; right: 0px; background-color: #00000075; padding: 5px 9px; border-radius: 5px;"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {options.map((o) => (
+                                    <DivFlex
+                                        key={o.id}
+                                        justify="left"
+                                        css="padding: 3px; &:hover{background-color: #3d3e3ef0;} &:active{.deep{display: block}} border-radius: 5px; &:hover{.deep{display: block}}"
+                                    >
+                                        <Div css="margin-right: 5px">{o.icon}</Div>
+                                        <P z="1.3rem">{o.name}</P>
+                                        <Div
+                                            width="9px"
+                                            display="none"
+                                            className="deep"
+                                            css="height: 83px; position: absolute; left:0; top: 0;.deep{display: block}"
+                                        ></Div>
+                                        <Div
+                                            width="100%"
+                                            display="none"
+                                            className="deep"
+                                            css="position: absolute; bottom: 0; right: 100%; background-color: #000000de; border-radius: 5px; padding: 5px 9px; &:hover{display: block}"
+                                        >
+                                            <DivFlex>{o.title}</DivFlex>
+                                            {o.data?.map((x) => (
+                                                <Div
+                                                    key={x.id}
+                                                    css={`
+                                                        padding: 3px;
+                                                        &:hover {
+                                                            background-color: #585858ab;
+                                                        }
+                                                        ${o.bg === x.id ? 'background-color: #585858ab;' : ''}
+                                                        border-radius: 5px;
+                                                    `}
+                                                    onClick={() => o.onClick(x)}
+                                                >
+                                                    <P z="1.2rem" css="">
+                                                        {x.val}
+                                                        {x?.text ? ` ( ${x?.text} )` : ''}
+                                                        {o.type}
+                                                    </P>
+                                                </Div>
+                                            ))}
+                                        </Div>
+                                    </DivFlex>
+                                ))}
+                            </Div>
+                        )}
+                    </DivFlex>
                     <Input
                         ref={progress}
                         type="range"
+                        defaultValue={0}
                         min="0"
                         max="100"
                         bo
@@ -177,19 +303,132 @@ const Player: React.FC<{ src: string; step?: number; height?: string }> = ({ src
                         onMouseUp={handleMouseUp}
                         onTouchStart={handleMouseDown}
                         onTouchEnd={handleMouseUp}
+                        css="background-size: 0;"
                     />
                     {/* <Progress ref={progress} value="0" max="100"></Progress> */}
                 </Div>
-                <Div
-                    display="none"
-                    width="90px"
-                    css="justify-content: space-around; align-items: center; @media(min-width: 768px) {display: flex;}"
-                >
-                    <P z="1.4rem">{currentTime + ' / ' + showTime}s</P>
-                    {/* <Div css="font-size: 20px;">
-                            <FullScreenI />
-                        </Div> */}
-                </Div>
+                <DivFlex justify="space-between" css="padding: 0 5px; height: 100%;">
+                    <Div
+                        display="none"
+                        width="58px"
+                        css={`
+                            height: 100%;
+
+                            @media (min-width: 768px) {
+                                display: flex;
+                            }
+                        `}
+                    >
+                        <Div
+                            css="width: 30px; height: 100%; align-items: center; justify-content: center;  font-size: 16px;  align-items: center; cursor: var(--pointer);"
+                            onClick={handlePlay}
+                        >
+                            {play ? <PauseI /> : <PlayI />}
+                        </Div>
+                        <Div
+                            onClick={handleVolume}
+                            css={`
+                                width: 30px;
+                                height: 100%;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: var(--pointer);
+                                &:hover {
+                                    div {
+                                        display: flex;
+                                    }
+                                }
+                                font-size: 21px;
+                            `}
+                        >
+                            {volume ? <VolumeOnI /> : <VolumeOffI />}
+                            <Div
+                                display="none"
+                                width="115px"
+                                className="Volume"
+                                css={`
+                                    top: -68px;
+                                    justify-content: center;
+                                    left: -15px;
+                                    margin-left: 5px;
+                                    align-items: center;
+                                    position: absolute;
+                                    transform: rotateZ(270deg);
+                                    height: 32px;
+                                `}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <Input
+                                    id="volumeVideo"
+                                    bgImage="linear-gradient(rgb(44 45 45),rgb(49 49 49))"
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    onChange={handleProgressVolume}
+                                    css={`
+                                        height: 12px;
+                                        border: 1px solid #acacac;
+                                    `}
+                                />
+                            </Div>
+                        </Div>
+                    </Div>
+
+                    <Div>
+                        <DivFlex width="auto" css="margin-right: 5px;">
+                            <DivFlex
+                                width="auto"
+                                css="font-size: 20px; cursor: var(--pointer)"
+                                onClick={() => {
+                                    video.current.currentTime =
+                                        video.current.currentTime - forward.val <= 0
+                                            ? 0
+                                            : video.current.currentTime - forward.val;
+                                }}
+                            >
+                                <FastBackI />
+                            </DivFlex>
+                            <DivFlex
+                                width="auto"
+                                css="font-size: 20px; cursor: var(--pointer)"
+                                onClick={() => {
+                                    video.current.currentTime =
+                                        video.current.currentTime + forward.val >= video.current.duration
+                                            ? video.current.duration
+                                            : video.current.currentTime + forward.val;
+                                }}
+                            >
+                                <FastForwardI />
+                            </DivFlex>
+                        </DivFlex>
+                        <Div
+                            display="none"
+                            css="justify-content: space-around; align-items: center; @media(min-width: 768px) {display: flex;}"
+                        >
+                            <P
+                                z="1.2rem"
+                                css={`
+                                    width: max-content;
+                                    padding: 2px 5px;
+                                `}
+                            >
+                                {currentTime + ' / ' + showTime}
+                            </P>
+                            {/* <Div css="font-size: 20px;">
+                                    <FullScreenI />
+                                </Div> */}
+                        </Div>
+                        <DivFlex
+                            width="22px"
+                            css={`
+                                cursor: var(--pointer);
+                            `}
+                            onClick={() => setFullScreen(!fullScreen)}
+                        >
+                            {fullScreen ? <ScreenI /> : <FullScreenI />}
+                        </DivFlex>
+                    </Div>
+                </DivFlex>
             </DivControls>
         </Div>
     );
