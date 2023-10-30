@@ -95,7 +95,7 @@ const ItemsRoom: React.FC<{
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const textarea = useRef<HTMLTextAreaElement | null>(null);
-
+    const width = useRef<HTMLDivElement | null>(null);
     console.log('Item', wch);
     if (rc.id === dataFirst.id && !wch) {
         if (rc.seenBy.includes(user.id) && !rr.current) {
@@ -107,7 +107,20 @@ const ItemsRoom: React.FC<{
         }
     }
     if (wch) rr.current = '';
-
+    useEffect(() => {
+        if (width.current) {
+            if (width.current.clientWidth >= 150) {
+                console.log(width.current.clientWidth, 'clientWidth', width.current);
+                width.current.classList.add('adjustDate');
+            }
+        }
+        if (elWatChTime.current) {
+            if (elWatChTime.current.clientWidth >= 150) {
+                console.log(elWatChTime.current.clientWidth, 'clientWidth', elWatChTime.current);
+                elWatChTime.current.classList.add('adjustDate');
+            }
+        }
+    }, [width, elWatChTime]);
     return (
         <>
             {rc?.delete !== dataFirst.id && <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>}
@@ -132,6 +145,13 @@ const ItemsRoom: React.FC<{
                             }
                             p {
                                 z-index: 1;
+                            }
+                            .adjustDate {
+                                .dateTime {
+                                    top: unset;
+                                    bottom: 1px;
+                                    left: -31px;
+                                }
                             }
                         `}
                     >
@@ -321,8 +341,8 @@ const ItemsRoom: React.FC<{
                                                 width: 15px;
                                                 height: 15px;
                                                 position: absolute;
-                                                bottom: 12px;
-                                                left: -5px;
+                                                bottom: 12px !important;
+                                                left: -5px !important;
                                                 z-index: 1;
                                             `}
                                         />
@@ -372,7 +392,15 @@ const ItemsRoom: React.FC<{
                         css={`
                             ${rc.imageOrVideos.length < 1 ? 'display: flex;' : ''}
                             position: relative;
+                            max-width: 100%;
                             justify-content: left;
+                            .adjustDate {
+                                .dateTime {
+                                    right: -50px;
+                                    top: unset;
+                                    bottom: 1px;
+                                }
+                            }
                             ${rc.imageOrVideos.length > 0 ? 'flex-grow: 1;' : ''}
                         `}
                     >
@@ -384,10 +412,12 @@ const ItemsRoom: React.FC<{
                             css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
                         />
                         <Div
-                            width="100%"
+                            width="fit-content"
+                            ref={width}
                             display="block"
                             className="noTouch"
                             css={`
+                                max-width: 100%;
                                 position: relative;
                                 justify-content: start;
                                 ${rc.text.t &&
@@ -397,35 +427,37 @@ const ItemsRoom: React.FC<{
                             `}
                             onClick={(e) => {
                                 console.log('hello');
-                                if (rc.imageOrVideos.length) {
-                                    e.stopPropagation();
-                                    handleWatchMore(elWatChTime.current);
-                                }
+                                e.stopPropagation();
+                                handleWatchMore(elWatChTime.current);
                             }}
                         >
                             {(rc.text.t || rc?.delete === 'all') && (
-                                <P
-                                    z={rc?.delete === 'all' ? '1.2rem' : '1.4rem'}
-                                    css={`
-                                        width: fit-content;
-                                        padding: 2px 12px 4px;
-                                        border-radius: 7px;
-                                        border-top-right-radius: 13px;
-                                        display: flex;
-                                        align-items: center;
-                                        white-space: pre;
-                                        border-bottom-right-radius: 13px;
-                                        background-color: ${rc?.delete === 'all' ? '#1d1c1c' : '#353636'};
-                                        border: 1px solid #4e4d4b;
-                                        svg {
-                                            margin-right: 3px;
-                                        }
-                                    `}
-                                >
-                                    {rc.text.t}
-                                    {rc?.delete === 'all' && <GarbageI />}
-                                    {rc?.delete === 'all' && `${user.fullName} has deleted`}
-                                </P>
+                                <Div width="100%" css="justify-content: end; z-index: 11; position: relative;">
+                                    <P
+                                        z={rc?.delete === 'all' ? '1.2rem' : '1.4rem'}
+                                        css={`
+                                            width: fit-content;
+                                            padding: 2px 12px 4px;
+                                            border-radius: 7px;
+                                            border-top-right-radius: 13px;
+                                            align-items: center;
+                                            white-space: pre;
+                                            text-wrap: wrap;
+                                            word-wrap: break-word;
+                                            max-width: 100%;
+                                            border-bottom-right-radius: 13px;
+                                            background-color: ${rc?.delete === 'all' ? '#1d1c1c' : '#353636'};
+                                            border: 1px solid #4e4d4b;
+                                            svg {
+                                                margin-right: 3px;
+                                            }
+                                        `}
+                                    >
+                                        {rc.text.t}
+                                        {rc?.delete === 'all' && <GarbageI />}
+                                        {rc?.delete === 'all' && `${user.fullName} has deleted`}
+                                    </P>
+                                </Div>
                             )}
                             {rc.imageOrVideos.length > 0 && (
                                 <Div css=" align-items: start; ">
@@ -485,7 +517,7 @@ const ItemsRoom: React.FC<{
                                             font-size: 1rem;
                                             margin-left: 5px;
                                             position: absolute;
-                                            right: -89px;
+                                            right: -195px;
                                             top: 5px;
                                             ${rc?.delete && 'right: -55px; top: 31px;'}
                                         `}
@@ -500,7 +532,7 @@ const ItemsRoom: React.FC<{
                                                 font-size: 1rem;
                                                 margin-left: 5px;
                                                 position: absolute;
-                                                right: -122px;
+                                                right: -195px;
                                                 top: 44px;
                                             `}
                                         >

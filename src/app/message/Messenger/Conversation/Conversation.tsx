@@ -853,6 +853,13 @@ const Conversation: React.FC<{
                                     setValue(e.target.value);
                                 }}
                             />
+                            <Div
+                                width="34px"
+                                css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
+                                onClick={(e) => handleSend(conversation?._id, conversation?.user.id)}
+                            >
+                                <SendOPTI />
+                            </Div>
                         </Div>
                     </Div>
                 </Div>

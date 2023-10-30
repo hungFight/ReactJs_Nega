@@ -56,7 +56,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import { PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 import { PropsReloadRD, setOnline } from '~/redux/reload';
-export const socket = io('http://localhost:3001', { transports: ['websocket'] });
+export const socket = io('http://localhost:3001', { transports: ['websocket'], ackTimeout: 10000 });
 
 const Website: React.FC<{
     openProfile: string[];
