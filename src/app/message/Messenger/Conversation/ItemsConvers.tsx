@@ -5,6 +5,7 @@ import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useEffect, useRef, useState } from 'react';
 import { DotI, GarbageI } from '~/assets/Icons/Icons';
+import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
 type PropsRc = {
     _id: string;
@@ -73,6 +74,7 @@ const ItemsRoom: React.FC<{
     wch: string | undefined;
     setWch: React.Dispatch<React.SetStateAction<string | undefined>>;
     rr: React.MutableRefObject<string>;
+    roomId: string;
 }> = ({
     rc,
     index,
@@ -89,8 +91,11 @@ const ItemsRoom: React.FC<{
     wch,
     setWch,
     rr,
+    roomId,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
+    const textarea = useRef<HTMLTextAreaElement | null>(null);
+
     console.log('Item', wch);
     if (rc.id === dataFirst.id && !wch) {
         if (rc.seenBy.includes(user.id) && !rr.current) {
@@ -134,8 +139,10 @@ const ItemsRoom: React.FC<{
                             ref={elWatChTime}
                             display="block"
                             className="noTouch"
+                            width="fit-content"
                             css={`
                                 position: relative;
+                                max-width: 100%;
                                 justify-content: right;
                                 ${rc.imageOrVideos.length < 1 ? 'display: block;' : 'flex-grow: 1;'}
                                 ${rc.text.t &&
@@ -185,6 +192,7 @@ const ItemsRoom: React.FC<{
 
                             {(rc.text.t || rc?.delete) && (
                                 <Div
+                                    width="100%"
                                     css="justify-content: end; z-index: 11; position: relative;"
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -194,14 +202,19 @@ const ItemsRoom: React.FC<{
                                     <P
                                         z={rc?.delete ? '1.2rem' : '1.4rem'}
                                         css={`
-                                            width: fit-content;
                                             margin: 0;
                                             padding: 2px 12px 4px;
                                             border-radius: 7px;
+                                            white-space: pre;
                                             border-top-left-radius: 13px;
                                             border-bottom-left-radius: 13px;
-                                            display: flex;
                                             align-items: center;
+
+                                            text-wrap: wrap;
+                                            width: max-content;
+                                            word-wrap: break-word;
+                                            max-width: 100%;
+
                                             background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
                                             border: 1px solid #4e4d4b;
                                             svg {
@@ -400,6 +413,7 @@ const ItemsRoom: React.FC<{
                                         border-top-right-radius: 13px;
                                         display: flex;
                                         align-items: center;
+                                        white-space: pre;
                                         border-bottom-right-radius: 13px;
                                         background-color: ${rc?.delete === 'all' ? '#1d1c1c' : '#353636'};
                                         border: 1px solid #4e4d4b;

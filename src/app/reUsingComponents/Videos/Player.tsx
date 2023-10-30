@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
-import { Div, DivFlex, P } from '../styleComponents/styleDefault';
+import { Div, DivFlex, Img, P } from '../styleComponents/styleDefault';
 import { DivControls, Input, Progress, Video } from './styleVideos';
 import {
     FastBackI,
@@ -109,6 +109,10 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
             video.current.play();
             setPlay(true);
         }
+        if (Image.current) {
+            Image.current.src = '';
+            Image.current.style.display = 'none';
+        }
     };
     const handleVolume = () => {
         if (video.current) {
@@ -197,7 +201,48 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
         { id: 3, onClick: () => {}, bg: 1, name: 'Group', title: 'Group', icon: <GroupPeopleI />, data: [] },
     ];
     console.log(speed, forward);
+    const [picture, setPicture] = useState<string>('');
+    const Image = useRef<HTMLImageElement | null>(null);
+    const handleHover = (e: any) => {
+        if (Image.current) Image.current.alt = '';
 
+        const progressBar = e.target;
+        const mouseX = e.clientX - progressBar.getBoundingClientRect().left;
+        const progressBarWidth = progressBar.clientWidth;
+        const value = (mouseX / progressBarWidth) * 100; // Calculate the value as a percentage
+        const second = Math.ceil((value * showTime) / 100);
+        const canvas = document.createElement('canvas');
+        const vid = document.createElement('video');
+        vid.src = src;
+        vid.currentTime = second;
+        vid.addEventListener('seeked', () => {
+            if (!(Image.current?.getAttribute('alt') === 'remove')) {
+                // Draw the frame on the canvas
+                canvas.width = vid.videoWidth;
+                canvas.height = vid.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(vid, 0, 0, canvas.width, canvas.height);
+                const imageSrc = canvas.toDataURL('image/jpeg');
+                if (imageSrc)
+                    if (Image.current) {
+                        Image.current.src = imageSrc;
+                        Image.current.style.display = 'block';
+                    }
+
+                console.log(second, 'value', mouseX, progressBarWidth, ctx);
+            }
+            // Now, ctx contains the frame at the specified time
+        });
+
+        //  setHoverValue(value);
+    };
+    const handleMouseLeave = () => {
+        if (Image.current) {
+            Image.current.src = '';
+            Image.current.alt = 'remove';
+            Image.current.style.display = 'none';
+        }
+    };
     return (
         <Div
             width="100%"
@@ -230,6 +275,20 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         }
                     `}
                 >
+                    <Img
+                        ref={Image}
+                        src=""
+                        css={`
+                            display: none;
+                            position: absolute;
+                            width: 100px;
+                            height: auto;
+                            border-radius: 5px;
+                            bottom: 8px;
+                            object-fit: contain;
+                            left: 0;
+                        `}
+                    />
                     <DivFlex
                         width="auto"
                         css={`
@@ -308,9 +367,10 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         onMouseUp={handleMouseUp}
                         onTouchStart={handleMouseDown}
                         onTouchEnd={handleMouseUp}
-                        css="background-size: 0;"
+                        onMouseMove={handleHover}
+                        onMouseLeave={handleMouseLeave}
+                        css="background-size: 0;padding: 2px 0;"
                     />
-                    {/* <Progress ref={progress} value="0" max="100"></Progress> */}
                 </Div>
                 <DivFlex justify="space-between" css="padding: 0 5px; height: 100%;">
                     <Div

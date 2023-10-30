@@ -7,7 +7,7 @@ export interface PropsRoomChat {
     _id: string;
     id_us: string[];
     background: string;
-    miss: number;
+    miss?: number;
     users: {
         id: string;
         avatar: any;
@@ -27,6 +27,7 @@ export interface PropsRoomChat {
         imageOrVideos: { v: string; icon: string; _id: string }[];
         seenBy: string[];
         createdAt: string;
+        secondary?: string;
         // user: { avatar: any; fullName: string; gender: number; id: string };
     };
     deleted: {

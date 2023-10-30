@@ -1,6 +1,6 @@
-import React from 'react';
-import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI } from '~/assets/Icons/Icons';
-import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import React, { useRef, useState } from 'react';
+import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI, SendOPTI } from '~/assets/Icons/Icons';
+import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import { PropsChat } from './LogicConver';
 import Languages from '~/reUsingComponents/languages';
@@ -40,8 +40,13 @@ const OptionForItem: React.FC<{
     ERef: React.MutableRefObject<any>;
     del: React.MutableRefObject<HTMLDivElement | null>;
     conversation: PropsChat | undefined;
-}> = ({ setOptions, optionsForItem, ERef, del, conversation }) => {
+    colorText: string;
+    setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji }) => {
     const { lg } = Languages();
+    const [value, setValue] = useState<string>('');
+    const textarea = useRef<HTMLTextAreaElement | null>(null);
+    const [changeCus, setChangeCus] = useState<number | undefined>(undefined);
     const dispatch = useDispatch();
     const optionsForItemData: {
         [en: string]: {
@@ -50,7 +55,7 @@ const OptionForItem: React.FC<{
             color: string;
             title: string;
             top: string;
-            onClick: () => void;
+            onClick: (id?: number) => void;
         }[];
         vi: {
             id: number;
@@ -58,7 +63,7 @@ const OptionForItem: React.FC<{
             color: string;
             title: string;
             top: string;
-            onClick: () => void;
+            onClick: (id?: number) => void;
         }[];
     } = {
         en: [
@@ -100,7 +105,8 @@ const OptionForItem: React.FC<{
                 color: '',
                 title: 'Change this text and others still can see your changing',
                 top: '-100px',
-                onClick: async () => {
+                onClick: async (id?: number) => {
+                    setChangeCus(id);
                     // const res = await sendChatAPi.getChat
                 },
             },
@@ -192,6 +198,12 @@ const OptionForItem: React.FC<{
             },
         ],
     };
+    const handleImageUpload = (e: any) => {
+        const files = e.target.files;
+        // const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        // setFileUpload(upLoad);
+        // setupload(getFilesToPre);
+    };
     const handleTouchMoveM = (e: any) => {
         const touches = e.touches;
         // Kiểm tra tọa độ của ngón tay đầu tiên trong danh sách
@@ -212,6 +224,29 @@ const OptionForItem: React.FC<{
                 console.log('Đang di chuyển qua phần tử:', element);
             }
             // Bây giờ, "element" chứa thông tin về phần tử mà ngón tay đang di chuyển qua
+        }
+    };
+    const handleOnKeyup = (e: any) => {
+        if (e.key === 'Enter') {
+            // handleSend(conversation?._id, conversation?.user.id);
+        } else {
+            e.target.setAttribute('style', 'height: auto');
+            if (e.key === 'Backspace') {
+                e.target.setAttribute(
+                    'style',
+                    `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`,
+                );
+            } else {
+                e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
+            }
+        }
+    };
+    const handleOnKeyDown = (e: any) => {
+        console.log(e.key);
+        if (e.key === 'Enter') e.preventDefault();
+        if (e.key === '+') {
+            e.preventDefault();
+            e.target.value += '\n';
         }
     };
     return (
@@ -276,19 +311,35 @@ const OptionForItem: React.FC<{
                 `}
             >
                 {optionsForItem.text && (
-                    <Div
-                        css="justify-content: end; width: 100%; align-items: baseline; "
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <P
-                            z="1.4rem"
-                            css="width: fit-content; margin: 0; padding: 2px 12px 4px; border-radius: 7px; border-top-left-radius: 13px; border-bottom-left-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                            }}
+                    <Div width="100%" css="padding-left: 30%">
+                        <Div
+                            width="100%"
+                            onClick={(e) => e.stopPropagation()}
+                            css="justify-content: end;align-items: baseline; "
                         >
-                            {optionsForItem.text}
-                        </P>
+                            <P
+                                z="1.4rem"
+                                css={`
+                                    white-space: pre;
+                                    margin: 0;
+                                    padding: 2px 12px 4px;
+                                    border-radius: 7px;
+                                    border-top-left-radius: 13px;
+                                    border-bottom-left-radius: 13px;
+                                    background-color: #353636;
+                                    border: 1px solid #4e4d4b;
+                                    text-wrap: wrap;
+                                    width: max-content;
+                                    word-wrap: break-word;
+                                    max-width: 100%;
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                {value ? value : optionsForItem.text}
+                            </P>
+                        </Div>
                     </Div>
                 )}
                 {optionsForItem.imageOrVideos.length > 0 && (
@@ -352,6 +403,7 @@ const OptionForItem: React.FC<{
                     justify-content: right;
                     padding: 0 5px;
                     animation: chatMove 0.5s linear;
+                    justify-content: space-between;
                     @keyframes chatMove {
                         0% {
                             right: -348px;
@@ -363,6 +415,41 @@ const OptionForItem: React.FC<{
                 `}
                 onClick={(e) => e.stopPropagation()}
             >
+                <DivFlex width="auto">
+                    <Div
+                        css={`
+                            cursor: var(--pointer);
+                        `}
+                        onClick={() => setEmoji((pre) => !pre)}
+                    >
+                        🙂
+                    </Div>
+
+                    <Div
+                        width="34px !important"
+                        css={`
+                            color: #869ae7;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 5px;
+                            cursor: var(--pointer);
+                        `}
+                    >
+                        <form method="post" encType="multipart/form-data" id="formss">
+                            <input
+                                id={conversation?._id + 'uploadConOpItem'}
+                                type="file"
+                                name="file[]"
+                                onChange={handleImageUpload}
+                                multiple
+                                hidden
+                            />
+                            <Label htmlFor={conversation?._id + 'uploadConOpItem'} color={colorText}>
+                                <CameraI />
+                            </Label>
+                        </form>
+                    </Div>
+                </DivFlex>
                 <Div
                     css={`
                         font-size: 1.4rem;
@@ -372,7 +459,16 @@ const OptionForItem: React.FC<{
                         cursor: var(--pointer);
                     `}
                 >
-                    Reply
+                    {changeCus === 3 ? (
+                        <Div
+                            width="34px"
+                            css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
+                        >
+                            <SendOPTI />
+                        </Div>
+                    ) : (
+                        'Reply'
+                    )}
                 </Div>
             </Div>
             <Div
@@ -459,6 +555,50 @@ const OptionForItem: React.FC<{
                         </P>
                     </Div>
                 ))} */}
+                <Div // inserting bar of chat
+                    width="100%"
+                    css={`
+                        height: auto;
+                        align-items: center;
+                        justify-content: space-around;
+                    `}
+                >
+                    <Textarea
+                        ref={textarea}
+                        color={colorText}
+                        value={value}
+                        placeholder="Send"
+                        bg="rgb(255 255 255 / 6%)"
+                        css={`
+                            width: 100%;
+                            max-height: 100%;
+                            margin: 0;
+                            padding: 5px 10px;
+                            border-radius: 10px;
+                            font-size: 1.4rem !important;
+                            overflow-y: overlay;
+                            height: 33px;
+                            &:disabled {
+                                background-color: #f2f2f2; /* Set a background color */
+                                cursor: not-allowed; /* Change cursor to "not-allowed" */
+                                color: #888; /* Change text color to a subdued gray */
+                            }
+                        `}
+                        onKeyDown={(e) => handleOnKeyDown(e)}
+                        onKeyUp={(e) => handleOnKeyup(e)}
+                        onChange={(e) => {
+                            console.log(e.target.value, 'enter');
+                            setValue(e.target.value);
+                        }}
+                    />
+                    <Div
+                        width="34px"
+                        css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
+                        onClick={(e) => {}}
+                    >
+                        <SendOPTI />
+                    </Div>
+                </Div>
             </Div>
         </Div>
     );

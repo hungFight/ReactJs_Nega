@@ -31,6 +31,7 @@ import { PropsRoomChat } from '~/restAPI/chatAPI';
 import { useQuery, gql } from '@apollo/client';
 import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
+import { decrypt } from '~/utils/crypto';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -284,6 +285,9 @@ function App() {
         handleCheck.current = false;
         socket.on(`${userId}roomChat`, async (dt: string) => {
             const data: PropsRoomChat = JSON.parse(dt);
+            console.log(data, 'datadata');
+
+            const key = `chat_${data.room.secondary ? data.room.secondary : data._id}`;
             const eleDiv1 = document.createElement('div');
             const eleDiv2 = document.createElement('div');
             const eleImg = document.createElement('img');
@@ -307,7 +311,7 @@ function App() {
             eleH3.innerText = data.user.fullName;
             eleDiv3.className = 'showChatDiv3';
             eleP.className = 'showChatTitle';
-            eleP.innerText = '... ' + data.room.text.t;
+            eleP.innerText = '... ' + decrypt(data.room.text.t, key);
             elePState.className = 'showChatPState';
             elePState.innerText = 'Vừa xong';
             //Add
@@ -359,7 +363,7 @@ function App() {
             }
 
     `;
-    console.log('id_cookie', userId, userData, id_chats, chats);
+    // console.log('id_cookie', userId, userData, id_chats, chats);
 
     if (token && userId) {
         return (

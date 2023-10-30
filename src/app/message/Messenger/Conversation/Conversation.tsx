@@ -382,6 +382,7 @@ const Conversation: React.FC<{
     }
     const handleOnKeyup = (e: any) => {
         if (e.key === 'Enter') {
+            e.preventDefault();
             handleSend(conversation?._id, conversation?.user.id);
         } else {
             e.target.setAttribute('style', 'height: auto');
@@ -393,6 +394,14 @@ const Conversation: React.FC<{
             } else {
                 e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
             }
+        }
+    };
+    const handleOnKeyDown = (e: any) => {
+        console.log(e.key);
+        if (e.key === 'Enter') e.preventDefault();
+        if (e.key === '+') {
+            e.preventDefault();
+            e.target.value += '\n';
         }
     };
     const [optionsForItem, setOptions] = useState<
@@ -449,15 +458,18 @@ const Conversation: React.FC<{
             onMouseMove={(e) => handleTouchMoveRoomChat(e)}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
+            onClick={() => setEmoji(false)}
         >
             <DivResultsConversation color="#e4e4e4">
                 {optionsForItem && (
                     <OptionForItem
                         setOptions={setOptions}
                         ERef={ERef}
+                        colorText={colorText}
                         del={del}
                         optionsForItem={optionsForItem}
                         conversation={conversation}
+                        setEmoji={setEmoji}
                     />
                 )}
                 <Div
@@ -470,7 +482,7 @@ const Conversation: React.FC<{
                         top: 10px;
                         left: 0;
                         background-color: #202124;
-                        z-index: 13;
+                        z-index: 999;
                     `}
                 >
                     <Div
@@ -654,6 +666,7 @@ const Conversation: React.FC<{
                         }
                         return (
                             <ItemsRoom
+                                roomId={conversation._id}
                                 key={rc.text.t + index}
                                 options={optionsForItem}
                                 setOptions={setOptions}
@@ -713,7 +726,7 @@ const Conversation: React.FC<{
                     `}
                 >
                     {emoji && (
-                        <div id="emojiCon">
+                        <div id="emojiCon" onClick={(e) => e.stopPropagation()}>
                             <Picker
                                 locale="en"
                                 set="facebook"
@@ -775,7 +788,10 @@ const Conversation: React.FC<{
                                 css={`
                                     cursor: var(--pointer);
                                 `}
-                                onClick={() => setEmoji(!emoji)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEmoji(!emoji);
+                                }}
                             >
                                 🙂
                             </Div>
@@ -825,6 +841,7 @@ const Conversation: React.FC<{
                                         color: #888; /* Change text color to a subdued gray */
                                     }
                                 `}
+                                onKeyDown={(e) => handleOnKeyDown(e)}
                                 onKeyUp={(e) => handleOnKeyup(e)}
                                 onChange={(e) => {
                                     console.log(e.target.value, 'enter');
@@ -833,17 +850,9 @@ const Conversation: React.FC<{
                                         id_other: dataFirst.id,
                                         value: e.target.value.length,
                                     });
-                                    if (!e.target.value) setValue(e.target.value);
-                                    if (e.target.value.trim()) setValue(e.target.value);
+                                    setValue(e.target.value);
                                 }}
                             />
-                            <Div
-                                width="34px"
-                                css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
-                                onClick={(e) => handleSend(conversation?._id, conversation?.user.id)}
-                            >
-                                <SendOPTI />
-                            </Div>
                         </Div>
                     </Div>
                 </Div>

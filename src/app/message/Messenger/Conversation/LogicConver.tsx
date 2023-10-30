@@ -5,6 +5,7 @@ import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import sendChatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import { v4 as uuidv4 } from 'uuid';
+import CryptoJS from 'crypto-js';
 
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setTrueErrorServer } from '~/redux/hideShow';
@@ -19,6 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import userAPI from '~/restAPI/userAPI';
 import { PropsBgRD } from '~/redux/background';
 import handleFileUpload from '~/utils/handleFileUpload';
+import { decrypt, encrypt } from '~/utils/crypto';
 
 export interface PropsChat {
     _id: string;
@@ -145,9 +147,22 @@ export default function LogicConversation(
                     await Promise.all(
                         modifiedData.room?.map(
                             async (
-                                rr: { imageOrVideos: { _id: string; v: string; icon: string; type: string }[] },
+                                rr: {
+                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
+                                    text: { t: string };
+                                    secondary?: string;
+                                },
                                 index1: number,
                             ) => {
+                                console.log(rr, 'rr');
+
+                                if (rr.text.t) {
+                                    modifiedData.room[index1].text.t = decrypt(
+                                        rr.text.t,
+                                        `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
+                                    );
+                                }
+
                                 await Promise.all(
                                     rr.imageOrVideos.map(
                                         async (
@@ -199,8 +214,12 @@ export default function LogicConversation(
         setLoading(false);
     }
 
-    const code = `${conversation?._id + '-' + conversation?.user.id}phrase_chatRoom`;
+    const code = `${
+        conversation?._id ? conversation._id + '-' + conversation?.user.id : conversation?.user.id + '-' + id_you
+    }phrase_chatRoom`;
     useEffect(() => {
+        console.log('eeeee');
+
         if (code) {
             socket.on(`phrase_chatRoom_response_${conversation?._id}_${id_you}`, (res) => {
                 console.log('in_roomChat_personal_receive_and_saw con');
@@ -212,7 +231,6 @@ export default function LogicConversation(
                     setWritingBy(res);
                 },
             );
-
             socket.on(code, async (d: string) => {
                 const { id, data }: { id: string; data: PropsRoomChat } = JSON.parse(d);
                 const codeS = `user_${id}_in_roomChat_personal_receive_and_saw`;
@@ -224,6 +242,12 @@ export default function LogicConversation(
                     idChat: data.room._id,
                 });
                 const newD: any = await new Promise(async (resolve, reject) => {
+                    // room
+                    // if (data.room.text.t)
+                    //     data.room.text.t = decrypt(
+                    //         data.room.text.t,
+                    //         `chat_${data.room.secondary ? data.room.secondary : data.room._id}`,
+                    //     );
                     await Promise.all(
                         data.room.imageOrVideos.map(async (d, index) => {
                             console.log('hey');
@@ -235,9 +259,24 @@ export default function LogicConversation(
                     );
                     resolve(data.room);
                 });
+                if (newD.text?.t) {
+                    if (newD?.secondary) {
+                        const bytes = CryptoJS.AES.decrypt(newD.text?.t, `chat_${newD.secondary}`);
+                        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                        newD.text.t = decryptedData;
+                    } else {
+                        const bytes = CryptoJS.AES.decrypt(newD.text?.t, `chat_${conversation?._id}`);
+                        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                        newD.text.t = decryptedData;
+                    }
+                }
                 const a = CommonUtils.convertBase64(data.user.avatar);
                 data.user.avatar = a;
                 data.users.push(data.user);
+                if (!conversation?._id && conversation) {
+                    setConversation({ ...conversation, _id: data._id });
+                    console.log('eyeye');
+                }
                 dispatch(setRoomChat(data));
                 setDataSent(newD);
                 setWritingBy(undefined);
@@ -248,7 +287,7 @@ export default function LogicConversation(
             socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
             socket.off(code);
         };
-    }, [code]);
+    }, [code, conversation]);
     useEffect(() => {
         fetchChat();
         socket.on(
@@ -314,7 +353,7 @@ export default function LogicConversation(
         clearTimeout(time);
     };
     const handleSend = async (id_room: string | undefined, id_other: string | undefined) => {
-        if (value.trim() || upload.length > 0) {
+        if ((value.trim() || upload.length > 0) && conversation) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
             const images = upload.map((i) => {
@@ -332,9 +371,11 @@ export default function LogicConversation(
             };
             if (conversation) conversation.room.unshift(chat);
             const formData = new FormData();
-            formData.append('value', value);
+            const id_s = uuidv4();
+            formData.append('value', encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`));
             if (id_room) formData.append('id_room', id_room);
             if (id_) formData.append('id_', id_);
+            if (id_s && !conversation._id) formData.append('id_s', id_s); // first it have no id of the room then id_s is replace
             if (id_other) formData.append('id_others', id_other);
             console.log(fileUpload, 'fileUpload');
 
@@ -344,7 +385,11 @@ export default function LogicConversation(
             setupload([]);
             const res = await sendChatAPI.send(formData);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
-
+            const ciphertext = CryptoJS.AES.encrypt(JSON.stringify([1, 5]), 'hello').toString();
+            console.log(ciphertext, 'ciphertext');
+            const bytes = CryptoJS.AES.decrypt(ciphertext, 'hello');
+            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+            console.log(JSON.parse(decryptedData), 'decryptedData');
             if (data && conversation) {
                 rr.current = '';
                 conversation.room.map((r) => {
@@ -358,7 +403,7 @@ export default function LogicConversation(
         }
     };
 
-    const handleImageUpload = async (e: any) => {
+    const handleImageUpload = (e: any) => {
         const files = e.target.files;
         const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
         setFileUpload(upLoad);
