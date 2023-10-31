@@ -9,8 +9,8 @@ const FileConversation: React.FC<{
     del: React.MutableRefObject<HTMLDivElement | null>;
     type?: string;
     v: string;
-    icon: string;
-    ERef: any;
+    icon?: string;
+    ERef?: any;
     who?: string;
 }> = ({ type = '', v, icon, ERef, del, who }) => {
     const image = type.search('image/') >= 0;
@@ -50,7 +50,7 @@ const FileConversation: React.FC<{
             `}
             onClick={handleRoom}
         >
-            {v?.search('exist') >= 0 ? (
+            {v.search('exist') >= 0 ? (
                 <P
                     z="1.2rem"
                     css={`

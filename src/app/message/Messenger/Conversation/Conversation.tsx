@@ -409,6 +409,7 @@ const Conversation: React.FC<{
               _id: string;
               id: string;
               text: string;
+              secondary?: string;
               imageOrVideos:
                   | {
                         v: string;
@@ -482,7 +483,7 @@ const Conversation: React.FC<{
                         top: 10px;
                         left: 0;
                         background-color: #202124;
-                        z-index: 999;
+                        z-index: 960;
                     `}
                 >
                     <Div

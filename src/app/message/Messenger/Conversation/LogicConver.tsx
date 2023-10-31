@@ -40,6 +40,7 @@ export interface PropsChat {
             t: string;
             icon: string;
         };
+        secondary?: string;
         length?: number;
         imageOrVideos: {
             v: string;
@@ -374,7 +375,7 @@ export default function LogicConversation(
             const id_s = uuidv4();
             formData.append('value', encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`));
             if (id_room) formData.append('id_room', id_room);
-            if (id_) formData.append('id_', id_);
+            if (id_) formData.append('id_', id_); // id of the room
             if (id_s && !conversation._id) formData.append('id_s', id_s); // first it have no id of the room then id_s is replace
             if (id_other) formData.append('id_others', id_other);
             console.log(fileUpload, 'fileUpload');

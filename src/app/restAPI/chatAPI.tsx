@@ -151,5 +151,15 @@ class Messenger {
             return errorHandling(err);
         }
     };
+    updateChat = async (formData: FormData) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post<PropsChat>('/messenger/updateChat', formData);
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
 }
 export default new Messenger();

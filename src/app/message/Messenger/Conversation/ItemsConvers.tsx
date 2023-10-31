@@ -14,6 +14,7 @@ type PropsRc = {
         t: string;
         icon: string;
     };
+    secondary?: string;
     imageOrVideos: {
         v: string;
         type?: string | undefined;
@@ -47,6 +48,7 @@ const ItemsRoom: React.FC<{
                   _id: string;
                   id: string;
                   text: string;
+                  secondary?: string;
                   imageOrVideos: {
                       v: string;
                       type?: string | undefined;
@@ -201,6 +203,7 @@ const ItemsRoom: React.FC<{
                                                 _id: rc._id,
                                                 id: rc.id,
                                                 text: rc.text.t,
+                                                secondary: rc?.secondary,
                                                 imageOrVideos: rc.imageOrVideos,
                                             });
                                         }}

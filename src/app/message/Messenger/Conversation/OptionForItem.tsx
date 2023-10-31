@@ -8,6 +8,9 @@ import chatAPI from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { v4 as uuidv4 } from 'uuid';
+import handleFileUpload from '~/utils/handleFileUpload';
+import { encrypt } from '~/utils/crypto';
 
 const OptionForItem: React.FC<{
     setOptions: (
@@ -30,6 +33,7 @@ const OptionForItem: React.FC<{
         _id: string;
         id: string;
         text: string;
+        secondary?: string;
         imageOrVideos: {
             v: string;
             type?: string | undefined;
@@ -46,6 +50,8 @@ const OptionForItem: React.FC<{
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
     const textarea = useRef<HTMLTextAreaElement | null>(null);
+    const [fileUpload, setFileUpload] = useState<any>([]);
+    const [uploadPre, setUploadPre] = useState<{ _id: string; link: any; type: string }[]>([]);
     const [changeCus, setChangeCus] = useState<number | undefined>(undefined);
     const dispatch = useDispatch();
     const optionsForItemData: {
@@ -175,8 +181,8 @@ const OptionForItem: React.FC<{
                 color: '',
                 title: 'Khi thay đổi tin nhắn người khác sẽ biết ban đã thay đổi',
                 top: '-98px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                onClick: async (id?: number) => {
+                    setChangeCus(id);
                 },
             },
             {
@@ -203,9 +209,9 @@ const OptionForItem: React.FC<{
     };
     const handleImageUpload = (e: any) => {
         const files = e.target.files;
-        // const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
-        // setFileUpload(upLoad);
-        // setupload(getFilesToPre);
+        const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        setFileUpload(upLoad);
+        setUploadPre(getFilesToPre);
     };
     const handleTouchMoveM = (e: any) => {
         const touches = e.touches;
@@ -250,6 +256,29 @@ const OptionForItem: React.FC<{
         if (e.key === '+') {
             e.preventDefault();
             e.target.value += '\n';
+        }
+    };
+    const handleChange = async () => {
+        if (conversation && optionsForItem) {
+            const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
+
+            const formData = new FormData();
+            const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
+            formData.append('value', encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`));
+            console.log(fileUpload, 'fileUpload');
+            formData.append('roomId', conversation._id);
+            formData.append('id_filesDel', JSON.stringify(id_files));
+            formData.append('update', 'true');
+            formData.append('id_chat', optionsForItem._id); // id of the room
+            formData.append('userId', optionsForItem.id); // id of the room
+            for (let i = 0; i < fileUpload.length; i++) {
+                formData.append('files', fileUpload[i], fileUpload[i]._id); // assign file and _id of the file upload
+            }
+            const res = await chatAPI.updateChat(formData);
+
+            // else{
+            //     const res = await chatAPI.updateChat(conversation._id, optionsForItem._id, optionsForItem.id, id_files);
+            // }
         }
     };
     return (
@@ -394,7 +423,7 @@ const OptionForItem: React.FC<{
                         </Div>
                     </Div>
                 )}
-                {optionsForItem.imageOrVideos.length > 0 && (
+                {(uploadPre.length || optionsForItem.imageOrVideos.length > 0) && (
                     <Div
                         width="100%"
                         css={`
@@ -434,16 +463,26 @@ const OptionForItem: React.FC<{
                             `}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {optionsForItem.imageOrVideos.map((fl, index) => (
-                                <FileConversation
-                                    key={fl._id}
-                                    type={fl?.type}
-                                    v={fl.v}
-                                    icon={fl.icon}
-                                    ERef={ERef}
-                                    del={del}
-                                />
-                            ))}
+                            {uploadPre.length
+                                ? uploadPre.map((fl) => (
+                                      <FileConversation
+                                          key={fl._id}
+                                          type={fl?.type}
+                                          v={fl.link}
+                                          ERef={ERef}
+                                          del={del}
+                                      />
+                                  ))
+                                : optionsForItem.imageOrVideos.map((fl, index) => (
+                                      <FileConversation
+                                          key={fl._id}
+                                          type={fl?.type}
+                                          v={fl.v}
+                                          icon={fl.icon}
+                                          ERef={ERef}
+                                          del={del}
+                                      />
+                                  ))}
                         </Div>
                     </Div>
                 )}
@@ -517,6 +556,7 @@ const OptionForItem: React.FC<{
                         <Div
                             width="34px"
                             css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
+                            onClick={handleChange}
                         >
                             <SendOPTI />
                         </Div>
