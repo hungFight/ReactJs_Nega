@@ -1,7 +1,6 @@
 import moment from 'moment';
 import 'moment/locale/vi';
 import { useEffect, useRef, useState } from 'react';
-import { PropsReloadRD } from '~/redux/reload';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Languages from '~/reUsingComponents/languages';
@@ -29,7 +28,7 @@ moment.updateLocale('en', {
         ww: '%dws ago',
         M: '1m ago',
         MM: '%dms ago',
-        y: '1y agoe',
+        y: '1y ago',
         yy: '%dys ago',
     },
 });
@@ -80,7 +79,11 @@ const ListAccounts: React.FC<{
         id_room: string | undefined;
         id_other: string;
     }[];
-}> = ({ colorText, colorBg, setMoreBar, data, userId, setId_chats, id_chats }) => {
+    itemLg: {
+        seenBy: string;
+        who: string;
+    };
+}> = ({ colorText, colorBg, setMoreBar, data, userId, setId_chats, id_chats, itemLg }) => {
     const dispatch = useDispatch();
     const { userOnline } = useSelector((state: any) => {
         return {
@@ -136,15 +139,8 @@ const ListAccounts: React.FC<{
 
     return (
         <>
-            {data.users.map((rs) => {
-                const who =
-                    data.room?.id === userId
-                        ? 'You: '
-                        : rs.gender === 0
-                        ? 'Him: '
-                        : rs.gender === 1
-                        ? 'Her: '
-                        : 'Cuy: ';
+            {data.users.map((rs, index) => {
+                const who = data.room?.id === userId ? 'You: ' : rs.fullName;
                 const Time = moments().FromNow(data.room.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg);
                 return (
                     <Div
@@ -183,6 +179,25 @@ const ListAccounts: React.FC<{
                             }
                         `}
                     >
+                        {data.room.seenBy.includes(rs.id) && (
+                            <Div
+                                css={`
+                                    font-size: 1rem;
+                                    position: absolute;
+                                    width: 90px;
+                                    right: 54px;
+                                    top: 8px;
+                                `}
+                            >
+                                {index === 0 && itemLg.seenBy}
+                                <Avatar
+                                    src={rs.avatar}
+                                    gender={rs.gender}
+                                    radius="50%"
+                                    css="min-width: 15px; width: 15px; height: 15px; margin: 0px 5px; "
+                                />
+                            </Div>
+                        )}
                         <Avatar
                             src={rs.avatar}
                             gender={rs.gender}
@@ -218,8 +233,8 @@ const ListAccounts: React.FC<{
                                     color: #adadadde;
                                 `}
                             >
-                                <P css="min-width: 21px; width: 17px; height: 17px; margin-right: 5px; font-size: 1.1rem; margin-top: 3px;">
-                                    {who}
+                                <P css=" overflow: hidden;min-width: 21px; width: fit-content; height: 17px; margin-right: 5px; font-size: 1.1rem; margin-top: 3px;">
+                                    {who + ' ...'}
                                 </P>
                                 <P
                                     z="1.2rem"

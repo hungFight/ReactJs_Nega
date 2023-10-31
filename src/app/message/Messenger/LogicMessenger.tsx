@@ -10,9 +10,41 @@ import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
-
+import CryptoJS from 'crypto-js';
+import Languages from '~/reUsingComponents/languages';
+export interface PropsDataMore {
+    [en: string]: {
+        options: {
+            id: number;
+            load?: boolean;
+            name: string;
+            icon: JSX.Element;
+            onClick: () => any;
+        }[];
+        id_room: string;
+        id: string | undefined;
+        avatar: string | undefined;
+        fullName: string | undefined;
+        gender: number | undefined;
+    };
+    vi: {
+        options: {
+            id: number;
+            load?: boolean;
+            name: string;
+            icon: JSX.Element;
+            onClick: () => any;
+        }[];
+        id_room: string;
+        id: string | undefined;
+        avatar: string | undefined;
+        fullName: string | undefined;
+        gender: number | undefined;
+    };
+}
 const LogicMessenger = () => {
     const dispatch = useDispatch();
+    const { lg } = Languages();
     const { roomChat, delIds } = useSelector((state: PropsReloadRD) => state.reload);
     const [cookies, setCookies, _del] = useCookies(['k_user', 'tks']);
     const userId = cookies.k_user;
@@ -50,16 +82,30 @@ const LogicMessenger = () => {
         async function fetchRoom() {
             setLoading(true);
             const res = await sendChatAPi.getRoom(limit, offset.current);
-            const data = ServerBusy(res, dispatch);
-            if (typeof data === 'string' && data === 'NeGA_off') {
-                dispatch(setSession('The session expired! Please login again'));
-            } else {
-                if (data) {
-                    setRooms(data);
-                    preDelete.current = data;
-                }
-                setLoading(false);
-            }
+            const data: PropsRoomChat[] = ServerBusy(res, dispatch);
+            const newD: typeof data = await new Promise((resolve, reject) => {
+                resolve(
+                    data?.map((d) => {
+                        if (d.room.text?.t) {
+                            if (d.room?.secondary) {
+                                const bytes = CryptoJS.AES.decrypt(d.room.text?.t, `chat_${d.room.secondary}`);
+                                const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                                d.room.text.t = decryptedData;
+                            } else {
+                                const bytes = CryptoJS.AES.decrypt(d.room.text?.t, `chat_${d?._id}`);
+                                const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                                d.room.text.t = decryptedData;
+                            }
+                        }
+                        return d;
+                    }),
+                );
+            });
+            console.log(newD, 'newD', data);
+
+            setRooms(newD);
+            preDelete.current = newD;
+            setLoading(false);
         }
         fetchRoom();
 
@@ -77,6 +123,17 @@ const LogicMessenger = () => {
                             data.room.imageOrVideos[index].v = base64;
                         }),
                     );
+                    if (data.room.text?.t) {
+                        if (data.room?.secondary) {
+                            const bytes = CryptoJS.AES.decrypt(data.room.text?.t, `chat_${data.room.secondary}`);
+                            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                            data.room.text.t = decryptedData;
+                        } else {
+                            const bytes = CryptoJS.AES.decrypt(data.room.text?.t, `chat_${data?._id}`);
+                            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                            data.room.text.t = decryptedData;
+                        }
+                    }
                     resolve(data);
                 } catch (error) {
                     reject(error);
@@ -93,8 +150,25 @@ const LogicMessenger = () => {
     }, [roomNew]);
     useEffect(() => {
         if (roomChat) {
-            const newR = rooms.filter((r) => r._id !== roomChat._id);
-            setRooms([roomChat, ...newR]);
+            if (roomChat.room.text?.t) {
+                if (roomChat.room?.secondary) {
+                    const bytes = CryptoJS.AES.decrypt(roomChat.room.text?.t, `chat_${roomChat.room.secondary}`);
+                    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                    const newR = rooms.filter((r) => r._id !== roomChat._id);
+                    setRooms([
+                        { ...roomChat, room: { ...roomChat.room, text: { t: decryptedData, icon: '' } } },
+                        ...newR,
+                    ]);
+                } else {
+                    const bytes = CryptoJS.AES.decrypt(roomChat.room.text?.t, `chat_${roomChat?._id}`);
+                    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                    const newR = rooms.filter((r) => r._id !== roomChat._id);
+                    setRooms([
+                        { ...roomChat, room: { ...roomChat.room, text: { t: decryptedData, icon: '' } } },
+                        ...newR,
+                    ]);
+                }
+            }
         }
     }, [roomChat]);
     useEffect(() => {
@@ -157,60 +231,125 @@ const LogicMessenger = () => {
         setLoadDel(false);
     };
 
-    const dataMore: {
-        options: {
-            id: number;
-            load?: boolean;
-            name: string;
-            icon: JSX.Element;
-            onClick: () => any;
-        }[];
-        id_room: string;
-        id: string | undefined;
-        avatar: string | undefined;
-        fullName: string | undefined;
-        gender: number | undefined;
-    } = {
-        ...moreBar,
-        options: [
-            {
-                id: 1,
-                name: 'View Profile',
-                icon: <ProfileCircelI />,
-                onClick: () => dispatch(setOpenProfile({ newProfile: [moreBar.id] })),
-            },
-        ],
+    const dataMore: PropsDataMore = {
+        en: {
+            ...moreBar,
+            options: [
+                {
+                    id: 1,
+                    name: 'View Profile',
+                    icon: <ProfileCircelI />,
+                    onClick: () => dispatch(setOpenProfile({ newProfile: [moreBar.id] })),
+                },
+            ],
+        },
+        vi: {
+            ...moreBar,
+            options: [
+                {
+                    id: 1,
+                    name: 'Trang cá nhân',
+                    icon: <ProfileCircelI />,
+                    onClick: () => dispatch(setOpenProfile({ newProfile: [moreBar.id] })),
+                },
+            ],
+        },
     };
+
     if (rooms.some((r) => r._id === moreBar.id_room) && delIds?._id !== moreBar.id_room) {
-        dataMore.options.push({
-            id: 2,
-            name: 'Delete',
-            load: loadDel,
-            icon: loadDel ? (
-                <DivLoading css="font-size: 12px; margin: 0;">
-                    <LoadingI />
-                </DivLoading>
-            ) : (
-                <MinusI />
-            ),
+        const dd: {
+            [en: string]: {
+                id: number;
+                name: string;
+                load: boolean;
+                icon: JSX.Element;
+                onClick: () => Promise<void>;
+            };
+            vi: {
+                id: number;
+                name: string;
+                load: boolean;
+                icon: JSX.Element;
+                onClick: () => Promise<void>;
+            };
+        } = {
+            en: {
+                id: 2,
+                name: 'Delete',
+                load: loadDel,
+                icon: loadDel ? (
+                    <DivLoading css="font-size: 12px; margin: 0;">
+                        <LoadingI />
+                    </DivLoading>
+                ) : (
+                    <MinusI />
+                ),
 
-            onClick: () => handleDelete(),
-        });
+                onClick: () => handleDelete(),
+            },
+            vi: {
+                id: 2,
+                name: 'Xoá',
+                load: loadDel,
+                icon: loadDel ? (
+                    <DivLoading css="font-size: 12px; margin: 0;">
+                        <LoadingI />
+                    </DivLoading>
+                ) : (
+                    <MinusI />
+                ),
+
+                onClick: () => handleDelete(),
+            },
+        };
+        dataMore[lg].options.push(dd[lg]);
     } else {
-        dataMore.options.push({
-            id: 3,
-            name: 'Undo',
-            load: loadDel,
-            icon: loadDel ? (
-                <DivLoading css="font-size: 12px; margin: 0;">
-                    <LoadingI />
-                </DivLoading>
-            ) : (
-                <ClockCirclesI />
-            ),
+        const undo: {
+            [en: string]: {
+                id: number;
+                name: string;
+                load: boolean;
+                icon: JSX.Element;
+                onClick: () => Promise<void>;
+            };
+            vi: {
+                id: number;
+                name: string;
+                load: boolean;
+                icon: JSX.Element;
+                onClick: () => Promise<void>;
+            };
+        } = {
+            en: {
+                id: 2,
+                name: 'Undo',
+                load: loadDel,
+                icon: loadDel ? (
+                    <DivLoading css="font-size: 12px; margin: 0;">
+                        <LoadingI />
+                    </DivLoading>
+                ) : (
+                    <MinusI />
+                ),
 
-            onClick: () => handleUndo(),
-        });
+                onClick: () => handleDelete(),
+            },
+            vi: {
+                id: 2,
+                name: 'Thu hồi',
+                load: loadDel,
+                icon: loadDel ? (
+                    <DivLoading css="font-size: 12px; margin: 0;">
+                        <LoadingI />
+                    </DivLoading>
+                ) : (
+                    <MinusI />
+                ),
+
+                onClick: () => handleDelete(),
+            },
+        };
+        dataMore[lg].options.push(undo[lg]);
     }
 
     return {
@@ -225,6 +364,7 @@ const LogicMessenger = () => {
         handleShowHide,
         handleSearch,
         dataMore,
+        lg,
     };
 };
 

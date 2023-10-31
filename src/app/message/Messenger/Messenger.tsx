@@ -2,6 +2,7 @@ import { memo } from 'react';
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
+import CryptoJS from 'crypto-js';
 import 'swiper/css/effect-coverflow';
 
 import { CloseI, SendI, UndoI, LoadingI } from '~/assets/Icons/Icons';
@@ -46,7 +47,18 @@ const Send: React.FC<{
         handleShowHide,
         handleSearch,
         dataMore,
+        lg,
     } = LogicMessenger();
+    const itemLg: { [en: string]: { seenBy: string; who: string }; vi: { seenBy: string; who: string } } = {
+        en: {
+            seenBy: 'saw',
+            who: 'You',
+        },
+        vi: {
+            seenBy: 'đã xem',
+            who: 'Bạn',
+        },
+    };
     return (
         <>
             {!send && (
@@ -232,6 +244,7 @@ const Send: React.FC<{
                                 <ListAccounts
                                     key={r._id + r.room.id}
                                     data={r}
+                                    itemLg={itemLg[lg]}
                                     userId={userId}
                                     colorText={colorText}
                                     colorBg={colorBg}
@@ -241,7 +254,9 @@ const Send: React.FC<{
                                 />
                             ))
                         )}
-                        {moreBar.id && <MoreOption dataMore={dataMore} colorText={colorText} setMoreBar={setMoreBar} />}
+                        {moreBar.id && (
+                            <MoreOption dataMore={dataMore[lg]} colorText={colorText} setMoreBar={setMoreBar} />
+                        )}
                     </DivResults>
                 </DivSend>
             )}
