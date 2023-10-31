@@ -84,6 +84,7 @@ const OptionForItem: React.FC<{
                             optionsForItem.id,
                             id_file,
                         );
+                        const data: typeof res = ServerBusy(res, dispatch);
                     }
                 },
             },
@@ -96,6 +97,7 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
+                        const data: typeof res = ServerBusy(res, dispatch);
                     }
                 },
             },
@@ -163,6 +165,7 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
+                        const data: typeof res = ServerBusy(res, dispatch);
                     }
                 },
             },
@@ -266,6 +269,55 @@ const OptionForItem: React.FC<{
             `}
             onClick={() => setOptions(undefined)}
         >
+            {changeCus === 3 && (
+                <Div display="block" css="position: absolute; left: 6px; top: 64px;">
+                    {optionsForItemData[lg].map((o) => (
+                        <Div
+                            key={o.id}
+                            css={`
+                                position: relative;
+                                margin: 4px;
+                                height: fit-content;
+                                font-size: 25px;
+                                padding: 2px;
+                                color: ${o.color};
+                                svg {
+                                    pointer-events: none;
+                                }
+                                cursor: var(--pointer);
+                                @media (min-width: 767px) {
+                                    &:hover {
+                                        p {
+                                            display: block;
+                                        }
+                                    }
+                                }
+                            `}
+                            onClick={() => o.onClick(o.id)}
+                        >
+                            {o.icon}
+                            <P
+                                z="1.3rem"
+                                css={`
+                                    display: none;
+                                    position: absolute;
+                                    width: 100px;
+                                    padding: 3px;
+                                    background-color: #434444;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                    left: 50%;
+                                    right: 50%;
+                                    translate: -50%;
+                                    top: ${o.top};
+                                `}
+                            >
+                                {o.title}
+                            </P>
+                        </Div>
+                    ))}
+                </Div>
+            )}
             <Div
                 width="2px"
                 css={`
@@ -311,11 +363,11 @@ const OptionForItem: React.FC<{
                 `}
             >
                 {optionsForItem.text && (
-                    <Div width="100%" css="padding-left: 30%">
+                    <Div width="100%" css="padding-left: 30%; max-height: 100%;">
                         <Div
                             width="100%"
                             onClick={(e) => e.stopPropagation()}
-                            css="justify-content: end;align-items: baseline; "
+                            css="justify-content: end;align-items: baseline;     overflow-y: overlay;"
                         >
                             <P
                                 z="1.4rem"
@@ -403,7 +455,7 @@ const OptionForItem: React.FC<{
                     justify-content: right;
                     padding: 0 5px;
                     animation: chatMove 0.5s linear;
-                    justify-content: space-between;
+                    justify-content: ${changeCus === 3 ? 'space-between' : 'right'};
                     @keyframes chatMove {
                         0% {
                             right: -348px;
@@ -415,41 +467,43 @@ const OptionForItem: React.FC<{
                 `}
                 onClick={(e) => e.stopPropagation()}
             >
-                <DivFlex width="auto">
-                    <Div
-                        css={`
-                            cursor: var(--pointer);
-                        `}
-                        onClick={() => setEmoji((pre) => !pre)}
-                    >
-                        🙂
-                    </Div>
+                {changeCus === 3 && (
+                    <DivFlex width="auto">
+                        <Div
+                            css={`
+                                cursor: var(--pointer);
+                            `}
+                            onClick={() => setEmoji((pre) => !pre)}
+                        >
+                            🙂
+                        </Div>
 
-                    <Div
-                        width="34px !important"
-                        css={`
-                            color: #869ae7;
-                            align-items: center;
-                            justify-content: center;
-                            padding: 5px;
-                            cursor: var(--pointer);
-                        `}
-                    >
-                        <form method="post" encType="multipart/form-data" id="formss">
-                            <input
-                                id={conversation?._id + 'uploadConOpItem'}
-                                type="file"
-                                name="file[]"
-                                onChange={handleImageUpload}
-                                multiple
-                                hidden
-                            />
-                            <Label htmlFor={conversation?._id + 'uploadConOpItem'} color={colorText}>
-                                <CameraI />
-                            </Label>
-                        </form>
-                    </Div>
-                </DivFlex>
+                        <Div
+                            width="34px !important"
+                            css={`
+                                color: #869ae7;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 5px;
+                                cursor: var(--pointer);
+                            `}
+                        >
+                            <form method="post" encType="multipart/form-data" id="formss">
+                                <input
+                                    id={conversation?._id + 'uploadConOpItem'}
+                                    type="file"
+                                    name="file[]"
+                                    onChange={handleImageUpload}
+                                    multiple
+                                    hidden
+                                />
+                                <Label htmlFor={conversation?._id + 'uploadConOpItem'} color={colorText}>
+                                    <CameraI />
+                                </Label>
+                            </form>
+                        </Div>
+                    </DivFlex>
+                )}
                 <Div
                     css={`
                         font-size: 1.4rem;
@@ -472,6 +526,7 @@ const OptionForItem: React.FC<{
                 </Div>
             </Div>
             <Div
+                wrap="wrap"
                 width="100%"
                 css={`
                     height: 40%;
@@ -510,95 +565,92 @@ const OptionForItem: React.FC<{
                 onTouchMove={(e) => handleTouchMoveM(e)}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* {optionsForItemData[lg].map((o) => (
-                    <Div
-                        key={o.id}
+                {changeCus === 3 ? (
+                    <Div // inserting bar of chat
+                        width="100%"
                         css={`
-                            position: relative;
-                            margin: 4px;
-                            height: fit-content;
-                            font-size: 25px;
-                            padding: 2px;
-                            color: ${o.color};
-                            svg {
-                                pointer-events: none;
-                            }
-                            cursor: var(--pointer);
-                            @media (min-width: 767px) {
-                                &:hover {
-                                    p {
-                                        display: block;
+                            height: auto;
+                            align-items: center;
+                            max-height: 100%;
+                            justify-content: space-around;
+                        `}
+                    >
+                        <Textarea
+                            ref={textarea}
+                            color={colorText}
+                            value={value}
+                            placeholder="Send"
+                            bg="rgb(255 255 255 / 6%)"
+                            css={`
+                                width: 100%;
+                                max-height: 100%;
+                                margin: 0;
+                                padding: 5px 10px;
+                                border-radius: 10px;
+                                font-size: 1.4rem !important;
+                                overflow-y: overlay;
+                                height: 33px;
+                                &:disabled {
+                                    background-color: #f2f2f2; /* Set a background color */
+                                    cursor: not-allowed; /* Change cursor to "not-allowed" */
+                                    color: #888; /* Change text color to a subdued gray */
+                                }
+                            `}
+                            onKeyDown={(e) => handleOnKeyDown(e)}
+                            onKeyUp={(e) => handleOnKeyup(e)}
+                            onChange={(e) => {
+                                console.log(e.target.value, 'enter');
+                                setValue(e.target.value);
+                            }}
+                        />
+                    </Div>
+                ) : (
+                    optionsForItemData[lg].map((o) => (
+                        <Div
+                            key={o.id}
+                            css={`
+                                position: relative;
+                                margin: 4px;
+                                height: fit-content;
+                                font-size: 25px;
+                                padding: 2px;
+                                color: ${o.color};
+                                svg {
+                                    pointer-events: none;
+                                }
+                                cursor: var(--pointer);
+                                @media (min-width: 767px) {
+                                    &:hover {
+                                        p {
+                                            display: block;
+                                        }
                                     }
                                 }
-                            }
-                        `}
-                        onClick={o.onClick}
-                    >
-                        {o.icon}
-                        <P
-                            z="1.3rem"
-                            css={`
-                                display: none;
-                                position: absolute;
-                                width: 100px;
-                                padding: 3px;
-                                background-color: #434444;
-                                border-radius: 5px;
-                                text-align: center;
-                                left: 50%;
-                                right: 50%;
-                                translate: -50%;
-                                top: ${o.top};
                             `}
+                            onClick={() => o.onClick(o.id)}
                         >
-                            {o.title}
-                        </P>
-                    </Div>
-                ))} */}
-                <Div // inserting bar of chat
-                    width="100%"
-                    css={`
-                        height: auto;
-                        align-items: center;
-                        justify-content: space-around;
-                    `}
-                >
-                    <Textarea
-                        ref={textarea}
-                        color={colorText}
-                        value={value}
-                        placeholder="Send"
-                        bg="rgb(255 255 255 / 6%)"
-                        css={`
-                            width: 100%;
-                            max-height: 100%;
-                            margin: 0;
-                            padding: 5px 10px;
-                            border-radius: 10px;
-                            font-size: 1.4rem !important;
-                            overflow-y: overlay;
-                            height: 33px;
-                            &:disabled {
-                                background-color: #f2f2f2; /* Set a background color */
-                                cursor: not-allowed; /* Change cursor to "not-allowed" */
-                                color: #888; /* Change text color to a subdued gray */
-                            }
-                        `}
-                        onKeyDown={(e) => handleOnKeyDown(e)}
-                        onKeyUp={(e) => handleOnKeyup(e)}
-                        onChange={(e) => {
-                            console.log(e.target.value, 'enter');
-                            setValue(e.target.value);
-                        }}
-                    />
-                    <Div
-                        width="34px"
-                        css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
-                        onClick={(e) => {}}
-                    >
-                        <SendOPTI />
-                    </Div>
-                </Div>
+                            {o.icon}
+                            <P
+                                z="1.3rem"
+                                css={`
+                                    display: none;
+                                    position: absolute;
+                                    width: 100px;
+                                    padding: 3px;
+                                    background-color: #434444;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                    left: 50%;
+                                    right: 50%;
+                                    translate: -50%;
+                                    top: ${o.top};
+                                `}
+                            >
+                                {o.title}
+                            </P>
+                        </Div>
+                    ))
+                )}
             </Div>
         </Div>
     );

@@ -16,11 +16,12 @@ import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/s
 import ListAccounts from './ListAccounts';
 import MoreOption from './MoreOption';
 import LogicMessenger from './LogicMessenger';
+import { PropsUser } from 'src/App';
 
 const Send: React.FC<{
     colorText: string;
     colorBg: number;
-    dataUser: { id: string; avatar: any; fullName: string; nickName: string; gender: number };
+    dataUser: PropsUser;
     userOline: string[];
     setId_chats: React.Dispatch<
         React.SetStateAction<

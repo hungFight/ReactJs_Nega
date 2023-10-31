@@ -18,6 +18,7 @@ import Send from '../Messenger/Messenger';
 import { setOpenProfile } from '~/redux/hideShow';
 import moment from 'moment';
 import CommonUtils from '~/utils/CommonUtils';
+import { PropsUser } from 'src/App';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -30,7 +31,7 @@ interface PropsLanguage {
 const Notification: React.FC<{
     colorText: string;
     colorBg: number;
-    dataUser: { id: string; avatar: any; fullName: string; nickName: string; gender: number };
+    dataUser: PropsUser;
     userOline: string[];
 }> = ({ colorText, colorBg, dataUser, userOline }) => {
     const dispatch = useDispatch();

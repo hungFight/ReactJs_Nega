@@ -44,10 +44,9 @@ const DivOpacity = styled.div`
     z-index: 10;
 `;
 export interface PropsUser {
-    id: string;
+    readonly id: string;
     avatar: any;
     fullName: string;
-    nickName: string;
     gender: number;
     background: any;
     biography: string;
@@ -57,7 +56,7 @@ export interface PropsUser {
     active: boolean;
 }
 export interface PropsUserPer {
-    id: string;
+    readonly id: string;
     avatar: any;
     fullName: string;
     address: string;
