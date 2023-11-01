@@ -32,7 +32,7 @@ export default function LogicView(
     setId_chats: React.Dispatch<
         React.SetStateAction<
             {
-                id_room: string | undefined;
+                id_room?: string;
                 id_other: string;
             }[]
         >
@@ -332,7 +332,7 @@ export default function LogicView(
         dispatch(onChats({ id_room: undefined, id_other: id }));
         setId_chats((pre) => {
             if (!pre.some((p) => p.id_other === id)) {
-                return [...pre, { id_room: undefined, id_other: id }];
+                return [...pre, { id_other: id }];
             }
             return pre;
         });

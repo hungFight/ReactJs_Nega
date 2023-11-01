@@ -3,10 +3,11 @@ import { PropsChat } from './LogicConver';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { DotI, GarbageI } from '~/assets/Icons/Icons';
 import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
+import { PropsPhraseText } from 'src/dataText/DataMessager';
 type PropsRc = {
     _id: string;
     id: string;
@@ -24,6 +25,7 @@ type PropsRc = {
     delete?: string;
     sending?: boolean | undefined;
     seenBy: string[];
+    update?: string;
     createdAt: string;
     updatedAt?: string;
 };
@@ -77,6 +79,7 @@ const ItemsRoom: React.FC<{
     setWch: React.Dispatch<React.SetStateAction<string | undefined>>;
     rr: React.MutableRefObject<string>;
     roomId: string;
+    phraseText: PropsPhraseText;
 }> = ({
     rc,
     index,
@@ -94,9 +97,9 @@ const ItemsRoom: React.FC<{
     setWch,
     rr,
     roomId,
+    phraseText,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
-    const textarea = useRef<HTMLTextAreaElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
     console.log('Item', wch);
     if (rc.id === dataFirst.id && !wch) {
@@ -153,6 +156,9 @@ const ItemsRoom: React.FC<{
                                     top: unset;
                                     bottom: 1px;
                                     left: -31px;
+                                }
+                                .dateTimeN {
+                                    bottom: -10px;
                                 }
                             }
                         `}
@@ -243,6 +249,7 @@ const ItemsRoom: React.FC<{
                                             svg {
                                                 margin-right: 3px;
                                             }
+                                            ${rc.update === dataFirst.id && 'border: 1px solid #889a21c7;'}
                                         `}
                                     >
                                         {rc.text.t}
@@ -312,16 +319,19 @@ const ItemsRoom: React.FC<{
                                         <>
                                             <P
                                                 className="dateTime"
-                                                css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -153px; top: 5px;"
+                                                css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -179px; top: 5px;"
                                             >
                                                 {handleTime(rc.createdAt, 'date')}
                                             </P>
-                                            {rc?.updatedAt && (
+                                            {rc?.updatedAt && (rc.delete || rc?.update) && (
                                                 <P
-                                                    className="dateTime"
-                                                    css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -175px; top: 18px;"
+                                                    className="dateTime dateTimeN"
+                                                    css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -203px; top: 18px;"
                                                 >
-                                                    Deleted on {handleTime(rc?.updatedAt, 'date')}
+                                                    {rc?.update
+                                                        ? phraseText.dateTime.replace
+                                                        : phraseText.dateTime.remove}{' '}
+                                                    {handleTime(rc?.updatedAt, 'date')}
                                                 </P>
                                             )}
                                             <P
@@ -403,6 +413,9 @@ const ItemsRoom: React.FC<{
                                     top: unset;
                                     bottom: 1px;
                                 }
+                                .dateTimeN {
+                                    bottom: -10px;
+                                }
                             }
                             ${rc.imageOrVideos.length > 0 ? 'flex-grow: 1;' : ''}
                         `}
@@ -454,6 +467,7 @@ const ItemsRoom: React.FC<{
                                             svg {
                                                 margin-right: 3px;
                                             }
+                                            ${rc.update === user.id && 'border: 1px solid #889a21c7;'}
                                         `}
                                     >
                                         {rc.text.t}
@@ -527,19 +541,20 @@ const ItemsRoom: React.FC<{
                                     >
                                         {handleTime(rc.createdAt, 'date')}
                                     </P>
-                                    {rc?.updatedAt && (
+                                    {rc?.updatedAt && (rc?.update || rc?.delete) && (
                                         <P
-                                            className="dateTime"
+                                            className="dateTime dateTimeN"
                                             css={`
                                                 display: none;
                                                 font-size: 1rem;
                                                 margin-left: 5px;
                                                 position: absolute;
-                                                right: -195px;
-                                                top: 44px;
+                                                right: -220px;
+                                                top: 21px;
                                             `}
                                         >
-                                            Deleted on {handleTime(rc?.updatedAt, 'date')}
+                                            {rc?.update ? phraseText.dateTime.replace : phraseText.dateTime.remove}{' '}
+                                            {handleTime(rc?.updatedAt, 'date')}
                                         </P>
                                     )}
                                     <P
@@ -557,4 +572,4 @@ const ItemsRoom: React.FC<{
         </>
     );
 };
-export default ItemsRoom;
+export default memo(ItemsRoom);

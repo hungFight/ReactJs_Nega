@@ -120,10 +120,10 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
     const params = { phoneMail: phoneMail };
     const { data, isLoading } = useQuery({
         queryKey: ['changePassword', 1],
-        enabled: phoneMail !== undefined,
+        enabled: phoneMail ? true : false,
         queryFn: () => accountRequest.getPhoneMail(params),
     });
-    console.log(data, isLoading);
+    console.log(data, isLoading, params);
     const datas: PropsAccount[] | undefined = ServerBusy(data, dispatch);
 
     const handleChangePass = useCallback((id: string) => {

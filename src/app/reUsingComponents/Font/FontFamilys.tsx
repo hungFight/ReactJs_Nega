@@ -3,7 +3,7 @@ import { Div, H3 } from '../styleComponents/styleDefault';
 import { DivFonts, DivList, DivName, PItems } from './styleFontFamily';
 import { DivPos } from '../styleComponents/styleComponents';
 import { CloseI, ItalicI, StraightI } from '~/assets/Icons/Icons';
-import { fontDatas } from 'src/dataMark/dataHomeForm';
+import { fontDatas } from 'src/dataText/dataHomeForm';
 
 const FontFamilys: React.FC<{
     fontFamily: { name: string; type?: string };

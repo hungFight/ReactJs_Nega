@@ -4,7 +4,6 @@ import { PropsRoomChat } from '~/restAPI/chatAPI';
 type PropsReLoad = {
     people: number;
     userOnline: string[];
-    roomChat: PropsRoomChat | undefined;
     session: string;
     delIds:
         | {
@@ -23,7 +22,6 @@ export interface PropsReloadRD {
 const initialState: PropsReLoad = {
     people: 0,
     userOnline: [],
-    roomChat: undefined,
     session: '',
     delIds: undefined,
 };
@@ -38,9 +36,7 @@ const reloadPage = createSlice({
         setOnline: (state, action) => {
             state.userOnline = action.payload;
         },
-        setRoomChat: (state, action: { payload: PropsRoomChat }) => {
-            state.roomChat = action.payload;
-        },
+
         setSession: (state, action: { payload: string }) => {
             state.session = action.payload;
         },
@@ -65,5 +61,5 @@ const reloadPage = createSlice({
         },
     },
 });
-export const { setPeople, setOnline, setRoomChat, setSession, setDelIds } = reloadPage.actions;
+export const { setPeople, setOnline, setSession, setDelIds } = reloadPage.actions;
 export default reloadPage.reducer;

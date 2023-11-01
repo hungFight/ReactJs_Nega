@@ -10,8 +10,8 @@ import 'swiper/css/pagination';
 
 import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
-import { login } from './dataMark/dataLogin';
-import { register } from './dataMark/dataRegister';
+import { login } from './dataText/dataLogin';
+import { register } from './dataText/dataRegister';
 import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
@@ -32,6 +32,8 @@ import { useQuery, gql } from '@apollo/client';
 import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
 import { decrypt } from '~/utils/crypto';
+import { ConversationText } from './dataText/DataMessager';
+import Languages from '~/reUsingComponents/languages';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -139,10 +141,17 @@ export interface PropsUserPer {
         };
     }[];
 }
+export type PropsId_chats = {
+    id_room?: string;
+    id_other: string;
+    top?: number;
+    left?: number;
+};
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/nextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
 function App() {
+    const { lg } = Languages();
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
@@ -160,8 +169,7 @@ function App() {
     const [userFirst, setUserFirst] = useState<PropsUser>();
     const [loading, setLoading] = useState<boolean>(false);
     // messenger
-    const [id_chats, setId_chats] =
-        useState<{ id_room: string | undefined; id_other: string; top?: number; left?: number }[]>(chats);
+    const [id_chats, setId_chats] = useState<PropsId_chats[]>(chats);
     const showChat = useRef<HTMLInputElement | null>(null);
     const GET_USERDATA = gql`
         query Get_dataWarning($id: String!) {
@@ -171,13 +179,12 @@ function App() {
             }
         }
     `;
-    const { data } = useQuery(GET_USERDATA, {
-        variables: {
-            id: userId,
-        },
-        skip: !userId || !token,
-    });
-    console.log(data, 'GraphQL dat');
+    // const { data } = useQuery(GET_USERDATA, {
+    //     variables: {
+    //         id: userId,
+    //     },
+    //     skip: !userId || !token,
+    // });
     const handleCheck = useRef<boolean>(false);
     async function fetch(id: string | string[], first?: string) {
         if (!first) setLoading(true);
@@ -428,6 +435,7 @@ function App() {
                                         )
                                             return (
                                                 <Conversation
+                                                    conversationText={ConversationText[lg]}
                                                     userOnline={userOnline}
                                                     key={index}
                                                     index={index}

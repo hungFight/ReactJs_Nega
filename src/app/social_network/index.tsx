@@ -5,6 +5,7 @@ import { InitialStateHideShow } from '~/redux/hideShow';
 import { PropsSetting } from '~/reUsingComponents/Setting/interface';
 import Header, { PropsSN } from './components/Header/HeaderLayout';
 import Settingcbl from '~/reUsingComponents/Setting/Setting';
+import { PropsId_chats } from 'src/App';
 
 const settingData = [
     {
@@ -44,14 +45,7 @@ const Socialnetwork: React.FC<{
         en: InNetWork;
     };
     dataUser: { avatar: string; fullName: string; gender: number };
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }> = ({ data, dataUser, setId_chats }) => {
     const lg = useSelector((state: PropsLanguage) => state.persistedReducer.language.sn);
     const { header, sett } = data[lg];

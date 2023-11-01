@@ -28,7 +28,7 @@ interface PropsPer {
     setId_chats: React.Dispatch<
         React.SetStateAction<
             {
-                id_room: string | undefined;
+                id_room?: string;
                 id_other: string;
             }[]
         >

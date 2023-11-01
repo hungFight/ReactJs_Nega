@@ -12,7 +12,7 @@ import { setTrueErrorServer } from '~/redux/hideShow';
 import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/nextWeb';
 import Cookies from '~/utils/Cookies';
-import { PropsReloadRD, setRoomChat } from '~/redux/reload';
+import { PropsReloadRD } from '~/redux/reload';
 import Languages from '~/reUsingComponents/languages';
 import ServerBusy from '~/utils/ServerBusy';
 import moment from 'moment';
@@ -21,6 +21,8 @@ import userAPI from '~/restAPI/userAPI';
 import { PropsBgRD } from '~/redux/background';
 import handleFileUpload from '~/utils/handleFileUpload';
 import { decrypt, encrypt } from '~/utils/crypto';
+import { setRoomChat } from '~/redux/messenger';
+import { PropsId_chats } from 'src/App';
 
 export interface PropsChat {
     _id: string;
@@ -59,16 +61,11 @@ export interface PropsChat {
     }[];
     createdAt: string;
 }
-export default function LogicConversation(
-    id_chat: { id_room: string | undefined; id_other: string },
-    id_you: string,
-    userOnline: string[],
-) {
+export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
-    const { chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
-    const { userId, token } = Cookies();
+    const { userId } = Cookies();
     const { lg } = Languages();
     const textarea = useRef<HTMLTextAreaElement | null>(null);
     const ERef = useRef<any>();
@@ -85,8 +82,7 @@ export default function LogicConversation(
     const [option, setOption] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [opMore, setOpMore] = useState<boolean>(false);
-    const [fileUpload, setFileUpload] = useState<any>([]);
-    const [upload, setupload] = useState<{ _id: string; link: any; type: string }[]>([]);
+    const [upload, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
     const chatRef = useRef<PropsChat>();
     const [wch, setWch] = useState<string | undefined>('');
     const rr = useRef<string>('');
@@ -354,12 +350,14 @@ export default function LogicConversation(
         clearTimeout(time);
     };
     const handleSend = async (id_room: string | undefined, id_other: string | undefined) => {
-        if ((value.trim() || upload.length > 0) && conversation) {
+        if ((value.trim() || (upload && upload?.up.length > 0)) && conversation) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
-            const images = upload.map((i) => {
-                return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
-            });
+            const images = upload
+                ? upload?.pre.map((i) => {
+                      return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
+                  })
+                : [];
             const id_ = uuidv4();
             const chat: any = {
                 createdAt: DateTime(),
@@ -378,12 +376,11 @@ export default function LogicConversation(
             if (id_) formData.append('id_', id_); // id of the room
             if (id_s && !conversation._id) formData.append('id_s', id_s); // first it have no id of the room then id_s is replace
             if (id_other) formData.append('id_others', id_other);
-            console.log(fileUpload, 'fileUpload');
 
-            for (let i = 0; i < fileUpload.length; i++) {
-                formData.append('files', fileUpload[i], fileUpload[i]._id); // assign file and _id of the file upload
+            for (let i = 0; i < upload?.up.length; i++) {
+                formData.append('files', upload?.up[i], upload?.up[i]._id); // assign file and _id of the file upload
             }
-            setupload([]);
+
             const res = await sendChatAPI.send(formData);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
             const ciphertext = CryptoJS.AES.encrypt(JSON.stringify([1, 5]), 'hello').toString();
@@ -398,7 +395,7 @@ export default function LogicConversation(
                 });
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);
-                setFileUpload([]);
+                setupload(undefined);
                 dispatch(setRoomChat(data));
             }
         }
@@ -407,9 +404,9 @@ export default function LogicConversation(
     const handleImageUpload = (e: any) => {
         const files = e.target.files;
         const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
-        setFileUpload(upLoad);
-        setupload(getFilesToPre);
+        setupload({ pre: getFilesToPre, up: upload });
     };
+    console.log(conversation?.user.id, 'conversation.user');
 
     return {
         handleImageUpload,

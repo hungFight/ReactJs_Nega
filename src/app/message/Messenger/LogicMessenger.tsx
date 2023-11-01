@@ -12,6 +12,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import CryptoJS from 'crypto-js';
 import Languages from '~/reUsingComponents/languages';
+import { PropsReMessengerRD } from '~/redux/messenger';
 export interface PropsDataMore {
     [en: string]: {
         options: {
@@ -45,7 +46,9 @@ export interface PropsDataMore {
 const LogicMessenger = () => {
     const dispatch = useDispatch();
     const { lg } = Languages();
-    const { roomChat, delIds } = useSelector((state: PropsReloadRD) => state.reload);
+    const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
+    const { roomChat } = useSelector((state: PropsReMessengerRD) => state.messenger);
+
     const [cookies, setCookies, _del] = useCookies(['k_user', 'tks']);
     const userId = cookies.k_user;
 

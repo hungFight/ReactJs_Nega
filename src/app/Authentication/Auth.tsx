@@ -45,25 +45,12 @@ const Authentication: React.FC<{
 
     const Element = () => {
         if (whatKind === 'register') {
-            if (enable)
-                return (
-                    <Register
-                        acc={acc}
-                        dataRegister={dataRegister}
-                        account={'nguyentronghung05072003@gmail.com'}
-                        Next={Next}
-                    />
-                );
+            if (enable) return <Register acc={acc} dataRegister={dataRegister} account={account} Next={Next} />;
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else if (whatKind === 'changePassword') {
             if (enable)
                 return (
-                    <ChangePassword
-                        phoneMail={'nguyentronghung05072003@gmail.com'}
-                        Next={Next}
-                        setWhatKind={setWhatKind}
-                        setEnable={setEnable}
-                    />
+                    <ChangePassword phoneMail={account} Next={Next} setWhatKind={setWhatKind} setEnable={setEnable} />
                 );
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else {

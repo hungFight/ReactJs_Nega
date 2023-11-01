@@ -10,6 +10,7 @@ import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { PropsBgRD, onChats } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
+import { PropsId_chats } from 'src/App';
 interface PropsFriends {
     avatar: any;
     birthday: string;
@@ -19,14 +20,7 @@ interface PropsFriends {
 }
 const Friends: React.FC<{
     type: string;
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }> = ({ type, setId_chats }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);

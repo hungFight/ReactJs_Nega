@@ -1,3 +1,4 @@
+import { PropsOptionText } from 'src/dataText/DataMessager';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';

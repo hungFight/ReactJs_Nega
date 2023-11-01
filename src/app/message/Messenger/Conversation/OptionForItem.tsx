@@ -271,6 +271,7 @@ const OptionForItem: React.FC<{
             formData.append('update', 'true');
             formData.append('id_chat', optionsForItem._id); // id of the room
             formData.append('userId', optionsForItem.id); // id of the room
+            formData.append('id_other', conversation.user.id); // id of the room
             for (let i = 0; i < fileUpload.length; i++) {
                 formData.append('files', fileUpload[i], fileUpload[i]._id); // assign file and _id of the file upload
             }

@@ -32,6 +32,7 @@ import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
 import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
+import { PropsId_chats } from 'src/App';
 
 //button
 // to = Link tag, href = a tag
@@ -55,14 +56,7 @@ export interface PropsSN {
 const Header: React.FC<{
     dataText: PropsSN;
     dataUser: { avatar: string; fullName: string; gender: number };
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }> = ({ dataText, dataUser, setId_chats }) => {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);

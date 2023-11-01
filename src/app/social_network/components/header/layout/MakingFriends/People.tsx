@@ -9,6 +9,7 @@ import Strangers from './Strangers';
 import Friends from './Friends';
 import Requested from './Requested';
 import Others from './OthersRequest';
+import { PropsId_chats } from 'src/App';
 
 const socket = io('http://localhost:3001', { transports: ['websocket'] });
 
@@ -26,14 +27,7 @@ interface PropsMakingFriends {
     colorBg: number;
     dataUser?: PropsUserPeople;
     cRef: React.MutableRefObject<number>;
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }
 
 const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colorBg, dataUser, cRef, setId_chats }) => {

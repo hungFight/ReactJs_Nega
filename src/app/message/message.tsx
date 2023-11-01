@@ -5,24 +5,14 @@ import Send from './Messenger/Messenger';
 import { DivMs } from './styleMessage';
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PropsUser } from 'src/App';
+import { PropsId_chats, PropsUser } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 
 const Message: React.FC<{
     dataUser: PropsUser;
     userOnline: string[];
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
-    id_chats: {
-        id_room: string | undefined;
-        id_other: string;
-    }[];
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
+    id_chats: PropsId_chats[];
 }> = ({ dataUser, userOnline, setId_chats, id_chats }) => {
     const [width, setWidth] = useState<string>('');
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
@@ -54,7 +44,6 @@ const Message: React.FC<{
     window.addEventListener('onload', reloadMs);
     function reloadMs() {
         console.log('not', width);
-
         setWidth(window.location.pathname);
     }
     return (

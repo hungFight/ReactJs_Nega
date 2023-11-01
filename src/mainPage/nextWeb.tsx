@@ -53,7 +53,7 @@ import NextListWeb from './listWebs/ListWebs';
 import PeopleRequest from '~/restAPI/socialNetwork/peopleAPI';
 import WarningBrowser from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
 import CommonUtils from '~/utils/CommonUtils';
-import { PropsUser, PropsUserPer } from 'src/App';
+import { PropsId_chats, PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 import { PropsReloadRD, setOnline } from '~/redux/reload';
 export const socket = io('http://localhost:3001', { transports: ['websocket'], ackTimeout: 10000 });
@@ -62,14 +62,7 @@ const Website: React.FC<{
     openProfile: string[];
     dataUser: PropsUser;
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }> = ({ openProfile, dataUser, setDataUser, setId_chats }) => {
     const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);

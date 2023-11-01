@@ -16,25 +16,15 @@ import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/s
 import ListAccounts from './ListAccounts';
 import MoreOption from './MoreOption';
 import LogicMessenger from './LogicMessenger';
-import { PropsUser } from 'src/App';
+import { PropsId_chats, PropsUser } from 'src/App';
 
 const Send: React.FC<{
     colorText: string;
     colorBg: number;
     dataUser: PropsUser;
     userOline: string[];
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
-    id_chats: {
-        id_room: string | undefined;
-        id_other: string;
-    }[];
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
+    id_chats: PropsId_chats[];
 }> = ({ colorBg, colorText, dataUser, userOline, setId_chats, id_chats }) => {
     const {
         userId,

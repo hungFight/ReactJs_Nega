@@ -12,6 +12,7 @@ import { DotI, ProfileI, TyOnlineI } from '~/assets/Icons/Icons';
 import { PropsBgRD, onChats } from '~/redux/background';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
 import moments from '~/utils/moment';
+import { PropsId_chats } from 'src/App';
 moment.updateLocale('en', {
     relativeTime: {
         future: 'in %s',
@@ -67,18 +68,8 @@ const ListAccounts: React.FC<{
     >;
     data: PropsRoomChat;
     userId: string;
-    setId_chats: React.Dispatch<
-        React.SetStateAction<
-            {
-                id_room: string | undefined;
-                id_other: string;
-            }[]
-        >
-    >;
-    id_chats: {
-        id_room: string | undefined;
-        id_other: string;
-    }[];
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
+    id_chats: PropsId_chats[];
     itemLg: {
         seenBy: string;
         who: string;
@@ -122,8 +113,8 @@ const ListAccounts: React.FC<{
     useEffect(() => {
         // check have you seen this chat?
         let check = false;
-        chats.forEach((i: { id_room: any; id_other: string }) => {
-            if (i.id_room) {
+        chats.forEach((i) => {
+            if (i?.id_room) {
                 if (i.id_room === data._id) {
                     check = true;
                 }

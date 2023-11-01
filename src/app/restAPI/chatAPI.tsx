@@ -3,6 +3,7 @@ import refreshToken from '~/refreshToken/refreshToken';
 import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
+import { PropsId_chats } from 'src/App';
 export interface PropsRoomChat {
     _id: string;
     id_us: string[];
@@ -66,7 +67,7 @@ class Messenger {
         }
     };
     getChat = async (
-        id_chat: { id_room: string | undefined; id_other: string },
+        id_chat: PropsId_chats,
         limit: number,
         offset: number,
         moreChat: boolean = false,
