@@ -161,7 +161,7 @@ function App() {
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-
+const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
@@ -450,6 +450,7 @@ function App() {
                                                     left={room.left}
                                                     permanent={permanent}
                                                     setId_chats={setId_chats}
+                                                    mm={mm}
                                                 />
                                                 // </>
                                             );

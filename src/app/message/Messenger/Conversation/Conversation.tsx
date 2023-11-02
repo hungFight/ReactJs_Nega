@@ -38,6 +38,7 @@ import OptionForItem from './OptionForItem';
 import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/nextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessager';
+import { decrypt } from '~/utils/crypto';
 
 const Conversation: React.FC<{
     index: number;
@@ -67,6 +68,12 @@ const Conversation: React.FC<{
     >;
     userOnline: string[];
     conversationText: PropsConversionText;
+    mm: React.MutableRefObject<
+        {
+            index: number;
+            id: string;
+        }[]
+    >;
 }> = ({
     index,
     colorText,
@@ -83,6 +90,7 @@ const Conversation: React.FC<{
     setId_chats,
     userOnline,
     conversationText,
+    mm,
 }) => {
     const {
         handleImageUpload,
@@ -121,13 +129,18 @@ const Conversation: React.FC<{
         writingBy,
         setWritingBy,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
+    if (conversation?._id) {
+        if (!mm.current.some((m) => m.id === conversation?._id && index === m.index)) {
+            mm.current.push({ id: conversation._id, index });
+        }
+    }
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<string[]>([]);
 
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (conversation?._id && moves.includes(conversation._id))
+        if (conversation?._id && moves.includes(conversation._id) && del.current)
             if (moves.some((m) => m === conversation?._id || m === conversation?.user.id)) {
                 const ls = document.querySelectorAll('.ofChats');
                 Array.from(ls).forEach((s) => {
@@ -139,8 +152,8 @@ const Conversation: React.FC<{
                         s.setAttribute('style', 'z-index: 99');
                     }
                 });
-
-                // if (del.current) del.current.style.zIndex = '999';
+                del.current.style.top = `${del.current.getBoundingClientRect().top}px`;
+                del.current.style.left = `${del.current.getBoundingClientRect().left}px`;
                 if (!mouse.some((m) => m === conversation._id)) {
                     setMouse([...mouse, conversation._id]);
                 }
@@ -156,15 +169,13 @@ const Conversation: React.FC<{
     console.log(left, 'left');
 
     const handleTouchMoveRoomChat = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (mouse.includes(conversation?._id ?? '') && del.current) {
+        if (conversation?._id && mouse.includes(conversation?._id ?? '') && del.current) {
             const x = e.clientX;
             const y = e.clientY;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-
             if (del.current) {
                 if (viewportWidth - 10 >= x && x >= 19) {
-                    console.log('move');
                     xRef.current = x - 200;
                     del.current.style.left = `${x - 200}px`;
                 }
@@ -236,7 +247,7 @@ const Conversation: React.FC<{
     };
     const handleDelete = async () => {
         setLoadDel(true);
-        if (conversation?._id) {
+        if (conversation) {
             const res = await sendChatAPi.delete(conversation._id);
             const data:
                 | {
@@ -245,11 +256,13 @@ const Conversation: React.FC<{
                           id: string;
                           createdAt: string;
                           _id: string;
+                          show: boolean;
                       }[];
                   }
                 | undefined = ServerBusy(res, dispatch);
 
             if (data) {
+                setConversation({ ...conversation, room: [], deleted: data.deleted });
                 dispatch(setDelIds(data));
             }
         }
@@ -260,9 +273,16 @@ const Conversation: React.FC<{
         console.log('Undo');
         setLoadDel(true);
         if (conversation?._id) {
+            emptyRef.current = false;
             const res = await sendChatAPi.undo(conversation._id);
             const data: PropsChat | undefined = ServerBusy(res, dispatch);
             if (data) {
+                data.room = data.room.map((r) => {
+                    if (r.text.t) {
+                        r.text.t = decrypt(r.text.t, `chat_${r.secondary ? r.secondary : conversation._id}`);
+                    }
+                    return r;
+                });
                 cRef.current = 0;
                 dispatch(setDelIds(undefined));
                 setConversation({ ...data, user: conversation.user });
@@ -271,6 +291,7 @@ const Conversation: React.FC<{
         setLoadDel(false);
     };
     console.log(moves, mouse, 'moves');
+    const ye = !moves.some((m) => m === conversation?._id || m === conversation?.user.id);
     const dataMore: {
         options: {
             id: number;
@@ -296,11 +317,7 @@ const Conversation: React.FC<{
                 name: conversationText.optionRoom.personal,
                 icon: <ProfileCircelI />,
                 onClick: () => {
-                    if (
-                        conversation?.user.id &&
-                        !moves.some((m) => m === conversation?._id || m === conversation?.user.id)
-                    )
-                        dispatch(setOpenProfile({ newProfile: [conversation?.user.id] }));
+                    if (conversation?.user.id && ye) dispatch(setOpenProfile({ newProfile: [conversation?.user.id] }));
                 },
             },
             {
@@ -308,8 +325,7 @@ const Conversation: React.FC<{
                 name: conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
                 onClick: () => {
-                    if (id_chat && !moves.some((m) => m === conversation?._id || m === conversation?.user.id))
-                        dispatch(setBalloon({ id_other: id_chat.id_other, id_room: id_chat.id_room }));
+                    if (id_chat && ye) dispatch(setBalloon({ id_other: id_chat.id_other, id_room: id_chat.id_room }));
                 },
             },
             {
@@ -371,7 +387,9 @@ const Conversation: React.FC<{
             ) : (
                 <MinusI />
             ),
-            onClick: () => handleDelete(),
+            onClick: () => {
+                if (ye) handleDelete();
+            },
         });
     }
     const handleOnKeyup = (e: any) => {
