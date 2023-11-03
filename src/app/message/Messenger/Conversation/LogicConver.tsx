@@ -42,16 +42,20 @@ export interface PropsChat {
             t: string;
             icon: string;
         };
+        delete?: string;
+        update?: string;
         secondary?: string;
         length?: number;
         imageOrVideos: {
             v: string;
             type?: string;
             icon: string;
+            link?: string;
             _id: string;
         }[];
         sending?: boolean;
         seenBy: string[];
+        updatedAt: string;
         createdAt: string;
     }[];
     deleted: {
@@ -91,6 +95,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const [dataSent, setDataSent] = useState<
         | {
               createdAt: string;
+              updatedAt: string;
               imageOrVideos: any;
               seenBy: string[];
               text: { t: string; icon: string };
@@ -128,6 +133,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 : false
             : false,
     });
+    console.log(conversation, 'conversation0');
+
     //get image
     async function fetchChat(moreChat?: boolean) {
         if (!emptyRef.current) {

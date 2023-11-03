@@ -494,6 +494,7 @@ const Conversation: React.FC<{
                         del={del}
                         optionsForItem={optionsForItem}
                         conversation={conversation}
+                        setConversation={setConversation}
                         setEmoji={setEmoji}
                     />
                 )}

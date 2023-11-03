@@ -101,7 +101,7 @@ const ItemsRoom: React.FC<{
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
-    console.log('Item', wch);
+    console.log('Item', rc);
     if (rc.id === dataFirst.id && !wch) {
         if (rc.seenBy.includes(user.id) && !rr.current) {
             rr.current = rc._id;

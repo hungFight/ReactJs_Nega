@@ -10,7 +10,9 @@ import { useDispatch } from 'react-redux';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { v4 as uuidv4 } from 'uuid';
 import handleFileUpload from '~/utils/handleFileUpload';
-import { encrypt } from '~/utils/crypto';
+import { decrypt, encrypt } from '~/utils/crypto';
+import fileGridFS from '~/restAPI/gridFS';
+import CommonUtils from '~/utils/CommonUtils';
 
 const OptionForItem: React.FC<{
     setOptions: (
@@ -46,12 +48,13 @@ const OptionForItem: React.FC<{
     conversation: PropsChat | undefined;
     colorText: string;
     setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji }) => {
+    setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
+}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation }) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
+    const [loading, setLoading] = useState<string>('');
     const textarea = useRef<HTMLTextAreaElement | null>(null);
-    const [fileUpload, setFileUpload] = useState<any>([]);
-    const [uploadPre, setUploadPre] = useState<{ _id: string; link: any; type: string }[]>([]);
+    const [fileUpload, setFileUpload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any }>();
     const [changeCus, setChangeCus] = useState<number | undefined>(undefined);
     const dispatch = useDispatch();
     const optionsForItemData: {
@@ -81,16 +84,32 @@ const OptionForItem: React.FC<{
                 top: '-80px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
+                        setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        console.log(id_file, 'id_file', optionsForItem);
                         const res = await chatAPI.delChatAll(
                             conversation._id,
                             optionsForItem._id,
                             optionsForItem.id,
                             id_file,
                         );
-                        const data: typeof res = ServerBusy(res, dispatch);
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data)
+                            setConversation((pre) => {
+                                if (pre) {
+                                    pre.room = pre.room.map((r) => {
+                                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                            r.delete = 'all';
+                                            r.text.t = '';
+                                            r.imageOrVideos = [];
+                                        }
+                                        return r;
+                                    });
+                                }
+                                return pre;
+                            });
+                        setOptions(undefined);
+                        setLoading('');
                     }
                 },
             },
@@ -102,8 +121,21 @@ const OptionForItem: React.FC<{
                 top: '-80px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
+                        setLoading('Removing...');
                         const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
-                        const data: typeof res = ServerBusy(res, dispatch);
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data) {
+                            const newR = conversation.room.map((r) => {
+                                if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                    r.delete = optionsForItem.id;
+                                    r.updatedAt = data;
+                                }
+                                return r;
+                            });
+                            setConversation({ ...conversation, room: newR });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
                     }
                 },
             },
@@ -148,10 +180,9 @@ const OptionForItem: React.FC<{
                 top: '-100px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
+                        setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        console.log(id_file, 'id_file', optionsForItem);
-
                         const res = await chatAPI.delChatAll(
                             conversation._id,
                             optionsForItem._id,
@@ -159,6 +190,23 @@ const OptionForItem: React.FC<{
                             id_file,
                         );
                         const data: typeof res = ServerBusy(res, dispatch);
+                        if (data) {
+                            setConversation((pre) => {
+                                if (pre) {
+                                    pre.room = pre.room.map((r) => {
+                                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                            r.delete = 'all';
+                                            r.text.t = '';
+                                            r.imageOrVideos = [];
+                                        }
+                                        return r;
+                                    });
+                                }
+                                return pre;
+                            });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
                     }
                 },
             },
@@ -170,8 +218,22 @@ const OptionForItem: React.FC<{
                 top: '-100px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
+                        setLoading('Removing...');
                         const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
-                        const data: typeof res = ServerBusy(res, dispatch);
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data) {
+                            console.log('here');
+                            const newR = conversation.room.map((r) => {
+                                if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                    r.delete = optionsForItem.id;
+                                    r.updatedAt = data;
+                                }
+                                return r;
+                            });
+                            setConversation({ ...conversation, room: newR });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
                     }
                 },
             },
@@ -208,10 +270,11 @@ const OptionForItem: React.FC<{
         ],
     };
     const handleImageUpload = (e: any) => {
+        setLoading('Getting file...');
         const files = e.target.files;
         const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
-        setFileUpload(upLoad);
-        setUploadPre(getFilesToPre);
+        setFileUpload({ pre: getFilesToPre, up: upLoad });
+        setLoading('');
     };
     const handleTouchMoveM = (e: any) => {
         const touches = e.touches;
@@ -259,12 +322,18 @@ const OptionForItem: React.FC<{
         }
     };
     const handleChange = async () => {
-        if (conversation && optionsForItem) {
+        if (
+            conversation &&
+            optionsForItem &&
+            !loading &&
+            ((value && value !== optionsForItem.text) || fileUpload?.up.length)
+        ) {
+            setLoading('updating...');
             const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
-
-            const formData = new FormData();
             const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
-            formData.append('value', encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`));
+            const vl = value ? encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`) : '';
+            const formData = new FormData();
+            formData.append('value', vl);
             console.log(fileUpload, 'fileUpload');
             formData.append('roomId', conversation._id);
             formData.append('id_filesDel', JSON.stringify(id_files));
@@ -272,16 +341,68 @@ const OptionForItem: React.FC<{
             formData.append('id_chat', optionsForItem._id); // id of the room
             formData.append('userId', optionsForItem.id); // id of the room
             formData.append('id_other', conversation.user.id); // id of the room
-            for (let i = 0; i < fileUpload.length; i++) {
-                formData.append('files', fileUpload[i], fileUpload[i]._id); // assign file and _id of the file upload
+            for (let i = 0; i < fileUpload?.up.length; i++) {
+                formData.append('files', fileUpload?.up[i], fileUpload?.up[i]._id); // assign file and _id of the file upload
             }
             const res = await chatAPI.updateChat(formData);
+            const data: {
+                _id: string;
+                id: string;
+                text: {
+                    t: string;
+                    icon: string;
+                };
+                delete?: string;
+                update?: string;
+                secondary?: string;
+                length?: number;
+                imageOrVideos: {
+                    v: string;
+                    type?: string;
+                    icon: string;
+                    link?: string;
+                    _id: string;
+                }[];
+                sending?: boolean;
+                seenBy: string[];
+                updatedAt: string;
+                createdAt: string;
+            } | null = ServerBusy(res, dispatch);
 
-            // else{
-            //     const res = await chatAPI.updateChat(conversation._id, optionsForItem._id, optionsForItem.id, id_files);
-            // }
+            if (data) {
+                if (data.text.t)
+                    data.text.t = decrypt(data.text.t, `chat_${data.secondary ? data.secondary : conversation._id}`);
+                const newR: any = await new Promise((resolve, reject) => {
+                    //room
+                    data.imageOrVideos.map(async (i, index) => {
+                        const dataF = await fileGridFS.getFile(i.v, i?.type);
+                        const buffer = ServerBusy(dataF, dispatch);
+                        if (dataF?.message === 'File not found') {
+                            data.imageOrVideos[index].v =
+                                dataF?.type?.search('image/') >= 0 ? "Image doesn't exist" : "Video doesn't exist";
+                        } else {
+                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                            data.imageOrVideos[index].v = 'ss';
+                        }
+                    });
+                    resolve(data);
+                });
+                setConversation({
+                    ...conversation,
+                    room: conversation.room.map((r) => {
+                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                            r = newR;
+                        }
+                        return r;
+                    }),
+                });
+                setOptions(undefined);
+            }
+            setLoading('');
         }
     };
+    console.log(conversation, 'conversationA');
+
     return (
         <Div
             width="100%"
@@ -392,7 +513,7 @@ const OptionForItem: React.FC<{
                     }
                 `}
             >
-                {optionsForItem.text && (
+                {(optionsForItem.text || value) && (
                     <Div width="100%" css="padding-left: 30%; max-height: 100%;">
                         <Div
                             width="100%"
@@ -424,7 +545,7 @@ const OptionForItem: React.FC<{
                         </Div>
                     </Div>
                 )}
-                {(uploadPre.length || optionsForItem.imageOrVideos.length > 0) && (
+                {(fileUpload?.pre.length || optionsForItem.imageOrVideos.length > 0) && (
                     <Div
                         width="100%"
                         css={`
@@ -464,8 +585,8 @@ const OptionForItem: React.FC<{
                             `}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {uploadPre.length
-                                ? uploadPre.map((fl) => (
+                            {fileUpload?.pre.length
+                                ? fileUpload.pre.map((fl) => (
                                       <FileConversation
                                           key={fl._id}
                                           type={fl?.type}
@@ -542,6 +663,7 @@ const OptionForItem: React.FC<{
                                 </Label>
                             </form>
                         </Div>
+                        {loading && <P z="1.2rem">{loading}</P>}
                     </DivFlex>
                 )}
                 <Div
@@ -556,7 +678,18 @@ const OptionForItem: React.FC<{
                     {changeCus === 3 ? (
                         <Div
                             width="34px"
-                            css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
+                            css={`
+                                font-size: 22px;
+                                color: #23c3ec;
+                                height: 100%;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: ${loading ||
+                                (!value && !fileUpload) ||
+                                (value === optionsForItem.text && !fileUpload)
+                                    ? 'no-drop'
+                                    : 'var(--pointer)'};
+                            `}
                             onClick={handleChange}
                         >
                             <SendOPTI />

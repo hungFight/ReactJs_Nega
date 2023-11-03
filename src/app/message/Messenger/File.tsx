@@ -26,7 +26,7 @@ const FileConversation: React.FC<{
             }
         }
     };
-    console.log(image, type.search('image/'), type, 'check file');
+    console.log(image, type.search('image/'), v, type, 'check file');
 
     return (
         <Div
