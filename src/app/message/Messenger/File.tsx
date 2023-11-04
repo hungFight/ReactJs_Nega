@@ -13,6 +13,9 @@ const FileConversation: React.FC<{
     ERef?: any;
     who?: string;
 }> = ({ type = '', v, icon, ERef, del, who }) => {
+    if (who === 'you') console.log(v, 'FileConversation');
+
+    const [reload, setReload] = useState<boolean>(false);
     const image = type.search('image/') >= 0;
     const handleRoom = (e: any) => {
         if (image) {
@@ -26,8 +29,9 @@ const FileConversation: React.FC<{
             }
         }
     };
-    console.log(image, type.search('image/'), v, type, 'check file');
-
+    useEffect(() => {
+        // if (v.length < 50 && !v.search('data')) setReload(true); // check data format
+    }, [v]);
     return (
         <Div
             css={`

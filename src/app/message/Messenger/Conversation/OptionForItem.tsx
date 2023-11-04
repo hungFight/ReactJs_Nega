@@ -244,7 +244,9 @@ const OptionForItem: React.FC<{
                 title: 'Khi thay đổi tin nhắn người khác sẽ biết ban đã thay đổi',
                 top: '-98px',
                 onClick: async (id?: number) => {
-                    setChangeCus(id);
+                    if (conversation && optionsForItem) {
+                        //   setChangeCus(id);
+                    }
                 },
             },
             {
@@ -254,7 +256,9 @@ const OptionForItem: React.FC<{
                 title: 'Gim',
                 top: '-40px',
                 onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                    if (conversation && optionsForItem) {
+                        //  const res = await chatAPI.pin(optionsForItem._id, conversation._id,);
+                    }
                 },
             },
             {
@@ -382,7 +386,7 @@ const OptionForItem: React.FC<{
                                 dataF?.type?.search('image/') >= 0 ? "Image doesn't exist" : "Video doesn't exist";
                         } else {
                             const base64 = CommonUtils.convertBase64GridFS(buffer);
-                            data.imageOrVideos[index].v = 'ss';
+                            data.imageOrVideos[index].v = base64;
                         }
                     });
                     resolve(data);
@@ -391,14 +395,18 @@ const OptionForItem: React.FC<{
                     ...conversation,
                     room: conversation.room.map((r) => {
                         if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                            r = newR;
+                            if (fileUpload?.up.length && newR.imageOrVideos) {
+                                r.imageOrVideos = newR.imageOrVideos;
+                            }
+                            r.text.t = newR.text.t;
                         }
                         return r;
                     }),
                 });
-                setOptions(undefined);
+                setLoading('Change successful');
+            } else {
+                setLoading('Change failed');
             }
-            setLoading('');
         }
     };
     console.log(conversation, 'conversationA');

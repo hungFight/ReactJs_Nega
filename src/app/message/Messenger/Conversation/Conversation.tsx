@@ -14,9 +14,10 @@ import {
     TyOnlineI,
     PenI,
     EraserI,
+    PinI,
 } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
 import { ReactElement, useEffect, useRef, useState } from 'react';
@@ -567,7 +568,30 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-
+                <Div
+                    css={`
+                        position: absolute;
+                        top: 50px;
+                        left: 0;
+                        width: 100%;
+                        max-height: 50px;
+                        background-color: #030303c4;
+                        z-index: 12;
+                        padding: 5px;
+                    `}
+                >
+                    <Div css="position: relative">
+                        <DivPos
+                            top="0px"
+                            left="0px"
+                            css={`
+                                transform: rotate(297deg);
+                            `}
+                        >
+                            📌
+                        </DivPos>
+                    </Div>
+                </Div>
                 <Div
                     ref={ERef}
                     width="100%"

@@ -101,7 +101,6 @@ const ItemsRoom: React.FC<{
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
-    console.log('Item', rc);
     if (rc.id === dataFirst.id && !wch) {
         if (rc.seenBy.includes(user.id) && !rr.current) {
             rr.current = rc._id;
@@ -281,17 +280,21 @@ const ItemsRoom: React.FC<{
                                             ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                         `}
                                     >
-                                        {rc.imageOrVideos.map((fl, index) => (
-                                            <FileConversation
-                                                key={fl._id}
-                                                type={fl?.type}
-                                                v={fl.v}
-                                                icon={fl.icon}
-                                                ERef={ERef}
-                                                del={del}
-                                                who="you"
-                                            />
-                                        ))}
+                                        {rc.imageOrVideos.map((fl, index) => {
+                                            console.log(fl, 'FileConversation');
+
+                                            return (
+                                                <FileConversation
+                                                    key={fl._id}
+                                                    type={fl?.type}
+                                                    v={fl.v}
+                                                    icon={fl.icon}
+                                                    ERef={ERef}
+                                                    del={del}
+                                                    who="you"
+                                                />
+                                            );
+                                        })}
                                     </Div>
                                 </Div>
                             )}

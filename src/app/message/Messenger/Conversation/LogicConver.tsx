@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Buffer } from 'buffer';
 import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
@@ -133,90 +133,93 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 : false
             : false,
     });
-    console.log(conversation, 'conversation0');
 
     //get image
-    async function fetchChat(moreChat?: boolean) {
-        if (!emptyRef.current) {
-            setLoading(true);
+    const fetchChat = useCallback(
+        async (moreChat?: boolean) => {
+            if (!emptyRef.current) {
+                setLoading(true);
 
-            cRef.current = 2;
-            const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
-            const dataC = ServerBusy(res, dispatch);
+                cRef.current = 2;
+                const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
+                const dataC = ServerBusy(res, dispatch);
 
-            if (!dataC.room.length) emptyRef.current = true;
-            if (dataC) {
-                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                    const modifiedData = { ...dataC };
-                    await Promise.all(
-                        modifiedData.room?.map(
-                            async (
-                                rr: {
-                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
-                                    text: { t: string };
-                                    secondary?: string;
-                                },
-                                index1: number,
-                            ) => {
-                                console.log(rr, 'rr');
+                if (!dataC.room.length) emptyRef.current = true;
+                if (dataC) {
+                    const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                        const modifiedData = { ...dataC };
+                        await Promise.all(
+                            modifiedData.room?.map(
+                                async (
+                                    rr: {
+                                        imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
+                                        text: { t: string };
+                                        secondary?: string;
+                                    },
+                                    index1: number,
+                                ) => {
+                                    console.log(rr, 'rr');
 
-                                if (rr.text.t) {
-                                    modifiedData.room[index1].text.t = decrypt(
-                                        rr.text.t,
-                                        `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
+                                    if (rr.text.t) {
+                                        modifiedData.room[index1].text.t = decrypt(
+                                            rr.text.t,
+                                            `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
+                                        );
+                                    }
+
+                                    await Promise.all(
+                                        rr.imageOrVideos.map(
+                                            async (
+                                                fl: { _id: string; v: string; icon: string; type: string },
+                                                index2: number,
+                                            ) => {
+                                                const data = await fileGridFS.getFile(fl.v, fl?.type);
+                                                const buffer = ServerBusy(data, dispatch);
+                                                if (data?.message === 'File not found') {
+                                                    modifiedData.room[index1].imageOrVideos[index2].v =
+                                                        data?.type?.search('image/') >= 0
+                                                            ? "Image doesn't exist"
+                                                            : "Video doesn't exist";
+                                                } else {
+                                                    const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                                    modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                                }
+                                            },
+                                        ),
                                     );
-                                }
+                                },
+                            ),
+                        );
+                        resolve(modifiedData);
+                    });
+                    const a = CommonUtils.convertBase64(newData.user?.avatar);
+                    if (a) newData.user.avatar = a;
+                    console.log(conversation, 'await');
 
-                                await Promise.all(
-                                    rr.imageOrVideos.map(
-                                        async (
-                                            fl: { _id: string; v: string; icon: string; type: string },
-                                            index2: number,
-                                        ) => {
-                                            const data = await fileGridFS.getFile(fl.v, fl?.type);
-                                            const buffer = ServerBusy(data, dispatch);
-                                            if (data?.message === 'File not found') {
-                                                modifiedData.room[index1].imageOrVideos[index2].v =
-                                                    data?.type?.search('image/') >= 0
-                                                        ? "Image doesn't exist"
-                                                        : "Video doesn't exist";
-                                            } else {
-                                                const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                            }
-                                        },
-                                    ),
-                                );
-                            },
-                        ),
-                    );
-                    resolve(modifiedData);
-                });
-                const a = CommonUtils.convertBase64(newData.user?.avatar);
-                if (a) newData.user.avatar = a;
-
-                if (newData) {
-                    if (moreChat) {
-                        cRef.current = 8;
-                        if (newData.room.length > 0 && chatRef.current) {
-                            chatRef.current = {
-                                ...chatRef.current,
-                                room: [...chatRef.current.room, ...newData.room],
-                            };
+                    if (newData) {
+                        if (moreChat) {
+                            cRef.current = 8;
+                            if (newData.room.length > 0 && chatRef.current) {
+                                chatRef.current = {
+                                    ...chatRef.current,
+                                    room: [...chatRef.current.room, ...newData.room],
+                                };
+                            }
+                        } else {
+                            chatRef.current = newData;
+                            cRef.current = 7;
                         }
-                    } else {
-                        chatRef.current = newData;
-                        cRef.current = 7;
+                        offset.current += limit;
                     }
-                    offset.current += limit;
+                    setConversation(chatRef.current);
                 }
-                setConversation(chatRef.current);
+                date1.current = moment(conversation?.room[0]?.createdAt);
             }
-            date1.current = moment(conversation?.room[0]?.createdAt);
-        }
 
-        setLoading(false);
-    }
+            setLoading(false);
+        },
+        [conversation],
+    );
 
     const code = `${
         conversation?._id ? conversation._id + '-' + conversation?.user.id : conversation?.user.id + '-' + id_you
@@ -302,7 +305,9 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             },
         );
     }, []);
-
+    useEffect(() => {
+        chatRef.current = conversation;
+    }, [conversation]);
     useEffect(() => {
         if (dataSent && !writingBy) {
             if (conversation?.room.some((r) => r.length)) {
@@ -357,7 +362,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         clearTimeout(time);
     };
     const handleSend = async (id_room: string | undefined, id_other: string | undefined) => {
-        if ((value.trim() || (upload && upload?.up.length > 0)) && conversation) {
+        if ((value.trim() || (upload && upload?.up?.length > 0)) && conversation) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
             const images = upload
@@ -411,9 +416,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const handleImageUpload = (e: any) => {
         const files = e.target.files;
         const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
-        setupload({ pre: getFilesToPre, up: upload });
+        setupload({ pre: getFilesToPre, up: upLoad });
     };
-    console.log(conversation?.user.id, 'conversation.user');
 
     return {
         handleImageUpload,
