@@ -570,7 +570,15 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {conversation?.pins.length && <PinChat conversationId={conversation._id} pins={conversation.pins} />}
+                {conversation?.pins.length && (
+                    <PinChat
+                        conversationId={conversation._id}
+                        pins={conversation.pins}
+                        avatar={conversation.user.avatar}
+                        name={conversation.user.fullName}
+                        gender={conversation.user.gender}
+                    />
+                )}
                 <Div
                     ref={ERef}
                     width="100%"

@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { DotI } from '~/assets/Icons/Icons';
+import { ArrowDownI, ClockCirclesI, DotI } from '~/assets/Icons/Icons';
+import Avatar from '~/reUsingComponents/Avatars/Avatar';
+import Player from '~/reUsingComponents/Videos/Player';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import chatAPI from '~/restAPI/chatAPI';
@@ -17,7 +19,11 @@ const PinChat: React.FC<{
         createdAt: string;
     }[];
     conversationId: string;
-}> = ({ conversationId, pins }) => {
+    avatar?: string;
+    name: string;
+    gender: number;
+}> = ({ conversationId, pins, avatar, name, gender }) => {
+    const [more, setMore] = useState<boolean>(false);
     const dispatch = useDispatch();
     const { data } = useQuery({
         queryKey: ['Pins chat', conversationId],
@@ -69,13 +75,14 @@ const PinChat: React.FC<{
                 top: 50px;
                 left: 0;
                 width: 100%;
-                max-height: 39px;
                 background-color: #030303c4;
+                transition: all 0.5s linear;
                 z-index: 12;
                 padding: 5px;
+                ${more ? 'max-height: 81%; ' : 'max-height: 39px;'}
             `}
         >
-            <Div width="93%" css="position: relative;">
+            <Div width={more ? '100%' : '93%'} css="position: relative;">
                 <DivPos
                     top="-8px"
                     left="-7px"
@@ -88,21 +95,47 @@ const PinChat: React.FC<{
                 <DivPos top="17px" left="5px" css="font-size: 1.2rem;">
                     {pins.length}
                 </DivPos>
-                <Div width="100%" wrap="wrap" css="overflow-y: overlay; align-items: center;">
+                <Div width="100%" display="block" wrap="wrap" css="overflow-y: overlay; justify-content: center; ">
                     {data?.map((r) => {
                         return (
                             <Div
                                 key={r._id}
                                 width="100%"
-                                css="margin: 2px 0;  height: 100%; padding: 5px 10px; padding-left: 22px; justify-content: space-between;"
+                                css="margin: 2px 0; cursor: var(--pointer); align-items: center; background-color: #19191aa6; padding: 5px 10px; padding-left: 22px; justify-content: space-between;"
                             >
-                                <P z="1.2rem" css="overflow: hidden;">
-                                    {r.text.t}
-                                </P>
+                                <Div width="73%" css="align-items: center; max-width: 73%;">
+                                    <Avatar
+                                        src={avatar}
+                                        alt={name}
+                                        radius="50%"
+                                        gender={gender}
+                                        css={`
+                                            width: 20px;
+                                            height: 20px;
+                                            margin-right: 8px;
+                                            min-width: 20px;
+                                        `}
+                                    />
+                                    <Div css="align-items: center;" wrap="wrap">
+                                        <P z="1.2rem" css="overflow: hidden; width: 100%;">
+                                            {r.text.t}
+                                        </P>
+                                        <P
+                                            z="1rem"
+                                            css="display: flex;  color: #828282; svg{margin-top: 2px;margin-right: 5px;}"
+                                        >
+                                            <ClockCirclesI /> 30/10/2023
+                                        </P>
+                                    </Div>
+                                </Div>
                                 <Div>
                                     {r.imageOrVideos.map((f) => (
-                                        <Div key={f._id} width="30px" css="height: 30px; margin-right: 2px; ">
-                                            <Img src={f.v} alt={f._id} radius="5px" />{' '}
+                                        <Div key={f._id} width="30px" css="height: 30px; margin: 2px; ">
+                                            {f.type.search('image/') >= 0 ? (
+                                                <Img src={f.v} alt={f._id} radius="5px" />
+                                            ) : (
+                                                <Player src={f.v} />
+                                            )}
                                         </Div>
                                     ))}
                                 </Div>
@@ -111,8 +144,18 @@ const PinChat: React.FC<{
                     })}
                 </Div>
             </Div>
-            <Div css="width: 7%; justify-content: center; align-items: center; cursor: var(--pointer)">
-                <DotI />
+            <Div
+                css={`
+                    justify-content: center;
+                    align-items: center;
+                    cursor: var(--pointer);
+                    ${more
+                        ? 'position: absolute; transform: rotate(178deg); right: 8px; top: 16px; height: 30px; width: 30px; font-size: 20px; background-color: #2b2b2bf2; border-radius: 50%;'
+                        : 'width: 7%;'}
+                `}
+                onClick={() => setMore(!more)}
+            >
+                <ArrowDownI />
             </Div>
         </Div>
     );

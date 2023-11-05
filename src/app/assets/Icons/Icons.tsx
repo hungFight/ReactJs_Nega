@@ -95,7 +95,14 @@ import {
     RiMailSendLine,
     RiTyphoonLine,
 } from 'react-icons/ri';
-import { TbArrowNarrowLeft, TbGenderFemale, TbGenderMale, TbGridDots, TbTextResize } from 'react-icons/tb';
+import {
+    TbArrowNarrowDown,
+    TbArrowNarrowLeft,
+    TbGenderFemale,
+    TbGenderMale,
+    TbGridDots,
+    TbTextResize,
+} from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
 import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
@@ -215,3 +222,4 @@ export const FastForwardI = () => <AiFillFastForward />;
 export const SpeedI = () => <MdShutterSpeed />;
 export const ForwardI = () => <GiForwardSun />;
 export const GroupPeopleI = () => <MdGroups2 />;
+export const ArrowDownI = () => <TbArrowNarrowDown />;
