@@ -157,7 +157,9 @@ const OptionForItem: React.FC<{
                 title: 'Pin',
                 top: '-40px',
                 onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                    if (conversation && optionsForItem) {
+                        const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                    }
                 },
             },
             {
@@ -244,9 +246,7 @@ const OptionForItem: React.FC<{
                 title: 'Khi thay đổi tin nhắn người khác sẽ biết ban đã thay đổi',
                 top: '-98px',
                 onClick: async (id?: number) => {
-                    if (conversation && optionsForItem) {
-                        //   setChangeCus(id);
-                    }
+                    setChangeCus(id);
                 },
             },
             {
@@ -257,7 +257,7 @@ const OptionForItem: React.FC<{
                 top: '-40px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
-                        //  const res = await chatAPI.pin(optionsForItem._id, conversation._id,);
+                        const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
                     }
                 },
             },
@@ -273,10 +273,10 @@ const OptionForItem: React.FC<{
             },
         ],
     };
-    const handleImageUpload = (e: any) => {
+    const handleImageUpload = async (e: any) => {
         setLoading('Getting file...');
         const files = e.target.files;
-        const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
         setFileUpload({ pre: getFilesToPre, up: upLoad });
         setLoading('');
     };
@@ -339,7 +339,7 @@ const OptionForItem: React.FC<{
             const formData = new FormData();
             formData.append('value', vl);
             console.log(fileUpload, 'fileUpload');
-            formData.append('roomId', conversation._id);
+            formData.append('conversationId', conversation._id);
             formData.append('id_filesDel', JSON.stringify(id_files));
             formData.append('update', 'true');
             formData.append('id_chat', optionsForItem._id); // id of the room

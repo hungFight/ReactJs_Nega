@@ -40,6 +40,7 @@ import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/nextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessager';
 import { decrypt } from '~/utils/crypto';
+import PinChat from './PinChat';
 
 const Conversation: React.FC<{
     index: number;
@@ -223,6 +224,7 @@ const Conversation: React.FC<{
             }
         }
     };
+    console.log(upload, 'upload');
 
     const handleScroll = () => {
         if (!emptyRef.current) {
@@ -568,30 +570,7 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                <Div
-                    css={`
-                        position: absolute;
-                        top: 50px;
-                        left: 0;
-                        width: 100%;
-                        max-height: 50px;
-                        background-color: #030303c4;
-                        z-index: 12;
-                        padding: 5px;
-                    `}
-                >
-                    <Div css="position: relative">
-                        <DivPos
-                            top="0px"
-                            left="0px"
-                            css={`
-                                transform: rotate(297deg);
-                            `}
-                        >
-                            📌
-                        </DivPos>
-                    </Div>
-                </Div>
+                {conversation?.pins.length && <PinChat conversationId={conversation._id} pins={conversation.pins} />}
                 <Div
                     ref={ERef}
                     width="100%"

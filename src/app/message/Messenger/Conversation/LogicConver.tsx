@@ -35,6 +35,7 @@ export interface PropsChat {
     };
     status: string;
     background: string;
+    pins: { chatId: string; userId: string; createdAt: string }[];
     room: {
         _id: string;
         id: string;
@@ -413,9 +414,9 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         }
     };
 
-    const handleImageUpload = (e: any) => {
+    const handleImageUpload = async (e: any) => {
         const files = e.target.files;
-        const { upLoad, getFilesToPre } = handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
         setupload({ pre: getFilesToPre, up: upLoad });
     };
 

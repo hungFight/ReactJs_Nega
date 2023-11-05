@@ -5,7 +5,7 @@ import CommonUtils from './CommonUtils';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-const handleFileUpload = (
+const handleFileUpload = async (
     file: FileList,
     quantity: number,
     imageSize: number,
@@ -29,15 +29,22 @@ const handleFileUpload = (
                     vid.src = url;
                     // wait for duration to change from NaN to the actual duration
                     // eslint-disable-next-line no-loop-func
-                    vid.ondurationchange = function () {
-                        console.log(vid.duration);
-                        if (vid.duration <= videoTime) {
-                            upLoad.push(fil);
-                            getFilesToPre.push({ _id, link: url, type: fil.type });
-                        } else {
-                            dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
-                        }
-                    };
+                    const rr: any = await new Promise((resolve, reject) => {
+                        vid.ondurationchange = function () {
+                            console.log(vid.duration);
+                            if (vid.duration <= videoTime) {
+                                fil._id = _id; // _id flow setupload's _id
+
+                                resolve({ file: fil, pre: { _id, link: url, type: fil.type } });
+                            } else {
+                                dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
+                            }
+                        };
+                    });
+                    if (rr) {
+                        upLoad.push(rr.file);
+                        getFilesToPre.push(rr.pre);
+                    }
                 }
             } else if (
                 file[i].type.includes('image/jpg') ||
@@ -47,8 +54,8 @@ const handleFileUpload = (
                 try {
                     if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= imageSize) {
                         if (type === 'per') {
-                            upLoadPer.push({ file: file[i], type: 'image' });
-                            getFilesToPrePer.push({ file: URL.createObjectURL(file[i]), type: 'image' });
+                            upLoadPer.push({ file: file[i], type: file[i].type });
+                            getFilesToPrePer.push({ file: URL.createObjectURL(file[i]), type: file[i].type });
                         } else {
                             fil._id = _id; // _id flow setupload's _id
                             upLoad.push(fil);
@@ -59,8 +66,11 @@ const handleFileUpload = (
                         const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
                         if (sizeImage <= imageSize) {
                             if (type === 'per') {
-                                upLoadPer.push({ file: file[i], type: 'image' });
-                                getFilesToPrePer.push({ file: URL.createObjectURL(compressedFile), type: 'image' });
+                                upLoadPer.push({ file: file[i], type: file[i].type });
+                                getFilesToPrePer.push({
+                                    file: URL.createObjectURL(compressedFile),
+                                    type: file[i].type,
+                                });
                             } else {
                                 fil._id = _id; // _id flow setupload's _id
                                 upLoad.push(compressedFile);

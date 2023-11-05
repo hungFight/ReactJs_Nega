@@ -29,7 +29,6 @@ export interface PropsRoomChat {
         seenBy: string[];
         createdAt: string;
         secondary?: string;
-        // user: { avatar: any; fullName: string; gender: number; id: string };
     };
     deleted: {
         id: string;
@@ -123,11 +122,11 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    delChatAll = async (roomId: string, chatId: string, userId: string, id_file: string[]) => {
+    delChatAll = async (conversationId: string, chatId: string, userId: string, id_file: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>('/messenger/delChatAll', {
-                roomId,
+                conversationId,
                 chatId,
                 userId,
                 id_file,
@@ -138,11 +137,11 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    delChatSelf = async (roomId: string, chatId: string, userId: string) => {
+    delChatSelf = async (conversationId: string, chatId: string, userId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>('/messenger/delChatSelf', {
-                roomId,
+                conversationId,
                 chatId,
                 userId,
             });
@@ -156,6 +155,35 @@ class Messenger {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>('/messenger/updateChat', formData);
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    pin = async (chatId: string, userId: string, conversationId: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post<PropsChat>('/messenger/pin', {
+                chatId,
+                userId,
+                conversationId,
+            });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    getPins = async (conversationId: string, pins: string[]) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.get('/messenger/getPins', {
+                params: {
+                    conversationId,
+                    pins,
+                },
+            });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
