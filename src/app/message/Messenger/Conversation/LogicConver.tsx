@@ -328,6 +328,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     setChoicePin('');
+
                     console.log('Child element is now visible in the container', entry, ERef.current?.scrollTop);
                 }
                 // You can perform actions when the child element becomes visible here

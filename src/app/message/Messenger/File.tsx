@@ -41,7 +41,6 @@ const FileConversation: React.FC<{
                 border: 2px solid #202124;
                 flex-grow: 1;
                 position: relative;
-                justify-content: ${who === 'you' ? 'right' : 'left'};
                 &::after {
                     display: block;
                     content: '';

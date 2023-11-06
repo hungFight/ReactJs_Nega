@@ -138,6 +138,9 @@ const ItemsRoom: React.FC<{
                         id={`chat_to_scroll_${rc._id}`}
                         width="100%"
                         css={`
+                            ${choicePin === rc._id
+                                ? 'background-color: #1d1d1db3;border-radius: 10px; box-shadow: 0 0 5px #63d2ad;'
+                                : ''}
                             padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
                             margin-bottom: 8px;
                             justify-content: right;
@@ -442,6 +445,7 @@ const ItemsRoom: React.FC<{
                             display="block"
                             className="noTouch"
                             css={`
+                                width: 100%;
                                 max-width: 100%;
                                 position: relative;
                                 justify-content: start;
@@ -457,7 +461,7 @@ const ItemsRoom: React.FC<{
                             }}
                         >
                             {(rc.text.t || rc?.delete === 'all') && (
-                                <Div width="100%" css="justify-content: end; z-index: 11; position: relative;">
+                                <Div width="100%" css="justify-content: start; z-index: 11; position: relative;">
                                     <P
                                         z={rc?.delete === 'all' ? '1.2rem' : '1.4rem'}
                                         css={`
@@ -486,12 +490,12 @@ const ItemsRoom: React.FC<{
                                 </Div>
                             )}
                             {rc.imageOrVideos.length > 0 && (
-                                <Div css=" align-items: start; ">
+                                <Div css=" align-items: start;flex-grow: 1; ">
                                     <Div
                                         width="100%"
                                         wrap="wrap"
                                         css={`
-                                            justify-content: end;
+                                            justify-content: start;
                                             .roomOfChat {
                                                 position: fixed;
                                                 width: 100%;
