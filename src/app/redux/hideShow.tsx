@@ -5,7 +5,7 @@ export interface InitialStateHideShow {
     personalPage: boolean;
     openProfile: {
         newProfile: string[];
-        currentId?: string;
+        currentId?: string; // is used in personalPage's title
     };
     errorServer: {
         check: boolean;

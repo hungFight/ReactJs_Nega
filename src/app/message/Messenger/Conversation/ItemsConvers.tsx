@@ -33,6 +33,7 @@ const ItemsRoom: React.FC<{
     del: React.MutableRefObject<HTMLDivElement | null>;
     rc: PropsRc;
     index: number;
+    targetChild: React.MutableRefObject<HTMLDivElement | null>;
     archetype: PropsRc[];
     handleWatchMore: (e: any) => void;
     ERef: React.MutableRefObject<any>;
@@ -80,6 +81,7 @@ const ItemsRoom: React.FC<{
     rr: React.MutableRefObject<string>;
     roomId: string;
     phraseText: PropsPhraseText;
+    choicePin: string;
 }> = ({
     rc,
     index,
@@ -98,6 +100,8 @@ const ItemsRoom: React.FC<{
     rr,
     roomId,
     phraseText,
+    targetChild,
+    choicePin,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -131,6 +135,7 @@ const ItemsRoom: React.FC<{
             {rc.id === dataFirst.id ? (
                 rc?.delete !== dataFirst.id && (
                     <Div
+                        id={`chat_to_scroll_${rc._id}`}
                         width="100%"
                         css={`
                             padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
@@ -389,6 +394,7 @@ const ItemsRoom: React.FC<{
                 )
             ) : (
                 <Div
+                    id={`chat_to_scroll_${rc._id}`}
                     key={rc.text.t + index}
                     wrap="wrap"
                     css={`

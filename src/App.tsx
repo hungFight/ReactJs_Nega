@@ -161,7 +161,7 @@ function App() {
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-const mm = useRef<{ index: number; id: string }[]>([]);
+    const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
@@ -424,8 +424,8 @@ const mm = useRef<{ index: number; id: string }[]>([]);
                                 onMouseLeave={handleClear}
                             ></Div>
                             {/* show message from messenger */}
-                            <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99;">
-                                <Div css="position: relative;">
+                            <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99; @media(max-width: 360px){width: 100%;left: 0}">
+                                <Div css="position: relative; width: inherit;">
                                     {id_chats?.map((room, index) => {
                                         const permanent = { index: index + 1, id: room.id_room || room.id_other };
                                         if (

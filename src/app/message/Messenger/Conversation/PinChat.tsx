@@ -1,11 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ArrowDownI, ClockCirclesI, DotI } from '~/assets/Icons/Icons';
+import { PropsUser } from 'src/App';
+import { ArrowDownI, ClockCirclesI, DotI, GarbageI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Player from '~/reUsingComponents/Videos/Player';
+import Languages from '~/reUsingComponents/languages';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { setOpenProfile } from '~/redux/hideShow';
 import chatAPI from '~/restAPI/chatAPI';
 import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
@@ -21,9 +25,17 @@ const PinChat: React.FC<{
     conversationId: string;
     avatar?: string;
     name: string;
-    gender: number;
-}> = ({ conversationId, pins, avatar, name, gender }) => {
+    dataFirst: PropsUser;
+    user: {
+        id: string;
+        fullName: string;
+        avatar: string | undefined;
+        gender: number;
+    };
+    setChoicePin: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ conversationId, pins, avatar, name, user, dataFirst, setChoicePin }) => {
     const [more, setMore] = useState<boolean>(false);
+    const { lg } = Languages();
     const dispatch = useDispatch();
     const { data } = useQuery({
         queryKey: ['Pins chat', conversationId],
@@ -37,6 +49,7 @@ const PinChat: React.FC<{
                 seenBy: string[];
                 secondary?: string;
                 createdAt: string;
+                delete?: string;
             }[] = await chatAPI.getPins(
                 conversationId,
                 pins.map((r) => r.chatId),
@@ -97,16 +110,36 @@ const PinChat: React.FC<{
                 </DivPos>
                 <Div width="100%" display="block" wrap="wrap" css="overflow-y: overlay; justify-content: center; ">
                     {data?.map((r) => {
+                        const pin = pins.filter((p) => p.chatId === r._id)[0];
+                        const whoText =
+                            pin.chatId === r._id && r.id === dataFirst.id // name of that chat
+                                ? dataFirst.fullName
+                                : r.id === user.id
+                                ? user.fullName
+                                : '';
+                        const whoAvatar =
+                            pin.chatId === r._id && r.id === dataFirst.id // avatar of that chat
+                                ? dataFirst.avatar
+                                : r.id === user.id
+                                ? user.avatar
+                                : '';
+                        const gender =
+                            pin.chatId === r._id && r.id === dataFirst.id // gender of that chat
+                                ? dataFirst.gender
+                                : r.id === user.id
+                                ? user.gender
+                                : 0;
                         return (
                             <Div
                                 key={r._id}
                                 width="100%"
-                                css="margin: 2px 0; cursor: var(--pointer); align-items: center; background-color: #19191aa6; padding: 5px 10px; padding-left: 22px; justify-content: space-between;"
+                                css="margin: 2px 0; cursor: var(--pointer); align-items: center; background-color: #19191aa6; padding: 5px 10px; padding-left: 22px; justify-content: space-between; &:hover{background-color:#313131;}"
+                                onClick={() => setChoicePin(r._id)}
                             >
                                 <Div width="73%" css="align-items: center; max-width: 73%;">
                                     <Avatar
-                                        src={avatar}
-                                        alt={name}
+                                        src={whoAvatar}
+                                        alt={whoText}
                                         radius="50%"
                                         gender={gender}
                                         css={`
@@ -117,14 +150,39 @@ const PinChat: React.FC<{
                                         `}
                                     />
                                     <Div css="align-items: center;" wrap="wrap">
-                                        <P z="1.2rem" css="overflow: hidden; width: 100%;">
-                                            {r.text.t}
-                                        </P>
+                                        <Div width="100%" css="align-items: center; ">
+                                            <P z="1.2rem" css="text-wrap: nowrap; margin-right: 3px;">
+                                                {whoText}:
+                                            </P>
+                                            <P z="1.2rem" css="overflow: hidden; width: max-content;">
+                                                {r.text.t}
+                                                {r?.delete && <GarbageI />}
+                                                {r?.delete && r.id === dataFirst.id
+                                                    ? "You've deleted"
+                                                    : r.id === user.id && r?.delete === 'all'
+                                                    ? `${user.fullName} has deleted`
+                                                    : ''}
+                                            </P>
+                                        </Div>
                                         <P
                                             z="1rem"
-                                            css="display: flex;  color: #828282; svg{margin-top: 2px;margin-right: 5px;}"
+                                            css="display: flex;  color: #828282; svg{margin-top: 2px;margin-right: 5px;};width: 100%;"
                                         >
-                                            <ClockCirclesI /> 30/10/2023
+                                            <ClockCirclesI /> {moment(pin.createdAt).locale(lg).format('lll')}
+                                        </P>
+                                        <P z="1.2rem" css="text-wrap: nowrap; margin-right: 3px; color: #828282; ">
+                                            pined by:{' '}
+                                        </P>
+                                        <P
+                                            z="1.2rem"
+                                            css="text-wrap: nowrap; color: #828282; &:hover{color: #cccccc;text-decoration: underline;}"
+                                            onClick={() => dispatch(setOpenProfile({ newProfile: [pin.userId] }))}
+                                        >
+                                            {pin.userId === dataFirst.id // be pined by who
+                                                ? dataFirst.fullName
+                                                : pin.userId === user.id
+                                                ? user.fullName
+                                                : ''}
                                         </P>
                                     </Div>
                                 </Div>

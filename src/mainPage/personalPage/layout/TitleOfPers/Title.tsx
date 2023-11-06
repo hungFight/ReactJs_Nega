@@ -524,6 +524,7 @@ const Title: React.FC<{
                             </Div>
                         ) : (
                             <Div css="margin-top: 2.5px; display: flex; flex-wrap: wrap; ">
+                                {/* display subAccounts */}
                                 {subAccountsData.length ? (
                                     subAccountsData?.map((ac) => {
                                         const sub = ac.account;
@@ -553,7 +554,7 @@ const Title: React.FC<{
                                                                         id={sub.id}
                                                                         src={sub.avatar}
                                                                         alt={sub.fullName}
-                                                                        currentId={data.id}
+                                                                        currentId={data.id} // just be used here when find personal page of the current id
                                                                         gender={sub.gender}
                                                                         radius="50%"
                                                                     />

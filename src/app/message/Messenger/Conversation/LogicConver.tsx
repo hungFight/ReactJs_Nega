@@ -73,7 +73,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const { userId } = Cookies();
     const { lg } = Languages();
     const textarea = useRef<HTMLTextAreaElement | null>(null);
-    const ERef = useRef<any>();
+    const ERef = useRef<HTMLDivElement | null>(null);
     const del = useRef<HTMLDivElement | null>(null);
     const check = useRef<number>(0);
     const cRef = useRef<number>(0);
@@ -91,6 +91,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const chatRef = useRef<PropsChat>();
     const [wch, setWch] = useState<string | undefined>('');
     const rr = useRef<string>('');
+    // pin page
+    const [choicePin, setChoicePin] = useState<string>('');
 
     const [conversation, setConversation] = useState<PropsChat>();
     const [dataSent, setDataSent] = useState<
@@ -136,92 +138,88 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     });
 
     //get image
-    const fetchChat = useCallback(
-        async (moreChat?: boolean) => {
-            if (!emptyRef.current) {
-                setLoading(true);
+    const fetchChat = async (moreChat: boolean = false) => {
+        if (!emptyRef.current && !loading) {
+            setLoading(true);
 
-                cRef.current = 2;
-                const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
-                const dataC = ServerBusy(res, dispatch);
+            cRef.current = 2;
+            const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
+            const dataC = ServerBusy(res, dispatch);
 
-                if (!dataC.room.length) emptyRef.current = true;
-                if (dataC) {
-                    const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                        const modifiedData = { ...dataC };
-                        await Promise.all(
-                            modifiedData.room?.map(
-                                async (
-                                    rr: {
-                                        imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
-                                        text: { t: string };
-                                        secondary?: string;
-                                    },
-                                    index1: number,
-                                ) => {
-                                    console.log(rr, 'rr');
-
-                                    if (rr.text.t) {
-                                        modifiedData.room[index1].text.t = decrypt(
-                                            rr.text.t,
-                                            `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
-                                        );
-                                    }
-
-                                    await Promise.all(
-                                        rr.imageOrVideos.map(
-                                            async (
-                                                fl: { _id: string; v: string; icon: string; type: string },
-                                                index2: number,
-                                            ) => {
-                                                const data = await fileGridFS.getFile(fl.v, fl?.type);
-                                                const buffer = ServerBusy(data, dispatch);
-                                                if (data?.message === 'File not found') {
-                                                    modifiedData.room[index1].imageOrVideos[index2].v =
-                                                        data?.type?.search('image/') >= 0
-                                                            ? "Image doesn't exist"
-                                                            : "Video doesn't exist";
-                                                } else {
-                                                    const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                                    modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                                }
-                                            },
-                                        ),
-                                    );
+            if (!dataC.room.length) emptyRef.current = true;
+            if (dataC) {
+                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                    const modifiedData = { ...dataC };
+                    await Promise.all(
+                        modifiedData.room?.map(
+                            async (
+                                rr: {
+                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
+                                    text: { t: string };
+                                    secondary?: string;
                                 },
-                            ),
-                        );
-                        resolve(modifiedData);
-                    });
-                    const a = CommonUtils.convertBase64(newData.user?.avatar);
-                    if (a) newData.user.avatar = a;
-                    console.log(conversation, 'await');
+                                index1: number,
+                            ) => {
+                                console.log(rr, 'rr');
 
-                    if (newData) {
-                        if (moreChat) {
-                            cRef.current = 8;
-                            if (newData.room.length > 0 && chatRef.current) {
-                                chatRef.current = {
-                                    ...chatRef.current,
-                                    room: [...chatRef.current.room, ...newData.room],
-                                };
-                            }
-                        } else {
-                            chatRef.current = newData;
-                            cRef.current = 7;
+                                if (rr.text.t) {
+                                    modifiedData.room[index1].text.t = decrypt(
+                                        rr.text.t,
+                                        `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
+                                    );
+                                }
+
+                                await Promise.all(
+                                    rr.imageOrVideos.map(
+                                        async (
+                                            fl: { _id: string; v: string; icon: string; type: string },
+                                            index2: number,
+                                        ) => {
+                                            const data = await fileGridFS.getFile(fl.v, fl?.type);
+                                            const buffer = ServerBusy(data, dispatch);
+                                            if (data?.message === 'File not found') {
+                                                modifiedData.room[index1].imageOrVideos[index2].v =
+                                                    data?.type?.search('image/') >= 0
+                                                        ? "Image doesn't exist"
+                                                        : "Video doesn't exist";
+                                            } else {
+                                                const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                            }
+                                        },
+                                    ),
+                                );
+                            },
+                        ),
+                    );
+                    resolve(modifiedData);
+                });
+                const a = CommonUtils.convertBase64(newData.user?.avatar);
+                if (a) newData.user.avatar = a;
+                console.log(conversation, 'await');
+
+                if (newData) {
+                    if (moreChat) {
+                        cRef.current = 8;
+                        if (newData.room.length > 0 && chatRef.current) {
+                            chatRef.current = {
+                                ...chatRef.current,
+                                room: [...chatRef.current.room, ...newData.room],
+                            };
                         }
-                        offset.current += limit;
+                    } else {
+                        chatRef.current = newData;
+                        cRef.current = 7;
                     }
-                    setConversation(chatRef.current);
+                    offset.current += limit;
                 }
-                date1.current = moment(conversation?.room[0]?.createdAt);
+                setConversation(chatRef.current);
             }
+            date1.current = moment(conversation?.room[0]?.createdAt); // first element
+        }
 
-            setLoading(false);
-        },
-        [conversation],
-    );
-
+        setLoading(false);
+    };
     const code = `${
         conversation?._id ? conversation._id + '-' + conversation?.user.id : conversation?.user.id + '-' + id_you
     }phrase_chatRoom`;
@@ -306,6 +304,41 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             },
         );
     }, []);
+    const targetChild = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        const re = document.getElementById(`chat_to_scroll_${choicePin}`);
+        if (choicePin) {
+            if (!conversation?.room.some((r) => r._id === choicePin)) {
+                fetchChat(true);
+            } else {
+                const container = ERef.current;
+                if (container && re) {
+                    const childRect = re.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    // Kiểm tra nếu phần tử con đang ở trên tầm nhìn của phần tử cha
+                    container.scrollTo({
+                        top: container.scrollTop + (childRect.top - containerRect.top - 100), // calculate top's coordinate of child and parents
+                        behavior: 'smooth',
+                    });
+                }
+            }
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    setChoicePin('');
+                    console.log('Child element is now visible in the container', entry, ERef.current?.scrollTop);
+                }
+                // You can perform actions when the child element becomes visible here
+            });
+        });
+
+        if (re) observer.observe(re);
+        return () => {
+            if (re) observer.unobserve(re);
+        };
+    }, [choicePin, conversation]);
     useEffect(() => {
         chatRef.current = conversation;
     }, [conversation]);
@@ -456,5 +489,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         rr,
         writingBy,
         setWritingBy,
+        choicePin,
+        setChoicePin,
+        targetChild,
     };
 }

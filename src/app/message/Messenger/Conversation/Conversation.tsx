@@ -130,6 +130,9 @@ const Conversation: React.FC<{
         rr,
         writingBy,
         setWritingBy,
+        choicePin,
+        setChoicePin,
+        targetChild,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
     if (conversation?._id) {
         if (!mm.current.some((m) => m.id === conversation?._id && index === m.index)) {
@@ -191,10 +194,10 @@ const Conversation: React.FC<{
     };
     const [loadDel, setLoadDel] = useState<boolean>(false);
     useEffect(() => {
-        ERef.current.scrollTop = -check.current;
+        if (ERef.current && !choicePin) ERef.current.scrollTop = -check.current;
     }, [conversation]);
     useEffect(() => {
-        ERef.current.addEventListener('scroll', handleScroll);
+        if (ERef.current) ERef.current.addEventListener('scroll', handleScroll);
         return () => {
             ERef.current?.removeEventListener('scroll', handleScroll);
         };
@@ -227,7 +230,7 @@ const Conversation: React.FC<{
     console.log(upload, 'upload');
 
     const handleScroll = () => {
-        if (!emptyRef.current) {
+        if (!emptyRef.current && ERef.current) {
             const { scrollTop, clientHeight, scrollHeight } = ERef.current;
             const scrollBottom = -scrollTop + clientHeight;
             console.log(scrollBottom, scrollTop, clientHeight, scrollHeight, check.current, loading);
@@ -474,12 +477,14 @@ const Conversation: React.FC<{
             className="ofChats"
             id={`ofChatId${index}`}
             css={`
-                margin-right: 5px;
                 overflow: hidden;
                 ${yRef.current || top || mouse.includes(conversation?._id ?? '') ? 'position: fixed;' : ''}
                 top: ${(yRef.current || top || 329) + 'px'};
                 left: ${(xRef.current || left || 185 * (index >= 1 ? index + index : index) + 8) + 'px'};
                 z-index: 99;
+                @media (min-width: 360px) {
+                    margin-right: 5px;
+                }
             `}
             onMouseMove={(e) => handleTouchMoveRoomChat(e)}
             onMouseDown={handleMouseDown}
@@ -570,13 +575,15 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {conversation?.pins.length && (
+                {conversation?.pins?.length && (
                     <PinChat
                         conversationId={conversation._id}
+                        user={conversation.user}
+                        dataFirst={dataFirst}
                         pins={conversation.pins}
+                        setChoicePin={setChoicePin}
                         avatar={conversation.user.avatar}
                         name={conversation.user.fullName}
-                        gender={conversation.user.gender}
                     />
                 )}
                 <Div
@@ -591,6 +598,7 @@ const Conversation: React.FC<{
                         height: 91%;
                         padding-right: 5px;
                         transition: all 0.5s linear;
+                        position: relative;
                         @media (max-width: 768px) {
                             padding-right: 0px;
                             &::-webkit-scrollbar {
@@ -705,6 +713,8 @@ const Conversation: React.FC<{
                         }
                         return (
                             <ItemsRoom
+                                choicePin={choicePin}
+                                targetChild={targetChild}
                                 phraseText={conversationText.phrase}
                                 roomId={conversation._id}
                                 key={rc.text.t + index}
