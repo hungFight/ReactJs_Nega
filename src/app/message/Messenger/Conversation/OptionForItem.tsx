@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI, SendOPTI } from '~/assets/Icons/Icons';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
-import { PropsChat } from './LogicConver';
+import { PropsChat, PropsPinC } from './LogicConver';
 import Languages from '~/reUsingComponents/languages';
 import chatAPI from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
@@ -49,16 +49,7 @@ const OptionForItem: React.FC<{
     colorText: string;
     setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
-    setItemPin: React.Dispatch<
-        React.SetStateAction<
-            | {
-                  chatId: string;
-                  userId: string;
-                  createdAt: string;
-              }
-            | undefined
-        >
-    >;
+    setItemPin: React.Dispatch<React.SetStateAction<PropsPinC | undefined>>;
 }> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation, setItemPin }) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
@@ -169,7 +160,12 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                            const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                            const res = await chatAPI.pin(
+                                optionsForItem._id,
+                                optionsForItem.id,
+                                conversation._id,
+                                conversation.room[0]._id,
+                            );
                             if (res) setItemPin(res);
                         } else {
                             setOptions(undefined);
@@ -273,7 +269,12 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                            const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                            const res = await chatAPI.pin(
+                                optionsForItem._id,
+                                optionsForItem.id,
+                                conversation._id,
+                                conversation.room[0]._id,
+                            );
                             if (res) setItemPin(res);
                         } else {
                             setOptions(undefined);

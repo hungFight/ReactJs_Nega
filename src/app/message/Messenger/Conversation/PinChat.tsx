@@ -16,15 +16,11 @@ import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import { decrypt } from '~/utils/crypto';
-import { PropsChat, PropsRooms } from './LogicConver';
+import { PropsChat, PropsPinC, PropsRooms } from './LogicConver';
 import { socket } from 'src/mainPage/nextWeb';
 
 const PinChat: React.FC<{
-    pins: {
-        chatId: string;
-        userId: string;
-        createdAt: string;
-    }[];
+    pins: PropsPinC[];
     conversationId: string;
     avatar?: string;
     name: string;
@@ -37,23 +33,13 @@ const PinChat: React.FC<{
     };
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
     room: PropsRooms[];
-    itemPin:
-        | {
-              chatId: string;
-              userId: string;
-              createdAt: string;
-          }
-        | undefined;
+    itemPin: PropsPinC | undefined;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
 }> = ({ conversationId, pins, avatar, name, user, dataFirst, setChoicePin, room, itemPin, setConversation }) => {
     const [more, setMore] = useState<boolean>(false);
     const [otherPin, setOtherPin] = useState<{
         data: PropsRooms;
-        pin: {
-            chatId: string;
-            userId: string;
-            createdAt: string;
-        };
+        pin: PropsPinC;
     }>();
     const { lg } = Languages();
     const dispatch = useDispatch();
@@ -130,7 +116,7 @@ const PinChat: React.FC<{
             mutate(room.filter((r) => r._id === itemPin.chatId)[0]);
         }
         socket.on(`conversation_pins_room_${conversationId}`, async (data) => {
-            if (!room.some((r) => r._id === data.chatId)) {
+            if (!room.some((r) => r._id === data.chatId) && data.userId !== dataFirst.id) {
                 const rr: PropsRooms[] = await chatAPI.getPins(conversationId, [data.chatId]);
                 const da: typeof rr = ServerBusy(rr, dispatch);
                 const newR: typeof rr = await new Promise(async (resolve, reject) => {

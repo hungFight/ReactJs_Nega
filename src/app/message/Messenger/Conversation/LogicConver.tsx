@@ -23,6 +23,12 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import { decrypt, encrypt } from '~/utils/crypto';
 import { setRoomChat } from '~/redux/messenger';
 import { PropsId_chats } from 'src/App';
+export interface PropsPinC {
+    chatId: string;
+    userId: string;
+    createdAt: string;
+    latestChatId: string;
+}
 export interface PropsRooms {
     _id: string;
     id: string;
@@ -57,7 +63,7 @@ export interface PropsChat {
     };
     status: string;
     background: string;
-    pins: { chatId: string; userId: string; createdAt: string }[];
+    pins: PropsPinC[];
     room: PropsRooms[];
     deleted: {
         id: string;

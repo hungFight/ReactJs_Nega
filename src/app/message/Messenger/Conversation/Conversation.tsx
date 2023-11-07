@@ -22,7 +22,7 @@ import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
-import LogicConversation, { PropsChat } from './LogicConver';
+import LogicConversation, { PropsChat, PropsPinC } from './LogicConver';
 import { Player } from 'video-react';
 import { PropsId_chats, PropsUser } from 'src/App';
 import moment from 'moment';
@@ -140,7 +140,7 @@ const Conversation: React.FC<{
             mm.current.push({ id: conversation._id, index });
         }
     }
-    const [itemPin, setItemPin] = useState<{ chatId: string; userId: string; createdAt: string }>();
+    const [itemPin, setItemPin] = useState<PropsPinC>();
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<string[]>([]);
 
@@ -619,6 +619,7 @@ const Conversation: React.FC<{
                     onScroll={() => handleScroll}
                 >
                     {conversation?.room.map((rc, index, arr) => {
+                        // const timePin = moment(conversation.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
                         let timeS = '';
                         const mn = moment(arr[index].createdAt); //show time for every day
                         if (
@@ -719,6 +720,7 @@ const Conversation: React.FC<{
                         return (
                             <ItemsRoom
                                 choicePin={choicePin}
+                                setChoicePin={setChoicePin}
                                 targetChild={targetChild}
                                 phraseText={conversationText.phrase}
                                 roomId={conversation._id}

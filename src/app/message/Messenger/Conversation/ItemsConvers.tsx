@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PropsChat } from './LogicConver';
+import { PropsChat, PropsPinC } from './LogicConver';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -30,11 +30,8 @@ type PropsRc = {
     updatedAt?: string;
 };
 const ItemsRoom: React.FC<{
-    pins: {
-        chatId: string;
-        userId: string;
-        createdAt: string;
-    }[];
+    setChoicePin: React.Dispatch<React.SetStateAction<string>>;
+    pins: PropsPinC[];
     del: React.MutableRefObject<HTMLDivElement | null>;
     rc: PropsRc;
     index: number;
@@ -108,6 +105,7 @@ const ItemsRoom: React.FC<{
     targetChild,
     choicePin,
     pins,
+    setChoicePin,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -135,18 +133,37 @@ const ItemsRoom: React.FC<{
             }
         }
     }, [width, elWatChTime]);
+    const self = pins.filter((p) => p.latestChatId === rc._id)[0]?.userId === dataFirst.id;
+    const others = pins.filter((p) => p.latestChatId === rc._id)[0]?.userId === user.id;
+    const avatarPin = self ? dataFirst.avatar : others ? user.avatar : '';
+    const fullName = self ? dataFirst.fullName + ' have pined' : others ? user.fullName + ' has pined' : '';
+    const gender = self ? dataFirst.gender : others ? user.gender : 0;
+    const displayById = pins.filter((p) => p.latestChatId === rc._id);
     return (
         <>
-            {pins.some((p) => p.chatId === rc._id) && (
-                <DivFlex css="margin: 5px 0 15px 0;">
-                    <P
-                        z="1rem"
-                        css="padding: 0px 7px;border-radius: 5px; cursor: var(--pointer);  border: 1px solid #5f5f5f; &:hover{background-color: #3f3f3f;}"
-                    >
-                        Hung nguyen pined
-                    </P>
+            {displayById.map((dis) => (
+                <DivFlex
+                    css="margin: 5px 0 15px 0;"
+                    onClick={() => {
+                        setChoicePin(dis.chatId);
+                    }}
+                >
+                    <Div css="padding: 0px 7px;border-radius: 5px; cursor: var(--pointer);  border: 1px solid #5f5f5f; &:hover{background-color: #3f3f3f;} align-items: center;">
+                        <Avatar
+                            src={avatarPin}
+                            alt={fullName}
+                            gender={gender}
+                            radius="50%"
+                            css={`
+                                width: 15px;
+                                height: 15px;
+                                margin: 0 5px 5px 0;
+                            `}
+                        />
+                        <P z="1rem">{fullName}</P>
+                    </Div>
                 </DivFlex>
-            )}
+            ))}
             {rc?.delete !== dataFirst.id && <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>}
             {rc.id === dataFirst.id ? (
                 rc?.delete !== dataFirst.id && (

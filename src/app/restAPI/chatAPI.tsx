@@ -161,13 +161,14 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    pin = async (chatId: string, userId: string, conversationId: string) => {
+    pin = async (chatId: string, userId: string, conversationId: string, latestChatId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>('/messenger/pin', {
                 chatId,
                 userId,
                 conversationId,
+                latestChatId,
             });
             return res.data;
         } catch (error) {
