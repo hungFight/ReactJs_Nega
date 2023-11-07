@@ -29,7 +29,7 @@ import moment from 'moment';
 import 'moment/locale/vi';
 import { setOpenProfile } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
-import { PropsBgRD, offChats, setBalloon, setTopLeft } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 import MoreOption from '../MoreOption';
 import { setDelIds } from '~/redux/reload';
 import sendChatAPi from '~/restAPI/chatAPI';
@@ -41,6 +41,7 @@ import { socket } from 'src/mainPage/nextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessager';
 import { decrypt } from '~/utils/crypto';
 import PinChat from './PinChat';
+import { offChats, setBalloon, setTopLeft } from '~/redux/roomsChat';
 
 const Conversation: React.FC<{
     index: number;
@@ -139,6 +140,7 @@ const Conversation: React.FC<{
             mm.current.push({ id: conversation._id, index });
         }
     }
+    const [itemPin, setItemPin] = useState<{ chatId: string; userId: string; createdAt: string }>();
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<string[]>([]);
 
@@ -496,6 +498,7 @@ const Conversation: React.FC<{
             <DivResultsConversation color="#e4e4e4">
                 {optionsForItem && (
                     <OptionForItem
+                        setItemPin={setItemPin}
                         setOptions={setOptions}
                         ERef={ERef}
                         colorText={colorText}
@@ -577,13 +580,16 @@ const Conversation: React.FC<{
                 </Div>
                 {conversation?.pins?.length && (
                     <PinChat
+                        itemPin={itemPin}
                         conversationId={conversation._id}
                         user={conversation.user}
                         dataFirst={dataFirst}
                         pins={conversation.pins}
                         setChoicePin={setChoicePin}
                         avatar={conversation.user.avatar}
+                        room={conversation.room}
                         name={conversation.user.fullName}
+                        setConversation={setConversation}
                     />
                 )}
                 <Div
@@ -611,7 +617,6 @@ const Conversation: React.FC<{
                         }
                     `}
                     onScroll={() => handleScroll}
-                    // onClick={() => setEmoji(false)}
                 >
                     {conversation?.room.map((rc, index, arr) => {
                         let timeS = '';
@@ -733,6 +738,7 @@ const Conversation: React.FC<{
                                 wch={wch}
                                 setWch={setWch}
                                 rr={rr}
+                                pins={conversation.pins}
                             />
                         );
                     })}

@@ -6,6 +6,7 @@ import { PropsSetting } from '~/reUsingComponents/Setting/interface';
 import Header, { PropsSN } from './components/Header/HeaderLayout';
 import Settingcbl from '~/reUsingComponents/Setting/Setting';
 import { PropsId_chats } from 'src/App';
+import { memo } from 'react';
 
 const settingData = [
     {

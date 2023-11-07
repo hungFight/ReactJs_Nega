@@ -5,6 +5,7 @@ import background from './background';
 import changeLanguage from './languageRD';
 import reload from './reload';
 import messenger from './messenger';
+import roomsChat from './roomsChat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 const persistConfig = {
@@ -16,6 +17,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     language: changeLanguage,
     background: background,
+    roomsChat,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({

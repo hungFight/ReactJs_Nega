@@ -34,6 +34,7 @@ import { useCookies } from 'react-cookie';
 import { decrypt } from '~/utils/crypto';
 import { ConversationText } from './dataText/DataMessager';
 import Languages from '~/reUsingComponents/languages';
+import { PropsRoomsChatRD } from '~/redux/roomsChat';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -160,7 +161,8 @@ function App() {
     const dispatch = useDispatch();
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
-    const { colorText, colorBg, chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+    const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+    const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
     const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);

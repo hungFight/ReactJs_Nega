@@ -9,10 +9,12 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, ProfileI, TyOnlineI } from '~/assets/Icons/Icons';
-import { PropsBgRD, onChats } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
 import moments from '~/utils/moment';
 import { PropsId_chats } from 'src/App';
+import { PropsReMessengerRD } from '~/redux/messenger';
+import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
 moment.updateLocale('en', {
     relativeTime: {
         future: 'in %s',
@@ -81,7 +83,7 @@ const ListAccounts: React.FC<{
             userOnline: state.reload.userOnline,
         };
     });
-    const { chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+    const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
 
     const { lg } = Languages();
     const seenBy = useRef<HTMLDivElement | null>(null);

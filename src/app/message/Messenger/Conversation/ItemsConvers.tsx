@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { PropsChat } from './LogicConver';
-import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { memo, useEffect, useRef, useState } from 'react';
@@ -30,6 +30,11 @@ type PropsRc = {
     updatedAt?: string;
 };
 const ItemsRoom: React.FC<{
+    pins: {
+        chatId: string;
+        userId: string;
+        createdAt: string;
+    }[];
     del: React.MutableRefObject<HTMLDivElement | null>;
     rc: PropsRc;
     index: number;
@@ -102,6 +107,7 @@ const ItemsRoom: React.FC<{
     phraseText,
     targetChild,
     choicePin,
+    pins,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -131,6 +137,16 @@ const ItemsRoom: React.FC<{
     }, [width, elWatChTime]);
     return (
         <>
+            {pins.some((p) => p.chatId === rc._id) && (
+                <DivFlex css="margin: 5px 0 15px 0;">
+                    <P
+                        z="1rem"
+                        css="padding: 0px 7px;border-radius: 5px; cursor: var(--pointer);  border: 1px solid #5f5f5f; &:hover{background-color: #3f3f3f;}"
+                    >
+                        Hung nguyen pined
+                    </P>
+                </DivFlex>
+            )}
             {rc?.delete !== dataFirst.id && <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>}
             {rc.id === dataFirst.id ? (
                 rc?.delete !== dataFirst.id && (
@@ -138,9 +154,6 @@ const ItemsRoom: React.FC<{
                         id={`chat_to_scroll_${rc._id}`}
                         width="100%"
                         css={`
-                            ${choicePin === rc._id
-                                ? 'background-color: #1d1d1db3;border-radius: 10px; box-shadow: 0 0 5px #63d2ad;'
-                                : ''}
                             padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
                             margin-bottom: 8px;
                             justify-content: right;
@@ -256,7 +269,7 @@ const ItemsRoom: React.FC<{
                                             svg {
                                                 margin-right: 3px;
                                             }
-                                            ${rc.update === dataFirst.id && 'border: 1px solid #889a21c7;'}
+                                            ${rc.update && 'border: 1px solid #889a21c7;'}
                                         `}
                                     >
                                         {rc.text.t}
@@ -284,6 +297,8 @@ const ItemsRoom: React.FC<{
                                                 img {
                                                     object-fit: contain;
                                                 }
+                                                border-radius: 5px;
+                                                ${rc.update && 'border: 1px solid #889a21c7;'}
                                             }
                                             ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                         `}
@@ -480,7 +495,7 @@ const ItemsRoom: React.FC<{
                                             svg {
                                                 margin-right: 3px;
                                             }
-                                            ${rc.update === user.id && 'border: 1px solid #889a21c7;'}
+                                            ${rc.update && 'border: 1px solid #889a21c7;'}
                                         `}
                                     >
                                         {rc.text.t}
@@ -508,6 +523,8 @@ const ItemsRoom: React.FC<{
                                                     object-fit: contain;
                                                 }
                                             }
+                                            border-radius: 5px;
+                                            ${rc.update && 'border: 1px solid #889a21c7;'}
                                             ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                         `}
                                     >

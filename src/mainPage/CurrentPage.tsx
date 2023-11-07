@@ -1,5 +1,4 @@
 import React from 'react';
-import { memo } from 'react';
 import { PropsId_chats } from 'src/App';
 
 import { socialnetwork } from 'src/dataText/dateTextSocialNetWork';

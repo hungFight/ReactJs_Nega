@@ -8,9 +8,10 @@ import CommonUtils from '~/utils/CommonUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
-import { PropsBgRD, onChats } from '~/redux/background';
+import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 import { PropsId_chats } from 'src/App';
+import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
 interface PropsFriends {
     avatar: any;
     birthday: string;
@@ -24,7 +25,7 @@ const Friends: React.FC<{
 }> = ({ type, setId_chats }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
-    const { chats } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
+    const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
 
     const [loading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<PropsFriends[]>();

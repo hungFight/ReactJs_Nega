@@ -9,10 +9,10 @@ import { InitialStateHideShow, setTrueErrorServer } from '~/redux/hideShow';
 import userAPI from '~/restAPI/userAPI';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
-import { onChats } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 import { Buffer } from 'buffer';
 import { ExpandI, LoadingI } from '~/assets/Icons/Icons';
+import { onChats } from '~/redux/roomsChat';
 interface PropsLanguage {
     persistedReducer: {
         language: {

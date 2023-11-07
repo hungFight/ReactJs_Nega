@@ -49,7 +49,17 @@ const OptionForItem: React.FC<{
     colorText: string;
     setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
-}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation }) => {
+    setItemPin: React.Dispatch<
+        React.SetStateAction<
+            | {
+                  chatId: string;
+                  userId: string;
+                  createdAt: string;
+              }
+            | undefined
+        >
+    >;
+}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation, setItemPin }) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<string>('');
@@ -158,7 +168,12 @@ const OptionForItem: React.FC<{
                 top: '-40px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
-                        const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                            const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                            if (res) setItemPin(res);
+                        } else {
+                            setOptions(undefined);
+                        }
                     }
                 },
             },
@@ -257,7 +272,12 @@ const OptionForItem: React.FC<{
                 top: '-40px',
                 onClick: async () => {
                     if (conversation && optionsForItem) {
-                        const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                            const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id);
+                            if (res) setItemPin(res);
+                        } else {
+                            setOptions(undefined);
+                        }
                     }
                 },
             },
@@ -403,6 +423,8 @@ const OptionForItem: React.FC<{
                         return r;
                     }),
                 });
+                if (!fileUpload?.up.length) setOptions(undefined);
+                setChangeCus(undefined);
                 setLoading('Change successful');
             } else {
                 setLoading('Change failed');

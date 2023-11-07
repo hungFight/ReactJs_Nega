@@ -23,7 +23,29 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import { decrypt, encrypt } from '~/utils/crypto';
 import { setRoomChat } from '~/redux/messenger';
 import { PropsId_chats } from 'src/App';
-
+export interface PropsRooms {
+    _id: string;
+    id: string;
+    text: {
+        t: string;
+        icon: string;
+    };
+    delete?: string;
+    update?: string;
+    secondary?: string;
+    length?: number;
+    imageOrVideos: {
+        v: string;
+        type: string;
+        icon: string;
+        link?: string;
+        _id: string;
+    }[];
+    sending?: boolean;
+    seenBy: string[];
+    updatedAt: string;
+    createdAt: string;
+}
 export interface PropsChat {
     _id: string;
     id_us: string[];
@@ -36,29 +58,7 @@ export interface PropsChat {
     status: string;
     background: string;
     pins: { chatId: string; userId: string; createdAt: string }[];
-    room: {
-        _id: string;
-        id: string;
-        text: {
-            t: string;
-            icon: string;
-        };
-        delete?: string;
-        update?: string;
-        secondary?: string;
-        length?: number;
-        imageOrVideos: {
-            v: string;
-            type?: string;
-            icon: string;
-            link?: string;
-            _id: string;
-        }[];
-        sending?: boolean;
-        seenBy: string[];
-        updatedAt: string;
-        createdAt: string;
-    }[];
+    room: PropsRooms[];
     deleted: {
         id: string;
         createdAt: string;
