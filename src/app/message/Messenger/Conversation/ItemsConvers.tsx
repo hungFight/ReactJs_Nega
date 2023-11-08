@@ -4,10 +4,11 @@ import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefaul
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { memo, useEffect, useRef, useState } from 'react';
-import { DotI, GarbageI } from '~/assets/Icons/Icons';
+import { DotI, GarbageI, LoadingI } from '~/assets/Icons/Icons';
 import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessager';
+import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 type PropsRc = {
     _id: string;
     id: string;
@@ -133,16 +134,22 @@ const ItemsRoom: React.FC<{
             }
         }
     }, [width, elWatChTime]);
-    const self = pins.filter((p) => p.latestChatId === rc._id)[0]?.userId === dataFirst.id;
+    const chatId = pins.some((p) => p.chatId === rc._id);
+
+    const selfChatID = pins.filter((p) => p.chatId === rc._id)[0]?.userId === dataFirst.id;
+    const otherChatId = pins.filter((p) => p.chatId === rc._id)[0]?.userId === user.id;
+    const fullNameChatId = selfChatID ? 'You have pined' : otherChatId ? user.fullName + ' has pined' : '';
+    const self = pins.filter((p) => p.latestChatId === rc._id)[0]?.userId === dataFirst.id; // filter by latest chatId(room._id) to display who has pined
     const others = pins.filter((p) => p.latestChatId === rc._id)[0]?.userId === user.id;
     const avatarPin = self ? dataFirst.avatar : others ? user.avatar : '';
-    const fullName = self ? dataFirst.fullName + ' have pined' : others ? user.fullName + ' has pined' : '';
+    const fullName = self ? 'You have pined' : others ? user.fullName + ' has pined' : '';
     const gender = self ? dataFirst.gender : others ? user.gender : 0;
     const displayById = pins.filter((p) => p.latestChatId === rc._id);
     return (
         <>
             {displayById.map((dis) => (
                 <DivFlex
+                    key={dis.chatId}
                     css="margin: 5px 0 15px 0;"
                     onClick={() => {
                         setChoicePin(dis.chatId);
@@ -161,10 +168,17 @@ const ItemsRoom: React.FC<{
                             `}
                         />
                         <P z="1rem">{fullName}</P>
+                        {choicePin === dis.chatId && (
+                            <DivLoading css="margin: 0 5px; width: auto; font-size: 13px;">
+                                <LoadingI />
+                            </DivLoading>
+                        )}
                     </Div>
                 </DivFlex>
             ))}
-            {rc?.delete !== dataFirst.id && <P css="font-size: 1.1rem; text-align: center;padding: 2px 0;">{timeS}</P>}
+            {rc?.delete !== dataFirst.id && timeS && (
+                <P css="font-size: 1rem; text-align: center;padding: 2px 0;  margin: 10px 0;">{timeS}</P>
+            )}
             {rc.id === dataFirst.id ? (
                 rc?.delete !== dataFirst.id && (
                     <Div
@@ -200,6 +214,33 @@ const ItemsRoom: React.FC<{
                             }
                         `}
                     >
+                        {chatId && (
+                            <DivPos
+                                top="-13px"
+                                right="-11px"
+                                index={16}
+                                css={`
+                                    /* transform: rotate(70deg); */
+                                    &:hover {
+                                        p {
+                                            display: block;
+                                            width: max-content;
+                                            padding: 2px 4px;
+                                            background-color: #4d31b4;
+                                            border-radius: 5px;
+                                            position: absolute;
+                                            right: 35px;
+                                            top: -8;
+                                        }
+                                    }
+                                `}
+                            >
+                                📌
+                                <P z="1rem" css="display: none">
+                                    {fullNameChatId}
+                                </P>
+                            </DivPos>
+                        )}
                         <Div
                             ref={elWatChTime}
                             display="block"
@@ -227,7 +268,7 @@ const ItemsRoom: React.FC<{
                                     id="showDotAtRoomChat"
                                     css={`
                                         position: absolute;
-                                        width: 100%;
+                                        width: 114%;
                                         left: -35px;
                                         top: 1px;
                                         padding-left: 4px;
@@ -281,7 +322,7 @@ const ItemsRoom: React.FC<{
                                             word-wrap: break-word;
                                             max-width: 100%;
 
-                                            background-color: ${rc?.delete ? '#1d1c1c' : '#353636'};
+                                            background-color: ${rc?.delete ? '#1d1c1c' : '#1a383b'};
                                             border: 1px solid #4e4d4b;
                                             svg {
                                                 margin-right: 3px;
@@ -437,6 +478,7 @@ const ItemsRoom: React.FC<{
                         justify-content: left;
                         align-items: center;
                         margin-bottom: 8px;
+                        position: relative;
                         .chatTime {
                             .dateTime {
                                 display: block;
@@ -444,6 +486,34 @@ const ItemsRoom: React.FC<{
                         }
                     `}
                 >
+                    {chatId && (
+                        <DivPos
+                            top="-13px"
+                            left="14px"
+                            index={16}
+                            css={`
+                                transform: rotate(275deg);
+                                &:hover {
+                                    p {
+                                        transform: rotate(85deg);
+                                        display: block;
+                                        width: max-content;
+                                        padding: 2px 4px;
+                                        background-color: #4d31b4;
+                                        border-radius: 5px;
+                                        position: absolute;
+                                        left: -27px;
+                                        top: 72px;
+                                    }
+                                }
+                            `}
+                        >
+                            📌
+                            <P z="1rem" css="display: none">
+                                {fullNameChatId}
+                            </P>
+                        </DivPos>
+                    )}
                     <Div
                         ref={elWatChTime}
                         css={`

@@ -167,9 +167,8 @@ const OptionForItem: React.FC<{
                                 conversation.room[0]._id,
                             );
                             if (res) setItemPin(res);
-                        } else {
-                            setOptions(undefined);
                         }
+                        setOptions(undefined);
                     }
                 },
             },
@@ -276,9 +275,8 @@ const OptionForItem: React.FC<{
                                 conversation.room[0]._id,
                             );
                             if (res) setItemPin(res);
-                        } else {
-                            setOptions(undefined);
                         }
+                        setOptions(undefined);
                     }
                 },
             },
@@ -560,7 +558,7 @@ const OptionForItem: React.FC<{
                                     border-radius: 7px;
                                     border-top-left-radius: 13px;
                                     border-bottom-left-radius: 13px;
-                                    background-color: #353636;
+                                    background-color: #1a383b;
                                     border: 1px solid #4e4d4b;
                                     text-wrap: wrap;
                                     width: max-content;
