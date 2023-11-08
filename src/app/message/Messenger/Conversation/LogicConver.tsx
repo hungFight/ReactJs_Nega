@@ -28,6 +28,7 @@ export interface PropsPinC {
     userId: string;
     createdAt: string;
     latestChatId: string;
+    _id: string;
 }
 export interface PropsRooms {
     _id: string;

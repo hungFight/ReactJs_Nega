@@ -166,7 +166,13 @@ const OptionForItem: React.FC<{
                                 conversation._id,
                                 conversation.room[0]._id,
                             );
-                            if (res) setItemPin(res);
+                            if (res) {
+                                setConversation((pre) => {
+                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                                    return pre;
+                                });
+                                setItemPin(res);
+                            }
                         }
                         setOptions(undefined);
                     }
@@ -274,7 +280,13 @@ const OptionForItem: React.FC<{
                                 conversation._id,
                                 conversation.room[0]._id,
                             );
-                            if (res) setItemPin(res);
+                            if (res) {
+                                setConversation((pre) => {
+                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                                    return pre;
+                                });
+                                setItemPin(res);
+                            }
                         }
                         setOptions(undefined);
                     }

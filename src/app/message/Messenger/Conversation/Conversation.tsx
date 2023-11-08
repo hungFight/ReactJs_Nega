@@ -143,6 +143,7 @@ const Conversation: React.FC<{
     const [itemPin, setItemPin] = useState<PropsPinC>();
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<string[]>([]);
+    const one = useRef<boolean>(true);
 
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);
@@ -580,7 +581,9 @@ const Conversation: React.FC<{
                 </Div>
                 {conversation?.pins?.length && (
                     <PinChat
+                        one={one}
                         itemPin={itemPin}
+                        setItemPin={setItemPin}
                         conversationId={conversation._id}
                         user={conversation.user}
                         dataFirst={dataFirst}
@@ -601,8 +604,7 @@ const Conversation: React.FC<{
                         padding-bottom: 10px;
                         overflow-y: overlay;
                         scroll-behavior: smooth;
-                        height: 91%;
-                        padding-right: 5px;
+                        padding-right: 11px;
                         transition: all 0.5s linear;
                         position: relative;
                         @media (max-width: 768px) {
@@ -612,9 +614,7 @@ const Conversation: React.FC<{
                                 transform: translateX(calc(100% - 100vw));
                             }
                         }
-                        @media (max-width: 1080px) {
-                            height: 91%;
-                        }
+                        height: 88%;
                     `}
                     onScroll={() => handleScroll}
                 >

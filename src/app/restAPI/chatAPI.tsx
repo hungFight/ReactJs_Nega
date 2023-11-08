@@ -191,5 +191,20 @@ class Messenger {
             return errorHandling(err);
         }
     };
+    deletePin = async (conversationId: string, pinId: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.delete('/messenger/deletePin', {
+                params: {
+                    conversationId,
+                    pinId,
+                },
+            });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
 }
 export default new Messenger();

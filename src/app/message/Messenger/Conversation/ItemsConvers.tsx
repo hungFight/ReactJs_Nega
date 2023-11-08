@@ -148,14 +148,13 @@ const ItemsRoom: React.FC<{
     return (
         <>
             {displayById.map((dis) => (
-                <DivFlex
-                    key={dis.chatId}
-                    css="margin: 5px 0 15px 0;"
-                    onClick={() => {
-                        setChoicePin(dis.chatId);
-                    }}
-                >
-                    <Div css="padding: 0px 7px;border-radius: 5px; cursor: var(--pointer);  border: 1px solid #5f5f5f; &:hover{background-color: #3f3f3f;} align-items: center;">
+                <DivFlex key={dis.chatId} css="margin: 5px 0 15px 0;">
+                    <Div
+                        css="padding: 0px 7px;border-radius: 5px; cursor: var(--pointer);  border: 1px solid #5f5f5f; &:hover{background-color: #3f3f3f;} align-items: center;"
+                        onClick={() => {
+                            setChoicePin(dis.chatId);
+                        }}
+                    >
                         <Avatar
                             src={avatarPin}
                             alt={fullName}

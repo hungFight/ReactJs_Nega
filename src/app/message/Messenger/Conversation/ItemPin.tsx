@@ -2,13 +2,15 @@ import React, { useRef, useState } from 'react';
 import { ClockCirclesI, GarbageI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { PropsPinC, PropsRooms } from './LogicConver';
+import { PropsChat, PropsPinC, PropsRooms } from './LogicConver';
 import { PropsUser } from 'src/App';
 import { useDispatch } from 'react-redux';
 import { setOpenProfile } from '~/redux/hideShow';
 import moment from 'moment';
 import Languages from '~/reUsingComponents/languages';
 import Player from '~/reUsingComponents/Videos/Player';
+import chatAPI from '~/restAPI/chatAPI';
+import { UseMutationResult } from '@tanstack/react-query';
 
 const ItemPin: React.FC<{
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
@@ -21,7 +23,20 @@ const ItemPin: React.FC<{
         avatar: string | undefined;
         gender: number;
     };
-}> = ({ setChoicePin, r, pins, dataFirst, user }) => {
+    conversationId: string;
+    // Cập nhật cache tạm thời với dữ liệu mới
+    removePin: UseMutationResult<
+        string,
+        unknown,
+        string,
+        {
+            previousData: PropsRooms[] | undefined;
+        }
+    >;
+    coordS: React.MutableRefObject<number>;
+    coord: React.MutableRefObject<number>;
+    setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
+}> = ({ setChoicePin, r, pins, dataFirst, user, conversationId, removePin, coordS, setConversation, coord }) => {
     const dispatch = useDispatch();
     const { lg } = Languages();
     const elem = useRef<HTMLDivElement | null>(null);
@@ -29,26 +44,73 @@ const ItemPin: React.FC<{
     const coordinate = useRef<number | null>(null);
     const handleMove = (e: any) => {
         if (coordinate.current !== null && elem.current) {
-            console.log(e.clientX, 'move');
+            if (coordS.current >= 175 || coordS.current <= -175) {
+                elem.current.style.backgroundColor = '#4d1c1c';
+            } else {
+                elem.current.style.backgroundColor = '#19191aa6';
+            }
+            coordS.current = (e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current;
+            console.log(e.clientX - coordinate.current, 'move');
             elem.current.style.left = `${(e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current}px`;
         }
     };
     const handleMouseDown = (e: any) => {
-        console.log(e.clientX, 'down');
-
+        coord.current = 1;
         coordinate.current = e.clientX || e?.changedTouches[0]?.clientX;
     };
-    const handleMouseUp = (e: any) => {
+    const handleMouseUp = async (e: any) => {
         coordinate.current = null;
-        if (elem.current) {
-            elem.current.style.backgroundColor = '';
-            elem.current.style.left = '0px';
+        if (coordS.current >= 175 || coordS.current <= -175) {
+            if (elem.current) {
+                elem.current.style.backgroundColor = '';
+                elem.current.style.transition = 'all 0.3s linear';
+                elem.current.style.left = '500px';
+            }
+
+            const _id = pins.filter((p) => p.chatId === r._id)[0]._id;
+            coordS.current = 0;
+            const res = await chatAPI.deletePin(conversationId, _id);
+            if (res) {
+                setConversation((pre) => {
+                    if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== _id) };
+                    return pre;
+                });
+                removePin.mutate(r._id);
+            }
+            coord.current = 0;
+        } else {
+            if (elem.current) {
+                elem.current.style.backgroundColor = '';
+                elem.current.style.left = '0px';
+            }
         }
     };
-    const handleMouseLeave = (e: any) => {
+    const handleMouseLeave = async (e: any) => {
         coordinate.current = null;
-        if (elem.current) {
-            elem.current.style.left = '0px';
+
+        if (coordS.current >= 175 || coordS.current <= -175) {
+            if (elem.current) {
+                elem.current.style.backgroundColor = '';
+                elem.current.style.transition = 'all 0.3s linear';
+                elem.current.style.left = '500px';
+            }
+
+            const _id = pins.filter((p) => p.chatId === r._id)[0]._id;
+            coordS.current = 0;
+            const res = await chatAPI.deletePin(conversationId, _id);
+            if (res) {
+                setConversation((pre) => {
+                    if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== _id) };
+                    return pre;
+                });
+                removePin.mutate(r._id);
+            }
+            coord.current = 0;
+        } else {
+            if (elem.current) {
+                elem.current.style.backgroundColor = '';
+                elem.current.style.left = '0px';
+            }
         }
     };
     const pin = pins.filter((p) => p.chatId === r._id)[0];
@@ -78,7 +140,9 @@ const ItemPin: React.FC<{
             className="pin_move_op"
             width="100%"
             css="margin: 2px 0; position: relative; overflow: auto; cursor: var(--pointer); align-items: center; background-color: #19191aa6; padding: 5px 10px; padding-left: 22px; justify-content: space-between; &:hover{background-color:#313131;}"
-            onClick={() => setChoicePin(r._id)}
+            onClick={() => {
+                if (coord.current === 0) setChoicePin(r._id);
+            }}
             onMouseMove={handleMove}
             onTouchMove={handleMove}
             onMouseDown={handleMouseDown}
