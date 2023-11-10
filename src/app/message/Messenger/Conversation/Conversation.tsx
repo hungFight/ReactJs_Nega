@@ -197,8 +197,8 @@ const Conversation: React.FC<{
     };
     const [loadDel, setLoadDel] = useState<boolean>(false);
     useEffect(() => {
-        if (ERef.current && !choicePin) ERef.current.scrollTop = -check.current;
-    }, [conversation]);
+        if (ERef.current) ERef.current.scrollTop = -check.current;
+    }, [conversation, itemPin]);
     useEffect(() => {
         if (ERef.current) ERef.current.addEventListener('scroll', handleScroll);
         return () => {
@@ -473,6 +473,8 @@ const Conversation: React.FC<{
         });
         setValue(e.target.value);
     };
+    console.log(conversation, 'conversation');
+
     return (
         <DivConversation
             ref={del}
@@ -597,16 +599,16 @@ const Conversation: React.FC<{
                 )}
                 <Div
                     ref={ERef}
-                    width="100%"
+                    width="96%"
                     css={`
                         margin-top: 22px;
                         flex-direction: column-reverse;
-                        padding-bottom: 10px;
                         overflow-y: overlay;
                         scroll-behavior: smooth;
                         padding-right: 11px;
+                        bottom: 35px;
                         transition: all 0.5s linear;
-                        position: relative;
+                        position: absolute;
                         @media (max-width: 768px) {
                             padding-right: 0px;
                             &::-webkit-scrollbar {
@@ -614,7 +616,8 @@ const Conversation: React.FC<{
                                 transform: translateX(calc(100% - 100vw));
                             }
                         }
-                        height: 88%;
+                        height: 91%;
+                        padding-bottom: 20px;
                     `}
                     onScroll={() => handleScroll}
                 >
@@ -634,7 +637,7 @@ const Conversation: React.FC<{
 
                         if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD'))
                             timeS = '';
-
+                        console.log(timeS, 'Times', mn);
                         if (rc?.length && rc?.length > 0) {
                             if (writingBy && writingBy.length > 0)
                                 return (

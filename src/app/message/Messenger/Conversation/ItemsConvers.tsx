@@ -175,7 +175,7 @@ const ItemsRoom: React.FC<{
                     </Div>
                 </DivFlex>
             ))}
-            {rc?.delete !== dataFirst.id && timeS && (
+            {rc?.delete !== dataFirst.id && timeS && index !== 0 && (
                 <P css="font-size: 1rem; text-align: center;padding: 2px 0;  margin: 10px 0;">{timeS}</P>
             )}
             {rc.id === dataFirst.id ? (
@@ -361,8 +361,6 @@ const ItemsRoom: React.FC<{
                                         `}
                                     >
                                         {rc.imageOrVideos.map((fl, index) => {
-                                            console.log(fl, 'FileConversation');
-
                                             return (
                                                 <FileConversation
                                                     key={fl._id}

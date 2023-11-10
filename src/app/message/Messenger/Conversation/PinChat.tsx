@@ -56,118 +56,20 @@ const PinChat: React.FC<{
     const coordS = useRef<number>(1);
     const coord = useRef<number>(0);
     const dispatch = useDispatch();
+    const check = one.current && pins.length && !itemPin ? true : false;
     const { data, isLoading } = useQuery({
         queryKey: ['Pins chat', conversationId],
         staleTime: 5 * 60 * 1000,
         cacheTime: 6 * 60 * 1000,
-        enabled: one.current && pins.length && !itemPin ? true : false,
+        enabled: check,
         queryFn: async () => {
-            const rr: PropsRooms[] = await chatAPI.getPins(
-                conversationId,
-                pins
-                    .sort((p, a) => moment(p.createdAt).diff(new Date()) - moment(a.createdAt).diff(new Date()))
-                    .map((r) => r.chatId),
-            );
-            const da: typeof rr = ServerBusy(rr, dispatch);
-            const newR: typeof rr = await new Promise(async (resolve, reject) => {
-                await Promise.all(
-                    da.map(async (d, index) => {
-                        if (d.text.t)
-                            d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversationId}`);
-                        await Promise.all(
-                            d.imageOrVideos.map(async (f, index2) => {
-                                const aa = await gridFS.getFile(f.v, f?.type);
-                                const buffer = ServerBusy(aa, dispatch);
-                                if (aa?.message === 'File not found') {
-                                    rr[index].imageOrVideos[index2].v =
-                                        aa?.type?.search('image/') >= 0 ? "Image doesn't exist" : "Video doesn't exist";
-                                } else {
-                                    const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                    rr[index].imageOrVideos[index2].v = base64;
-                                }
-                            }),
-                        );
-                    }),
+            try {
+                const rr: PropsRooms[] = await chatAPI.getPins(
+                    conversationId,
+                    pins
+                        .sort((p, a) => moment(p.createdAt).diff(new Date()) - moment(a.createdAt).diff(new Date()))
+                        .map((r) => r.chatId),
                 );
-                resolve(rr);
-            });
-            one.current = false;
-            return newR;
-        },
-    });
-    console.log(itemPin, 'ItemPin', coordS);
-
-    const addPin = useMutation(
-        async (newData: PropsRooms) => {
-            return newData;
-        },
-        {
-            onMutate: (newData) => {
-                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
-                const previousData = data;
-                // Cập nhật cache tạm thời với dữ liệu mới
-                queryClient.setQueryData(['Pins chat', conversationId], (oldData: any) => {
-                    // Thêm newData vào mảng dữ liệu cũ (oldData)
-                    return [newData, ...oldData]; //PropsRooms[]
-                });
-
-                return { previousData };
-            },
-            onError: (error, newData, context) => {
-                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
-                queryClient.setQueryData(['Pins chat', conversationId], context?.previousData);
-            },
-            onSettled: () => {
-                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
-                queryClient.invalidateQueries(['Pins chat', conversationId]);
-            },
-        },
-    );
-    const removePin = useMutation(
-        async (_id: string) => {
-            return _id;
-        },
-        {
-            onMutate: (_id) => {
-                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
-                const previousData = data;
-                // Cập nhật cache tạm thời với dữ liệu mới
-                queryClient.setQueryData(['Pins chat', conversationId], (oldData: any) => {
-                    console.log(_id, oldData, 'oldData');
-
-                    // Thêm newData vào mảng dữ liệu cũ (oldData)
-                    return oldData.filter((od: { _id: string }) => od._id !== _id); //PropsRooms[]
-                });
-
-                return { previousData };
-            },
-            onError: (error, newData, context) => {
-                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
-                queryClient.setQueryData(['Pins chat', conversationId], context?.previousData);
-            },
-            onSettled: () => {
-                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
-                queryClient.invalidateQueries(['Pins chat', conversationId]);
-            },
-        },
-    );
-
-    useEffect(() => {
-        console.log(data, 'oldData');
-        if (itemPin) {
-            addPin.mutate(room.filter((r) => r._id === itemPin.chatId)[0]);
-        }
-        socket.on(`conversation_deletedPin_room_${conversationId}`, (data) => {
-            setConversation((pre) => {
-                if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== data) }; // add pin into
-                return pre;
-            });
-            removePin.mutate(data);
-            console.log(data, 'deletePin');
-        });
-        socket.on(`conversation_pins_room_${conversationId}`, async (data) => {
-            if (!room.some((r) => r._id === data.chatId) && data.userId !== dataFirst.id) {
-                const rr: PropsRooms[] = await chatAPI.getPins(conversationId, [data.chatId]);
                 const da: typeof rr = ServerBusy(rr, dispatch);
                 const newR: typeof rr = await new Promise(async (resolve, reject) => {
                     await Promise.all(
@@ -193,20 +95,126 @@ const PinChat: React.FC<{
                     );
                     resolve(rr);
                 });
-                setOtherPin({ data: newR[0], pin: data });
-                console.log(newR, 'newR pin socket');
+                one.current = false;
+                return newR;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+    });
+    console.log(one.current && pins.length && !itemPin ? true : false, isLoading, 'check request');
+
+    const addPin = useMutation(
+        async (newData: PropsRooms) => {
+            return newData;
+        },
+        {
+            onMutate: (newData) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = data ?? [];
+                // Cập nhật cache tạm thời với dữ liệu mới
+                queryClient.setQueryData(['Pins chat', conversationId], (oldData: any) => {
+                    // Thêm newData vào mảng dữ liệu cũ (oldData)
+                    console.log(oldData, 'oldData', [newData, ...(oldData ?? [])]);
+                    if (itemPin) setItemPin(undefined);
+                    return [newData, ...(oldData ?? [])]; //PropsRooms[]
+                });
+
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['Pins chat', conversationId], context?.previousData);
+            },
+            onSettled: () => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                queryClient.invalidateQueries(['Pins chat', conversationId]);
+            },
+        },
+    );
+    const removePin = useMutation(
+        async (xd: { roomId: string; pinId: String }) => {
+            return xd;
+        },
+        {
+            onMutate: (xd) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = data;
+                // Cập nhật cache tạm thời với dữ liệu mới
+                queryClient.setQueryData(['Pins chat', conversationId], (oldData: any) => {
+                    // Thêm newData vào mảng dữ liệu cũ (oldData)
+                    setConversation((pre) => {
+                        if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== xd.pinId) };
+                        return pre;
+                    });
+                    return oldData.filter((od: { _id: string }) => od._id !== xd.roomId); //PropsRooms[]
+                });
+
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['Pins chat', conversationId], context?.previousData);
+            },
+            onSettled: () => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                queryClient.invalidateQueries(['Pins chat', conversationId]);
+            },
+        },
+    );
+    console.log(data, 'conversationPin');
+
+    useEffect(() => {
+        if (itemPin) {
+            addPin.mutate(room.filter((r) => r._id === itemPin.chatId)[0]);
+        }
+        socket.on(`conversation_deletedPin_room_${conversationId}`, (data: { pinId: string; roomId: string }) => {
+            setConversation((pre) => {
+                if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== data.pinId) }; // add pin into
+                return pre;
+            });
+            removePin.mutate(data);
+            console.log(data, 'deletePin');
+        });
+        socket.on(`conversation_pins_room_${conversationId}`, async (dataF) => {
+            console.log(dataF, 'Add Pin');
+
+            if (!data?.some((r) => r._id === dataF.chatId) && dataF.userId !== dataFirst.id) {
+                const rr: PropsRooms[] = await chatAPI.getPins(conversationId, [dataF.chatId]);
+                const da: typeof rr = ServerBusy(rr, dispatch);
+                const newR: typeof rr = await new Promise(async (resolve, reject) => {
+                    await Promise.all(
+                        da.map(async (d, index) => {
+                            if (d.text.t)
+                                d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversationId}`);
+                            await Promise.all(
+                                d.imageOrVideos.map(async (f, index2) => {
+                                    const aa = await gridFS.getFile(f.v, f?.type);
+                                    const buffer = ServerBusy(aa, dispatch);
+                                    if (aa?.message === 'File not found') {
+                                        rr[index].imageOrVideos[index2].v =
+                                            aa?.type?.search('image/') >= 0
+                                                ? "Image doesn't exist"
+                                                : "Video doesn't exist";
+                                    } else {
+                                        const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                        rr[index].imageOrVideos[index2].v = base64;
+                                    }
+                                }),
+                            );
+                        }),
+                    );
+                    resolve(rr);
+                });
+                console.log(newR, 'newRPin');
+                setConversation((pre) => {
+                    if (pre) return { ...pre, pins: [...pre.pins, dataF] }; // add pin into
+                    return pre;
+                });
+                addPin.mutate(newR[0]);
             }
         });
     }, [itemPin]);
-    useEffect(() => {
-        if (otherPin) {
-            setConversation((pre) => {
-                if (pre) return { ...pre, pins: [...pre.pins, otherPin.pin] }; // add pin into
-                return pre;
-            });
-            addPin.mutate(otherPin.data);
-        }
-    }, [otherPin]);
 
     return (
         <Div
@@ -237,27 +245,28 @@ const PinChat: React.FC<{
                     {pins.length}
                 </DivPos>
                 <Div width="100%" display="block" wrap="wrap" css="overflow-y: overlay; justify-content: center; ">
-                    {isLoading && (
+                    {isLoading && check && (
                         <DivLoading css="margin: 0px;">
                             <LoadingI />
                         </DivLoading>
                     )}
                     {data?.map((r) => {
-                        return (
-                            <ItemPin
-                                coord={coord}
-                                coordS={coordS}
-                                conversationId={conversationId}
-                                removePin={removePin}
-                                key={r._id}
-                                setChoicePin={setChoicePin}
-                                r={r}
-                                setConversation={setConversation}
-                                pins={pins}
-                                dataFirst={dataFirst}
-                                user={user}
-                            />
-                        );
+                        if (pins.some((p) => p.chatId === r._id))
+                            return (
+                                <ItemPin
+                                    coord={coord}
+                                    coordS={coordS}
+                                    conversationId={conversationId}
+                                    removePin={removePin}
+                                    key={r._id}
+                                    setChoicePin={setChoicePin}
+                                    r={r}
+                                    setConversation={setConversation}
+                                    pins={pins}
+                                    dataFirst={dataFirst}
+                                    user={user}
+                                />
+                            );
                     })}
                 </Div>
             </Div>

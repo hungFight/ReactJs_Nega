@@ -191,13 +191,14 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    deletePin = async (conversationId: string, pinId: string) => {
+    deletePin = async (conversationId: string, pinId: string, roomId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.delete('/messenger/deletePin', {
                 params: {
                     conversationId,
                     pinId,
+                    roomId,
                 },
             });
             return res.data;

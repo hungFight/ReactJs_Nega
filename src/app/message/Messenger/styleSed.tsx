@@ -64,6 +64,7 @@ export const DivResultsConversation = styled.div`
     height: 100%;
     position: relative;
     padding: 10px;
+    padding-bottom: 43px !important;
     background-color: transparent;
     color: ${(props) => props.color};
 `;

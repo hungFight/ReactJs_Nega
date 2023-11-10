@@ -26,13 +26,20 @@ const ItemPin: React.FC<{
     conversationId: string;
     // Cập nhật cache tạm thời với dữ liệu mới
     removePin: UseMutationResult<
-        string,
+        {
+            roomId: string;
+            pinId: String;
+        },
         unknown,
-        string,
+        {
+            roomId: string;
+            pinId: String;
+        },
         {
             previousData: PropsRooms[] | undefined;
         }
     >;
+
     coordS: React.MutableRefObject<number>;
     coord: React.MutableRefObject<number>;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
@@ -50,7 +57,6 @@ const ItemPin: React.FC<{
                 elem.current.style.backgroundColor = '#19191aa6';
             }
             coordS.current = (e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current;
-            console.log(e.clientX - coordinate.current, 'move');
             elem.current.style.left = `${(e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current}px`;
         }
     };
@@ -69,13 +75,9 @@ const ItemPin: React.FC<{
 
             const _id = pins.filter((p) => p.chatId === r._id)[0]._id;
             coordS.current = 0;
-            const res = await chatAPI.deletePin(conversationId, _id);
+            const res = await chatAPI.deletePin(conversationId, _id, r._id);
             if (res) {
-                setConversation((pre) => {
-                    if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== _id) };
-                    return pre;
-                });
-                removePin.mutate(r._id);
+                removePin.mutate({ roomId: r._id, pinId: _id });
             }
             coord.current = 0;
         } else {
@@ -94,16 +96,11 @@ const ItemPin: React.FC<{
                 elem.current.style.transition = 'all 0.3s linear';
                 elem.current.style.left = '500px';
             }
-
             const _id = pins.filter((p) => p.chatId === r._id)[0]._id;
             coordS.current = 0;
-            const res = await chatAPI.deletePin(conversationId, _id);
+            const res = await chatAPI.deletePin(conversationId, _id, r._id);
             if (res) {
-                setConversation((pre) => {
-                    if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== _id) };
-                    return pre;
-                });
-                removePin.mutate(r._id);
+                removePin.mutate({ roomId: r._id, pinId: _id });
             }
             coord.current = 0;
         } else {
@@ -113,6 +110,7 @@ const ItemPin: React.FC<{
             }
         }
     };
+
     const pin = pins.filter((p) => p.chatId === r._id)[0];
     const whoText =
         pin.chatId === r._id && r.id === dataFirst.id // name of that chat

@@ -23,6 +23,7 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import { decrypt, encrypt } from '~/utils/crypto';
 import { setRoomChat } from '~/redux/messenger';
 import { PropsId_chats } from 'src/App';
+import gridFS from '~/restAPI/gridFS';
 export interface PropsPinC {
     chatId: string;
     userId: string;
@@ -114,7 +115,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
           }
         | undefined
     >();
-    // display conversation's one day
+    // display conversation's each day
     const date1 = useRef<moment.Moment | null>(null);
     const [writingBy, setWritingBy] = useState<{ length: number; id: string } | undefined>();
 
@@ -152,6 +153,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             cRef.current = 2;
             const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
             const dataC = ServerBusy(res, dispatch);
+            console.log(dataC, 'chatRef.current');
 
             if (!dataC.room.length) emptyRef.current = true;
             if (dataC) {
@@ -167,15 +169,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 },
                                 index1: number,
                             ) => {
-                                console.log(rr, 'rr');
-
                                 if (rr.text.t) {
                                     modifiedData.room[index1].text.t = decrypt(
                                         rr.text.t,
                                         `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
                                     );
                                 }
-
                                 await Promise.all(
                                     rr.imageOrVideos.map(
                                         async (
@@ -191,6 +190,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                                         : "Video doesn't exist";
                                             } else {
                                                 const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                                modifiedData.room[index1] = rr;
                                                 modifiedData.room[index1].imageOrVideos[index2].v = base64;
                                             }
                                         },
@@ -220,6 +220,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     }
                     offset.current += limit;
                 }
+                console.log(chatRef.current, 'chatRef.current');
+
                 setConversation(chatRef.current);
             }
             date1.current = moment(conversation?.room[0]?.createdAt); // first element
@@ -234,6 +236,76 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         console.log('eeeee');
 
         if (code) {
+            socket.on(
+                `Conversation_chat_deleteAll_${conversation?._id}`,
+                (deleteData: { chatId: string; userId: string; updatedAt: string }) => {
+                    if (deleteData && deleteData.userId !== id_you) {
+                        setConversation((pre) => {
+                            if (pre)
+                                return {
+                                    ...pre,
+                                    room: pre.room.map((r) => {
+                                        if (r._id === deleteData.chatId) {
+                                            r.text.t = '';
+                                            r.imageOrVideos = [];
+                                            r.delete = 'all';
+                                            r.updatedAt = deleteData.updatedAt;
+                                        }
+                                        return r;
+                                    }),
+                                };
+                            return pre;
+                        });
+                    }
+                },
+            );
+            socket.on(
+                `Conversation_chat_update_${conversation?._id}`,
+                async (updateData: { chatId: string; data: PropsRooms; userId: string }) => {
+                    console.log(updateData, 'updateData');
+
+                    if (updateData.userId !== id_you && conversation) {
+                        const newR: PropsRooms = await new Promise(async (resolve, reject) => {
+                            const d = updateData.data;
+                            if (d.text.t)
+                                d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);
+                            if (d.imageOrVideos.length)
+                                Promise.all(
+                                    d.imageOrVideos.map(async (f, index2) => {
+                                        const aa = await gridFS.getFile(f.v, f?.type);
+                                        const buffer = ServerBusy(aa, dispatch);
+                                        if (aa?.message === 'File not found') {
+                                            d.imageOrVideos[index2].v =
+                                                aa?.type?.search('image/') >= 0
+                                                    ? "Image doesn't exist"
+                                                    : "Video doesn't exist";
+                                        } else {
+                                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                            d.imageOrVideos[index2].v = base64;
+                                        }
+                                    }),
+                                );
+                            resolve(d);
+                        });
+                        console.log(newR, 'updateData newR');
+
+                        setConversation((pre) => {
+                            if (pre)
+                                return {
+                                    ...pre,
+                                    room: pre.room.map((r) => {
+                                        if (r._id === updateData.chatId) {
+                                            r = newR;
+                                        }
+                                        return r;
+                                    }),
+                                };
+                            return pre;
+                        });
+                    }
+                },
+            );
+
             socket.on(`phrase_chatRoom_response_${conversation?._id}_${id_you}`, (res) => {
                 console.log('in_roomChat_personal_receive_and_saw con');
                 setWch(res);
@@ -299,8 +371,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             socket.off(`phrase_chatRoom_response_${conversation?._id}_${id_you}`);
             socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
             socket.off(code);
+            socket.off(`Conversation_chat_deleteAll_${conversation?._id}`);
+            socket.off(`Conversation_chat_update_${conversation?._id}`);
         };
     }, [code, conversation]);
+    console.log(writingBy, 'writingBy');
+
     useEffect(() => {
         fetchChat();
         socket.on(

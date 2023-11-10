@@ -13,9 +13,6 @@ const FileConversation: React.FC<{
     ERef?: any;
     who?: string;
 }> = ({ type = '', v, icon, ERef, del, who }) => {
-    if (who === 'you') console.log(v, 'FileConversation');
-
-    const [reload, setReload] = useState<boolean>(false);
     const image = type.search('image/') >= 0;
     const handleRoom = (e: any) => {
         if (image) {
