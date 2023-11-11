@@ -16,7 +16,7 @@ const MoreOption: React.FC<{
             icon: React.ReactElement;
             id: number;
             load?: boolean;
-            onClick: () => any;
+            onClick: (e?: any) => void;
         }[];
     };
     colorText: string;

@@ -395,7 +395,11 @@ function App() {
                         }
                     `}
                 >
-                    {session ? <ErrorBoundaries message={session} /> : ''}
+                    {session || errorServer?.message ? (
+                        <ErrorBoundaries message={session || (errorServer?.message ?? '')} />
+                    ) : (
+                        ''
+                    )}
                     {userFirst ? (
                         <>
                             <Website

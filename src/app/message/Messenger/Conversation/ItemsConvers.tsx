@@ -85,6 +85,13 @@ const ItemsRoom: React.FC<{
     roomId: string;
     phraseText: PropsPhraseText;
     choicePin: string;
+    background: {
+        v: string;
+        type: string;
+        id: string;
+        userId: string;
+        latestChatId: string;
+    };
 }> = ({
     rc,
     index,
@@ -107,6 +114,7 @@ const ItemsRoom: React.FC<{
     choicePin,
     pins,
     setChoicePin,
+    background,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -135,6 +143,9 @@ const ItemsRoom: React.FC<{
         }
     }, [width, elWatChTime]);
     const chatId = pins.some((p) => p.chatId === rc._id);
+    const changedBG = background.latestChatId === rc._id;
+    const whoChangedBG =
+        background.userId === dataFirst.id ? 'You have' : background.userId === user.id ? user.fullName + ' has' : '';
 
     const selfChatID = pins.filter((p) => p.chatId === rc._id)[0]?.userId === dataFirst.id;
     const otherChatId = pins.filter((p) => p.chatId === rc._id)[0]?.userId === user.id;
@@ -147,6 +158,11 @@ const ItemsRoom: React.FC<{
     const displayById = pins.filter((p) => p.latestChatId === rc._id);
     return (
         <>
+            {changedBG && (
+                <Div width="100%" css="justify-content: center;">
+                    <P z="1rem">{whoChangedBG} changed background</P>
+                </Div>
+            )}
             {displayById.map((dis) => (
                 <DivFlex key={dis.chatId} css="margin: 5px 0 15px 0;">
                     <Div
@@ -315,13 +331,11 @@ const ItemsRoom: React.FC<{
                                             border-top-left-radius: 13px;
                                             border-bottom-left-radius: 13px;
                                             align-items: center;
-
                                             text-wrap: wrap;
                                             width: max-content;
                                             word-wrap: break-word;
                                             max-width: 100%;
-
-                                            background-color: ${rc?.delete ? '#1d1c1c' : '#1a383b'};
+                                            background-color: ${rc?.delete ? '#1d1c1c; display: flex;' : '#1a383b'};
                                             border: 1px solid #4e4d4b;
                                             svg {
                                                 margin-right: 3px;
@@ -574,7 +588,9 @@ const ItemsRoom: React.FC<{
                                             word-wrap: break-word;
                                             max-width: 100%;
                                             border-bottom-right-radius: 13px;
-                                            background-color: ${rc?.delete === 'all' ? '#1d1c1c' : '#353636'};
+                                            background-color: ${rc?.delete === 'all'
+                                                ? '#1d1c1c; display: flex;'
+                                                : '#353636'};
                                             border: 1px solid #4e4d4b;
                                             svg {
                                                 margin-right: 3px;
@@ -648,7 +664,7 @@ const ItemsRoom: React.FC<{
                                             font-size: 1rem;
                                             margin-left: 5px;
                                             position: absolute;
-                                            right: -195px;
+                                            right: -157px;
                                             top: 5px;
                                             ${rc?.delete && 'right: -55px; top: 31px;'}
                                         `}

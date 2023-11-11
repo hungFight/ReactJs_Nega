@@ -207,5 +207,15 @@ class Messenger {
             return errorHandling(err);
         }
     };
+    setBackground = async (formData: FormData) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post<PropsChat>('/messenger/setBackground', formData);
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
 }
 export default new Messenger();

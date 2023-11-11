@@ -113,7 +113,7 @@ const LogicTitle = (
     const handleAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files;
         if (file) {
-            const { getFilesToPrePer, upLoadPer } = await handleFileUpload(file, 10, 8, 10, dispatch, 'per');
+            const { getFilesToPrePer, upLoadPer } = await handleFileUpload(file, 10, 8, 10, dispatch, 'per', false);
             setSrc(getFilesToPrePer);
             srcUp.current = upLoadPer;
         }

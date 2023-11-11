@@ -105,7 +105,7 @@ export default function LogicView(
                         const buff = Buffer.from(base64);
                         const res = await userAPI.changesOne(
                             userFirst.id,
-                            buff,
+                            buff, // mysql
                             id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                         );
                         const data = ServerBusy(res, dispatch);

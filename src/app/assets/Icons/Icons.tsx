@@ -108,7 +108,7 @@ import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
-import { PiEraserThin, PiFlowerLotusFill, PiPlayFill } from 'react-icons/pi';
+import { PiEraserThin, PiFlowerLotusFill, PiPlayFill, PiSelectionBackgroundFill } from 'react-icons/pi';
 import { HiMiniPause } from 'react-icons/hi2';
 
 export const ImageI = () => <IoImagesOutline />;
@@ -223,3 +223,4 @@ export const SpeedI = () => <MdShutterSpeed />;
 export const ForwardI = () => <GiForwardSun />;
 export const GroupPeopleI = () => <MdGroups2 />;
 export const ArrowDownI = () => <TbArrowNarrowDown />;
+export const BackgroundI = () => <PiSelectionBackgroundFill />;

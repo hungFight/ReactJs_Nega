@@ -64,7 +64,7 @@ export interface PropsChat {
         gender: number;
     };
     status: string;
-    background: string;
+    background: { v: string; type: string; id: string; userId: string; latestChatId: string };
     pins: PropsPinC[];
     room: PropsRooms[];
     deleted: {
@@ -83,7 +83,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const textarea = useRef<HTMLTextAreaElement | null>(null);
     const ERef = useRef<HTMLDivElement | null>(null);
     const del = useRef<HTMLDivElement | null>(null);
-    const check = useRef<number>(0);
     const cRef = useRef<number>(0);
     const mRef = useRef<any>(0);
     const offset = useRef<number>(0);
@@ -95,7 +94,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const [option, setOption] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [opMore, setOpMore] = useState<boolean>(false);
-    const [upload, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
+    const [uploadIn, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
+
     const chatRef = useRef<PropsChat>();
     const [wch, setWch] = useState<string | undefined>('');
     const rr = useRef<string>('');
@@ -159,6 +159,16 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             if (dataC) {
                 const newData = await new Promise<PropsChat>(async (resolve, reject) => {
                     const modifiedData = { ...dataC };
+                    if (modifiedData.background) {
+                        const dataB = await fileGridFS.getFile(modifiedData.background.v, modifiedData.background.type);
+                        const buffer = ServerBusy(dataB, dispatch);
+                        if (dataB?.message === 'File not found') {
+                            modifiedData.background.v = '';
+                        } else {
+                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                            modifiedData.background.v = base64;
+                        }
+                    }
                     await Promise.all(
                         modifiedData.room?.map(
                             async (
@@ -220,13 +230,10 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     }
                     offset.current += limit;
                 }
-                console.log(chatRef.current, 'chatRef.current');
-
                 setConversation(chatRef.current);
             }
             date1.current = moment(conversation?.room[0]?.createdAt); // first element
         }
-
         setLoading(false);
     };
     const code = `${
@@ -236,6 +243,26 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         console.log('eeeee');
 
         if (code) {
+            socket.on(
+                `conversation_changeBG_room_${conversation?._id}`,
+                async (dataBG: { type: string; v: string; id: string; userId: string; latestChatId: string }) => {
+                    if (dataBG && dataBG.userId !== id_you) {
+                        const Bg = await fileGridFS.getFile(dataBG.v, dataBG.type);
+                        const buffer = ServerBusy(Bg, dispatch);
+                        if (Bg?.message === 'File not found') {
+                            dataBG.v = '';
+                        } else {
+                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                            dataBG.v = base64;
+                            setConversation((pre) => {
+                                if (pre) return { ...pre, background: dataBG };
+                                return pre;
+                            });
+                        }
+                    }
+                },
+            );
+
             socket.on(
                 `Conversation_chat_deleteAll_${conversation?._id}`,
                 (deleteData: { chatId: string; userId: string; updatedAt: string }) => {
@@ -389,7 +416,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     }, []);
     const targetChild = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
-        const re = document.getElementById(`chat_to_scroll_${choicePin}`);
+        const re = document.getElementById(`chat_to_scroll_${choicePin}`); // auto scroll when click into pin button
         if (choicePin) {
             if (!conversation?.room.some((r) => r._id === choicePin)) {
                 fetchChat(true);
@@ -403,16 +430,16 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         top: container.scrollTop + (childRect.top - containerRect.top - 100), // calculate top's coordinate of child and parents
                         behavior: 'smooth',
                     });
+                    // if (ERef.current) ERef.current.scrollTop = -check.current;
                 }
             }
         }
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
+                console.log('Child element is now visible in the container', entry, ERef.current?.scrollTop);
                 if (entry.isIntersecting) {
                     setChoicePin('');
-
-                    console.log('Child element is now visible in the container', entry, ERef.current?.scrollTop);
                 }
                 // You can perform actions when the child element becomes visible here
             });
@@ -462,7 +489,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     useEffect(() => {
         return clearInterval(mRef.current);
     }, [mRef.current]);
-
     const handleEmojiSelect = (e: any) => {
         console.log(e);
         setValue(value + e.native);
@@ -480,11 +506,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         clearTimeout(time);
     };
     const handleSend = async (id_room: string | undefined, id_other: string | undefined) => {
-        if ((value.trim() || (upload && upload?.up?.length > 0)) && conversation) {
+        if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && conversation) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
-            const images = upload
-                ? upload?.pre.map((i) => {
+            const images = uploadIn
+                ? uploadIn?.pre.map((i) => {
                       return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
                   })
                 : [];
@@ -502,13 +528,13 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const formData = new FormData();
             const id_s = uuidv4();
             formData.append('value', encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`));
-            if (id_room) formData.append('id_room', id_room);
+            if (id_room) formData.append('id_room', id_room); // conversation._id
             if (id_) formData.append('id_', id_); // id of the room
             if (id_s && !conversation._id) formData.append('id_s', id_s); // first it have no id of the room then id_s is replace
             if (id_other) formData.append('id_others', id_other);
 
-            for (let i = 0; i < upload?.up.length; i++) {
-                formData.append('files', upload?.up[i], upload?.up[i]._id); // assign file and _id of the file upload
+            for (let i = 0; i < uploadIn?.up.length; i++) {
+                formData.append('files', uploadIn?.up[i], uploadIn?.up[i]._id); // assign file and _id of the file upload
             }
 
             const res = await sendChatAPI.send(formData);
@@ -533,13 +559,13 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
 
     const handleImageUpload = async (e: any) => {
         const files = e.target.files;
-        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', true);
         setupload({ pre: getFilesToPre, up: upLoad });
     };
 
     return {
         handleImageUpload,
-        upload,
+        uploadIn,
         handleTouchStart,
         handleTouchMove,
         handleTouchEnd,
@@ -563,7 +589,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         lg,
         ERef,
         del,
-        check,
         textarea,
         date1,
         data,

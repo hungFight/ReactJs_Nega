@@ -1,5 +1,6 @@
 export type PropsOptionText = {
     personal: string;
+    background: string;
     balloon: string;
     move: string;
     del: string;
@@ -25,6 +26,7 @@ export const ConversationText: {
     en: {
         optionRoom: {
             personal: 'View Profile',
+            background: 'Background',
             balloon: 'Balloon',
             move: 'Move',
             del: 'Delete',
@@ -43,6 +45,7 @@ export const ConversationText: {
     vi: {
         optionRoom: {
             personal: 'Trang cá nhân',
+            background: 'Nền chat',
             balloon: 'Bong bóng chat',
             move: 'Di chuyển',
             del: 'Xoá',

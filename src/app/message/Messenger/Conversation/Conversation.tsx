@@ -15,6 +15,7 @@ import {
     PenI,
     EraserI,
     PinI,
+    BackgroundI,
 } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
@@ -42,6 +43,10 @@ import { PropsConversionText } from 'src/dataText/DataMessager';
 import { decrypt } from '~/utils/crypto';
 import PinChat from './PinChat';
 import { offChats, setBalloon, setTopLeft } from '~/redux/roomsChat';
+import handleFileUpload from '~/utils/handleFileUpload';
+import chatAPI from '~/restAPI/chatAPI';
+import gridFS from '~/restAPI/gridFS';
+import CommonUtils from '~/utils/CommonUtils';
 
 const Conversation: React.FC<{
     index: number;
@@ -97,7 +102,7 @@ const Conversation: React.FC<{
 }) => {
     const {
         handleImageUpload,
-        upload,
+        uploadIn,
         handleTouchStart,
         handleTouchMove,
         handleTouchEnd,
@@ -121,7 +126,6 @@ const Conversation: React.FC<{
         lg,
         ERef,
         del,
-        check,
         textarea,
         date1,
         data,
@@ -197,9 +201,6 @@ const Conversation: React.FC<{
     };
     const [loadDel, setLoadDel] = useState<boolean>(false);
     useEffect(() => {
-        if (ERef.current) ERef.current.scrollTop = -check.current;
-    }, [conversation, itemPin]);
-    useEffect(() => {
         if (ERef.current) ERef.current.addEventListener('scroll', handleScroll);
         return () => {
             ERef.current?.removeEventListener('scroll', handleScroll);
@@ -230,15 +231,12 @@ const Conversation: React.FC<{
             }
         }
     };
-    console.log(upload, 'upload');
 
     const handleScroll = () => {
         if (!emptyRef.current && ERef.current) {
             const { scrollTop, clientHeight, scrollHeight } = ERef.current;
             const scrollBottom = -scrollTop + clientHeight;
-            console.log(scrollBottom, scrollTop, clientHeight, scrollHeight, check.current, loading);
             if (scrollBottom >= scrollHeight - 250 && !loading) {
-                check.current = -scrollTop;
                 if (cRef.current !== 2) {
                     // wait for another request
                     fetchChat(true);
@@ -284,30 +282,114 @@ const Conversation: React.FC<{
         if (conversation?._id) {
             emptyRef.current = false;
             const res = await sendChatAPi.undo(conversation._id);
-            const data: PropsChat | undefined = ServerBusy(res, dispatch);
-            if (data) {
-                data.room = data.room.map((r) => {
-                    if (r.text.t) {
-                        r.text.t = decrypt(r.text.t, `chat_${r.secondary ? r.secondary : conversation._id}`);
+            const dataV: PropsChat | undefined = ServerBusy(res, dispatch);
+            if (dataV) {
+                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                    const modifiedData: any = { ...dataV };
+                    if (modifiedData.background) {
+                        const dataB = await gridFS.getFile(modifiedData.background.v, modifiedData.background.type);
+                        const buffer = ServerBusy(dataB, dispatch);
+                        if (dataB?.message === 'File not found') {
+                            modifiedData.background.v = '';
+                        } else {
+                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                            modifiedData.background.v = base64;
+                        }
+                        const a = CommonUtils.convertBase64(modifiedData.user?.avatar);
+                        if (a) modifiedData.user.avatar = a;
                     }
-                    return r;
+                    await Promise.all(
+                        modifiedData.room?.map(
+                            async (
+                                rr: {
+                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
+                                    text: { t: string };
+                                    secondary?: string;
+                                },
+                                index1: number,
+                            ) => {
+                                if (rr.text.t) {
+                                    modifiedData.room[index1].text.t = decrypt(
+                                        rr.text.t,
+                                        `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
+                                    );
+                                }
+                                await Promise.all(
+                                    rr.imageOrVideos.map(
+                                        async (
+                                            fl: { _id: string; v: string; icon: string; type: string },
+                                            index2: number,
+                                        ) => {
+                                            const dataI = await gridFS.getFile(fl.v, fl?.type);
+                                            const buffer = ServerBusy(dataI, dispatch);
+                                            if (dataI?.message === 'File not found') {
+                                                modifiedData.room[index1].imageOrVideos[index2].v =
+                                                    dataI?.type?.search('image/') >= 0
+                                                        ? "Image doesn't exist"
+                                                        : "Video doesn't exist";
+                                            } else {
+                                                const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                                modifiedData.room[index1] = rr;
+                                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                            }
+                                        },
+                                    ),
+                                );
+                            },
+                        ),
+                    );
+                    resolve(modifiedData);
                 });
                 cRef.current = 0;
                 dispatch(setDelIds(undefined));
-                setConversation({ ...data, user: conversation.user });
+                console.log(newData, 'newDataBG');
+                setConversation(newData);
             }
         }
         setLoadDel(false);
     };
-    console.log(moves, mouse, 'moves');
     const ye = !moves.some((m) => m === conversation?._id || m === conversation?.user.id);
+
+    const handleImageUploadBg = async (e: any) => {
+        if (!ye) e.preventDefault();
+        if (conversation && ye) {
+            const files = e.target.files;
+            const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', false);
+            const fileC: any = upLoad[0];
+            const formData = new FormData();
+            if (fileC) {
+                formData.append('background', conversation.background.id);
+                formData.append('latestChatId', conversation.room[0]._id);
+                formData.append('userId', dataFirst.id);
+                formData.append('conversationId', conversation._id); // assign file and _id of the file upload
+                formData.append('files', fileC, fileC._id); // assign file and _id of the file upload
+                const res: { userId: string; latestChatID: string } = await chatAPI.setBackground(formData);
+                if (res)
+                    setConversation((pre) => {
+                        if (pre)
+                            return {
+                                ...pre,
+                                background: {
+                                    id: fileC._id,
+                                    v: getFilesToPre[0].link,
+                                    type: getFilesToPre[0].type,
+                                    userId: res.userId,
+                                    latestChatId: res.latestChatID,
+                                },
+                            };
+                        return pre;
+                    });
+            }
+        }
+    };
+    console.log(moves, mouse, 'moves');
     const dataMore: {
         options: {
             id: number;
             load?: boolean;
             name: string;
             icon: JSX.Element;
-            onClick: () => any;
+            onClick: (e?: any) => void;
         }[];
         id_room: string | undefined;
         id: string | undefined;
@@ -331,6 +413,41 @@ const Conversation: React.FC<{
             },
             {
                 id: 2,
+                name: '',
+                icon: (
+                    <Div
+                        css={`
+                            color: #869ae7;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: var(--pointer);
+                            svg {
+                                margin-right: 5px;
+                            }
+                        `}
+                    >
+                        <form method="post" encType="multipart/form-data">
+                            <input
+                                id={conversation?._id + 'uploadCon_BG'}
+                                type="file"
+                                name="file"
+                                onChange={handleImageUploadBg}
+                                hidden
+                            />
+                            <Label
+                                htmlFor={conversation?._id + 'uploadCon_BG'}
+                                color={colorText}
+                                css="align-items: center; font-size: 1.3rem;"
+                            >
+                                <BackgroundI /> {conversationText.optionRoom.background}
+                            </Label>
+                        </form>
+                    </Div>
+                ),
+                onClick: () => {},
+            },
+            {
+                id: 3,
                 name: conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
                 onClick: () => {
@@ -338,7 +455,7 @@ const Conversation: React.FC<{
                 },
             },
             {
-                id: 5,
+                id: 4,
                 name: `${conversationText.optionRoom.move} ${
                     moves.some((m) => m === conversation?._id || m === conversation?.user.id) ? ' stop' : ''
                 }`,
@@ -371,7 +488,7 @@ const Conversation: React.FC<{
 
     if (conversation?.deleted?.some((c) => c.id === userId)) {
         dataMore.options.push({
-            id: 3,
+            id: 6,
             name: conversationText.optionRoom.undo,
             load: loadDel,
             icon: loadDel ? (
@@ -386,7 +503,7 @@ const Conversation: React.FC<{
     }
     if (conversation?.room[0]?.id) {
         dataMore.options.push({
-            id: 4,
+            id: 5,
             name: conversationText.optionRoom.del,
             load: loadDel,
             icon: loadDel ? (
@@ -499,6 +616,11 @@ const Conversation: React.FC<{
             }}
         >
             <DivResultsConversation color="#e4e4e4">
+                {loading && (
+                    <DivLoading css="position: absolute; top: 37px; left: 50%; right: 50%; translate: -50%; z-index: 5;">
+                        <LoadingI />
+                    </DivLoading>
+                )}
                 {optionsForItem && (
                     <OptionForItem
                         setItemPin={setItemPin}
@@ -516,7 +638,7 @@ const Conversation: React.FC<{
                     width="100%"
                     css={`
                         align-items: center;
-                        padding: 5px 10px;
+                        padding: 0 8px 9px;
                         font-size: 25px;
                         position: absolute;
                         top: 10px;
@@ -599,16 +721,22 @@ const Conversation: React.FC<{
                 )}
                 <Div
                     ref={ERef}
-                    width="96%"
+                    width="100%"
                     css={`
                         margin-top: 22px;
                         flex-direction: column-reverse;
                         overflow-y: overlay;
                         scroll-behavior: smooth;
-                        padding-right: 11px;
+                        padding: 0 11px 20px;
                         bottom: 35px;
+                        left: 0;
                         transition: all 0.5s linear;
                         position: absolute;
+                        background-position: center;
+                        ${conversation?.background
+                            ? `background-image: url(${conversation?.background.v});  background-repeat: no-repeat;background-size: cover;`
+                            : ''}
+
                         @media (max-width: 768px) {
                             padding-right: 0px;
                             &::-webkit-scrollbar {
@@ -617,7 +745,6 @@ const Conversation: React.FC<{
                             }
                         }
                         height: 91%;
-                        padding-bottom: 20px;
                     `}
                     onScroll={() => handleScroll}
                 >
@@ -720,8 +847,10 @@ const Conversation: React.FC<{
                                 );
                             return null;
                         }
+
                         return (
                             <ItemsRoom
+                                background={conversation.background}
                                 choicePin={choicePin}
                                 setChoicePin={setChoicePin}
                                 targetChild={targetChild}
@@ -748,30 +877,24 @@ const Conversation: React.FC<{
                         );
                     })}
 
-                    {loading ? (
-                        <DivLoading>
-                            <LoadingI />
-                        </DivLoading>
-                    ) : (
+                    <Div
+                        width="100%"
+                        wrap="wrap"
+                        css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
+                    >
                         <Div
-                            width="100%"
-                            wrap="wrap"
-                            css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
+                            css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
+                            onClick={handleProfile}
                         >
-                            <Div
-                                css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
-                                onClick={handleProfile}
-                            >
-                                <ProfileCircelI />{' '}
-                                <Hname css="margin: 0 5px; width: fit-content;">
-                                    {conversationText.optionRoom.personal}
-                                </Hname>
-                            </Div>
+                            <ProfileCircelI />{' '}
+                            <Hname css="margin: 0 5px; width: fit-content;">
+                                {conversationText.optionRoom.personal}
+                            </Hname>
                         </Div>
-                    )}
+                    </Div>
                 </Div>
                 <Div
-                    width="96%"
+                    width="100%"
                     wrap="wrap"
                     css={`
                         border-radius: 5px;
@@ -780,10 +903,10 @@ const Conversation: React.FC<{
                         justify-content: center;
                         background-color: #202124;
                         position: absolute;
-                        left: 8px;
+                        left: 0px;
                         bottom: 9px;
                         z-index: 20;
-                        padding-top: 9px;
+                        padding: 9px 9px 0;
                         div#emojiCon {
                             width: 100%;
                         }
@@ -802,7 +925,7 @@ const Conversation: React.FC<{
                         </div>
                     )}
                     <Div width="100%" wrap="wrap" css="position: relative; height: auto;">
-                        {upload && upload?.pre.length > 0 && (
+                        {uploadIn && uploadIn?.pre.length > 0 && (
                             <Div
                                 width="100%"
                                 wrap="wrap"
@@ -818,14 +941,16 @@ const Conversation: React.FC<{
                                     padding: 5px;
                                 `}
                             >
-                                {upload?.pre.map((item, index) => (
+                                {uploadIn?.pre.map((item, index) => (
                                     <Div
                                         key={item.link}
                                         css={`
                                             min-width: 79px;
                                             border-radius: 5px;
                                             border: 1px solid #4e4e4e;
-                                            ${upload.pre.length === 1 ? 'width: 150px;' : 'width: 79px; flex-grow: 1;'}
+                                            ${uploadIn.pre.length === 1
+                                                ? 'width: 150px;'
+                                                : 'width: 79px; flex-grow: 1;'}
                                         `}
                                         onTouchMove={handleTouchMove}
                                         onTouchStart={handleTouchStart}

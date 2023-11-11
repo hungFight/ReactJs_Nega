@@ -34,6 +34,7 @@ const ErrorBoundaries: React.FC<{
                     css="margin: 10px auto; "
                     onClick={() => {
                         dispatch(setSession(''));
+                        dispatch(setFalseErrorServer());
                         if (login) {
                             Cookies.remove('tks');
                             Cookies.remove('k_user');

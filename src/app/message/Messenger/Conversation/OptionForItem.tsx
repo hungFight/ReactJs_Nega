@@ -307,7 +307,7 @@ const OptionForItem: React.FC<{
     const handleImageUpload = async (e: any) => {
         setLoading('Getting file...');
         const files = e.target.files;
-        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat');
+        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', true);
         setFileUpload({ pre: getFilesToPre, up: upLoad });
         setLoading('');
     };
