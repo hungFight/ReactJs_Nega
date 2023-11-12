@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { ClockCirclesI, GarbageI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { PropsChat, PropsPinC, PropsRooms } from './LogicConver';
+import { PropsChat, PropsItemRoom, PropsPinC, PropsRooms } from './LogicConver';
 import { PropsUser } from 'src/App';
 import { useDispatch } from 'react-redux';
 import { setOpenProfile } from '~/redux/hideShow';
@@ -14,7 +14,7 @@ import { UseMutationResult } from '@tanstack/react-query';
 
 const ItemPin: React.FC<{
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
-    r: PropsRooms;
+    r: PropsItemRoom;
     pins: PropsPinC[];
     dataFirst: PropsUser;
     user: {
@@ -36,7 +36,7 @@ const ItemPin: React.FC<{
             pinId: String;
         },
         {
-            previousData: PropsRooms[] | undefined;
+            previousData: PropsItemRoom[] | undefined;
         }
     >;
 

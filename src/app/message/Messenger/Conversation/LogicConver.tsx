@@ -32,6 +32,31 @@ export interface PropsPinC {
     _id: string;
 }
 export interface PropsRooms {
+    room: {
+        _id: string;
+        id: string;
+        text: {
+            t: string;
+            icon: string;
+        };
+        delete?: string;
+        update?: string;
+        secondary?: string;
+        length?: number;
+        imageOrVideos: {
+            v: string;
+            type: string;
+            icon: string;
+            link?: string;
+            _id: string;
+        }[];
+        sending?: boolean;
+        seenBy: string[];
+        updatedAt: string;
+        createdAt: string;
+    }[];
+}
+export interface PropsItemRoom {
     _id: string;
     id: string;
     text: {
@@ -54,19 +79,50 @@ export interface PropsRooms {
     updatedAt: string;
     createdAt: string;
 }
-export interface PropsChat {
+export interface PropsRoom {
+    room: {
+        _id: string;
+        id: string;
+        text: {
+            t: string;
+            icon: string;
+        };
+        delete?: string;
+        update?: string;
+        secondary?: string;
+        length?: number;
+        imageOrVideos: {
+            v: string;
+            type: string;
+            icon: string;
+            link?: string;
+            _id: string;
+        }[];
+        sending?: boolean;
+        seenBy: string[];
+        updatedAt: string;
+        createdAt: string;
+    };
+}
+export interface PropsConversationCustoms {
     _id: string;
     id_us: string[];
+    miss?: number;
     user: {
         id: string;
         fullName: string;
         avatar: string | undefined;
         gender: number;
     };
+    users: {
+        id: string;
+        fullName: string;
+        avatar: string | undefined;
+        gender: number;
+    }[];
     status: string;
     background: { v: string; type: string; id: string; userId: string; latestChatId: string };
     pins: PropsPinC[];
-    room: PropsRooms[];
     deleted: {
         id: string;
         createdAt: string;
@@ -74,6 +130,7 @@ export interface PropsChat {
     }[];
     createdAt: string;
 }
+export type PropsChat = PropsConversationCustoms & PropsRooms;
 export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
@@ -288,11 +345,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             );
             socket.on(
                 `Conversation_chat_update_${conversation?._id}`,
-                async (updateData: { chatId: string; data: PropsRooms; userId: string }) => {
+                async (updateData: { chatId: string; data: PropsItemRoom; userId: string }) => {
                     console.log(updateData, 'updateData');
 
                     if (updateData.userId !== id_you && conversation) {
-                        const newR: PropsRooms = await new Promise(async (resolve, reject) => {
+                        const newR: PropsItemRoom = await new Promise(async (resolve, reject) => {
                             const d = updateData.data;
                             if (d.text.t)
                                 d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);

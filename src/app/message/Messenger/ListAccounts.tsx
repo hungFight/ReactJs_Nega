@@ -63,7 +63,7 @@ const ListAccounts: React.FC<{
         React.SetStateAction<{
             id_room: string;
             id: string;
-            avatar: string;
+            avatar: string | undefined;
             fullName: string;
             gender: number;
         }>
@@ -92,7 +92,7 @@ const ListAccounts: React.FC<{
     const handleTouchStart = (user: {
         id_room: string;
         id: string;
-        avatar: string;
+        avatar: string | undefined;
         fullName: string;
         gender: number;
         deleted: {
@@ -129,7 +129,6 @@ const ListAccounts: React.FC<{
         if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room?.id !== userId)
             seenBy.current.setAttribute('style', 'color: #f0ffffde;');
     }, [data]);
-
     return (
         <>
             {data.users.map((rs, index) => {

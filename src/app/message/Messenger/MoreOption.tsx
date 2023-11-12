@@ -24,19 +24,38 @@ const MoreOption: React.FC<{
         React.SetStateAction<{
             id_room: string;
             id: string;
-            avatar: string;
+            avatar: string | undefined;
             fullName: string;
             gender: number;
         }>
     >;
     setOpMore?: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ dataMore, colorText, setMoreBar, setOpMore }) => {
+    background: {
+        v: string;
+        type: string;
+        id: string;
+        userId: string;
+        latestChatId: string;
+    };
+}> = ({ dataMore, colorText, setMoreBar, setOpMore, background }) => {
     return (
         <DivPos
             width="100%"
             bottom="0"
             left="0"
-            css="height: 100%; background-color: #212121cc; height: 98%; div,p{user-select: none;} z-index: 100; background-color: #29292900; border-radius: 0; align-items: flex-end;"
+            css={`
+                height: 100%;
+                background-color: #212121cc;
+                height: 98%;
+                div,
+                p {
+                    user-select: none;
+                }
+                z-index: 100;
+                background-color: #29292900;
+                border-radius: 0;
+                align-items: flex-end;
+            `}
             onClick={() => {
                 if (setMoreBar) {
                     setMoreBar({
@@ -61,6 +80,12 @@ const MoreOption: React.FC<{
                     color: ${colorText};
                     animation: chatMoveOP 0.5s linear;
                     position: relative;
+                    background-position: center;
+                    transition: all 0.5s linear;
+                    background-blend-mode: soft-light;
+                    ${background
+                        ? `background-image: url(${background.v}); background-repeat: no-repeat;background-size: cover;`
+                        : ''}
                     @keyframes chatMoveOP {
                         0% {
                             bottom: -436px;

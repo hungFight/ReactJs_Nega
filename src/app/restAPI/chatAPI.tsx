@@ -1,41 +1,10 @@
-import { PropsChat } from '~/Message/Messenger/Conversation/LogicConver';
+import { PropsChat, PropsConversationCustoms, PropsRoom } from '~/Message/Messenger/Conversation/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import { PropsId_chats } from 'src/App';
-export interface PropsRoomChat {
-    _id: string;
-    id_us: string[];
-    background: string;
-    miss?: number;
-    users: {
-        id: string;
-        avatar: any;
-        fullName: string;
-        gender: number;
-    }[];
-    user: {
-        id: string;
-        avatar: any;
-        fullName: string;
-        gender: number;
-    };
-    room: {
-        _id: string;
-        id: string;
-        text: { icon: string; t: string };
-        imageOrVideos: { v: string; icon: string; _id: string }[];
-        seenBy: string[];
-        createdAt: string;
-        secondary?: string;
-    };
-    deleted: {
-        id: string;
-        createdAt: string;
-    }[];
-    createdAt: string;
-}
+export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
 
 class Messenger {
     send = async (formData: any) => {

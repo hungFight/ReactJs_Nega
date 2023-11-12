@@ -12,7 +12,7 @@ import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import { decrypt } from '~/utils/crypto';
-import { PropsChat, PropsPinC, PropsRooms } from './LogicConver';
+import { PropsChat, PropsItemRoom, PropsPinC, PropsRooms } from './LogicConver';
 import { socket } from 'src/mainPage/nextWeb';
 import ItemPin from './ItemPin';
 
@@ -29,7 +29,7 @@ const PinChat: React.FC<{
         gender: number;
     };
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
-    room: PropsRooms[];
+    room: PropsItemRoom[];
     itemPin: PropsPinC | undefined;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
     setItemPin: React.Dispatch<React.SetStateAction<PropsPinC | undefined>>;
@@ -64,7 +64,7 @@ const PinChat: React.FC<{
         enabled: check,
         queryFn: async () => {
             try {
-                const rr: PropsRooms[] = await chatAPI.getPins(
+                const rr: PropsItemRoom[] = await chatAPI.getPins(
                     conversationId,
                     pins
                         .sort((p, a) => moment(p.createdAt).diff(new Date()) - moment(a.createdAt).diff(new Date()))
@@ -105,7 +105,7 @@ const PinChat: React.FC<{
     console.log(one.current && pins.length && !itemPin ? true : false, isLoading, 'check request');
 
     const addPin = useMutation(
-        async (newData: PropsRooms) => {
+        async (newData: PropsItemRoom) => {
             return newData;
         },
         {
@@ -180,7 +180,7 @@ const PinChat: React.FC<{
             console.log(dataF, 'Add Pin');
 
             if (!data?.some((r) => r._id === dataF.chatId) && dataF.userId !== dataFirst.id) {
-                const rr: PropsRooms[] = await chatAPI.getPins(conversationId, [dataF.chatId]);
+                const rr: PropsItemRoom[] = await chatAPI.getPins(conversationId, [dataF.chatId]);
                 const da: typeof rr = ServerBusy(rr, dispatch);
                 const newR: typeof rr = await new Promise(async (resolve, reject) => {
                     await Promise.all(

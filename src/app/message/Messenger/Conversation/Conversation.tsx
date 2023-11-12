@@ -187,6 +187,7 @@ const Conversation: React.FC<{
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             if (del.current) {
+                del.current.style.transition = 'none';
                 if (viewportWidth - 10 >= x && x >= 19) {
                     xRef.current = x - 200;
                     del.current.style.left = `${x - 200}px`;
@@ -604,6 +605,13 @@ const Conversation: React.FC<{
                 top: ${(yRef.current || top || 329) + 'px'};
                 left: ${(xRef.current || left || 185 * (index >= 1 ? index + index : index) + 8) + 'px'};
                 z-index: 99;
+                background-position: center;
+                transition: all 0.5s linear;
+                background-blend-mode: soft-light;
+                ${conversation?.background
+                    ? `background-image: url(${conversation?.background.v}); background-repeat: no-repeat;background-size: cover;`
+                    : ''}
+
                 @media (min-width: 360px) {
                     margin-right: 5px;
                 }
@@ -643,7 +651,7 @@ const Conversation: React.FC<{
                         position: absolute;
                         top: 10px;
                         left: 0;
-                        background-color: #202124;
+                        background-color: transparent;
                         z-index: 960;
                     `}
                 >
@@ -703,7 +711,7 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {conversation?.pins?.length && (
+                {conversation?.pins?.length ? (
                     <PinChat
                         one={one}
                         itemPin={itemPin}
@@ -718,25 +726,21 @@ const Conversation: React.FC<{
                         name={conversation.user.fullName}
                         setConversation={setConversation}
                     />
+                ) : (
+                    ''
                 )}
                 <Div
                     ref={ERef}
                     width="100%"
                     css={`
-                        margin-top: 22px;
                         flex-direction: column-reverse;
                         overflow-y: overlay;
                         scroll-behavior: smooth;
-                        padding: 0 11px 20px;
-                        bottom: 35px;
+                        padding: 0 11px 5px;
+                        bottom: 45px;
                         left: 0;
                         transition: all 0.5s linear;
                         position: absolute;
-                        background-position: center;
-                        ${conversation?.background
-                            ? `background-image: url(${conversation?.background.v});  background-repeat: no-repeat;background-size: cover;`
-                            : ''}
-
                         @media (max-width: 768px) {
                             padding-right: 0px;
                             &::-webkit-scrollbar {
@@ -744,7 +748,7 @@ const Conversation: React.FC<{
                                 transform: translateX(calc(100% - 100vw));
                             }
                         }
-                        height: 91%;
+                        height: 83%;
                     `}
                     onScroll={() => handleScroll}
                 >
@@ -901,7 +905,7 @@ const Conversation: React.FC<{
                         height: auto;
                         align-items: center;
                         justify-content: center;
-                        background-color: #202124;
+                        background-color: transparent;
                         position: absolute;
                         left: 0px;
                         bottom: 9px;
@@ -1044,7 +1048,14 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {opMore && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} />}
+                {opMore && conversation && (
+                    <MoreOption
+                        dataMore={dataMore}
+                        colorText={colorText}
+                        setOpMore={setOpMore}
+                        background={conversation.background}
+                    />
+                )}
             </DivResultsConversation>
         </DivConversation>
     );

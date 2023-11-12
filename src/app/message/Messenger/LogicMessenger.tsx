@@ -68,7 +68,7 @@ const LogicMessenger = () => {
     const [moreBar, setMoreBar] = useState<{
         id_room: string;
         id: string;
-        avatar: string;
+        avatar: string | undefined;
         fullName: string;
         gender: number;
     }>({
@@ -87,8 +87,18 @@ const LogicMessenger = () => {
             const res = await sendChatAPi.getRoom(limit, offset.current);
             const data: PropsRoomChat[] = ServerBusy(res, dispatch);
             const newD: typeof data = await new Promise((resolve, reject) => {
-                resolve(
-                    data?.map((d) => {
+                const newRR = Promise.all(
+                    data?.map(async (d) => {
+                        if (d.background) {
+                            const dataB = await gridFS.getFile(d.background.v, d.background.type);
+                            const buffer = ServerBusy(dataB, dispatch);
+                            if (dataB?.message === 'File not found') {
+                                d.background.v = '';
+                            } else {
+                                const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                d.background.v = base64;
+                            }
+                        }
                         if (d.room.text?.t) {
                             if (d.room?.secondary) {
                                 const bytes = CryptoJS.AES.decrypt(d.room.text?.t, `chat_${d.room.secondary}`);
@@ -103,6 +113,7 @@ const LogicMessenger = () => {
                         return d;
                     }),
                 );
+                resolve(newRR);
             });
             console.log(newD, 'newD', data);
 
