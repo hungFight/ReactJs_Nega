@@ -21,6 +21,7 @@ const OptionForItem: React.FC<{
                   _id: string;
                   id: string;
                   text: string;
+                  who: string;
                   imageOrVideos: {
                       v: string;
                       type?: string | undefined;
@@ -35,6 +36,7 @@ const OptionForItem: React.FC<{
         _id: string;
         id: string;
         text: string;
+        who: string;
         secondary?: string;
         imageOrVideos: {
             v: string;
@@ -50,35 +52,47 @@ const OptionForItem: React.FC<{
     setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
     setItemPin: React.Dispatch<React.SetStateAction<PropsPinC | undefined>>;
-}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation, setItemPin }) => {
+    id_you: string;
+}> = ({
+    setOptions,
+    optionsForItem,
+    ERef,
+    del,
+    conversation,
+    colorText,
+    setEmoji,
+    setConversation,
+    setItemPin,
+    id_you,
+}) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<string>('');
     const textarea = useRef<HTMLTextAreaElement | null>(null);
     const [fileUpload, setFileUpload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any }>();
-    const [changeCus, setChangeCus] = useState<number | undefined>(undefined);
+    const [changeCus, setChangeCus] = useState<string | undefined>(undefined);
     const dispatch = useDispatch();
-    const optionsForItemData: {
+    const optionsForItemDataYou: {
         [en: string]: {
-            id: number;
+            id: string;
             icon: JSX.Element;
             color: string;
             title: string;
             top: string;
-            onClick: (id?: number) => void;
+            onClick: (id?: string) => void;
         }[];
         vi: {
-            id: number;
+            id: string;
             icon: JSX.Element;
             color: string;
             title: string;
             top: string;
-            onClick: (id?: number) => void;
+            onClick: (id?: string) => void;
         }[];
     } = {
         en: [
             {
-                id: 1,
+                id: 'deleteData',
                 icon: <DelAllI />,
                 color: '#67b5f8',
                 title: 'Remove both side can not see this text',
@@ -115,7 +129,7 @@ const OptionForItem: React.FC<{
                 },
             },
             {
-                id: 2,
+                id: 'deleteSelf',
                 icon: <DelSelfI />,
                 color: '#67b5f8',
                 title: 'Remove only you can not see this text',
@@ -123,12 +137,12 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
+                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
                         const data: string | null = ServerBusy(res, dispatch);
                         if (data) {
                             const newR = conversation.room.map((r) => {
-                                if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                    r.delete = optionsForItem.id;
+                                if (r._id === optionsForItem._id) {
+                                    r.delete = id_you;
                                     r.updatedAt = data;
                                 }
                                 return r;
@@ -141,18 +155,18 @@ const OptionForItem: React.FC<{
                 },
             },
             {
-                id: 3,
+                id: 'changeChat',
                 icon: <ChangeChatI />,
                 color: '',
                 title: 'Change this text and others still can see your changing',
                 top: '-100px',
-                onClick: async (id?: number) => {
+                onClick: async (id?: string) => {
                     setChangeCus(id);
                     // const res = await sendChatAPi.getChat
                 },
             },
             {
-                id: 4,
+                id: 'pin',
                 icon: <PinI />,
                 color: '#d0afaf',
                 title: 'Pin',
@@ -178,20 +192,10 @@ const OptionForItem: React.FC<{
                     }
                 },
             },
-            {
-                id: 5,
-                icon: <RedeemI />,
-                color: '#73b3eb',
-                title: 'Redeem',
-                top: '-40px',
-                onClick: async () => {
-                    // const res = await sendChatAPi.getChat
-                },
-            },
         ],
         vi: [
             {
-                id: 1,
+                id: 'deleteData',
                 icon: <DelAllI />,
                 color: '#67b5f8',
                 title: 'Khi xoá cả 2 bên sẽ đều không nhìn thấy tin nhắn này',
@@ -229,7 +233,7 @@ const OptionForItem: React.FC<{
                 },
             },
             {
-                id: 2,
+                id: 'deleteSelf',
                 icon: <DelSelfI />,
                 color: '#67b5f8',
                 title: 'Khi xoá thi chỉ mình bạn không nhìn thấy tin nhắn này',
@@ -237,13 +241,13 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, optionsForItem.id);
+                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
                         const data: string | null = ServerBusy(res, dispatch);
                         if (data) {
                             console.log('here');
                             const newR = conversation.room.map((r) => {
-                                if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                    r.delete = optionsForItem.id;
+                                if (r._id === optionsForItem._id) {
+                                    r.delete = id_you;
                                     r.updatedAt = data;
                                 }
                                 return r;
@@ -256,17 +260,17 @@ const OptionForItem: React.FC<{
                 },
             },
             {
-                id: 3,
+                id: 'changeChat',
                 icon: <ChangeChatI />,
                 color: '',
                 title: 'Khi thay đổi tin nhắn người khác sẽ biết ban đã thay đổi',
                 top: '-98px',
-                onClick: async (id?: number) => {
+                onClick: async (id?: string) => {
                     setChangeCus(id);
                 },
             },
             {
-                id: 4,
+                id: 'pin',
                 icon: <PinI />,
                 color: '#d0afaf',
                 title: 'Gim',
@@ -292,14 +296,135 @@ const OptionForItem: React.FC<{
                     }
                 },
             },
+        ],
+    };
+    const optionsForItemDataOthers: {
+        [en: string]: {
+            id: string;
+            icon: JSX.Element;
+            color: string;
+            title: string;
+            top: string;
+            onClick: (id?: string) => void;
+        }[];
+        vi: {
+            id: string;
+            icon: JSX.Element;
+            color: string;
+            title: string;
+            top: string;
+            onClick: (id?: string) => void;
+        }[];
+    } = {
+        en: [
             {
-                id: 5,
-                icon: <RedeemI />,
-                color: '#73b3eb',
-                title: 'Thu hồi',
+                id: 'deleteSelf',
+                icon: <DelSelfI />,
+                color: '#67b5f8',
+                title: 'Remove only you can not see this text',
+                top: '-80px',
+                onClick: async () => {
+                    if (conversation && optionsForItem) {
+                        setLoading('Removing...');
+                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data) {
+                            const newR = conversation.room.map((r) => {
+                                if (r._id === optionsForItem._id) {
+                                    r.delete = id_you;
+                                    r.updatedAt = data;
+                                }
+                                return r;
+                            });
+                            setConversation({ ...conversation, room: newR });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
+                    }
+                },
+            },
+            {
+                id: 'pin',
+                icon: <PinI />,
+                color: '#d0afaf',
+                title: 'Pin',
                 top: '-40px',
                 onClick: async () => {
-                    // const res = await sendChatAPi.getChat
+                    if (conversation && optionsForItem) {
+                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                            const res = await chatAPI.pin(
+                                optionsForItem._id,
+                                optionsForItem.id,
+                                conversation._id,
+                                conversation.room[0]._id,
+                            );
+                            if (res) {
+                                setConversation((pre) => {
+                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                                    return pre;
+                                });
+                                setItemPin(res);
+                            }
+                        }
+                        setOptions(undefined);
+                    }
+                },
+            },
+        ],
+        vi: [
+            {
+                id: 'deleteSelf',
+                icon: <DelSelfI />,
+                color: '#67b5f8',
+                title: 'Khi xoá thi chỉ mình bạn không nhìn thấy tin nhắn này',
+                top: '-100px',
+                onClick: async () => {
+                    if (conversation && optionsForItem) {
+                        setLoading('Removing...');
+                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data) {
+                            console.log('here');
+                            const newR = conversation.room.map((r) => {
+                                if (r._id === optionsForItem._id) {
+                                    r.delete = id_you;
+                                    r.updatedAt = data;
+                                }
+                                return r;
+                            });
+                            setConversation({ ...conversation, room: newR });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
+                    }
+                },
+            },
+
+            {
+                id: 'pin',
+                icon: <PinI />,
+                color: '#d0afaf',
+                title: 'Gim',
+                top: '-40px',
+                onClick: async () => {
+                    if (conversation && optionsForItem) {
+                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                            const res = await chatAPI.pin(
+                                optionsForItem._id,
+                                optionsForItem.id,
+                                conversation._id,
+                                conversation.room[0]._id,
+                            );
+                            if (res) {
+                                setConversation((pre) => {
+                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                                    return pre;
+                                });
+                                setItemPin(res);
+                            }
+                        }
+                        setOptions(undefined);
+                    }
                 },
             },
         ],
@@ -461,9 +586,9 @@ const OptionForItem: React.FC<{
             `}
             onClick={() => setOptions(undefined)}
         >
-            {changeCus === 3 && (
+            {changeCus === 'changeChat' && (
                 <Div display="block" css="position: absolute; left: 6px; top: 64px;">
-                    {optionsForItemData[lg].map((o) => (
+                    {(optionsForItem.who === 'you' ? optionsForItemDataYou : optionsForItemDataOthers)[lg].map((o) => (
                         <Div
                             key={o.id}
                             css={`
@@ -570,7 +695,7 @@ const OptionForItem: React.FC<{
                                     border-radius: 7px;
                                     border-top-left-radius: 13px;
                                     border-bottom-left-radius: 13px;
-                                    background-color: #1a383b;
+                                    background-color: ${optionsForItem.who === 'you' ? '#1a383b' : '#272727bd'};
                                     border: 1px solid #4e4d4b;
                                     text-wrap: wrap;
                                     width: max-content;
@@ -657,7 +782,7 @@ const OptionForItem: React.FC<{
                     justify-content: right;
                     padding: 0 5px;
                     animation: chatMove 0.5s linear;
-                    justify-content: ${changeCus === 3 ? 'space-between' : 'right'};
+                    justify-content: ${changeCus === 'changeChat' ? 'space-between' : 'right'};
                     @keyframes chatMove {
                         0% {
                             right: -348px;
@@ -669,7 +794,7 @@ const OptionForItem: React.FC<{
                 `}
                 onClick={(e) => e.stopPropagation()}
             >
-                {changeCus === 3 && (
+                {changeCus === 'changeChat' && (
                     <DivFlex width="auto">
                         <Div
                             css={`
@@ -716,7 +841,7 @@ const OptionForItem: React.FC<{
                         cursor: var(--pointer);
                     `}
                 >
-                    {changeCus === 3 ? (
+                    {changeCus === 'changeChat' ? (
                         <Div
                             width="34px"
                             css={`
@@ -780,7 +905,7 @@ const OptionForItem: React.FC<{
                 onTouchMove={(e) => handleTouchMoveM(e)}
                 onClick={(e) => e.stopPropagation()}
             >
-                {changeCus === 3 ? (
+                {changeCus === 'changeChat' ? (
                     <Div // inserting bar of chat
                         width="100%"
                         css={`
@@ -820,7 +945,7 @@ const OptionForItem: React.FC<{
                         />
                     </Div>
                 ) : (
-                    optionsForItemData[lg].map((o) => (
+                    (optionsForItem.who === 'you' ? optionsForItemDataYou : optionsForItemDataOthers)[lg].map((o) => (
                         <Div
                             key={o.id}
                             css={`

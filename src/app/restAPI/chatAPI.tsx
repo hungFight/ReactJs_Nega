@@ -186,5 +186,15 @@ class Messenger {
             return errorHandling(err);
         }
     };
+    delBackground = async (conversationId: string, id_file: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post<PropsChat>('/messenger/delBackground', { conversationId, id_file: [id_file] });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
 }
 export default new Messenger();

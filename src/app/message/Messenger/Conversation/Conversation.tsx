@@ -16,6 +16,7 @@ import {
     EraserI,
     PinI,
     BackgroundI,
+    GarbageI,
 } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
@@ -359,7 +360,7 @@ const Conversation: React.FC<{
             const fileC: any = upLoad[0];
             const formData = new FormData();
             if (fileC) {
-                formData.append('background', conversation.background.id);
+                if (conversation.background) formData.append('background', conversation.background.id);
                 formData.append('latestChatId', conversation.room[0]._id);
                 formData.append('userId', dataFirst.id);
                 formData.append('conversationId', conversation._id); // assign file and _id of the file upload
@@ -383,7 +384,6 @@ const Conversation: React.FC<{
             }
         }
     };
-    console.log(moves, mouse, 'moves');
     const dataMore: {
         options: {
             id: number;
@@ -416,34 +416,58 @@ const Conversation: React.FC<{
                 id: 2,
                 name: '',
                 icon: (
-                    <Div
-                        css={`
-                            color: #869ae7;
-                            align-items: center;
-                            justify-content: center;
-                            cursor: var(--pointer);
-                            svg {
-                                margin-right: 5px;
-                            }
-                        `}
-                    >
-                        <form method="post" encType="multipart/form-data">
-                            <input
-                                id={conversation?._id + 'uploadCon_BG'}
-                                type="file"
-                                name="file"
-                                onChange={handleImageUploadBg}
-                                hidden
-                            />
-                            <Label
-                                htmlFor={conversation?._id + 'uploadCon_BG'}
-                                color={colorText}
-                                css="align-items: center; font-size: 1.3rem;"
+                    <>
+                        <Div
+                            wrap="wrap"
+                            css={`
+                                align-items: center;
+                                justify-content: left;
+                                cursor: var(--pointer);
+                                svg {
+                                    margin-right: 5px;
+                                }
+                                form {
+                                    margin-bottom: 12px;
+                                }
+                            `}
+                        >
+                            <form method="post" encType="multipart/form-data">
+                                <input
+                                    id={conversation?._id + 'uploadCon_BG'}
+                                    type="file"
+                                    name="file"
+                                    onChange={handleImageUploadBg}
+                                    hidden
+                                />
+                                <Label
+                                    htmlFor={conversation?._id + 'uploadCon_BG'}
+                                    color={colorText}
+                                    css="align-items: center; font-size: 1.3rem;"
+                                >
+                                    <BackgroundI /> {conversationText.optionRoom.background}
+                                </Label>
+                            </form>
+                            <P
+                                z="1.3rem"
+                                css="width: 100%; display: flex; svg{margin-right: 3px;} align-items: baseline;"
+                                onClick={async () => {
+                                    if (conversation && conversation.background) {
+                                        const res: boolean = await chatAPI.delBackground(
+                                            conversation._id,
+                                            conversation.background.id,
+                                        );
+                                        if (res)
+                                            setConversation((pre) => {
+                                                if (pre) return { ...pre, background: undefined };
+                                                return pre;
+                                            });
+                                    }
+                                }}
                             >
-                                <BackgroundI /> {conversationText.optionRoom.background}
-                            </Label>
-                        </form>
-                    </Div>
+                                <GarbageI /> Remove background
+                            </P>
+                        </Div>
+                    </>
                 ),
                 onClick: () => {},
             },
@@ -549,6 +573,7 @@ const Conversation: React.FC<{
               id: string;
               text: string;
               secondary?: string;
+              who: string;
               imageOrVideos:
                   | {
                         v: string;
@@ -631,6 +656,7 @@ const Conversation: React.FC<{
                 )}
                 {optionsForItem && (
                     <OptionForItem
+                        id_you={dataFirst.id}
                         setItemPin={setItemPin}
                         setOptions={setOptions}
                         ERef={ERef}
@@ -742,7 +768,6 @@ const Conversation: React.FC<{
                         transition: all 0.5s linear;
                         position: absolute;
                         @media (max-width: 768px) {
-                            padding-right: 0px;
                             &::-webkit-scrollbar {
                                 width: 0px;
                                 transform: translateX(calc(100% - 100vw));

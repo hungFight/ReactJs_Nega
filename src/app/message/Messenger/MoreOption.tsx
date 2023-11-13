@@ -30,7 +30,7 @@ const MoreOption: React.FC<{
         }>
     >;
     setOpMore?: React.Dispatch<React.SetStateAction<boolean>>;
-    background: {
+    background?: {
         v: string;
         type: string;
         id: string;

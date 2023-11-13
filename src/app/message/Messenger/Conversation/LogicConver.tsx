@@ -121,12 +121,12 @@ export interface PropsConversationCustoms {
         gender: number;
     }[];
     status: string;
-    background: { v: string; type: string; id: string; userId: string; latestChatId: string };
+    background?: { v: string; type: string; id: string; userId: string; latestChatId: string };
     pins: PropsPinC[];
     deleted: {
         id: string;
         createdAt: string;
-        show: boolean;
+        show?: boolean;
     }[];
     createdAt: string;
 }
@@ -298,8 +298,13 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     }phrase_chatRoom`;
     useEffect(() => {
         console.log('eeeee');
-
         if (code) {
+            socket.on(`conversation_deleteBG_room_${conversation?._id}`, () => {
+                setConversation((pre) => {
+                    if (pre) return { ...pre, background: undefined };
+                    return pre;
+                });
+            });
             socket.on(
                 `conversation_changeBG_room_${conversation?._id}`,
                 async (dataBG: { type: string; v: string; id: string; userId: string; latestChatId: string }) => {
