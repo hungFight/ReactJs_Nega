@@ -221,7 +221,7 @@ const PinChat: React.FC<{
             css={`
                 user-select: none;
                 position: absolute;
-                top: 50px;
+                top: 45px;
                 left: 0;
                 width: 100%;
                 background-color: #030303c4;

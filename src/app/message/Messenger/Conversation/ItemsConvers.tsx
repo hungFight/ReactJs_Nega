@@ -9,6 +9,7 @@ import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessager';
 import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import Conversation from './Conversation';
 type PropsRc = {
     _id: string;
     id: string;
@@ -203,7 +204,7 @@ const ItemsRoom: React.FC<{
                           width="100%"
                           css={`
                               padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
-                              margin-bottom: 8px;
+                              margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                               justify-content: right;
                               position: relative;
                               .chatTime {
@@ -292,7 +293,7 @@ const ItemsRoom: React.FC<{
                                           padding-left: 4px;
                                           border-radius: 5px;
                                           font-size: 25px;
-                                          z-index: 10;
+                                          z-index: 0;
                                           cursor: var(--pointer);
                                       `}
                                       onClick={(e) => {
@@ -379,6 +380,7 @@ const ItemsRoom: React.FC<{
                                               }
                                               ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                           `}
+                                          onClick={(e) => e.stopPropagation()}
                                       >
                                           {rc.imageOrVideos.map((fl, index) => {
                                               return (
@@ -494,7 +496,7 @@ const ItemsRoom: React.FC<{
                               padding-right: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
                               justify-content: left;
                               align-items: center;
-                              margin-bottom: 8px;
+                              margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                               position: relative;
                               .chatTime {
                                   .dateTime {
@@ -597,7 +599,7 @@ const ItemsRoom: React.FC<{
                                               padding-left: 4px;
                                               border-radius: 5px;
                                               font-size: 25px;
-                                              z-index: 10;
+                                              z-index: 0;
                                               justify-content: right;
                                               cursor: var(--pointer);
                                           `}
@@ -638,7 +640,9 @@ const ItemsRoom: React.FC<{
                                                   border-bottom-right-radius: 13px;
                                                   background-color: ${rc?.delete === 'all'
                                                       ? '#1d1c1c; display: flex;'
-                                                      : '#272727bd'};
+                                                      : background
+                                                      ? '#272727bd'
+                                                      : '#393838bd'};
                                                   border: 1px solid #4e4d4b;
                                                   svg {
                                                       margin-right: 3px;

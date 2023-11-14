@@ -14,9 +14,13 @@ const FileConversation: React.FC<{
     who?: string;
 }> = ({ type = '', v, icon, ERef, del, who }) => {
     const image = type.search('image/') >= 0;
+    console.log(image, 'image', type, type.search('image/'));
+
     const handleRoom = (e: any) => {
+        e.stopPropagation();
+        console.log('here');
+
         if (image) {
-            e.stopPropagation();
             if (e.target.getAttribute('class').includes('roomOfChat')) {
                 e.target.classList.remove('roomOfChat');
                 del.current?.setAttribute('style', 'z-index: 99');
@@ -50,7 +54,7 @@ const FileConversation: React.FC<{
             `}
             onClick={handleRoom}
         >
-            {v.search('exist') >= 0 ? (
+            {v?.search('exist') >= 0 ? (
                 <P
                     z="1.2rem"
                     css={`
@@ -76,7 +80,7 @@ const FileConversation: React.FC<{
                     {v}
                 </P>
             ) : image ? (
-                <Img id="roomImageChat" src={v} radius="5px" onClick={(e) => e.stopPropagation()} />
+                <Img id="roomImageChat" src={v} radius="5px" />
             ) : (
                 <Player src={v} radius="5px" />
             )}

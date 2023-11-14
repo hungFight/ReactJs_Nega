@@ -832,38 +832,40 @@ const OptionForItem: React.FC<{
                         {loading && <P z="1.2rem">{loading}</P>}
                     </DivFlex>
                 )}
-                <Div
-                    css={`
-                        font-size: 1.4rem;
-                        padding: 2px 8px;
-                        background-color: #4b4b4b;
-                        border-radius: 5px;
-                        cursor: var(--pointer);
-                    `}
-                >
-                    {changeCus === 'changeChat' ? (
-                        <Div
-                            width="34px"
-                            css={`
-                                font-size: 22px;
-                                color: #23c3ec;
-                                height: 100%;
-                                align-items: center;
-                                justify-content: center;
-                                cursor: ${loading ||
-                                (!value && !fileUpload) ||
-                                (value === optionsForItem.text && !fileUpload)
-                                    ? 'no-drop'
-                                    : 'var(--pointer)'};
-                            `}
-                            onClick={handleChange}
-                        >
-                            <SendOPTI />
-                        </Div>
-                    ) : (
-                        'Reply'
-                    )}
-                </Div>
+                {optionsForItem.id !== id_you && (
+                    <Div
+                        css={`
+                            font-size: 1.4rem;
+                            padding: 2px 8px;
+                            background-color: #4b4b4b;
+                            border-radius: 5px;
+                            cursor: var(--pointer);
+                        `}
+                    >
+                        {changeCus === 'changeChat' ? (
+                            <Div
+                                width="34px"
+                                css={`
+                                    font-size: 22px;
+                                    color: #23c3ec;
+                                    height: 100%;
+                                    align-items: center;
+                                    justify-content: center;
+                                    cursor: ${loading ||
+                                    (!value && !fileUpload) ||
+                                    (value === optionsForItem.text && !fileUpload)
+                                        ? 'no-drop'
+                                        : 'var(--pointer)'};
+                                `}
+                                onClick={handleChange}
+                            >
+                                <SendOPTI />
+                            </Div>
+                        ) : (
+                            <Div>Reply</Div>
+                        )}
+                    </Div>
+                )}
             </Div>
             <Div
                 wrap="wrap"

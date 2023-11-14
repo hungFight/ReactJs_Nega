@@ -139,7 +139,7 @@ const ItemPin: React.FC<{
             width="100%"
             css="margin: 2px 0; position: relative; overflow: auto; cursor: var(--pointer); align-items: center; background-color: #19191aa6; padding: 5px 10px; padding-left: 22px; justify-content: space-between; &:hover{background-color:#313131;}"
             onClick={() => {
-                if (coord.current === 0) setChoicePin(r._id);
+                setChoicePin(r._id);
             }}
             onMouseMove={handleMove}
             onTouchMove={handleMove}
@@ -165,10 +165,10 @@ const ItemPin: React.FC<{
                 />
                 <Div css="align-items: center;" wrap="wrap">
                     <Div width="100%" css="align-items: center; ">
-                        <P z="1.2rem" css="text-wrap: nowrap; margin-right: 3px;">
+                        <P z="1.2rem" css="text-wrap: nowrap; margin-right: 3px; color: #828282;">
                             {whoText}:
                         </P>
-                        <P z="1.2rem" css="overflow: hidden; width: 67%; ">
+                        <P z="1.2rem" css="overflow: hidden; width: 67%; text-wrap: nowrap;">
                             {r.text.t}
                             {r?.delete && <GarbageI />}
                             {r?.delete && r.id === dataFirst.id
@@ -200,17 +200,19 @@ const ItemPin: React.FC<{
                     </P>
                 </Div>
             </Div>
-            <Div wrap="wrap" width="27%">
-                {r.imageOrVideos.map((f) => (
-                    <Div key={f._id} width="30px" css="height: 30px; margin: 2px; ">
-                        {f.type.search('image/') >= 0 ? (
-                            <Img src={f.v} alt={f._id} radius="5px" />
-                        ) : (
-                            <Player src={f.v} />
-                        )}
-                    </Div>
-                ))}
-            </Div>
+            {r.imageOrVideos && (
+                <Div wrap="wrap" width="27%">
+                    {r.imageOrVideos.map((f) => (
+                        <Div key={f._id} width="30px" css="height: 30px; margin: 2px; ">
+                            {f.type.search('image/') >= 0 ? (
+                                <Img src={f.v} alt={f._id} radius="5px" />
+                            ) : (
+                                <Player src={f.v} />
+                            )}
+                        </Div>
+                    ))}
+                </Div>
+            )}
         </Div>
     );
 };
