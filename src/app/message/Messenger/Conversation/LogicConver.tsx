@@ -567,7 +567,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const handleTouchEnd = () => {
         clearTimeout(time);
     };
-    const handleSend = async (id_room: string | undefined, id_other: string | undefined) => {
+    const handleSend = async (conversationId: string | undefined, id_other: string | undefined) => {
         if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && conversation) {
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
@@ -590,9 +590,9 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const formData = new FormData();
             const id_s = uuidv4();
             formData.append('value', encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`));
-            if (id_room) formData.append('id_room', id_room); // conversation._id
-            if (id_) formData.append('id_', id_); // id of the room
-            if (id_s && !conversation._id) formData.append('id_s', id_s); // first it have no id of the room then id_s is replace
+            if (conversationId) formData.append('conversationId', conversationId); // conversation._id
+            if (id_) formData.append('id_room', id_); // id of the room
+            if (id_s && !conversation._id) formData.append('id_s', id_s); // first it have no _id of the conversationId then id_s is replaced
             if (id_other) formData.append('id_others', id_other);
 
             for (let i = 0; i < uploadIn?.up.length; i++) {
@@ -614,6 +614,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);
                 setupload(undefined);
+                setConversation(conversation);
                 dispatch(setRoomChat(data));
             }
         }

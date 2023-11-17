@@ -37,7 +37,7 @@ import { setDelIds } from '~/redux/reload';
 import sendChatAPi from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { useSelector } from 'react-redux';
-import OptionForItem from './OptionForItem';
+import OptionForItem from './OptionForItems/OptionForItem';
 import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/nextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessager';

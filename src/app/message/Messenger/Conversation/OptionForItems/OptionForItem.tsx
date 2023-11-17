@@ -1,8 +1,18 @@
 import React, { useRef, useState } from 'react';
-import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI, SendOPTI } from '~/assets/Icons/Icons';
+import {
+    CameraI,
+    ChangeChatI,
+    DelAllI,
+    DelSelfI,
+    PinI,
+    RedeemI,
+    RemoveCircleI,
+    SendI,
+    SendOPTI,
+} from '~/assets/Icons/Icons';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import FileConversation from '../File';
-import { PropsChat, PropsPinC } from './LogicConver';
+import FileConversation from '../../File';
+import { PropsChat, PropsPinC } from '../LogicConver';
 import Languages from '~/reUsingComponents/languages';
 import chatAPI from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
@@ -13,6 +23,7 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import { decrypt, encrypt } from '~/utils/crypto';
 import fileGridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
+import DateTime from '~/reUsingComponents/CurrentDateTime';
 
 const OptionForItem: React.FC<{
     setOptions: (
@@ -71,6 +82,7 @@ const OptionForItem: React.FC<{
     const textarea = useRef<HTMLTextAreaElement | null>(null);
     const [fileUpload, setFileUpload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any }>();
     const [changeCus, setChangeCus] = useState<string | undefined>(undefined);
+    const [replyText, setReplyText] = useState<string>('');
     const dispatch = useDispatch();
     const optionsForItemDataYou: {
         [en: string]: {
@@ -370,6 +382,16 @@ const OptionForItem: React.FC<{
                     }
                 },
             },
+            {
+                id: 'reply',
+                icon: <SendOPTI />,
+                color: colorText,
+                title: 'Reply',
+                top: '-40px',
+                onClick: (id?: string) => {
+                    setChangeCus(id);
+                },
+            },
         ],
         vi: [
             {
@@ -425,6 +447,16 @@ const OptionForItem: React.FC<{
                         }
                         setOptions(undefined);
                     }
+                },
+            },
+            {
+                id: 'reply',
+                icon: <SendOPTI />,
+                color: colorText,
+                title: 'Reply',
+                top: '-40px',
+                onClick: (id?: string) => {
+                    setChangeCus(id);
                 },
             },
         ],
@@ -565,6 +597,75 @@ const OptionForItem: React.FC<{
             } else {
                 setLoading('Change failed');
             }
+        }
+    };
+    const handleReply = async () => {
+        if (
+            conversation &&
+            optionsForItem &&
+            !loading &&
+            ((replyText && replyText !== optionsForItem.text) || fileUpload?.up.length)
+        ) {
+            textarea.current?.setAttribute('style', 'height: 33px');
+            setValue('');
+            const images = fileUpload?.pre
+                ? fileUpload?.pre?.map((i) => {
+                      return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
+                  })
+                : [];
+            const id_ = uuidv4();
+            const chat: any = {
+                createdAt: DateTime(),
+                imageOrVideos: images,
+                seenBy: [],
+                text: { t: replyText, icon: '' },
+                sending: true,
+                id: id_you,
+                _id: id_,
+                reply: {
+                    id_reply: id_you,
+                    id_replied: optionsForItem.id,
+                    text: optionsForItem.text,
+                    imageOrVideos: optionsForItem.imageOrVideos.length ? true : false,
+                },
+            };
+            if (conversation) conversation.room.unshift(chat);
+            const formData = new FormData();
+            formData.append('value', encrypt(replyText, `chat_${conversation._id}`));
+            if (conversation._id) formData.append('conversationId', conversation._id); // conversation._id
+            formData.append(
+                'reply',
+                JSON.stringify({
+                    id_room: optionsForItem._id,
+                    id_reply: id_you,
+                    id_replied: optionsForItem.id,
+                    text: encrypt(optionsForItem.text, `chat_${conversation._id}`),
+                }),
+            ); // id of the room
+            formData.append('id_room', id_);
+            if (optionsForItem) formData.append('id_others', optionsForItem.id);
+
+            for (let i = 0; i < fileUpload?.up.length; i++) {
+                formData.append('files', fileUpload?.up[i], fileUpload?.up[i]._id); // assign file and _id of the file upload
+            }
+
+            const res = await chatAPI.send(formData);
+            // const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
+            // const ciphertext = CryptoJS.AES.encrypt(JSON.stringify([1, 5]), 'hello').toString();
+            // console.log(ciphertext, 'ciphertext');
+            // const bytes = CryptoJS.AES.decrypt(ciphertext, 'hello');
+            // const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+            // console.log(JSON.parse(decryptedData), 'decryptedData');
+            // if (data && conversation) {
+            //     rr.current = '';
+            //     conversation.room.map((r) => {
+            //         if (r.sending) r.sending = false;
+            //     });
+            //     if (!conversation._id) conversation._id = data._id; // add id when id is empty
+            //     data.users.push(conversation.user);
+            //     setupload(undefined);
+            //     dispatch(setRoomChat(data));
+            // }
         }
     };
     console.log(conversation, 'conversationA');
@@ -711,7 +812,7 @@ const OptionForItem: React.FC<{
                         </Div>
                     </Div>
                 )}
-                {(fileUpload?.pre.length || optionsForItem.imageOrVideos.length > 0) && (
+                {(fileUpload?.pre.length || optionsForItem.imageOrVideos.length > 0) && changeCus === 'changeChat' && (
                     <Div
                         width="100%"
                         css={`
@@ -774,13 +875,109 @@ const OptionForItem: React.FC<{
                         </Div>
                     </Div>
                 )}
+                {replyText && (
+                    <Div width="100%" css="padding-right: 30%; max-height: 100%; margin-top: 15px;">
+                        <Div
+                            width="100%"
+                            onClick={(e) => e.stopPropagation()}
+                            css="justify-content: start;align-items: baseline; overflow-y: overlay;"
+                        >
+                            <P
+                                z="1.4rem"
+                                css={`
+                                    white-space: pre;
+                                    margin: 0;
+                                    padding: 2px 12px 4px;
+                                    border-radius: 7px;
+                                    border-top-left-radius: 13px;
+                                    border-bottom-left-radius: 13px;
+                                    background-color: #148a6ebd;
+                                    border: 1px solid #4e4d4b;
+                                    text-wrap: wrap;
+                                    width: max-content;
+                                    word-wrap: break-word;
+                                    max-width: 100%;
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                {replyText}
+                            </P>
+                        </Div>
+                    </Div>
+                )}
+                {(fileUpload?.pre.length || optionsForItem.imageOrVideos.length > 0) && changeCus === 'reply' && (
+                    <Div
+                        width="100%"
+                        css={`
+                            height: auto;
+                            width: 71%;
+                            align-items: center;
+                            ${!replyText ? 'margin-top: 10px;' : ''}
+                        `}
+                    >
+                        <Div
+                            width="100%"
+                            wrap="wrap"
+                            css={`
+                                height: 97%;
+                                overflow-y: overlay;
+                                border-radius: 5px;
+                                position: relative;
+                                padding: 1px;
+                                justify-content: left;
+                                .roomOfChat {
+                                    position: fixed;
+                                    width: 100%;
+                                    height: 100%;
+                                    top: 0;
+                                    left: 0;
+                                    background-color: #171718;
+                                    z-index: 9999;
+                                    img {
+                                        object-fit: contain;
+                                    }
+                                }
+                                div {
+                                    flex-grow: 0 !important;
+                                    border: 2px solid #686767;
+                                }
+                            `}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {fileUpload?.pre.length
+                                ? fileUpload.pre.map((fl) => (
+                                      <FileConversation
+                                          key={fl._id}
+                                          type={fl?.type}
+                                          v={fl.link}
+                                          ERef={ERef}
+                                          del={del}
+                                      />
+                                  ))
+                                : optionsForItem.imageOrVideos.map((fl, index) => (
+                                      <FileConversation
+                                          key={fl._id}
+                                          type={fl?.type}
+                                          v={fl.v}
+                                          icon={fl.icon}
+                                          ERef={ERef}
+                                          del={del}
+                                      />
+                                  ))}
+                        </Div>
+                    </Div>
+                )}
             </Div>
             <Div
                 width="100%"
                 css={`
                     margin: 5px 0;
                     justify-content: right;
+                    position: relative;
                     padding: 0 5px;
+                    align-items: center;
                     animation: chatMove 0.5s linear;
                     justify-content: ${changeCus === 'changeChat' ? 'space-between' : 'right'};
                     @keyframes chatMove {
@@ -794,8 +991,13 @@ const OptionForItem: React.FC<{
                 `}
                 onClick={(e) => e.stopPropagation()}
             >
-                {changeCus === 'changeChat' && (
-                    <DivFlex width="auto">
+                {(changeCus === 'changeChat' || changeCus === 'reply') && (
+                    <DivFlex
+                        width="auto"
+                        css={`
+                            ${changeCus === 'reply' ? 'position: absolute; top: -30px; left: 10px;' : ''}
+                        `}
+                    >
                         <Div
                             css={`
                                 cursor: var(--pointer);
@@ -832,13 +1034,43 @@ const OptionForItem: React.FC<{
                         {loading && <P z="1.2rem">{loading}</P>}
                     </DivFlex>
                 )}
-                {optionsForItem.id !== id_you && (
+                {changeCus === 'reply' && (
+                    <Textarea
+                        ref={textarea}
+                        color={colorText}
+                        value={replyText}
+                        placeholder="Send"
+                        bg="rgb(255 255 255 / 6%)"
+                        css={`
+                            width: 100%;
+                            max-height: 144px;
+                            margin: 0;
+                            padding: 5px 10px;
+                            border-radius: 10px;
+                            font-size: 1.4rem !important;
+                            overflow-y: overlay;
+                            height: 33px;
+                            &:disabled {
+                                background-color: #f2f2f2; /* Set a background color */
+                                cursor: not-allowed; /* Change cursor to "not-allowed" */
+                                color: #888; /* Change text color to a subdued gray */
+                            }
+                        `}
+                        onKeyDown={(e) => handleOnKeyDown(e)}
+                        onKeyUp={(e) => handleOnKeyup(e)}
+                        onChange={(e) => {
+                            setReplyText(e.target.value);
+                        }}
+                    />
+                )}
+                {(optionsForItem.id !== id_you || changeCus === 'changeChat') && (
                     <Div
                         css={`
                             font-size: 1.4rem;
                             padding: 2px 8px;
                             background-color: #4b4b4b;
                             border-radius: 5px;
+                            align-items: center;
                             cursor: var(--pointer);
                         `}
                     >
@@ -862,7 +1094,28 @@ const OptionForItem: React.FC<{
                                 <SendOPTI />
                             </Div>
                         ) : (
-                            <Div>Reply</Div>
+                            changeCus === 'reply' && (
+                                <>
+                                    <Div
+                                        width="34px"
+                                        css={`
+                                            font-size: 22px;
+                                            color: #23c3ec;
+                                            height: 100%;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: ${loading ||
+                                            (!replyText && !fileUpload) ||
+                                            (replyText === optionsForItem.text && !fileUpload)
+                                                ? 'no-drop'
+                                                : 'var(--pointer)'};
+                                        `}
+                                        onClick={handleReply}
+                                    >
+                                        <SendOPTI />
+                                    </Div>
+                                </>
+                            )
                         )}
                     </Div>
                 )}
@@ -957,6 +1210,7 @@ const OptionForItem: React.FC<{
                                 font-size: 25px;
                                 padding: 2px;
                                 color: ${o.color};
+                                ${o.id === changeCus ? 'border-bottom: 1px solid #7b7b7b;' : ''}
                                 svg {
                                     pointer-events: none;
                                 }
