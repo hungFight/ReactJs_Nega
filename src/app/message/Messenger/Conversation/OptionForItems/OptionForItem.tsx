@@ -626,6 +626,7 @@ const OptionForItem: React.FC<{
                     id_reply: id_you,
                     id_replied: optionsForItem.id,
                     text: optionsForItem.text,
+                    id_room: optionsForItem._id,
                     imageOrVideos: optionsForItem.imageOrVideos.length ? true : false,
                 },
             };
@@ -640,6 +641,7 @@ const OptionForItem: React.FC<{
                     id_reply: id_you,
                     id_replied: optionsForItem.id,
                     text: encrypt(optionsForItem.text, `chat_${conversation._id}`),
+                    imageOrVideos: optionsForItem.imageOrVideos,
                 }),
             ); // id of the room
             formData.append('id_room', id_);

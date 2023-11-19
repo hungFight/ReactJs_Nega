@@ -32,29 +32,7 @@ export interface PropsPinC {
     _id: string;
 }
 export interface PropsRooms {
-    room: {
-        _id: string;
-        id: string;
-        text: {
-            t: string;
-            icon: string;
-        };
-        delete?: string;
-        update?: string;
-        secondary?: string;
-        length?: number;
-        imageOrVideos: {
-            v: string;
-            type: string;
-            icon: string;
-            link?: string;
-            _id: string;
-        }[];
-        sending?: boolean;
-        seenBy: string[];
-        updatedAt: string;
-        createdAt: string;
-    }[];
+    room: PropsItemRoom[];
 }
 export interface PropsItemRoom {
     _id: string;
@@ -78,19 +56,11 @@ export interface PropsItemRoom {
     seenBy: string[];
     updatedAt: string;
     createdAt: string;
-}
-export interface PropsRoom {
-    room: {
-        _id: string;
-        id: string;
-        text: {
-            t: string;
-            icon: string;
-        };
-        delete?: string;
-        update?: string;
-        secondary?: string;
-        length?: number;
+    reply: {
+        id_room: string;
+        id_reply: string;
+        id_replied: string;
+        text: string;
         imageOrVideos: {
             v: string;
             type: string;
@@ -98,11 +68,10 @@ export interface PropsRoom {
             link?: string;
             _id: string;
         }[];
-        sending?: boolean;
-        seenBy: string[];
-        updatedAt: string;
-        createdAt: string;
     };
+}
+export interface PropsRoom {
+    room: PropsItemRoom;
 }
 export interface PropsConversationCustoms {
     _id: string;
@@ -160,18 +129,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const [choicePin, setChoicePin] = useState<string>('');
 
     const [conversation, setConversation] = useState<PropsChat>();
-    const [dataSent, setDataSent] = useState<
-        | {
-              createdAt: string;
-              updatedAt: string;
-              imageOrVideos: any;
-              seenBy: string[];
-              text: { t: string; icon: string };
-              _id: string;
-              id: string;
-          }
-        | undefined
-    >();
+    const [dataSent, setDataSent] = useState<PropsItemRoom | undefined>();
     // display conversation's each day
     const date1 = useRef<moment.Moment | null>(null);
     const [writingBy, setWritingBy] = useState<{ length: number; id: string } | undefined>();
@@ -209,13 +167,13 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
 
             cRef.current = 2;
             const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, chatRef.current?._id);
-            const dataC = ServerBusy(res, dispatch);
+            const dataC: PropsConversationCustoms & PropsRooms = ServerBusy(res, dispatch);
             console.log(dataC, 'chatRef.current');
 
             if (!dataC.room.length) emptyRef.current = true;
             if (dataC) {
-                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                    const modifiedData = { ...dataC };
+                const newData = await new Promise<PropsConversationCustoms & PropsRooms>(async (resolve, reject) => {
+                    const modifiedData: typeof newData = { ...dataC };
                     if (modifiedData.background) {
                         const dataB = await fileGridFS.getFile(modifiedData.background.v, modifiedData.background.type);
                         const buffer = ServerBusy(dataB, dispatch);
@@ -227,44 +185,43 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         }
                     }
                     await Promise.all(
-                        modifiedData.room?.map(
-                            async (
-                                rr: {
-                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
-                                    text: { t: string };
-                                    secondary?: string;
-                                },
-                                index1: number,
-                            ) => {
-                                if (rr.text.t) {
-                                    modifiedData.room[index1].text.t = decrypt(
-                                        rr.text.t,
+                        modifiedData.room?.map(async (rr: PropsItemRoom, index1: number) => {
+                            if (rr.text.t) {
+                                modifiedData.room[index1].text.t = decrypt(
+                                    rr.text.t,
+                                    `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
+                                );
+                            }
+                            if (rr?.reply && modifiedData.room[index1].reply) {
+                                if (rr.reply.text) {
+                                    modifiedData.room[index1].reply.text = decrypt(
+                                        rr.reply?.text,
                                         `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
                                     );
                                 }
-                                await Promise.all(
-                                    rr.imageOrVideos.map(
-                                        async (
-                                            fl: { _id: string; v: string; icon: string; type: string },
-                                            index2: number,
-                                        ) => {
-                                            const data = await fileGridFS.getFile(fl.v, fl?.type);
-                                            const buffer = ServerBusy(data, dispatch);
-                                            if (data?.message === 'File not found') {
-                                                modifiedData.room[index1].imageOrVideos[index2].v =
-                                                    data?.type?.search('image/') >= 0
-                                                        ? "Image doesn't exist"
-                                                        : "Video doesn't exist";
-                                            } else {
-                                                const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                                modifiedData.room[index1] = rr;
-                                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                            }
-                                        },
-                                    ),
-                                );
-                            },
-                        ),
+                            }
+                            await Promise.all(
+                                rr.imageOrVideos.map(
+                                    async (
+                                        fl: { _id: string; v: string; icon: string; type: string },
+                                        index2: number,
+                                    ) => {
+                                        const data = await fileGridFS.getFile(fl.v, fl?.type);
+                                        const buffer = ServerBusy(data, dispatch);
+                                        if (data?.message === 'File not found') {
+                                            modifiedData.room[index1].imageOrVideos[index2].v =
+                                                data?.type?.search('image/') >= 0
+                                                    ? "Image doesn't exist"
+                                                    : "Video doesn't exist";
+                                        } else {
+                                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                            modifiedData.room[index1] = rr;
+                                            modifiedData.room[index1].imageOrVideos[index2].v = base64;
+                                        }
+                                    },
+                                ),
+                            );
+                        }),
                     );
                     resolve(modifiedData);
                 });

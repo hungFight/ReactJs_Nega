@@ -149,6 +149,7 @@ const Conversation: React.FC<{
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<string[]>([]);
     const one = useRef<boolean>(true);
+    const [roomImage, setRoomImage] = useState<{ id_room: string; id_file: string } | undefined>(undefined);
 
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);
@@ -902,6 +903,8 @@ const Conversation: React.FC<{
                                 setWch={setWch}
                                 rr={rr}
                                 pins={conversation.pins}
+                                roomImage={roomImage}
+                                setRoomImage={setRoomImage}
                             />
                         );
                     })}

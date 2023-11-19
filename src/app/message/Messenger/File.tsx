@@ -1,40 +1,46 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { ImageI } from '~/assets/Icons/Icons';
 import Player from '~/reUsingComponents/Videos/Player';
+import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
 const FileConversation: React.FC<{
     del: React.MutableRefObject<HTMLDivElement | null>;
+    id_room?: string;
     type?: string;
     v: string;
     icon?: string;
     ERef?: any;
     who?: string;
-}> = ({ type = '', v, icon, ERef, del, who }) => {
+    roomImage?:
+        | {
+              id_room: string;
+              id_file: string;
+          }
+        | undefined;
+    id_file?: string;
+    setRoomImage?: React.Dispatch<
+        React.SetStateAction<
+            | {
+                  id_room: string;
+                  id_file: string;
+              }
+            | undefined
+        >
+    >;
+    fixed?: boolean;
+}> = ({ type = '', v, icon, ERef, del, who, setRoomImage, roomImage, id_room, id_file, fixed }) => {
     const image = type.search('image/') >= 0;
     console.log(image, 'image', type, type.search('image/'));
 
-    const handleRoom = (e: any) => {
-        e.stopPropagation();
-        console.log('here');
-
-        if (image) {
-            if (e.target.getAttribute('class').includes('roomOfChat')) {
-                e.target.classList.remove('roomOfChat');
-                del.current?.setAttribute('style', 'z-index: 99');
-            } else {
-                e.target.classList.add('roomOfChat');
-                del.current?.setAttribute('style', 'z-index: 100');
-            }
-        }
-    };
     useEffect(() => {
         // if (v.length < 50 && !v.search('data')) setReload(true); // check data format
     }, [v]);
     return (
         <Div
+            className={`${roomImage?.id_file === id_file && fixed ? 'roomOfChat' : ''}`}
             css={`
                 min-width: 79px;
                 width: 79px;
@@ -42,6 +48,7 @@ const FileConversation: React.FC<{
                 border: 2px solid #202124;
                 flex-grow: 1;
                 position: relative;
+                user-select: none;
                 &::after {
                     display: block;
                     content: '';
@@ -51,10 +58,27 @@ const FileConversation: React.FC<{
                     top: 0;
                     left: 0;
                 }
+                z-index: ${roomImage?.id_file === id_file ? 0 : 1};
             `}
-            onClick={handleRoom}
+            onClick={(e) => {
+                e.stopPropagation();
+                if (id_file && id_room && setRoomImage && roomImage?.id_file !== id_file)
+                    setRoomImage({ id_file, id_room });
+                if (roomImage?.id_file === id_file && setRoomImage) setRoomImage(undefined);
+            }}
         >
-            {v?.search('exist') >= 0 ? (
+            {roomImage?.id_file === id_file && !fixed && (
+                <DivPos
+                    width="100%"
+                    css="height: 100%; background-color: #0000009e; border-radius: 0px;"
+                    top="0"
+                    left="0"
+                    size="1.2rem"
+                >
+                    previewing
+                </DivPos>
+            )}
+            {v?.search('exist') >= 0 ? ( // notify info when file doesn't exist
                 <P
                     z="1.2rem"
                     css={`

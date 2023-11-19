@@ -75,6 +75,7 @@ import {
     MdReport,
     MdShutterSpeed,
     MdGroups2,
+    MdOutlineQuestionAnswer,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
 import {
@@ -224,3 +225,4 @@ export const ForwardI = () => <GiForwardSun />;
 export const GroupPeopleI = () => <MdGroups2 />;
 export const ArrowDownI = () => <TbArrowNarrowDown />;
 export const BackgroundI = () => <PiSelectionBackgroundFill />;
+export const ReplyI = () => <MdOutlineQuestionAnswer />;
