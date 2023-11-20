@@ -199,6 +199,25 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                         `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
                                     );
                                 }
+                                if (rr.reply.imageOrVideos.length) {
+                                    await Promise.all(
+                                        rr.reply.imageOrVideos.map(async (file, indexReFi) => {
+                                            if (indexReFi <= 2) {
+                                                const data = await fileGridFS.getFile(file._id, file?.type);
+                                                const buffer = ServerBusy(data, dispatch);
+                                                if (data?.message === 'File not found') {
+                                                    modifiedData.room[index1].reply.imageOrVideos[indexReFi].v =
+                                                        data?.type?.search('image/') >= 0
+                                                            ? "Image doesn't exist"
+                                                            : "Video doesn't exist";
+                                                } else {
+                                                    const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                                    modifiedData.room[index1].reply.imageOrVideos[indexReFi].v = base64;
+                                                }
+                                            }
+                                        }),
+                                    );
+                                }
                             }
                             await Promise.all(
                                 rr.imageOrVideos.map(
@@ -206,7 +225,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                         fl: { _id: string; v: string; icon: string; type: string },
                                         index2: number,
                                     ) => {
-                                        const data = await fileGridFS.getFile(fl.v, fl?.type);
+                                        const data = await fileGridFS.getFile(fl._id, fl?.type);
                                         const buffer = ServerBusy(data, dispatch);
                                         if (data?.message === 'File not found') {
                                             modifiedData.room[index1].imageOrVideos[index2].v =
@@ -215,7 +234,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                                     : "Video doesn't exist";
                                         } else {
                                             const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                            modifiedData.room[index1] = rr;
                                             modifiedData.room[index1].imageOrVideos[index2].v = base64;
                                         }
                                     },
@@ -388,6 +406,33 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                             data.room.imageOrVideos[index].v = base64;
                         }),
                     );
+                    if (data.room?.reply) {
+                        if (data.room.reply.text) {
+                            data.room.reply.text = decrypt(
+                                data.room.reply?.text,
+                                `chat_${data.room.secondary ? data.room.secondary : data._id}`,
+                            );
+                        }
+                        if (data.room.reply.imageOrVideos.length) {
+                            await Promise.all(
+                                data.room.reply.imageOrVideos.map(async (file, indexReFi) => {
+                                    if (indexReFi <= 2) {
+                                        const dataF = await fileGridFS.getFile(file._id, file?.type);
+                                        const buffer = ServerBusy(dataF, dispatch);
+                                        if (dataF?.message === 'File not found') {
+                                            data.room.reply.imageOrVideos[indexReFi].v =
+                                                dataF?.type?.search('image/') >= 0
+                                                    ? "Image doesn't exist"
+                                                    : "Video doesn't exist";
+                                        } else {
+                                            const base64 = CommonUtils.convertBase64GridFS(buffer);
+                                            data.room.reply.imageOrVideos[indexReFi].v = base64;
+                                        }
+                                    }
+                                }),
+                            );
+                        }
+                    }
                     resolve(data.room);
                 });
                 if (newD.text?.t) {
@@ -527,6 +572,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const handleSend = async (conversationId: string | undefined, id_other: string | undefined) => {
         if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && conversation) {
             textarea.current?.setAttribute('style', 'height: 33px');
+            if (ERef.current) ERef.current.scrollTop = 0;
             setValue('');
             const images = uploadIn
                 ? uploadIn?.pre.map((i) => {
@@ -558,15 +604,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
 
             const res = await sendChatAPI.send(formData);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
-            const ciphertext = CryptoJS.AES.encrypt(JSON.stringify([1, 5]), 'hello').toString();
-            console.log(ciphertext, 'ciphertext');
-            const bytes = CryptoJS.AES.decrypt(ciphertext, 'hello');
-            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-            console.log(JSON.parse(decryptedData), 'decryptedData');
             if (data && conversation) {
                 rr.current = '';
-                conversation.room.map((r) => {
+                conversation.room = conversation.room.map((r) => {
                     if (r.sending) r.sending = false;
+                    return r;
                 });
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);

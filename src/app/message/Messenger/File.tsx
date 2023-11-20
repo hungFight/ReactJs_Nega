@@ -31,6 +31,7 @@ const FileConversation: React.FC<{
         >
     >;
     fixed?: boolean;
+    room?: boolean;
 }> = ({ type = '', v, icon, ERef, del, who, setRoomImage, roomImage, id_room, id_file, fixed }) => {
     const image = type.search('image/') >= 0;
     console.log(image, 'image', type, type.search('image/'));
@@ -40,7 +41,7 @@ const FileConversation: React.FC<{
     }, [v]);
     return (
         <Div
-            className={`${roomImage?.id_file === id_file && fixed ? 'roomOfChat' : ''}`}
+            className={`${roomImage?.id_file === id_file && fixed ? 'roomOfChat' : 'roomIf'} `}
             css={`
                 min-width: 79px;
                 width: 79px;
@@ -61,13 +62,13 @@ const FileConversation: React.FC<{
                 z-index: ${roomImage?.id_file === id_file ? 0 : 1};
             `}
             onClick={(e) => {
-                e.stopPropagation();
+                if (setRoomImage) e.stopPropagation();
                 if (id_file && id_room && setRoomImage && roomImage?.id_file !== id_file)
                     setRoomImage({ id_file, id_room });
                 if (roomImage?.id_file === id_file && setRoomImage) setRoomImage(undefined);
             }}
         >
-            {roomImage?.id_file === id_file && !fixed && (
+            {roomImage && roomImage?.id_file === id_file && !fixed && (
                 <DivPos
                     width="100%"
                     css="height: 100%; background-color: #0000009e; border-radius: 0px;"

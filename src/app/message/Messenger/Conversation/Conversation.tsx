@@ -651,7 +651,7 @@ const Conversation: React.FC<{
         >
             <DivResultsConversation color="#e4e4e4">
                 {loading && (
-                    <DivLoading css="position: absolute; top: 37px; left: 50%; right: 50%; translate: -50%; z-index: 5;">
+                    <DivLoading css="position: absolute; top: 50px; left: 50%; right: 50%; translate: -50%; z-index: 999;">
                         <LoadingI />
                     </DivLoading>
                 )}
@@ -667,6 +667,8 @@ const Conversation: React.FC<{
                         conversation={conversation}
                         setConversation={setConversation}
                         setEmoji={setEmoji}
+                        roomImage={roomImage}
+                        setRoomImage={setRoomImage}
                     />
                 )}
                 <Div

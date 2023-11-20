@@ -214,6 +214,15 @@ const ItemsRoom: React.FC<{
                                   position: relative;
                                   z-index: ${roomImage?.id_room === rc._id ? 2 : 3};
                                   ${marginTop <= -5 ? 'margin-top: 10px;' : ''}
+                                  margin-top: ${rc?.reply?.imageOrVideos.length
+                                      ? rc?.reply?.imageOrVideos.length <= 3
+                                          ? rc?.reply?.imageOrVideos.length * 45
+                                          : 150
+                                      : rc?.reply?.text
+                                      ? rc?.reply?.text.length <= 38
+                                          ? 24
+                                          : 50
+                                      : ''}px;
                                   .chatTime {
                                       &:hover {
                                           #showDotAtRoomChat {
@@ -239,7 +248,7 @@ const ItemsRoom: React.FC<{
                                   }
                               `}
                           >
-                              {rc?.reply?.text && (
+                              {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
                                   <Div
                                       css={`
                                           position: absolute;
@@ -249,7 +258,7 @@ const ItemsRoom: React.FC<{
                                           width: fit-content;
                                           border-radius: 5px;
                                           padding: 5px;
-                                          bottom: 70%;
+                                          bottom: 100%;
                                           opacity: 0.5;
                                           cursor: var(--pointer);
                                           user-select: none;
@@ -258,14 +267,70 @@ const ItemsRoom: React.FC<{
                                           if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
                                       }}
                                   >
-                                      <Div width="inherit" css="position: relative;">
-                                          <P z="1.2rem">{rc.reply.text}</P>{' '}
+                                      <Div wrap="wrap" width="inherit">
+                                          {rc.reply.text && (
+                                              <P
+                                                  z="1.2rem"
+                                                  css={`
+                                                      padding: 2px;
+                                                      display: -webkit-box;
+                                                      -webkit-line-clamp: 2;
+                                                      -webkit-box-orient: vertical;
+                                                      overflow: hidden;
+                                                      width: fit-content;
+                                                      white-space: pre;
+                                                      text-wrap: wrap;
+                                                      word-wrap: break-word;
+                                                      max-width: 212px;
+                                                  `}
+                                              >
+                                                  {rc.reply.text}
+                                              </P>
+                                          )}
+                                          {rc?.reply?.imageOrVideos.length > 0 && (
+                                              <Div
+                                                  css={`
+                                                      align-items: end;
+                                                      flex-grow: 1;
+                                                  `}
+                                              >
+                                                  <Div
+                                                      width="100%"
+                                                      wrap="wrap"
+                                                      css={`
+                                                          .roomIf {
+                                                              height: 50px;
+                                                              width: auto;
+                                                          }
+                                                      `}
+                                                  >
+                                                      {rc?.reply?.imageOrVideos.map((fl, index) => {
+                                                          if (index <= 2) {
+                                                              return (
+                                                                  <FileConversation
+                                                                      id_room={rc._id}
+                                                                      key={fl._id + '103' + index}
+                                                                      type={fl?.type}
+                                                                      id_file={fl._id}
+                                                                      v={fl.v}
+                                                                      icon={fl.icon}
+                                                                      ERef={ERef}
+                                                                      del={del}
+                                                                      who="you"
+                                                                  />
+                                                              );
+                                                          }
+                                                      })}
+                                                  </Div>
+                                              </Div>
+                                          )}
                                           <Div css="position: absolute; top: 0px; left: -25px;">
                                               <ReplyI />
                                           </Div>
                                       </Div>
                                   </Div>
                               )}
+
                               {chatId && (
                                   <DivPos
                                       top="-13px"
@@ -556,11 +621,6 @@ const ItemsRoom: React.FC<{
                                   />
                               )}
                           </Div>
-                          {rc?.reply?.text && (
-                              <P z="1.2rem" css="opacity: 0; padding-left: 35%">
-                                  {rc.reply.text}
-                              </P>
-                          )}
                       </>
                   )
                 : rc?.delete !== dataFirst.id && (
@@ -575,6 +635,16 @@ const ItemsRoom: React.FC<{
                               margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                               position: relative;
                               z-index: ${roomImage?.id_room === rc._id ? 2 : 3};
+                              ${marginTop <= -5 ? 'margin-top: 10px;' : ''}
+                              margin-top: ${rc?.reply?.imageOrVideos.length
+                                  ? rc?.reply?.imageOrVideos.length <= 2
+                                      ? rc?.reply?.imageOrVideos.length * 45
+                                      : 150
+                                  : rc?.reply?.text
+                                  ? rc?.reply?.text.length <= 38
+                                      ? 40
+                                      : 90
+                                  : ''}px;
                               .chatTime {
                                   .dateTime {
                                       display: block;
@@ -582,6 +652,88 @@ const ItemsRoom: React.FC<{
                               }
                           `}
                       >
+                          {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
+                              <Div
+                                  css={`
+                                      position: absolute;
+                                      left: 21px;
+                                      max-width: 65%;
+                                      background-color: #0a0a0ad4;
+                                      width: fit-content;
+                                      border-radius: 5px;
+                                      padding: 5px;
+                                      bottom: 100%;
+                                      opacity: 0.5;
+                                      cursor: var(--pointer);
+                                      user-select: none;
+                                  `}
+                                  onClick={() => {
+                                      if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
+                                  }}
+                              >
+                                  <Div wrap="wrap" width="inherit">
+                                      {rc.reply.text && (
+                                          <P
+                                              z="1.2rem"
+                                              css={`
+                                                  padding: 2px;
+                                                  display: -webkit-box;
+                                                  -webkit-line-clamp: 2;
+                                                  -webkit-box-orient: vertical;
+                                                  overflow: hidden;
+                                                  width: fit-content;
+                                                  white-space: pre;
+                                                  text-wrap: wrap;
+                                                  word-wrap: break-word;
+                                                  max-width: 212px;
+                                              `}
+                                          >
+                                              {rc.reply.text}
+                                          </P>
+                                      )}
+                                      {rc?.reply?.imageOrVideos.length > 0 && (
+                                          <Div
+                                              css={`
+                                                  align-items: end;
+                                                  flex-grow: 1;
+                                              `}
+                                          >
+                                              <Div
+                                                  width="100%"
+                                                  wrap="wrap"
+                                                  css={`
+                                                      .roomIf {
+                                                          height: 50px;
+                                                          width: auto;
+                                                      }
+                                                  `}
+                                              >
+                                                  {rc?.reply?.imageOrVideos.map((fl, index) => {
+                                                      if (index <= 2) {
+                                                          return (
+                                                              <FileConversation
+                                                                  id_room={rc._id}
+                                                                  key={fl._id + '103' + index}
+                                                                  type={fl?.type}
+                                                                  id_file={fl._id}
+                                                                  v={fl.v}
+                                                                  icon={fl.icon}
+                                                                  ERef={ERef}
+                                                                  del={del}
+                                                                  who="you"
+                                                              />
+                                                          );
+                                                      }
+                                                  })}
+                                              </Div>
+                                          </Div>
+                                      )}
+                                      <Div css="position: absolute; top: 0px; right: -25px;">
+                                          <ReplyI />
+                                      </Div>
+                                  </Div>
+                              </Div>
+                          )}
                           {chatId && (
                               <DivPos
                                   top="-13px"

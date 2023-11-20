@@ -14,7 +14,7 @@ import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefaul
 import FileConversation from '../../File';
 import { PropsChat, PropsPinC } from '../LogicConver';
 import Languages from '~/reUsingComponents/languages';
-import chatAPI from '~/restAPI/chatAPI';
+import chatAPI, { PropsRoomChat } from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
@@ -24,6 +24,7 @@ import { decrypt, encrypt } from '~/utils/crypto';
 import fileGridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import DateTime from '~/reUsingComponents/CurrentDateTime';
+import { setRoomChat } from '~/redux/messenger';
 
 const OptionForItem: React.FC<{
     setOptions: (
@@ -64,6 +65,21 @@ const OptionForItem: React.FC<{
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
     setItemPin: React.Dispatch<React.SetStateAction<PropsPinC | undefined>>;
     id_you: string;
+    setRoomImage: React.Dispatch<
+        React.SetStateAction<
+            | {
+                  id_room: string;
+                  id_file: string;
+              }
+            | undefined
+        >
+    >;
+    roomImage:
+        | {
+              id_room: string;
+              id_file: string;
+          }
+        | undefined;
 }> = ({
     setOptions,
     optionsForItem,
@@ -75,6 +91,8 @@ const OptionForItem: React.FC<{
     setConversation,
     setItemPin,
     id_you,
+    setRoomImage,
+    roomImage,
 }) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
@@ -606,8 +624,10 @@ const OptionForItem: React.FC<{
             !loading &&
             ((replyText && replyText !== optionsForItem.text) || fileUpload?.up.length)
         ) {
+            if (ERef.current) ERef.current.scrollTop = 0;
             textarea.current?.setAttribute('style', 'height: 33px');
             setValue('');
+            setLoading('sending...');
             const images = fileUpload?.pre
                 ? fileUpload?.pre?.map((i) => {
                       return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
@@ -641,7 +661,12 @@ const OptionForItem: React.FC<{
                     id_reply: id_you,
                     id_replied: optionsForItem.id,
                     text: encrypt(optionsForItem.text, `chat_${conversation._id}`),
-                    imageOrVideos: optionsForItem.imageOrVideos,
+                    imageOrVideos: optionsForItem.imageOrVideos.map((i) => ({
+                        _id: i._id,
+                        v: '',
+                        type: i.type,
+                        icon: '',
+                    })),
                 }),
             ); // id of the room
             formData.append('id_room', id_);
@@ -650,24 +675,20 @@ const OptionForItem: React.FC<{
             for (let i = 0; i < fileUpload?.up.length; i++) {
                 formData.append('files', fileUpload?.up[i], fileUpload?.up[i]._id); // assign file and _id of the file upload
             }
-
             const res = await chatAPI.send(formData);
-            // const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
-            // const ciphertext = CryptoJS.AES.encrypt(JSON.stringify([1, 5]), 'hello').toString();
-            // console.log(ciphertext, 'ciphertext');
-            // const bytes = CryptoJS.AES.decrypt(ciphertext, 'hello');
-            // const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-            // console.log(JSON.parse(decryptedData), 'decryptedData');
-            // if (data && conversation) {
-            //     rr.current = '';
-            //     conversation.room.map((r) => {
-            //         if (r.sending) r.sending = false;
-            //     });
-            //     if (!conversation._id) conversation._id = data._id; // add id when id is empty
-            //     data.users.push(conversation.user);
-            //     setupload(undefined);
-            //     dispatch(setRoomChat(data));
-            // }
+            const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
+            if (data && conversation) {
+                conversation.room.map((r) => {
+                    if (r.sending) r.sending = false;
+                });
+                if (!conversation._id) conversation._id = data._id; // add id when id is empty
+                setConversation(conversation);
+                data.users.push(conversation.user);
+                setFileUpload(undefined);
+                setOptions(undefined);
+                setLoading('');
+                dispatch(setRoomChat(data));
+            }
         }
     };
     console.log(conversation, 'conversationA');
@@ -687,7 +708,6 @@ const OptionForItem: React.FC<{
                 padding: 10px;
                 overflow: hidden;
             `}
-            onClick={() => setOptions(undefined)}
         >
             {changeCus === 'changeChat' && (
                 <Div display="block" css="position: absolute; left: 6px; top: 64px;">
@@ -770,6 +790,7 @@ const OptionForItem: React.FC<{
                 width="100%"
                 css={`
                     height: 50%;
+                    overflow: overlay;
                     position: relative;
                     animation: chatMove 0.5s linear;
                     @keyframes chatMove {
@@ -814,14 +835,15 @@ const OptionForItem: React.FC<{
                         </Div>
                     </Div>
                 )}
-                {(fileUpload?.pre.length || optionsForItem.imageOrVideos.length > 0) && changeCus === 'changeChat' && (
+                {(fileUpload?.pre.length || optionsForItem.imageOrVideos.length > 0) && (
                     <Div
                         width="100%"
                         css={`
-                            height: ${optionsForItem.text ? '90%' : '100%'};
                             width: 100%;
                             align-items: center;
                             padding: 10px;
+                            padding-left: 20%;
+                            margin-top: 6px;
                         `}
                     >
                         <Div
@@ -848,13 +870,12 @@ const OptionForItem: React.FC<{
                                 }
                                 div {
                                     flex-grow: 0 !important;
-                                    height: 50%;
-                                    border: 2px solid #686767;
+                                    border: 2px solid #b951b9;
                                 }
                             `}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {fileUpload?.pre.length
+                            {changeCus !== 'reply' && fileUpload?.pre.length
                                 ? fileUpload.pre.map((fl) => (
                                       <FileConversation
                                           key={fl._id}
@@ -877,6 +898,7 @@ const OptionForItem: React.FC<{
                         </Div>
                     </Div>
                 )}
+
                 {replyText && (
                     <Div width="100%" css="padding-right: 30%; max-height: 100%; margin-top: 15px;">
                         <Div
@@ -916,7 +938,7 @@ const OptionForItem: React.FC<{
                             height: auto;
                             width: 71%;
                             align-items: center;
-                            ${!replyText ? 'margin-top: 10px;' : ''}
+                            margin-top: 6px;
                         `}
                     >
                         <Div
@@ -948,26 +970,9 @@ const OptionForItem: React.FC<{
                             `}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {fileUpload?.pre.length
-                                ? fileUpload.pre.map((fl) => (
-                                      <FileConversation
-                                          key={fl._id}
-                                          type={fl?.type}
-                                          v={fl.link}
-                                          ERef={ERef}
-                                          del={del}
-                                      />
-                                  ))
-                                : optionsForItem.imageOrVideos.map((fl, index) => (
-                                      <FileConversation
-                                          key={fl._id}
-                                          type={fl?.type}
-                                          v={fl.v}
-                                          icon={fl.icon}
-                                          ERef={ERef}
-                                          del={del}
-                                      />
-                                  ))}
+                            {fileUpload?.pre.map((fl) => (
+                                <FileConversation key={fl._id} type={fl?.type} v={fl.link} ERef={ERef} del={del} />
+                            ))}
                         </Div>
                     </Div>
                 )}
@@ -1070,7 +1075,6 @@ const OptionForItem: React.FC<{
                         css={`
                             font-size: 1.4rem;
                             padding: 2px 8px;
-                            background-color: #4b4b4b;
                             border-radius: 5px;
                             align-items: center;
                             cursor: var(--pointer);
