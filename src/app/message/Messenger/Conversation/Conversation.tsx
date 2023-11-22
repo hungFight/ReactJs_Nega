@@ -48,7 +48,21 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import chatAPI from '~/restAPI/chatAPI';
 import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
-
+export interface PropsDataMoreConversation {
+    options: {
+        id: number;
+        load?: boolean;
+        name: string;
+        device?: string;
+        icon: JSX.Element;
+        onClick: (e?: any) => void;
+    }[];
+    id_room: string | undefined;
+    id: string | undefined;
+    avatar: string | undefined;
+    fullName: string | undefined;
+    gender: number | undefined;
+}
 const Conversation: React.FC<{
     index: number;
     colorText: string;
@@ -153,6 +167,7 @@ const Conversation: React.FC<{
 
     const xRef = useRef<number | null>(null);
     const yRef = useRef<number | null>(null);
+    const scrollCheck = useRef<boolean>(true);
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (conversation?._id && moves.includes(conversation._id) && del.current)
             if (moves.some((m) => m === conversation?._id || m === conversation?.user.id)) {
@@ -236,6 +251,7 @@ const Conversation: React.FC<{
     };
 
     const handleScroll = () => {
+        if (scrollCheck.current) scrollCheck.current = false;
         if (!emptyRef.current && ERef.current) {
             const { scrollTop, clientHeight, scrollHeight } = ERef.current;
             const scrollBottom = -scrollTop + clientHeight;
@@ -385,20 +401,7 @@ const Conversation: React.FC<{
             }
         }
     };
-    const dataMore: {
-        options: {
-            id: number;
-            load?: boolean;
-            name: string;
-            icon: JSX.Element;
-            onClick: (e?: any) => void;
-        }[];
-        id_room: string | undefined;
-        id: string | undefined;
-        avatar: string | undefined;
-        fullName: string | undefined;
-        gender: number | undefined;
-    } = {
+    const dataMore: PropsDataMoreConversation = {
         id_room: conversation?._id,
         id: conversation?.user.id,
         avatar: conversation?.user.avatar,
@@ -428,7 +431,7 @@ const Conversation: React.FC<{
                                     margin-right: 5px;
                                 }
                                 form {
-                                    margin-bottom: 12px;
+                                    ${conversation?.background ? 'margin-bottom: 12px;' : ''}
                                 }
                             `}
                         >
@@ -448,25 +451,27 @@ const Conversation: React.FC<{
                                     <BackgroundI /> {conversationText.optionRoom.background}
                                 </Label>
                             </form>
-                            <P
-                                z="1.3rem"
-                                css="width: 100%; display: flex; svg{margin-right: 3px;} align-items: baseline;"
-                                onClick={async () => {
-                                    if (conversation && conversation.background) {
-                                        const res: boolean = await chatAPI.delBackground(
-                                            conversation._id,
-                                            conversation.background.id,
-                                        );
-                                        if (res)
-                                            setConversation((pre) => {
-                                                if (pre) return { ...pre, background: undefined };
-                                                return pre;
-                                            });
-                                    }
-                                }}
-                            >
-                                <GarbageI /> Remove background
-                            </P>
+                            {conversation?.background && (
+                                <P
+                                    z="1.3rem"
+                                    css="width: 100%; display: flex; svg{margin-right: 3px;} align-items: baseline;"
+                                    onClick={async () => {
+                                        if (conversation && conversation.background) {
+                                            const res: boolean = await chatAPI.delBackground(
+                                                conversation._id,
+                                                conversation.background.id,
+                                            );
+                                            if (res)
+                                                setConversation((pre) => {
+                                                    if (pre) return { ...pre, background: undefined };
+                                                    return pre;
+                                                });
+                                        }
+                                    }}
+                                >
+                                    <GarbageI /> Remove background
+                                </P>
+                            )}
                         </Div>
                     </>
                 ),
@@ -477,7 +482,7 @@ const Conversation: React.FC<{
                 name: conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
                 onClick: () => {
-                    if (id_chat && ye) dispatch(setBalloon({ id_other: id_chat.id_other, id_room: id_chat.id_room }));
+                    if (conversation?._id && ye) dispatch(setBalloon(conversation?._id));
                 },
             },
             {
@@ -486,6 +491,7 @@ const Conversation: React.FC<{
                     moves.some((m) => m === conversation?._id || m === conversation?.user.id) ? ' stop' : ''
                 }`,
                 icon: <MoveI />,
+                device: 'mobile',
                 onClick: () => {
                     let checkM = false;
                     if (conversation?._id) {
@@ -575,6 +581,7 @@ const Conversation: React.FC<{
               text: string;
               secondary?: string;
               who: string;
+              byWhoCreatedAt: string;
               imageOrVideos:
                   | {
                         v: string;
@@ -622,7 +629,6 @@ const Conversation: React.FC<{
     return (
         <DivConversation
             ref={del}
-            height="530px"
             className="ofChats"
             id={`ofChatId${index}`}
             css={`
@@ -779,6 +785,9 @@ const Conversation: React.FC<{
                         height: 83%;
                     `}
                     onScroll={() => handleScroll}
+                    onTouchEnd={() => {
+                        if (!scrollCheck.current) scrollCheck.current = true;
+                    }}
                 >
                     {conversation?.room.map((rc, index, arr) => {
                         // const timePin = moment(conversation.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
@@ -907,6 +916,7 @@ const Conversation: React.FC<{
                                 pins={conversation.pins}
                                 roomImage={roomImage}
                                 setRoomImage={setRoomImage}
+                                scrollCheck={scrollCheck}
                             />
                         );
                     })}

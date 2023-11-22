@@ -56,6 +56,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import { PropsId_chats, PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 import { PropsReloadRD, setOnline } from '~/redux/reload';
+import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 export const socket = io('http://localhost:3001', { transports: ['websocket'], ackTimeout: 10000 });
 
 const Website: React.FC<{
@@ -273,35 +274,7 @@ const Website: React.FC<{
                                     `}
                                 />
                             )}
-                            <Div
-                                css={`
-                                    width: 50px;
-                                    height: 50px;
-                                    position: fixed;
-                                    top: 195px;
-                                    right: 5px;
-                                    font-size: 50px;
-                                    z-index: 88;
-                                    cursor: var(--pointer);
-                                    color: ${colorText};
-                                `}
-                            >
-                                <Div
-                                    css={`
-                                        position: relative;
-                                        img {
-                                            width: 57%;
-                                            height: 59%;
-                                            position: absolute;
-                                            top: 2px;
-                                            right: 10px;
-                                        }
-                                    `}
-                                >
-                                    <BalloonI />
-                                    <Img src={dataUser.avatar} alt={dataUser.fullName} radius="50%" />
-                                </Div>
-                            </Div>
+
                             <CurrentPageL
                                 currentPage={currentPage}
                                 listPage={optionWebsite}

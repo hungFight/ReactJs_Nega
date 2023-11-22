@@ -18,7 +18,7 @@ import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault'
 import Progress from './app/reUsingComponents/Progress/Progress';
 import ErrorBoundaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
 import { socket } from './mainPage/nextWeb';
-import { DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
+import { BalloonI, DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
 import userAPI from '~/restAPI/userAPI';
 import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
@@ -35,6 +35,7 @@ import { decrypt } from '~/utils/crypto';
 import { ConversationText } from './dataText/DataMessager';
 import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
+import Balloon from './mainPage/Balloon/Balloon';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -162,7 +163,7 @@ function App() {
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-    const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
+    const { chats, balloon } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
     const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
@@ -430,39 +431,42 @@ function App() {
                                 onMouseLeave={handleClear}
                             ></Div>
                             {/* show message from messenger */}
-                            <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99; @media(max-width: 360px){width: 100%;left: 0}">
-                                <Div css="position: relative; width: inherit;">
-                                    {id_chats?.map((room, index) => {
-                                        const permanent = { index: index + 1, id: room.id_room || room.id_other };
-                                        if (
-                                            chats.some(
-                                                (c) => c.id_room === room.id_room && c.id_other === room.id_other,
+                            {chats.length > 0 && (
+                                <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99; @media(max-width: 450px){width: 100%;left: 0;height:93%;}">
+                                    <Div css="position: relative; width: inherit;">
+                                        {id_chats?.map((room, index) => {
+                                            const permanent = { index: index + 1, id: room.id_room || room.id_other };
+                                            if (
+                                                chats.some(
+                                                    (c) => c.id_room === room.id_room && c.id_other === room.id_other,
+                                                )
                                             )
-                                        )
-                                            return (
-                                                <Conversation
-                                                    conversationText={ConversationText[lg]}
-                                                    userOnline={userOnline}
-                                                    key={index}
-                                                    index={index}
-                                                    colorText={colorText}
-                                                    colorBg={colorBg}
-                                                    id_chat={room}
-                                                    currentPage={currentPage}
-                                                    dataFirst={userFirst}
-                                                    chat={chats}
-                                                    id_chats={id_chats}
-                                                    top={room.top}
-                                                    left={room.left}
-                                                    permanent={permanent}
-                                                    setId_chats={setId_chats}
-                                                    mm={mm}
-                                                />
-                                                // </>
-                                            );
-                                    })}
+                                                return (
+                                                    <Conversation
+                                                        conversationText={ConversationText[lg]}
+                                                        userOnline={userOnline}
+                                                        key={index}
+                                                        index={index}
+                                                        colorText={colorText}
+                                                        colorBg={colorBg}
+                                                        id_chat={room}
+                                                        currentPage={currentPage}
+                                                        dataFirst={userFirst}
+                                                        chat={chats}
+                                                        id_chats={id_chats}
+                                                        top={room.top}
+                                                        left={room.left}
+                                                        permanent={permanent}
+                                                        setId_chats={setId_chats}
+                                                        mm={mm}
+                                                    />
+                                                    // </>
+                                                );
+                                        })}
+                                    </Div>
                                 </Div>
-                            </Div>
+                            )}
+                            <Balloon userFirst={userFirst} colorText={colorText} balloon={balloon} />
                             {loading && (
                                 <Div
                                     width="100%"

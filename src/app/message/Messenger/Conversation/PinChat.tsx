@@ -61,7 +61,7 @@ const PinChat: React.FC<{
         queryKey: ['Pins chat', conversationId],
         staleTime: 5 * 60 * 1000,
         cacheTime: 6 * 60 * 1000,
-        enabled: check,
+        enabled: check && one.current ? true : false,
         queryFn: async () => {
             try {
                 const rr: PropsItemRoom[] = await chatAPI.getPins(
@@ -95,7 +95,7 @@ const PinChat: React.FC<{
                     );
                     resolve(rr);
                 });
-                one.current = false;
+
                 return newR;
             } catch (error) {
                 console.log(error);
@@ -103,7 +103,7 @@ const PinChat: React.FC<{
         },
     });
     console.log(one.current && pins.length && !itemPin ? true : false, isLoading, 'check request');
-
+    if (data && one.current) one.current = false;
     const addPin = useMutation(
         async (newData: PropsItemRoom) => {
             return newData;

@@ -1,24 +1,10 @@
-import { PropsOptionText } from 'src/dataText/DataMessager';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { PropsDataMoreConversation } from './Conversation/Conversation';
 
 const MoreOption: React.FC<{
-    dataMore: {
-        id_room: string | undefined;
-        id: string | undefined;
-        avatar: string | undefined;
-        fullName: string | undefined;
-        gender: number | undefined;
-
-        options: {
-            name: string;
-            icon: React.ReactElement;
-            id: number;
-            load?: boolean;
-            onClick: (e?: any) => void;
-        }[];
-    };
+    dataMore: PropsDataMoreConversation;
     colorText: string;
     setMoreBar?: React.Dispatch<
         React.SetStateAction<{
@@ -51,7 +37,7 @@ const MoreOption: React.FC<{
                 p {
                     user-select: none;
                 }
-                z-index: 100;
+                z-index: 9999;
                 background-color: #29292900;
                 border-radius: 0;
                 align-items: flex-end;
@@ -119,6 +105,9 @@ const MoreOption: React.FC<{
                             padding: 8px 7px;
                             cursor: var(--pointer);
                             ${item?.load ? 'cursor: no-drop' : ''};
+                            ${item?.device === 'mobile'
+                                ? 'display: none; @media(min-width: 768px){display: flex;}'
+                                : ''}
                         `}
                         onClick={(e) => {
                             e.stopPropagation();

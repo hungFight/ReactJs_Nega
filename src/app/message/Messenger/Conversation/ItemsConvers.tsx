@@ -8,7 +8,7 @@ import { DotI, GarbageI, LoadingI, ReplyI } from '~/assets/Icons/Icons';
 import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessager';
-import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
 type PropsRc = PropsItemRoom;
 const ItemsRoom: React.FC<{
@@ -35,8 +35,9 @@ const ItemsRoom: React.FC<{
                   _id: string;
                   id: string;
                   text: string;
-                  secondary?: string;
+                  secondary?: string | undefined;
                   who: string;
+                  byWhoCreatedAt: string;
                   imageOrVideos: {
                       v: string;
                       type?: string | undefined;
@@ -51,8 +52,10 @@ const ItemsRoom: React.FC<{
         | {
               _id: string;
               id: string;
-              who: string;
               text: string;
+              secondary?: string | undefined;
+              who: string;
+              byWhoCreatedAt: string;
               imageOrVideos: {
                   v: string;
                   type?: string | undefined;
@@ -90,6 +93,7 @@ const ItemsRoom: React.FC<{
               id_file: string;
           }
         | undefined;
+    scrollCheck: React.MutableRefObject<boolean>;
 }> = ({
     rc,
     index,
@@ -115,6 +119,7 @@ const ItemsRoom: React.FC<{
     background,
     roomImage,
     setRoomImage,
+    scrollCheck,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -161,7 +166,27 @@ const ItemsRoom: React.FC<{
         rc?.createdAt,
         'minutes',
     );
-    console.log(roomImage, 'marginTop');
+    // reply
+    const selfReply = rc?.reply?.id_replied === dataFirst.id;
+    const avatarReply = selfReply ? dataFirst.avatar : rc?.reply?.id_replied === user.id ? user.avatar : '';
+    const nameReply = selfReply ? dataFirst.fullName : rc?.reply?.id_replied === user.id ? user.fullName : '';
+    const genderReply = selfReply ? dataFirst.gender : rc?.reply?.id_replied === user.id ? user.gender : 0;
+    let alarm = useRef<NodeJS.Timeout | null>(null);
+    const handleTouchStart = (data: any) => {
+        if (!(rc?.delete === 'all')) {
+            alarm.current = setTimeout(() => {
+                if (scrollCheck.current) {
+                    setOptions(data);
+                    scrollCheck.current = false;
+                }
+            }, 500);
+        }
+    };
+    const handleTouchEnd = (e: any) => {
+        console.log('end');
+        if (alarm.current) clearTimeout(alarm.current);
+    };
+    console.log(alarm.current, 'marginTop');
 
     return (
         <>
@@ -246,6 +271,9 @@ const ItemsRoom: React.FC<{
                                           bottom: -10px;
                                       }
                                   }
+                                  &:hover {
+                                      z-index: 5;
+                                  }
                               `}
                           >
                               {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
@@ -259,7 +287,7 @@ const ItemsRoom: React.FC<{
                                           border-radius: 5px;
                                           padding: 5px;
                                           bottom: 100%;
-                                          opacity: 0.5;
+
                                           cursor: var(--pointer);
                                           user-select: none;
                                       `}
@@ -267,65 +295,111 @@ const ItemsRoom: React.FC<{
                                           if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
                                       }}
                                   >
-                                      <Div wrap="wrap" width="inherit">
-                                          {rc.reply.text && (
-                                              <P
-                                                  z="1.2rem"
-                                                  css={`
-                                                      padding: 2px;
-                                                      display: -webkit-box;
-                                                      -webkit-line-clamp: 2;
-                                                      -webkit-box-orient: vertical;
-                                                      overflow: hidden;
-                                                      width: fit-content;
-                                                      white-space: pre;
-                                                      text-wrap: wrap;
-                                                      word-wrap: break-word;
-                                                      max-width: 212px;
-                                                  `}
-                                              >
-                                                  {rc.reply.text}
-                                              </P>
+                                      <Div width="inherit" css="position: relative;">
+                                          {rc?.reply?.imageOrVideos.length > 3 && (
+                                              <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
+                                                  + {rc.reply.imageOrVideos.length - 3}
+                                              </DivPos>
                                           )}
-                                          {rc?.reply?.imageOrVideos.length > 0 && (
+                                          <Div
+                                              css="position: absolute; top: 0px; left: -25px; z-index: 1"
+                                              onClick={(e) => e.stopPropagation()}
+                                          >
                                               <Div
-                                                  css={`
-                                                      align-items: end;
-                                                      flex-grow: 1;
-                                                  `}
+                                                  wrap="wrap"
+                                                  css="position: relative;  &:hover{.moreReplyInfo {display: flex;}}"
                                               >
-                                                  <Div
-                                                      width="100%"
-                                                      wrap="wrap"
+                                                  <ReplyI />
+                                                  <DivPos
+                                                      className="moreReplyInfo"
+                                                      top="-90px"
+                                                      width="190px"
+                                                      left="-82px"
+                                                      css="display: none; height: auto; user-select: none; background-color: #1b5c5ffc; padding: 5px; border-radius: 5px;"
+                                                  >
+                                                      <Div wrap="wrap" width="100%">
+                                                          <DivFlex css="flex-wrap: wrap;">
+                                                              <Avatar
+                                                                  src={avatarReply}
+                                                                  alt={nameReply}
+                                                                  gender={genderReply}
+                                                                  radius="50%"
+                                                                  css="min-width: 25px; min-height: 25px; width: 25px; height: 25px;"
+                                                              />
+                                                              <Hname css="width: 100%; font-size: 1.2rem; text-align: center">
+                                                                  {nameReply}
+                                                              </Hname>
+                                                          </DivFlex>
+                                                          <Div
+                                                              wrap="wrap"
+                                                              width="100%"
+                                                              css="padding: 3px; background-color: #262728; margin-top: 3px"
+                                                          >
+                                                              <P z="1rem" css="width:100%;">
+                                                                  sent on thứ hai, 20 tháng 11 năm 2023
+                                                              </P>
+                                                          </Div>
+                                                      </Div>
+                                                  </DivPos>
+                                              </Div>
+                                          </Div>
+                                          <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
+                                              {rc.reply.text && (
+                                                  <P
+                                                      z="1.2rem"
                                                       css={`
-                                                          .roomIf {
-                                                              height: 50px;
-                                                              width: auto;
-                                                          }
+                                                          padding: 2px;
+                                                          display: -webkit-box;
+                                                          -webkit-line-clamp: 2;
+                                                          -webkit-box-orient: vertical;
+                                                          overflow: hidden;
+                                                          width: fit-content;
+                                                          white-space: pre;
+                                                          text-wrap: wrap;
+                                                          word-wrap: break-word;
+                                                          max-width: 212px;
                                                       `}
                                                   >
-                                                      {rc?.reply?.imageOrVideos.map((fl, index) => {
-                                                          if (index <= 2) {
-                                                              return (
-                                                                  <FileConversation
-                                                                      id_room={rc._id}
-                                                                      key={fl._id + '103' + index}
-                                                                      type={fl?.type}
-                                                                      id_file={fl._id}
-                                                                      v={fl.v}
-                                                                      icon={fl.icon}
-                                                                      ERef={ERef}
-                                                                      del={del}
-                                                                      who="you"
-                                                                  />
-                                                              );
-                                                          }
-                                                      })}
+                                                      {rc.reply.text}
+                                                  </P>
+                                              )}
+                                              {rc?.reply?.imageOrVideos.length > 0 && (
+                                                  <Div
+                                                      css={`
+                                                          align-items: end;
+                                                          flex-grow: 1;
+                                                      `}
+                                                  >
+                                                      <Div
+                                                          width="100%"
+                                                          wrap="wrap"
+                                                          css={`
+                                                              .roomIf {
+                                                                  height: 50px;
+                                                                  width: auto;
+                                                              }
+                                                          `}
+                                                      >
+                                                          {rc?.reply?.imageOrVideos.map((fl, index) => {
+                                                              if (index <= 2) {
+                                                                  return (
+                                                                      <FileConversation
+                                                                          id_room={rc._id}
+                                                                          key={fl._id + '103' + index}
+                                                                          type={fl?.type}
+                                                                          id_file={fl._id}
+                                                                          v={fl.v}
+                                                                          icon={fl.icon}
+                                                                          ERef={ERef}
+                                                                          del={del}
+                                                                          who="you"
+                                                                      />
+                                                                  );
+                                                              }
+                                                          })}
+                                                      </Div>
                                                   </Div>
-                                              </Div>
-                                          )}
-                                          <Div css="position: absolute; top: 0px; left: -25px;">
-                                              <ReplyI />
+                                              )}
                                           </Div>
                                       </Div>
                                   </Div>
@@ -378,6 +452,21 @@ const ItemsRoom: React.FC<{
                                           }
                                       }
                                   `}
+                                  onTouchEnd={handleTouchEnd}
+                                  onTouchStart={(e) => {
+                                      handleTouchStart({
+                                          _id: rc._id,
+                                          id: rc.id,
+                                          text: rc.text.t,
+                                          secondary: rc?.secondary,
+                                          imageOrVideos: rc.imageOrVideos,
+                                          who: 'you',
+                                          byWhoCreatedAt: rc.createdAt,
+                                      });
+                                  }}
+                                  onTouchMove={(e) => {
+                                      if (scrollCheck.current) scrollCheck.current = false;
+                                  }}
                               >
                                   {!rc?.delete && (
                                       <Div
@@ -408,6 +497,7 @@ const ItemsRoom: React.FC<{
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,
                                                       who: 'you',
+                                                      byWhoCreatedAt: rc.createdAt,
                                                   });
                                               }}
                                           >
@@ -650,6 +740,9 @@ const ItemsRoom: React.FC<{
                                       display: block;
                                   }
                               }
+                              &:hover {
+                                  z-index: 5;
+                              }
                           `}
                       >
                           {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
@@ -663,7 +756,6 @@ const ItemsRoom: React.FC<{
                                       border-radius: 5px;
                                       padding: 5px;
                                       bottom: 100%;
-                                      opacity: 0.5;
                                       cursor: var(--pointer);
                                       user-select: none;
                                   `}
@@ -671,65 +763,111 @@ const ItemsRoom: React.FC<{
                                       if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
                                   }}
                               >
-                                  <Div wrap="wrap" width="inherit">
-                                      {rc.reply.text && (
-                                          <P
-                                              z="1.2rem"
-                                              css={`
-                                                  padding: 2px;
-                                                  display: -webkit-box;
-                                                  -webkit-line-clamp: 2;
-                                                  -webkit-box-orient: vertical;
-                                                  overflow: hidden;
-                                                  width: fit-content;
-                                                  white-space: pre;
-                                                  text-wrap: wrap;
-                                                  word-wrap: break-word;
-                                                  max-width: 212px;
-                                              `}
-                                          >
-                                              {rc.reply.text}
-                                          </P>
+                                  <Div width="inherit" css="position: relative;">
+                                      {rc?.reply?.imageOrVideos.length > 3 && (
+                                          <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
+                                              + {rc.reply.imageOrVideos.length - 3}
+                                          </DivPos>
                                       )}
-                                      {rc?.reply?.imageOrVideos.length > 0 && (
+                                      <Div
+                                          css="position: absolute; top: 0px; right: -25px; z-index: 1"
+                                          onClick={(e) => e.stopPropagation()}
+                                      >
                                           <Div
-                                              css={`
-                                                  align-items: end;
-                                                  flex-grow: 1;
-                                              `}
+                                              wrap="wrap"
+                                              css="position: relative;  &:hover{.moreReplyInfo {display: flex;}}"
                                           >
-                                              <Div
-                                                  width="100%"
-                                                  wrap="wrap"
+                                              <ReplyI />
+                                              <DivPos
+                                                  className="moreReplyInfo"
+                                                  top="-90px"
+                                                  width="190px"
+                                                  right="-82px"
+                                                  css="display: none; height: auto; user-select: none; background-color: #1b5c5ffc; padding: 5px; border-radius: 5px;"
+                                              >
+                                                  <Div wrap="wrap" width="100%">
+                                                      <DivFlex css="flex-wrap: wrap;">
+                                                          <Avatar
+                                                              src={avatarReply}
+                                                              alt={nameReply}
+                                                              gender={genderReply}
+                                                              radius="50%"
+                                                              css="min-width: 25px; min-height: 25px; width: 25px; height: 25px;"
+                                                          />
+                                                          <Hname css="width: 100%; font-size: 1.2rem; text-align: center">
+                                                              {nameReply}
+                                                          </Hname>
+                                                      </DivFlex>
+                                                      <Div
+                                                          wrap="wrap"
+                                                          width="100%"
+                                                          css="padding: 3px; background-color: #262728; margin-top: 3px"
+                                                      >
+                                                          <P z="1rem" css="width:100%;">
+                                                              sent on thứ hai, 20 tháng 11 năm 2023
+                                                          </P>
+                                                      </Div>
+                                                  </Div>
+                                              </DivPos>
+                                          </Div>
+                                      </Div>
+                                      <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
+                                          {rc.reply.text && (
+                                              <P
+                                                  z="1.2rem"
                                                   css={`
-                                                      .roomIf {
-                                                          height: 50px;
-                                                          width: auto;
-                                                      }
+                                                      padding: 2px;
+                                                      display: -webkit-box;
+                                                      -webkit-line-clamp: 2;
+                                                      -webkit-box-orient: vertical;
+                                                      overflow: hidden;
+                                                      width: fit-content;
+                                                      white-space: pre;
+                                                      text-wrap: wrap;
+                                                      word-wrap: break-word;
+                                                      max-width: 212px;
                                                   `}
                                               >
-                                                  {rc?.reply?.imageOrVideos.map((fl, index) => {
-                                                      if (index <= 2) {
-                                                          return (
-                                                              <FileConversation
-                                                                  id_room={rc._id}
-                                                                  key={fl._id + '103' + index}
-                                                                  type={fl?.type}
-                                                                  id_file={fl._id}
-                                                                  v={fl.v}
-                                                                  icon={fl.icon}
-                                                                  ERef={ERef}
-                                                                  del={del}
-                                                                  who="you"
-                                                              />
-                                                          );
-                                                      }
-                                                  })}
+                                                  {rc.reply.text}
+                                              </P>
+                                          )}
+                                          {rc?.reply?.imageOrVideos.length > 0 && (
+                                              <Div
+                                                  css={`
+                                                      align-items: end;
+                                                      flex-grow: 1;
+                                                  `}
+                                              >
+                                                  <Div
+                                                      width="100%"
+                                                      wrap="wrap"
+                                                      css={`
+                                                          .roomIf {
+                                                              height: 50px;
+                                                              width: auto;
+                                                          }
+                                                      `}
+                                                  >
+                                                      {rc?.reply?.imageOrVideos.map((fl, index, arr) => {
+                                                          if (index <= 2) {
+                                                              return (
+                                                                  <FileConversation
+                                                                      id_room={rc._id}
+                                                                      key={fl._id + '103' + index}
+                                                                      type={fl?.type}
+                                                                      id_file={fl._id}
+                                                                      v={fl.v}
+                                                                      icon={fl.icon}
+                                                                      ERef={ERef}
+                                                                      del={del}
+                                                                      who="you"
+                                                                  />
+                                                              );
+                                                          }
+                                                      })}
+                                                  </Div>
                                               </Div>
-                                          </Div>
-                                      )}
-                                      <Div css="position: absolute; top: 0px; right: -25px;">
-                                          <ReplyI />
+                                          )}
                                       </Div>
                                   </Div>
                               </Div>
@@ -814,6 +952,21 @@ const ItemsRoom: React.FC<{
                                       e.stopPropagation();
                                       handleWatchMore(elWatChTime.current);
                                   }}
+                                  onTouchStart={(e) => {
+                                      handleTouchStart({
+                                          _id: rc._id,
+                                          id: rc.id,
+                                          text: rc.text.t,
+                                          secondary: rc?.secondary,
+                                          imageOrVideos: rc.imageOrVideos,
+                                          who: 'others',
+                                          byWhoCreatedAt: rc.createdAt,
+                                      });
+                                  }}
+                                  onTouchEnd={handleTouchEnd}
+                                  onTouchMove={(e) => {
+                                      if (scrollCheck.current) scrollCheck.current = false;
+                                  }}
                               >
                                   {!rc?.delete && (
                                       <Div
@@ -845,6 +998,7 @@ const ItemsRoom: React.FC<{
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,
                                                       who: 'others',
+                                                      byWhoCreatedAt: rc.createdAt,
                                                   });
                                               }}
                                           >

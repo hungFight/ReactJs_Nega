@@ -27,13 +27,15 @@ import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setRoomChat } from '~/redux/messenger';
 
 const OptionForItem: React.FC<{
-    setOptions: (
-        value: React.SetStateAction<
+    setOptions: React.Dispatch<
+        React.SetStateAction<
             | {
                   _id: string;
                   id: string;
                   text: string;
+                  secondary?: string | undefined;
                   who: string;
+                  byWhoCreatedAt: string;
                   imageOrVideos: {
                       v: string;
                       type?: string | undefined;
@@ -42,14 +44,15 @@ const OptionForItem: React.FC<{
                   }[];
               }
             | undefined
-        >,
-    ) => void;
+        >
+    >;
     optionsForItem: {
         _id: string;
         id: string;
         text: string;
+        secondary?: string | undefined;
         who: string;
-        secondary?: string;
+        byWhoCreatedAt: string;
         imageOrVideos: {
             v: string;
             type?: string | undefined;
@@ -647,7 +650,7 @@ const OptionForItem: React.FC<{
                     id_replied: optionsForItem.id,
                     text: optionsForItem.text,
                     id_room: optionsForItem._id,
-                    imageOrVideos: optionsForItem.imageOrVideos.length ? true : false,
+                    imageOrVideos: optionsForItem.imageOrVideos,
                 },
             };
             if (conversation) conversation.room.unshift(chat);
@@ -667,6 +670,7 @@ const OptionForItem: React.FC<{
                         type: i.type,
                         icon: '',
                     })),
+                    byWhoCreatedAt: optionsForItem.byWhoCreatedAt,
                 }),
             ); // id of the room
             formData.append('id_room', id_);

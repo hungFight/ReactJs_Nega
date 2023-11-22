@@ -3,6 +3,7 @@ import { PropsRoomChat } from '~/restAPI/chatAPI';
 
 interface PropsRoomsChat {
     chats: { id_room?: string; id_other: string; balloon?: boolean; top?: number; left?: number }[];
+    balloon: string[];
 }
 export interface PropsRoomsChatRD {
     persistedReducer: {
@@ -11,6 +12,7 @@ export interface PropsRoomsChatRD {
 }
 const initialState: PropsRoomsChat = {
     chats: [],
+    balloon: [],
 };
 const roomsChatPage = createSlice({
     name: 'roomsChat',
@@ -33,14 +35,14 @@ const roomsChatPage = createSlice({
         offChats: (state, action: { payload: { id_room?: string; id_other: string }[] }) => {
             state.chats = action.payload;
         },
-        setBalloon: (state, action: { payload: { id_other: string; id_room?: string } }) => {
-            state.chats = state.chats.map((c) => {
-                if (c.id_room === action.payload?.id_room && c.id_other === action.payload.id_other) {
-                    c.balloon = true;
-                    return c;
+        setBalloon: (state, action: { payload: string }) => {
+            let check = false;
+            state.balloon.map((c) => {
+                if (c === action.payload) {
+                    check = true;
                 }
-                return c;
             });
+            if (!check) state.balloon.push(action.payload);
         },
         setTopLeft: (state, action: { payload: { id_room?: string; id_other: string; top: number; left: number } }) => {
             state.chats = state.chats.map((ch) => {

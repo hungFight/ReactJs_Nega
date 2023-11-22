@@ -56,6 +56,11 @@ html *::-webkit-scrollbar-track {
         }
     }
 }
+@media (max-width: 768px) {
+    * {
+        user-select: none;
+    }
+}
 #root {
     height: var(--background);
     background-color: #292a2d;
