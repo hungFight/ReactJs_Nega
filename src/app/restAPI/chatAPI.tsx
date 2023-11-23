@@ -196,5 +196,15 @@ class Messenger {
             return errorHandling(err);
         }
     };
+    getConversationBalloon = async (conversationId: string[]) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post('/messenger/getConversationBalloon', { conversationId });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
 }
 export default new Messenger();

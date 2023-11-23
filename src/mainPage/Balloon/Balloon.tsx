@@ -5,6 +5,8 @@ import { BalloonI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import chatAPI from '~/restAPI/chatAPI';
+import CommonUtils from '~/utils/CommonUtils';
 
 const Balloon: React.FC<{
     userFirst: PropsUser;
@@ -13,7 +15,23 @@ const Balloon: React.FC<{
 }> = ({ userFirst, colorText, balloon }) => {
     const { data } = useQuery({
         queryKey: ['getBalloonChats', 1],
-        queryFn: () => null,
+        queryFn: async () => {
+            const data: {
+                _id: string;
+                userId: string;
+                user: {
+                    id: string;
+                    avatar: any;
+                    fullName: string;
+                    gender: number;
+                };
+            }[] = await chatAPI.getConversationBalloon(balloon);
+
+            return data.map((r) => {
+                r.user.avatar = CommonUtils.convertBase64(r.user.avatar);
+                return r;
+            });
+        },
     });
     return (
         <Div
@@ -32,6 +50,33 @@ const Balloon: React.FC<{
             <Div
                 css={`
                     position: relative;
+                    &:hover {
+                        .balloon {
+                            width: auto;
+                            transition: all 1s linear;
+                            height: auto;
+                        }
+                        .balloon_0 {
+                            top: -32px;
+                            left: -33px;
+                        }
+                        .balloon_1 {
+                            top: 11px;
+                            left: -49px;
+                        }
+                        .balloon_2 {
+                            top: 50px;
+                            left: -26px;
+                        }
+                        .balloon_3 {
+                            top: 78px;
+                            left: 13px;
+                        }
+                        .balloon_4 {
+                            top: 122px;
+                            left: 13px;
+                        }
+                    }
                 `}
             >
                 <BalloonI />
@@ -40,48 +85,43 @@ const Balloon: React.FC<{
                     alt={userFirst.fullName}
                     radius="50%"
                     gender={0}
-                    css="width:28px; height: 29px; position: absolute;
+                    css="width:28px; z-index: 5; height: 29px; position: absolute;
                                             top: -23px;
                                             right: 10px;"
                 />
-                {balloon.map((c, index) => {
+                {data?.map((c, index) => {
                     return (
                         <DivPos
-                            key={c}
+                            key={c._id}
+                            className={`balloon balloon_${index}`}
                             size="1.2rem"
-                            css=""
-                            top={
-                                index === 0
-                                    ? '-32px'
-                                    : index === 1
-                                    ? '11px'
-                                    : index === 2
-                                    ? '50px'
-                                    : index === 3
-                                    ? '78px'
-                                    : index === 4
-                                    ? '122px'
-                                    : ''
-                            }
-                            left={
-                                index === 0
-                                    ? '-33px'
-                                    : index === 1
-                                    ? '-49px'
-                                    : index === 2
-                                    ? '-26px'
-                                    : index === 3
-                                    ? '13px'
-                                    : '13px'
-                            }
+                            css={`
+                                width: 0px;
+                                height: 0px;
+                            `}
+                            top="0px"
+                            left="0px"
                         >
-                            <Avatar
-                                src={userFirst.avatar}
-                                alt={userFirst.fullName}
-                                radius="50%"
-                                gender={0}
-                                css="width:35px; height: 35px;"
-                            />
+                            <Div width="inherit" css="height: inherit; position: relative;">
+                                <Avatar
+                                    src={c.user.avatar}
+                                    alt={c.user.fullName}
+                                    radius="50%"
+                                    gender={c.user.gender}
+                                    css="width:35px; height: 35px;"
+                                />
+                                <Div
+                                    css={`
+                                        position: absolute;
+                                        bottom: -50px;
+                                        right: -50px;
+                                        bottom: -17px;
+                                        width: 100px;
+                                        height: 40px;
+                                        transform: rotate(40deg);
+                                    `}
+                                ></Div>
+                            </Div>
                         </DivPos>
                     );
                 })}
