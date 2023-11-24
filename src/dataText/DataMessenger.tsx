@@ -2,6 +2,7 @@ export type PropsOptionText = {
     personal: string;
     background: string;
     balloon: string;
+    balloonDel: string;
     move: string;
     del: string;
     undo: string;
@@ -28,6 +29,7 @@ export const ConversationText: {
             personal: 'View Profile',
             background: 'Background',
             balloon: 'Balloon',
+            balloonDel: 'Remove',
             move: 'Move',
             del: 'Delete',
             undo: 'Undo',
@@ -47,6 +49,7 @@ export const ConversationText: {
             personal: 'Trang cá nhân',
             background: 'Nền chat',
             balloon: 'Bong bóng chat',
+            balloonDel: 'Bỏ',
             move: 'Di chuyển',
             del: 'Xoá',
             undo: 'Hoàn tác',

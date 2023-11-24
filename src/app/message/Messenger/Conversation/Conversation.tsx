@@ -40,14 +40,16 @@ import { useSelector } from 'react-redux';
 import OptionForItem from './OptionForItems/OptionForItem';
 import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/nextWeb';
-import { PropsConversionText } from 'src/dataText/DataMessager';
+import { PropsConversionText } from 'src/dataText/DataMessenger';
 import { decrypt } from '~/utils/crypto';
 import PinChat from './PinChat';
-import { offChats, setBalloon, setTopLeft } from '~/redux/roomsChat';
+import { offChats, removeBalloon, setBalloon, setTopLeft } from '~/redux/roomsChat';
 import handleFileUpload from '~/utils/handleFileUpload';
 import chatAPI from '~/restAPI/chatAPI';
 import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
+import { useMutation } from '@tanstack/react-query';
+import { queryClient } from 'src';
 export interface PropsDataMoreConversation {
     options: {
         id: number;
@@ -97,6 +99,7 @@ const Conversation: React.FC<{
             id: string;
         }[]
     >;
+    balloon: string[];
 }> = ({
     index,
     colorText,
@@ -114,6 +117,7 @@ const Conversation: React.FC<{
     userOnline,
     conversationText,
     mm,
+    balloon,
 }) => {
     const {
         handleImageUpload,
@@ -401,6 +405,32 @@ const Conversation: React.FC<{
             }
         }
     };
+    const removeBall = useMutation(
+        async (xd: string) => {
+            return xd;
+        },
+        {
+            onMutate: (xd) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = data;
+                // Cập nhật cache tạm thời với dữ liệu mới
+                queryClient.setQueryData(['getBalloonChats', 1], (oldData: any) => {
+                    // Thêm newData vào mảng dữ liệu cũ (oldData)
+                    return oldData.filter((od: { _id: string }) => od._id !== xd); //PropsRooms[]
+                });
+
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['getBalloonChats', 1], context?.previousData);
+            },
+            onSettled: () => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                queryClient.invalidateQueries(['getBalloonChats', 1]);
+            },
+        },
+    );
     const dataMore: PropsDataMoreConversation = {
         id_room: conversation?._id,
         id: conversation?.user.id,
@@ -479,10 +509,18 @@ const Conversation: React.FC<{
             },
             {
                 id: 3,
-                name: conversationText.optionRoom.balloon,
+                name:
+                    (balloon.some((b) => b === conversation?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') +
+                    conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
                 onClick: () => {
-                    if (conversation?._id && ye) dispatch(setBalloon(conversation?._id));
+                    if (conversation?._id && ye)
+                        if (!balloon.some((b) => b === conversation._id)) {
+                            dispatch(setBalloon(conversation?._id));
+                        } else {
+                            removeBall.mutate(conversation._id);
+                            dispatch(removeBalloon(conversation?._id));
+                        }
                 },
             },
             {
@@ -949,7 +987,7 @@ const Conversation: React.FC<{
                         position: absolute;
                         left: 0px;
                         bottom: 9px;
-                        z-index: 20;
+                        z-index: 9999;
                         padding: 9px 9px 0;
                         div#emojiCon {
                             width: 100%;

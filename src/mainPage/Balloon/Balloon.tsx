@@ -1,10 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import { PropsUser } from 'src/App';
+import { AnyAction } from '@reduxjs/toolkit';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import React, { Dispatch, useEffect, useRef } from 'react';
+import { queryClient } from 'src';
+import { PropsId_chats, PropsUser } from 'src/App';
 import { BalloonI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { onChats } from '~/redux/roomsChat';
 import chatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
@@ -12,9 +15,16 @@ const Balloon: React.FC<{
     userFirst: PropsUser;
     colorText: string;
     balloon: string[];
-}> = ({ userFirst, colorText, balloon }) => {
-    const { data } = useQuery({
+    setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
+    dispatch: Dispatch<AnyAction>;
+    established: boolean;
+}> = ({ userFirst, colorText, balloon, setId_chats, dispatch, established }) => {
+    const memory = useRef<boolean>(true);
+    const { data, isLoading, refetch } = useQuery({
         queryKey: ['getBalloonChats', 1],
+        staleTime: 30 * 24 * 60 * 60 * 1000,
+        cacheTime: 30 * 24 * 60 * 60 * 1000,
+        enabled: memory.current,
         queryFn: async () => {
             const data: {
                 _id: string;
@@ -26,13 +36,17 @@ const Balloon: React.FC<{
                     gender: number;
                 };
             }[] = await chatAPI.getConversationBalloon(balloon);
-
+            memory.current = false;
             return data.map((r) => {
                 r.user.avatar = CommonUtils.convertBase64(r.user.avatar);
                 return r;
             });
         },
     });
+    console.log(balloon, 'balloon', isLoading);
+    useEffect(() => {
+        if (established) refetch();
+    }, [balloon, established]);
     return (
         <Div
             css={`
@@ -40,20 +54,22 @@ const Balloon: React.FC<{
                 height: 50px;
                 position: fixed;
                 top: 195px;
-                right: 5px;
+                right: 2px;
                 font-size: 50px;
                 z-index: 88;
                 cursor: var(--pointer);
                 color: ${colorText};
-            `}
-        >
-            <Div
-                css={`
-                    position: relative;
-                    &:hover {
+                &:hover {
+                    top: 160px;
+                    justify-content: end;
+                    align-items: baseline;
+                    width: 120px;
+                    height: 230px;
+                    .setTopBalloon {
+                        top: 35px;
                         .balloon {
                             width: auto;
-                            transition: all 1s linear;
+                            transition: all 0.5s linear;
                             height: auto;
                         }
                         .balloon_0 {
@@ -77,18 +93,65 @@ const Balloon: React.FC<{
                             left: 13px;
                         }
                     }
+                }
+            `}
+        >
+            <Div
+                className="setTopBalloon"
+                css={`
+                    position: relative;
+                    ${isLoading && established
+                        ? `animation: bg-color-animation 5s infinite;
+                                        @keyframes bg-color-animation {
+                                            0% {
+                                                color: #f67575;
+                                            }
+                                            10% {
+                                                color: #fdf982;
+                                            }
+                                            20% {
+                                                color: #97ff60;
+                                            }
+                                            30% {
+                                                color: #904ef3;
+                                            }
+                                            40% {
+                                                color: #7360ed;
+                                            }
+                                            50% {
+                                                color: #ff7cf0;
+                                            }
+                                            60% {
+                                                color: #88f588;
+                                            }
+                                            70% {
+                                                color: #88cff5;
+                                            }
+                                            80% {
+                                                color: #eef080;
+                                            }
+                                            90% {
+                                                color: #ffffff;
+                                            }
+                                            100% {
+                                                color: #373937;
+                                            }
+                                        }`
+                        : ''}
                 `}
             >
+                <Div css="position: absolute; top: 0; left: 0;"></Div>
                 <BalloonI />
-                <Avatar
-                    src={userFirst.avatar}
-                    alt={userFirst.fullName}
-                    radius="50%"
-                    gender={0}
-                    css="width:28px; z-index: 5; height: 29px; position: absolute;
-                                            top: -23px;
-                                            right: 10px;"
-                />
+                <P
+                    css={`
+                        position: absolute;
+                        top: 5px;
+                        right: 20px;
+                        color: #2ed1d1;
+                    `}
+                >
+                    {balloon.length}
+                </P>
                 {data?.map((c, index) => {
                     return (
                         <DivPos
@@ -98,9 +161,23 @@ const Balloon: React.FC<{
                             css={`
                                 width: 0px;
                                 height: 0px;
+                                &:hover {
+                                    h3 {
+                                        display: block;
+                                    }
+                                }
                             `}
                             top="0px"
                             left="0px"
+                            onClick={() => {
+                                dispatch(onChats({ id_room: c._id, id_other: c.userId }));
+                                setId_chats((pre) => {
+                                    if (!pre.some((p) => p.id_room === c._id && p.id_other === c.userId)) {
+                                        return [...pre, { id_room: c._id, id_other: c.userId }];
+                                    }
+                                    return pre;
+                                });
+                            }}
                         >
                             <Div width="inherit" css="height: inherit; position: relative;">
                                 <Avatar
@@ -108,19 +185,20 @@ const Balloon: React.FC<{
                                     alt={c.user.fullName}
                                     radius="50%"
                                     gender={c.user.gender}
-                                    css="width:35px; height: 35px;"
+                                    css="width:35px; height: 35px; &:hover{box-shadow: 0 0 9px #fc3838;border-radius: 50%;}"
                                 />
-                                <Div
+                                <Hname
                                     css={`
+                                        display: none;
                                         position: absolute;
-                                        bottom: -50px;
-                                        right: -50px;
-                                        bottom: -17px;
-                                        width: 100px;
-                                        height: 40px;
-                                        transform: rotate(40deg);
+                                        z-index: 9;
+                                        right: 50px;
+                                        top: 6px;
+                                        width: max-content;
                                     `}
-                                ></Div>
+                                >
+                                    {c.user.fullName}
+                                </Hname>
                             </Div>
                         </DivPos>
                     );

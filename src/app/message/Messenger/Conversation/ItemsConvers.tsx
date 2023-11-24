@@ -7,7 +7,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { DotI, GarbageI, LoadingI, ReplyI } from '~/assets/Icons/Icons';
 import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
-import { PropsPhraseText } from 'src/dataText/DataMessager';
+import { PropsPhraseText } from 'src/dataText/DataMessenger';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
 type PropsRc = PropsItemRoom;
@@ -237,7 +237,7 @@ const ItemsRoom: React.FC<{
                                   margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                                   justify-content: right;
                                   position: relative;
-                                  z-index: ${roomImage?.id_room === rc._id ? 2 : 3};
+                                  z-index: ${roomImage?.id_room === rc._id ? 2 : 6};
                                   ${marginTop <= -5 ? 'margin-top: 10px;' : ''}
                                   margin-top: ${rc?.reply?.imageOrVideos.length
                                       ? rc?.reply?.imageOrVideos.length <= 3
@@ -724,7 +724,7 @@ const ItemsRoom: React.FC<{
                               align-items: center;
                               margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                               position: relative;
-                              z-index: ${roomImage?.id_room === rc._id ? 2 : 3};
+                              z-index: ${roomImage?.id_room === rc._id ? 2 : 6};
                               ${marginTop <= -5 ? 'margin-top: 10px;' : ''}
                               margin-top: ${rc?.reply?.imageOrVideos.length
                                   ? rc?.reply?.imageOrVideos.length <= 2

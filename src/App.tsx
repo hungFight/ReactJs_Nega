@@ -32,7 +32,7 @@ import { useQuery, gql } from '@apollo/client';
 import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
 import { decrypt } from '~/utils/crypto';
-import { ConversationText } from './dataText/DataMessager';
+import { ConversationText } from './dataText/DataMessenger';
 import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
 import Balloon from './mainPage/Balloon/Balloon';
@@ -163,7 +163,7 @@ function App() {
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-    const { chats, balloon } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
+    const { chats, balloon, established } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
     const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
@@ -459,6 +459,7 @@ function App() {
                                                         permanent={permanent}
                                                         setId_chats={setId_chats}
                                                         mm={mm}
+                                                        balloon={balloon}
                                                     />
                                                     // </>
                                                 );
@@ -466,7 +467,14 @@ function App() {
                                     </Div>
                                 </Div>
                             )}
-                            <Balloon userFirst={userFirst} colorText={colorText} balloon={balloon} />
+                            <Balloon
+                                userFirst={userFirst}
+                                colorText={colorText}
+                                balloon={balloon}
+                                setId_chats={setId_chats}
+                                dispatch={dispatch}
+                                established={established}
+                            />
                             {loading && (
                                 <Div
                                     width="100%"
