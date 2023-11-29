@@ -3,7 +3,7 @@ import Picker from '@emoji-mart/react';
 import 'video-react/dist/video-react.css';
 import './formUpNews.scss';
 
-import { CameraI, CloseI, LoadingI, PreviewI } from '~/assets/Icons/Icons';
+import { CameraI, CloseI, HashI, LoadingI, PreviewI, TagPostI } from '~/assets/Icons/Icons';
 
 import { Player } from 'video-react';
 import {
@@ -26,6 +26,8 @@ import FontFamilys from '~/reUsingComponents/Font/FontFamilys';
 import PreviewPost, { PropsPreViewFormHome } from './PreView';
 import LogicForm from './LogicForm';
 import { PropsUserHome } from '../../Home';
+import { useState } from 'react';
+import Hashtag from './PostEditOptions/Hashtag';
 export interface PropsFormHome {
     textarea: string;
     buttonOne: string;
@@ -42,6 +44,7 @@ interface PropsFormUpNews {
     setInclude: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user, include, setInclude }) => {
+    const [displayTags, setDisplayTags] = useState<boolean>(false);
     const {
         displayEmoji,
         setdisplayEmoji,
@@ -117,10 +120,10 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     padding: 0 7px;
                                     margin-top: 5px;
                                     align-items: center;
-                                    background-color: #43464c;
+                                    background-color: #43464cbf;
                                     border-radius: 10px;
                                     justify-content: space-evenly;
-                                    border: 1px solid #6a6a6a;
+                                    border: 1px solid #5d5d5d;
                                     @media (min-width: 500px) {
                                         height: 35px;
                                     }
@@ -141,6 +144,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                 >
                                     🖋️
                                 </DivItems>
+
                                 <DivItems>
                                     <input
                                         id="upload"
@@ -154,18 +158,24 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                         <CameraI />
                                     </Label>
                                 </DivItems>
-
                                 <DivItems color={colorText} position="relative">
                                     <HoverTitle
-                                        title="Preview"
+                                        title="Tag"
                                         Tags={Div}
                                         right="none"
                                         left="90px"
                                         top="2px"
                                         color={colorText}
                                         colorBg={colorBg}
-                                        children={<PreviewI />}
+                                        children={<HashI />}
                                     ></HoverTitle>
+                                </DivItems>
+                                <DivItems
+                                    bg={displayFontText ? '#4496dd' : ''}
+                                    color={colorText}
+                                    onClick={() => setDisplayFontText(!displayFontText)}
+                                >
+                                    <TagPostI />
                                 </DivItems>
                             </Div>
                             {displayFontText && (
@@ -178,6 +188,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     setDisplayFontText={setDisplayFontText}
                                 />
                             )}
+                            {<Hashtag />}
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}
@@ -192,7 +203,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     color={colorText}
                                     onClick={() => {
                                         document.querySelector('.textHome')?.setAttribute('style', 'height: 42px');
-                                        setInputValue('');
+                                        setInputValue({ dis: '', textarea: '' });
                                     }}
                                 >
                                     <CloseI />
@@ -202,7 +213,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     color={colorText}
                                     bg={colorBg === 1 ? '#202124f5;' : ''}
                                     font={fontFamily.name + ' ' + fontFamily.type}
-                                    value={inputValue}
+                                    value={inputValue.textarea}
                                     onKeyUp={handleOnKeyup}
                                     onChange={handleGetValue}
                                     placeholder={textarea}
@@ -222,7 +233,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     colorText={colorText}
                                     colorBg={colorBg}
                                     file={uploadPre}
-                                    valueText={inputValue}
+                                    valueText={inputValue.dis}
                                     dataText={dataTextPreView}
                                     token={token}
                                     userId={userId}

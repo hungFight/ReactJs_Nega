@@ -7,7 +7,7 @@ import light from './light.png';
 import LGBT from './LGBTde.jpg';
 import anonymousMale from './anonymousMales.png';
 import anonymousFemale from './anonymousFemales.png';
-import like from './like.png';
+import like from './78ad52e49390239450558626e6586b82.svg';
 const Images = {
     defaultAvatarFemale: Female,
     defaultAvatarMale: Male,

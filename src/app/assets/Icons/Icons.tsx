@@ -22,6 +22,7 @@ import {
     IoArrowUndoCircleOutline,
     IoRemoveOutline,
     IoCopy,
+    IoPricetag,
 } from 'react-icons/io5';
 import { LiaExchangeAltSolid } from 'react-icons/lia';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
@@ -110,7 +111,7 @@ import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiUndo, CiWifiOff, CiW
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
 import { PiEraserThin, PiFlowerLotusFill, PiPlayFill, PiSelectionBackgroundFill } from 'react-icons/pi';
-import { HiMiniPause } from 'react-icons/hi2';
+import { HiMiniHashtag, HiMiniPause } from 'react-icons/hi2';
 
 export const ImageI = () => <IoImagesOutline />;
 
@@ -226,3 +227,5 @@ export const GroupPeopleI = () => <MdGroups2 />;
 export const ArrowDownI = () => <TbArrowNarrowDown />;
 export const BackgroundI = () => <PiSelectionBackgroundFill />;
 export const ReplyI = () => <MdOutlineQuestionAnswer />;
+export const HashI = () => <HiMiniHashtag />;
+export const TagPostI = () => <IoPricetag />;

@@ -17,7 +17,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     const [displayFontText, setDisplayFontText] = useState<boolean>(false);
 
     const [uploadPre, setuploadPre] = useState<{ link: string; type: string }[]>([]);
-    const [inputValue, setInputValue] = useState<string>('');
+    const [inputValue, setInputValue] = useState<{ dis: string; textarea: string }>({ dis: '', textarea: '' });
 
     const uploadPreRef = useRef<{ link: string; type: string }[]>([]);
     // upload submit
@@ -37,7 +37,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         type: 'Straight',
     });
     const handleClear = () => {
-        setInputValue('');
+        setInputValue({ dis: '', textarea: '' });
         setuploadPre([]);
         setDataCentered([]);
         const inpuFile: any = document.getElementById('upload');
@@ -145,7 +145,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
 
     const handleAbolish = () => {
         setuploadPre([]);
-        setInputValue('');
+        setInputValue({ dis: '', textarea: '' });
     };
 
     const handleEmojiSelect = (e: any) => {
@@ -155,7 +155,20 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         setdisplayEmoji(!displayEmoji);
     }, [displayEmoji]);
     const handleGetValue = (e: { target: { value: any } }) => {
-        if (e.target.value.length <= 2500) setInputValue(e.target.value);
+        if (e.target.value.length <= 2500) {
+            // Define a regex pattern to match URLs
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const dp = { dis: '', textarea: '' };
+
+            // Use the match method to find all matches in the text
+            const urls: string[] = e.target.value.match(urlRegex) ?? [];
+            urls.map((u) => {
+                dp.dis = e.target.value.replace(u, `<a href='${u}' target='_blank' style='color: #6ca0ce'>${u}</a>`);
+            });
+            if (!urls.length) dp.dis = e.target.value;
+            dp.textarea = e.target.value;
+            setInputValue(dp);
+        }
     };
 
     const handleDuration = (e: { target: any }) => {

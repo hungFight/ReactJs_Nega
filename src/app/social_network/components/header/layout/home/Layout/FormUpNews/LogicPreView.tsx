@@ -38,7 +38,7 @@ import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import OptionType from './ViewPostFrame/OptionType';
 import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import OpText from '~/reUsingComponents/Options/OpFeature';
+import OpText from '~/reUsingComponents/PostOptions/OpFeature';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
 import Cards from './ViewPostFrame/TypeFile/Swipers/Cards';

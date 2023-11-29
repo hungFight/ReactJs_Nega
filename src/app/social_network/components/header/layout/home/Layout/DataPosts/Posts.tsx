@@ -6,7 +6,7 @@ import { DotI, HeartI, LikeI, LockI, ShareI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import moment from 'moment';
 import Languages from '~/reUsingComponents/languages';
-import OpUpdate from '~/reUsingComponents/Options/OpUpdate';
+import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import Cookies from '~/utils/Cookies';
 import { PropsPosts } from './interfacePosts';
 

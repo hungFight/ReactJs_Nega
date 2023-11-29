@@ -40,7 +40,7 @@ import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import OptionType from './ViewPostFrame/OptionType';
 import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
 import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import OpFeature from '~/reUsingComponents/Options/OpFeature';
+import OpFeature from '~/reUsingComponents/PostOptions/OpFeature';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
 import Cards from './ViewPostFrame/TypeFile/Swipers/Cards';
@@ -412,19 +412,16 @@ const PreviewPost: React.FC<{
 
                     <Div width="100%" css="padding: 5px 6px 10px 6px;">
                         {valueText && (
-                            <TextAreaPre
-                                ref={textA}
-                                value={valueText}
-                                onInput={() => console.log('okkkk')}
+                            <P
                                 css={`
                                     padding: 5px;
                                     color: ${colorText};
                                     background-color: #292a2d;
                                     font-family: ${font}, sans-serif;
-                                    resize: none;
+                                    white-space: pre;
                                 `}
-                                readOnly
-                            />
+                                dangerouslySetInnerHTML={{ __html: valueText }}
+                            ></P>
                         )}
                     </Div>
                     <Div
