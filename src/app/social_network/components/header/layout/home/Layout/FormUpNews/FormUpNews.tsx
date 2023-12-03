@@ -188,7 +188,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     setDisplayFontText={setDisplayFontText}
                                 />
                             )}
-                            {<Hashtag />}
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}
@@ -260,6 +259,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                         </Button>
                     </DivWrapButton>
                 )} */}
+                <Hashtag />
             </DivForm>
             {/* {preView} */}
         </>
