@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Div, P } from '../styleComponents/styleDefault';
+import { Div, P, Span } from '../styleComponents/styleDefault';
 import { BeforeI, CheckI, NextI, OclockI, PrivateI, ResetI, UndoIRegister } from '~/assets/Icons/Icons';
 import { DivPos } from '../styleComponents/styleComponents';
 import LogicText from './logicOpFeature';
@@ -80,7 +80,7 @@ const OpFeature: React.FC<{
     valueSeePost,
     setValueSeePost,
 }) => {
-    const { option, handleReset, handleFirst, handleImotion } = LogicText(
+    const { option, handleReset, handleFirst, handleImotion, privateIndex, seenIndex } = LogicText(
         valuePrivacy,
         setTypeExpire,
         setValuePrivacy,
@@ -111,7 +111,7 @@ const OpFeature: React.FC<{
             <Div width="100%" css="justify-content: space-between;">
                 <Div
                     width="30px"
-                    css="height: 30px; font-size: 20px; align-items: center; justify-content: center;"
+                    css="height: 30px; font-size: 20px; align-items: center; justify-content: center;  cursor: var(--pointer);"
                     onClick={() => setOptions(false)}
                 >
                     <UndoIRegister />
@@ -134,17 +134,16 @@ const OpFeature: React.FC<{
                     wrap="wrap"
                     key={rs.id}
                     css={`
-                        padding: 4px 5px;
-                        margin: 1px 0;
-                        background-color: #3f4041;
+                        padding: 8px;
+                        margin: 3px 0;
+                        background-image: ${rs.title.backgroundImage};
                         cursor: var(--pointer);
                         ${index === 0 && 'border-top-right-radius: 5px;border-top-left-radius: 5px'};
                         ${index === arr.length - 1 && 'border-bottom-right-radius: 5px;border-bottom-left-radius: 5px'}
                     `}
                 >
-                    <P
-                        z="1.4rem"
-                        css="width: 100%"
+                    <Div
+                        css="font-size: 1.4rem; width: 100%;display: flex; align-items: flex-end;"
                         onClick={() => {
                             if (!more.includes(rs.id)) {
                                 setMore([...more, rs.id]);
@@ -153,8 +152,40 @@ const OpFeature: React.FC<{
                             }
                         }}
                     >
-                        {rs.title.name}
-                    </P>
+                        {rs.title.name}{' '}
+                        {rs.id === privateIndex && valuePrivacy.length > 0 && (
+                            <>
+                                <Span css="margin-left: 10px; color: #53d4bf;">(</Span>
+                                {valuePrivacy.map((v, index) => (
+                                    <P
+                                        z="1.2rem"
+                                        css={`
+                                            margin-left: 3px;
+                                            margin-right: ${valuePrivacy.length === index + 1 ? '3px' : '0'};
+                                        `}
+                                    >
+                                        {v.name + (valuePrivacy.length === index + 1 ? '' : ',')}
+                                    </P>
+                                ))}
+                                <Span css=" color: #53d478;">)</Span>
+                            </>
+                        )}
+                        {rs.id === seenIndex && valueSeePost && (
+                            <>
+                                <Span css="margin-left: 10px; color: #53d4bf;">(</Span>
+                                <P
+                                    z="1.2rem"
+                                    css={`
+                                        margin-left: 3px;
+                                        margin-right: 3px;
+                                    `}
+                                >
+                                    {valueSeePost.name}
+                                </P>
+                                <Span css=" color: #53d478;">)</Span>
+                            </>
+                        )}
+                    </Div>
                     {more.includes(rs.id) && (
                         <Div
                             width="100%"

@@ -34,7 +34,7 @@ const MP3: React.FC<{
                         css={`
                             margin-bottom: 10px;
                         `}
-                        onClick={(e) => handleStep(e, f.link)}
+                        onClick={(e) => handleStep(e, index)}
                     >
                         <Img src={f.link} alt={f.link} />
                     </Div>

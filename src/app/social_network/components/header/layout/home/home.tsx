@@ -97,7 +97,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
             onClick={() => setInclude(!include)}
             onTouchStart={() => setInclude(!include)}
         >
-            <DivPost>
+            <DivPost onClick={(e) => e.stopPropagation()}>
                 <Div
                     css={`
                         width: 100%;

@@ -196,9 +196,6 @@ export const DivAction = styled.div`
         font-size: 17px;
     }
     @media (min-width: 768px) {
-        svg {
-            font-size: 25px;
-        }
         font-size: 18px;
     }
 `;

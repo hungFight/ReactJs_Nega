@@ -123,7 +123,7 @@ const Grid: React.FC<{
                     </>
                 )}
                 <>{step === 2 && ToolDefault(2)}</>
-                {file.map((f) => {
+                {file.map((f, index) => {
                     return (
                         <Div
                             key={f.link}
@@ -132,12 +132,12 @@ const Grid: React.FC<{
                                 height: 100%;
                                 margin: 0 1.5px;
                                 border-radius: 5px;
-                                ${step > 1 && cc === f.link
+                                /* ${step > 1
                                     ? `position: fixed; top: 0; left:0; z-index: 88; background-color: #0e0e0d; img,div.video-react-controls-enabled{object-fit: contain; margin: auto;}`
-                                    : ''}
+                                    : ''} */
                                 ${f.type === 'video' && file.length === 1 ? 'height: 580px;' : ''}
                             `}
-                            onClick={(e) => handleStep(e, f.link)}
+                            onClick={(e) => handleStep(e, index)}
                         >
                             {f.type === 'image' ? (
                                 <Img src={f.link} alt={f.link} radius="5px" />

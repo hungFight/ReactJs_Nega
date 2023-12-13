@@ -5,10 +5,10 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<number>>, colorText: string) => {
     const [moreFile, setMoreFile] = useState<number>(6);
     const [update, setUpdate] = useState<number>(-1);
-    const [cc, setCC] = useState<string>('');
+    const [cc, setCC] = useState<number | null>(null);
     const [showTitle, setShowTitle] = useState<boolean>(false);
     const [showComment, setShowComment] = useState<number[]>([]);
-    const handleStep = (e: any, link: string) => {
+    const handleStep = (e: any, index: number) => {
         if (e.target.getAttribute('class')) {
             if (
                 !e.target.getAttribute('class').includes('video-react-play-control') &&
@@ -17,7 +17,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                 !e.target.getAttribute('class').includes('video-react-icon-stepscreen') &&
                 e.target.getAttribute('id') !== 'more'
             ) {
-                setCC(link);
+                setCC(index);
                 if (step === 0) {
                     setStep(3);
                 } else if (step === 1) {
@@ -40,6 +40,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                     onClick={() => {
                         setStep(0);
                         setShowTitle(false);
+                        setCC(null);
                     }}
                     css={`
                         ${step > 0
@@ -59,7 +60,9 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                     size="20px"
                     top="50px"
                     right="11.5px"
-                    onClick={() => setStep(1)}
+                    onClick={() => {
+                        setStep(1);
+                    }}
                     css="position: fixed;  color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px; background-color: #a1a1a18a; transition: all 0.5s linear; "
                 >
                     <UndoI />

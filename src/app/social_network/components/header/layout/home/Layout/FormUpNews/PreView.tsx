@@ -401,6 +401,11 @@ const PreviewPost: React.FC<{
                                 <Span css="padding-top: 3px;">3h</Span>
                                 <Span>{valueSeePost.icon}</Span>
                             </P>
+                            {valuePrivacy.length > 0 && (
+                                <Div css="margin-left: 2px">
+                                    <PrivateI />
+                                </Div>
+                            )}
                         </Div>
                         <DivPos
                             size="21px"
@@ -468,7 +473,7 @@ const PreviewPost: React.FC<{
                     >
                         <Div
                             css={`
-                                width: fint-content;
+                                width: fit-content;
                                 border-radius: 11px;
                                 margin: 8px;
                                 @media (min-width: 768px) {
@@ -552,12 +557,13 @@ const PreviewPost: React.FC<{
                                             background-color: #292a2d;
                                         `}
                                     >
-                                        {showAc &&
+                                        {showAc && // option icon as button like
                                             acList.map((a) => {
                                                 return Imotions.some((i) => i.id === a.id) ? (
                                                     <Div
                                                         key={a.id}
-                                                        onClick={() => {
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
                                                             setAcEmo(a);
                                                             setShowAc(false);
                                                         }}

@@ -6,6 +6,11 @@ import { UndoI } from '~/assets/Icons/Icons';
 import LogicType from './logicType';
 import Player from '~/reUsingComponents/Videos/Player';
 import { InputT } from './Swipers/styleSwipers';
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Pagination } from 'swiper';
 
 const DefaultType: React.FC<{
     file: { link: string; type: string }[];
@@ -14,6 +19,12 @@ const DefaultType: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
     upload: any;
 }> = ({ file, colorText, step, setStep, upload }) => {
+    const pagination = {
+        clickable: true,
+        renderBullet: function (index: number, className: string) {
+            return '<span class="' + className + '">' + (index + 1) + '</span>';
+        },
+    };
     const {
         moreFile,
         cc,
@@ -71,6 +82,49 @@ const DefaultType: React.FC<{
                 }`}
             `}
         >
+            {cc !== null && (
+                <Div
+                    css={`
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        z-index: 103;
+                        width: 100%;
+                        height: 100%;
+                        background-color: #171718;
+                        img {
+                            object-fit: contain;
+                        }
+                        .swiper-pagination-bullet {
+                            width: 20px;
+                            height: 20px;
+                            text-align: center;
+                            line-height: 20px;
+                            font-size: 12px;
+                            opacity: 1;
+                            color: white;
+                            background-color: #373737;
+                        }
+                        .swiper-pagination-bullet-active {
+                            background-color: #219599 !important;
+                        }
+                    `}
+                >
+                    <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiper">
+                        {file.map((f) => (
+                            <SwiperSlide key={f.link}>
+                                {f?.type === 'image' ? (
+                                    <Img src={f?.link} id="baby" alt={f?.link} />
+                                ) : f?.type === 'video' ? (
+                                    <Player src={f?.link} step={step} />
+                                ) : (
+                                    ''
+                                )}
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                </Div>
+            )}
             <>
                 {step > 0 && ToolDefault(0)}
                 {step === 2 && ToolDefault(2)}
@@ -93,6 +147,7 @@ const DefaultType: React.FC<{
                         console.log('Chiều rộng: ' + videoWidth);
                     });
                 }
+
                 // check every 6 picture
                 if (step === 0 ? index < moreFile : true) {
                     return (
@@ -104,7 +159,7 @@ const DefaultType: React.FC<{
                                 wrap="wrap"
                                 width="100%"
                                 onClick={(e) => {
-                                    handleStep(e, f?.link);
+                                    handleStep(e, index);
                                 }}
                                 css={`
                                     height: 100%;
@@ -115,9 +170,9 @@ const DefaultType: React.FC<{
                                     ${showTitle && step === 1 && 'padding-bottom: 24px'};
                                     color: ${colorText};
                                     height: ${heightV};
-                                    ${step > 1 && cc === f?.link
+                                    /* ${step > 1
                                         ? `position: fixed; height: 100%; top: 0; left:0; z-index: 103; background-color: #0e0e0d; img,div.video-react-controls-enabled{object-fit: contain; margin: auto;}`
-                                        : ''}
+                                        : ''} */
                                 `}
                             >
                                 {showTitle && step === 1 && (
@@ -133,21 +188,22 @@ const DefaultType: React.FC<{
                                         `}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        <P css="height: 20px;">
+                                        <P css=" word-break: break-all;">
                                             {classify[index]?.id === index && classify[index]?.value}
                                         </P>
 
-                                        <DivPos size="20px" top="5px" right="3px" onClick={() => setUpdate(index)}>
+                                        <Div css="font-size: 30px;" onClick={() => setUpdate(index)}>
                                             <ChangeI />
-                                        </DivPos>
+                                        </Div>
                                         {update === index && (
                                             <Div width="100%" wrap="wrap" css="justify-content: center;">
                                                 <InputT
                                                     onFocus={(e: any) => {
                                                         // e.target.value = '';
                                                     }}
+                                                    value={classify.filter((c) => c.id === index)[0]?.value}
                                                     onChange={(e: { target: { value: string } }) => {
-                                                        console.log(e.target.value);
+                                                        console.log(e.target.value, classify);
                                                         let ok = false;
                                                         classify.forEach((v) => {
                                                             if (v.id === index) ok = true;
@@ -169,10 +225,14 @@ const DefaultType: React.FC<{
                                                             );
                                                         }
 
-                                                        upload[index].title = e.target.value;
+                                                        upload[index].title = e.target.value; // set Title of every file
                                                     }}
                                                 />
-                                                <Button color={colorText} onClick={() => setUpdate(-1)}>
+                                                <Button
+                                                    color={colorText}
+                                                    css="background-image: linear-gradient(45deg, black,#b83333, black);"
+                                                    onClick={() => setUpdate(-1)}
+                                                >
                                                     Disappear
                                                 </Button>
                                                 {/* <Button color={colorText}>Change</Button>

@@ -13,12 +13,13 @@ const Comment: React.FC<{
     setShowComment: React.Dispatch<React.SetStateAction<boolean>>;
     colorText: string;
 }> = ({ anony, setShowComment, colorText }) => {
+    const anonymousIndex = 4;
     const [anonymous, setAnonymous] = useState<boolean>(false);
     const [activate, setActivate] = useState<number>(1);
     const handleComment = () => {
         setAnonymous(!anonymous);
     };
-    console.log(activate);
+    console.log(activate, anony);
 
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>
@@ -82,7 +83,11 @@ const Comment: React.FC<{
                     `}
                 >
                     <Avatar
-                        src={activate < 5 ? 'https://bookkol.com/wp-content/uploads/2022/12/son-tung-mtp.jpg' : ''}
+                        src={
+                            activate < 5
+                                ? 'https://gaixinhbikini.com/wp-content/uploads/2023/02/anh-gai-dep-2k-005.jpg'
+                                : ''
+                        }
                         alt="son-tung"
                         gender={activate}
                         radius="50%"
@@ -92,15 +97,17 @@ const Comment: React.FC<{
                         `}
                         onClick={handleComment}
                     >
-                        {anonymous && anony.some((a) => a.id === 5) ? (
+                        {anonymous && anony.some((a) => a.id === anonymousIndex) ? ( // anonymous comment
                             <Div
                                 css={`
                                     position: absolute;
-                                    top: -50px;
-                                    width: 115px;
-                                    padding: 4px;
+                                    top: 0px;
+                                    width: fit-content;
+                                    padding: 4px 10px;
                                     background-color: #1c5689;
                                     border-radius: 5px;
+                                    left: 0;
+                                    cursor: var(--pointer);
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -116,15 +123,16 @@ const Comment: React.FC<{
                                 }}
                             >
                                 <Avatar
+                                    css="width: 30px; height: 30px; min-width: 30px; margin-right: 3px;"
                                     src={
-                                        activate > 5
-                                            ? 'https://bookkol.com/wp-content/uploads/2022/12/son-tung-mtp.jpg'
+                                        activate > anonymousIndex
+                                            ? 'https://gaixinhbikini.com/wp-content/uploads/2023/02/anh-gai-dep-2k-005.jpg'
                                             : ''
                                     }
                                     radius="50%"
                                     gender={activate === 0 ? 11 : activate === 1 ? 12 : activate === 11 ? 0 : 1}
                                 />
-                                <P>Anonymous</P>
+                                <P z="1.5rem">{activate > anonymousIndex ? 'hung' : 'Anonymous'}</P>
                             </Div>
                         ) : (
                             <></>

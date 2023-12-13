@@ -69,6 +69,7 @@ const LogicText = (
             id: 1,
             title: {
                 name: 'Privacy',
+                backgroundImage: 'linear-gradient(47deg, #000000,#25415b,#1b6b3c, transparent)',
                 children: [
                     {
                         id: 1,
@@ -93,6 +94,7 @@ const LogicText = (
             id: 2,
             title: {
                 name: 'Who can see your posts',
+                backgroundImage: 'linear-gradient(47deg, #000000,#853333,#328585, #161515)',
                 children: [
                     { id: 1, name: 'Only me', icon: <PrivateI /> },
                     { id: 2, name: 'Friends', icon: <FriendI /> },
@@ -101,6 +103,8 @@ const LogicText = (
             },
         },
     ];
+    const privateIndex = option[0].id;
+    const seenIndex = option[1].id;
 
     const handleReset = () => {
         setOpSelect([]);
@@ -188,6 +192,8 @@ const LogicText = (
         handleFirst,
         handleImotion,
         valueSeePost,
+        privateIndex,
+        seenIndex,
     };
 };
 export default LogicText;

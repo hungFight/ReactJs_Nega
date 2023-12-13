@@ -151,7 +151,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     };
 
     const handleEmojiSelect = (e: any) => {
-        setInputValue(inputValue + e.native);
+        setInputValue({ textarea: inputValue.textarea + e.native, dis: inputValue.dis + e.native });
     };
     const handleDisEmoji = useCallback(() => {
         setdisplayEmoji(!displayEmoji);
