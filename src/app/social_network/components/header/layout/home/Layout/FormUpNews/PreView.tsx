@@ -1,5 +1,5 @@
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { Button, Div, H3, Img, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
+import { A, Button, Div, H3, Img, Links, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsUserHome } from '../../Home';
 import {
     BanI,
@@ -121,6 +121,7 @@ const PreviewPost: React.FC<{
     handleClear: () => void;
     include: boolean;
     setInclude: React.Dispatch<React.SetStateAction<boolean>>;
+    hashTags: string[];
 }> = ({
     user,
     colorText,
@@ -140,6 +141,7 @@ const PreviewPost: React.FC<{
     handleClear,
     include,
     setInclude,
+    hashTags,
 }) => {
     // Select type of post
     const {
@@ -349,6 +351,7 @@ const PreviewPost: React.FC<{
                             </DivPos>
                         </>
                     )}
+                    {/* view full screen */}
                     {step === 0 && file.length > 0 && (
                         <DivPos
                             size="18px"
@@ -418,12 +421,30 @@ const PreviewPost: React.FC<{
                                     color: ${colorText};
                                     background-color: #292a2d;
                                     font-family: ${font}, sans-serif;
-                                    white-space: pre;
+                                    white-space: pre-wrap;
+                                    word-break: break-word;
                                 `}
                                 dangerouslySetInnerHTML={{ __html: valueText }}
                             ></P>
                         )}
                     </Div>
+                    {hashTags.length > 0 && (
+                        <Div width="100%" css="padding: 5px">
+                            {hashTags.map((tag) => (
+                                <Smooth
+                                    key={tag}
+                                    to={`/sn/hashTags/${tag}`}
+                                    size="1.3rem"
+                                    css={`
+                                        margin-right: 5px;
+                                        color: #5ba3e2;
+                                    `}
+                                >
+                                    {tag}
+                                </Smooth>
+                            ))}
+                        </Div>
+                    )}
                     <Div
                         width="100%"
                         css={`
@@ -437,6 +458,7 @@ const PreviewPost: React.FC<{
                     >
                         {postTypes[selectType]}
                     </Div>
+                    {/* image, video here */}
                     <Div
                         css={`
                             width: 100%;
@@ -510,12 +532,14 @@ const PreviewPost: React.FC<{
                                 }}
                             >
                                 {showI?.icon || acEmo.icon}
+                                {/* emotion is chosen */}
                                 <Div
                                     css="font-size: 15px; position: absolute; right: 5px;"
                                     onClick={() => setShowAc(true)}
                                 >
                                     <IconI />
                                 </Div>
+                                {/* change icon for display on emotion button */}
                                 {showAc && (
                                     <Div
                                         css={`

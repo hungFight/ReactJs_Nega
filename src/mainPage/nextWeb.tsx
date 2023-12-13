@@ -121,21 +121,21 @@ const Website: React.FC<{
     const [hrefState, setHrefState] = useState<string>('');
     function reTap() {
         if (
-            window.location.pathname.includes('SN') &&
-            !window.location.pathname.includes('SD') &&
-            !window.location.pathname.includes('W')
+            window.location.pathname.toLowerCase().includes('sn') &&
+            !window.location.pathname.toLowerCase().includes('sd') &&
+            !window.location.pathname.toLowerCase().includes('w')
         ) {
             hanNextWebsite1();
         } else if (
-            window.location.pathname.includes('SD') &&
-            !window.location.pathname.includes('SN') &&
-            !window.location.pathname.includes('W')
+            window.location.pathname.toLowerCase().includes('sd') &&
+            !window.location.pathname.toLowerCase().includes('sn') &&
+            !window.location.pathname.toLowerCase().includes('w')
         ) {
             hanNextWebsite2();
         } else if (
-            window.location.pathname.includes('W') &&
-            !window.location.pathname.includes('SD') &&
-            !window.location.pathname.includes('SN')
+            window.location.pathname.toLowerCase().includes('w') &&
+            !window.location.pathname.toLowerCase().includes('sd') &&
+            !window.location.pathname.toLowerCase().includes('sn')
         ) {
             hanNextWebsite3();
         } else {
@@ -182,21 +182,21 @@ const Website: React.FC<{
     const buttonPage = [
         {
             Tag: Apage,
-            link: '/SN',
+            link: '/sn',
             next: hanNextWebsite1,
             name: 'News',
             icon: <NewI />,
         },
         {
             Tag: Apage,
-            link: '/SD',
+            link: '/sd',
             next: hanNextWebsite2,
             name: 'Study',
             icon: <BookI />,
         },
         {
             Tag: Apage,
-            link: '/W',
+            link: '/w',
             next: hanNextWebsite3,
             name: 'Work',
             icon: <WorkI />,

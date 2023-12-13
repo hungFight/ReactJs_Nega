@@ -8,6 +8,8 @@ import { PropsUserHome } from '../../Home';
 import CommonUtils from '~/utils/CommonUtils';
 import { useCookies } from 'react-cookie';
 import Cookies from '~/utils/Cookies';
+import { Link } from 'react-router-dom';
+import { Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault';
 
 export default function LogicForm(form: PropsFormHome, colorText: string, colorBg: number, user?: PropsUserHome) {
     const dispatch = useDispatch();
@@ -158,14 +160,27 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         if (e.target.value.length <= 2500) {
             // Define a regex pattern to match URLs
             const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const dp = { dis: '', textarea: '' };
+            const hashTagRegex = /#([^]+?)\s*#@/g;
+            const dp = { dis: '', textarea: '' }; //dis is displayed
 
             // Use the match method to find all matches in the text
             const urls: string[] = e.target.value.match(urlRegex) ?? [];
+            const hashs: string[] = e.target.value.match(hashTagRegex) ?? [];
+            dp.dis = e.target.value;
+
             urls.map((u) => {
-                dp.dis = e.target.value.replace(u, `<a href='${u}' target='_blank' style='color: #6ca0ce'>${u}</a>`);
+                dp.dis = dp.dis.replace(u, `<a href='${u}' target='_blank' style='color: #6ca0ce'>${u}</a>`);
             });
-            if (!urls.length) dp.dis = e.target.value;
+            hashs.map((u) => {
+                const protoType = u.split(/#|#@/);
+                console.log(protoType, 'protoType', u);
+
+                dp.dis = dp.dis.replace(
+                    u,
+                    `<a href='/sn/hashTags/${'#' + protoType[1]}' style="color: #6ca0ce">${'#' + protoType[1]}</a>`,
+                );
+            });
+            console.log(hashs, 'hashs', dp.dis);
             dp.textarea = e.target.value;
             setInputValue(dp);
         }

@@ -3,14 +3,17 @@ import { CloseI, HashI, PlusI, SearchI, TagPostI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
-const Hashtag = () => {
+const Hashtag: React.FC<{
+    setHashTags: React.Dispatch<React.SetStateAction<string[]>>;
+    setOnTags: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setHashTags: setHash, setOnTags }) => {
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [hashTag, setHashTag] = useState<string>('');
     return (
         <Div
             css={`
                 position: fixed;
-                width: 330px;
+                width: 100%;
                 height: 660px;
                 background-color: #84848475;
                 z-index: 9999;
@@ -20,7 +23,10 @@ const Hashtag = () => {
                 right: 50%;
                 align-items: center;
             `}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+                e.stopPropagation();
+                setOnTags(false);
+            }}
             onTouchStart={(e) => e.stopPropagation()}
         >
             <Div
@@ -32,6 +38,9 @@ const Hashtag = () => {
                     color: white;
                     background-color: #0e0e0e;
                 `}
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
             >
                 <H3
                     css={`
@@ -47,7 +56,7 @@ const Hashtag = () => {
                     `}
                 >
                     <HashI /> Hashtag
-                    <DivPos size="20px" top="3px" left="10px">
+                    <DivPos size="20px" top="3px" left="10px" onClick={() => setOnTags(false)}>
                         <CloseI />
                     </DivPos>
                 </H3>
@@ -94,6 +103,10 @@ const Hashtag = () => {
                 <Div
                     width="100%"
                     css="justify-content: end; padding-right: 3px; padding: 0px 5px; margin: 3px 0; cursor: var(--pointer);"
+                    onClick={() => {
+                        setHash(hashTags);
+                        setOnTags(false);
+                    }}
                 >
                     <P z="1.3rem" css="padding: 3px 7px; border-radius: 5px;">
                         Done

@@ -73,6 +73,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
         handleClear,
     } = LogicForm(form, colorText, colorBg, user);
 
+    const [hashTags, setHashTags] = useState<string[]>([]);
+    const [onTags, setOnTags] = useState<boolean>(false);
+
     return (
         <>
             <DivForm top="12px">
@@ -158,17 +161,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                         <CameraI />
                                     </Label>
                                 </DivItems>
-                                <DivItems color={colorText} position="relative">
-                                    <HoverTitle
-                                        title="Tag"
-                                        Tags={Div}
-                                        right="none"
-                                        left="90px"
-                                        top="2px"
-                                        color={colorText}
-                                        colorBg={colorBg}
-                                        children={<HashI />}
-                                    ></HoverTitle>
+                                <DivItems color={colorText} position="relative" onClick={() => setOnTags(true)}>
+                                    <HashI />
                                 </DivItems>
                                 <DivItems
                                     bg={displayFontText ? '#4496dd' : ''}
@@ -244,6 +238,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     handleClear={handleClear}
                                     include={include}
                                     setInclude={setInclude}
+                                    hashTags={hashTags} // hashTags
                                 />
                             )}
                         </DivDataFake>
@@ -259,7 +254,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                         </Button>
                     </DivWrapButton>
                 )} */}
-                <Hashtag />
+                {onTags && <Hashtag setHashTags={setHashTags} setOnTags={setOnTags} />}
             </DivForm>
             {/* {preView} */}
         </>

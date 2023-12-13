@@ -17,8 +17,13 @@ export const Links = styled(Link)`
         }
     }
 `;
-export const A = styled.a`
-    ${(props: { css?: string }) => props.css}
+export const A = styled.a<{ size?: string; css?: string }>`
+    font-size: ${(props) => props.size};
+    ${(props) => props.css}
+`;
+export const Smooth = styled(Link)<{ size?: string; css?: string }>`
+    font-size: ${(props) => props.size};
+    ${(props) => props.css}
 `;
 interface PropsInput {
     width?: string;

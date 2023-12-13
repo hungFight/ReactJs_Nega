@@ -77,23 +77,11 @@ const Header: React.FC<{
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [border, setBorder] = useState<string>(() => {
         const location = window.location.pathname;
-        console.log(
-            'location',
-            location,
-            ['/SN/', '/SN'].includes(location)
-                ? 'home'
-                : location === '/SN/exchange'
-                ? 'exch'
-                : location === '/SN/callVideo'
-                ? 'link'
-                : 'people',
-        );
-
-        return ['/SN/', '/SN'].includes(location)
+        return ['/SN/', '/SN', '/sn/', '/sn'].includes(location)
             ? 'home'
-            : ['/SN/exchange', '/SN/exchange/'].includes(location)
+            : ['/SN/exchange', '/SN/exchange/', '/sn/exchange', '/sn/exchange/'].includes(location)
             ? 'exch'
-            : ['/SN/callVideo', '/SN/callVideo/'].includes(location)
+            : ['/SN/callVideo', '/SN/callVideo/', '/sn/callVideo', '/sn/callVideo/'].includes(location)
             ? 'link'
             : 'people';
     });

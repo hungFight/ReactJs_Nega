@@ -27,7 +27,7 @@ class refreshToken {
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenN);
 
-                            if (decodeToken.exp < date.getTime() / 1000 + 5) {
+                            if (decodeToken.exp < date.getTime() / 1000 + 5) { // faster 50 second
                                 console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
 
                                 const data = await authHttpRequest.refreshToken();

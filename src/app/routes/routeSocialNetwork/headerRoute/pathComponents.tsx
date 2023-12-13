@@ -10,13 +10,13 @@ interface Routes {
 }
 
 const routes: Routes = {
-    home: '/SN/',
-    exchange: '/SN/exchange',
-    callVideo: '/SN/callVideo',
-    people: '/SN/people',
-    homeSlug: '/SN/:slug',
-    exchangeSlug: '/SN/exchange/:slug',
-    callVideoSlug: '/SN/callVideo/:slug',
+    home: '/sn/',
+    exchange: '/sn/exchange',
+    callVideo: '/sn/callVideo',
+    people: '/sn/people',
+    homeSlug: '/sn/:slug',
+    exchangeSlug: '/sn/exchange/:slug',
+    callVideoSlug: '/sn/callVideo/:slug',
 };
 const components = {
     Home,
