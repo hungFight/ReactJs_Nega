@@ -196,18 +196,7 @@ export default function LogicPreView(
         if (upload.length > 0 || valueText) {
             setLoading(true);
             console.log('Option', selectType, 'private', valuePrivacy, 'Expire', typeExpire);
-            let newExpire;
-            if (typeExpire?.cate === 1 && typeExpire?.name === 'Minute') {
-                newExpire = typeExpire?.value * 60;
-            } else if (typeExpire?.cate === 2 && typeExpire?.name === 'Hour') {
-                newExpire = typeExpire?.value * 3600;
-            } else if (typeExpire?.cate === 3 && typeExpire?.name === 'Date') {
-                newExpire = typeExpire?.value * 86400;
-            } else if (typeExpire?.cate === 4 && typeExpire?.name === 'Month') {
-                newExpire = typeExpire?.value * 262974656;
-            } else if (typeExpire?.cate === 5 && typeExpire?.name === 'Year') {
-                newExpire = typeExpire?.value * 31536000;
-            }
+         
 
             let res: any;
             let id_c: string[] = [];
@@ -225,7 +214,6 @@ export default function LogicPreView(
                 }),
             );
             formData.append('imotions', JSON.stringify(Imotions));
-            if (newExpire) formData.append('expire', String(newExpire));
 
             console.log('valuePrivacy', valuePrivacy, valueSeePost, 'valueSeePost');
 

@@ -12,7 +12,7 @@ import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 import { PropsId_chats } from 'src/App';
 import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
-interface PropsFriends {
+export interface PropsFriends {
     avatar: any;
     birthday: string;
     fullName: string;
@@ -39,6 +39,7 @@ const Friends: React.FC<{
     async function fetch(rel: boolean) {
         cRef.current = 1;
         if (rel) {
+            // for scroll
             offsetRef.current = 0;
             dataRef.current = [];
             setLoading(true);

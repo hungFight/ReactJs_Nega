@@ -434,9 +434,9 @@ const PreviewPost: React.FC<{
                         )}
                     </Div>
                     {hashTags.length > 0 && (
-                        <Div width="100%" css="padding: 5px">
+                        <Div width="100%" wrap="wrap" css="padding: 5px">
                             {hashTags.map((tag) => (
-                                <Smooth
+                                <Smooth // link tag
                                     key={tag}
                                     to={`/sn/hashTags/${tag}`}
                                     size="1.3rem"

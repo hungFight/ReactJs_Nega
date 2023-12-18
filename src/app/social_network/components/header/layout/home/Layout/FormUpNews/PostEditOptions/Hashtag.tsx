@@ -6,8 +6,9 @@ import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefa
 const Hashtag: React.FC<{
     setHashTags: React.Dispatch<React.SetStateAction<string[]>>;
     setOnTags: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setHashTags: setHash, setOnTags }) => {
-    const [hashTags, setHashTags] = useState<string[]>([]);
+    hashTagsInitially: string[];
+}> = ({ setHashTags: setHash, setOnTags, hashTagsInitially }) => {
+    const [hashTags, setHashTags] = useState<string[]>(hashTagsInitially);
     const [hashTag, setHashTag] = useState<string>('');
     return (
         <Div
@@ -17,11 +18,16 @@ const Hashtag: React.FC<{
                 height: 660px;
                 background-color: #84848475;
                 z-index: 9999;
-                top: 50%;
-                translate: -50% -50%;
-                left: 50%;
-                right: 50%;
+                top: 42px;
+                left: 0;
                 align-items: center;
+                @media (min-width: 400px) {
+                    width: 98%;
+                    height: 400px;
+                    translate: unset;
+                    margin-top: 11px;
+                    position: unset;
+                }
             `}
             onClick={(e) => {
                 e.stopPropagation();
@@ -34,9 +40,16 @@ const Hashtag: React.FC<{
                 display="block"
                 css={`
                     height: 80%;
+                    padding: 5px 0;
                     position: relative;
                     color: white;
                     background-color: #0e0e0e;
+                    @media (min-width: 400px) {
+                        height: 100%;
+                        box-shadow: 0 0 3px #60a6c7;
+                        border-radius: 5px;
+                        background-color: #18191b;
+                    }
                 `}
                 onClick={(e) => {
                     e.stopPropagation();
@@ -73,6 +86,9 @@ const Hashtag: React.FC<{
                         border-radius: 10px;
                         overflow: overlay;
                         padding: 5px;
+                        @media (min-width: 400px) {
+                            max-height: 125px;
+                        }
                     `}
                 >
                     {hashTags.map((t) => (

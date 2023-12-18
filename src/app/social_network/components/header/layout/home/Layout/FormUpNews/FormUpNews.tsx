@@ -28,6 +28,7 @@ import LogicForm from './LogicForm';
 import { PropsUserHome } from '../../Home';
 import { useState } from 'react';
 import Hashtag from './PostEditOptions/Hashtag';
+import Tags from './PostEditOptions/Tags';
 export interface PropsFormHome {
     textarea: string;
     buttonOne: string;
@@ -161,7 +162,12 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                         <CameraI />
                                     </Label>
                                 </DivItems>
-                                <DivItems color={colorText} position="relative" onClick={() => setOnTags(true)}>
+                                <DivItems
+                                    bg={onTags ? '#4496dd' : ''}
+                                    color={colorText}
+                                    position="relative"
+                                    onClick={() => setOnTags(!onTags)}
+                                >
                                     <HashI />
                                 </DivItems>
                                 <DivItems
@@ -182,6 +188,10 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     setDisplayFontText={setDisplayFontText}
                                 />
                             )}
+                            {onTags && (
+                                <Hashtag setHashTags={setHashTags} hashTagsInitially={hashTags} setOnTags={setOnTags} />
+                            )}
+                            <Tags />
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}
@@ -254,7 +264,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                         </Button>
                     </DivWrapButton>
                 )} */}
-                {onTags && <Hashtag setHashTags={setHashTags} setOnTags={setOnTags} />}
             </DivForm>
             {/* {preView} */}
         </>

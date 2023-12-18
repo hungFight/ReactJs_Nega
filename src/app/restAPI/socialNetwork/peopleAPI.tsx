@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import refreshToken from '~/refreshToken/refreshToken';
 import errorHandling from '../errorHandling/errorHandling';
+import { PropsFriends } from '~/social_network/components/Header/layout/MakingFriends/Friends';
 class PeopleRequest {
     setFriend = async (id: string, per?: string) => {
         try {
@@ -52,6 +53,7 @@ class PeopleRequest {
         }
     };
     getFriends = async (offset: number, limit: number, type: string) => {
+        // there are three type friend, requested, send request
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             console.log('loop friend');

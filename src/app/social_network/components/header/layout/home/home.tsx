@@ -86,7 +86,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const bgAther = colorBg === 1 ? '#17181af5' : colorBg;
     return (
         <Div
-            width="100%"
+            width="99%"
             css={`
                 overflow-y: overlay;
                 height: 100%;
