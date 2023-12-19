@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CloseI, HashI, PlusI, SearchI, TagPostI } from '~/assets/Icons/Icons';
+import { CloseI, HashI, PlusI, ProfileI, SearchI, TagPostI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
@@ -8,6 +8,7 @@ import Account from '~/social_network/Accoutns/Account';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtils';
+import { setOpenProfile } from '~/redux/hideShow';
 
 const Tags: React.FC = () => {
     const offsetRef = useRef<number>(0);
@@ -77,13 +78,12 @@ const Tags: React.FC = () => {
                 display="block"
                 css={`
                     height: 80%;
-                    padding: 5px 0;
+                    padding: 0 0 5px 0;
                     position: relative;
                     color: white;
-                    background-color: #292929;
+                    background-color: #242424;
                     @media (min-width: 400px) {
                         height: 100%;
-                        box-shadow: 0 0 3px #60a6c7;
                         border-radius: 5px;
                     }
                 `}
@@ -99,18 +99,45 @@ const Tags: React.FC = () => {
                         padding: 5px 4px;
                         font-size: 1.4rem;
                         display: flex;
+                        background-color: #3f3f3f;
                         align-items: center;
                         position: relative;
                         color: white;
                     `}
                 >
                     <HashI /> Hashtag
-                    <DivPos size="20px" top="3px" left="10px">
+                    <DivPos size="20px" top="5px" left="10px">
                         <CloseI />
                     </DivPos>
                 </H3>
                 <Div width="100%" wrap="wrap">
-                    <Account data={data} />
+                    {data.map((r) => (
+                        <Account
+                            key={r.id}
+                            data={r}
+                            Element={
+                                <>
+                                    <DivPos
+                                        top="14.5px"
+                                        right="57px"
+                                        size="25px"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            dispatch(setOpenProfile({ newProfile: [r.id], currentId: '' }));
+                                        }}
+                                    >
+                                        <ProfileI />
+                                    </DivPos>
+                                    <DivPos
+                                        top="17px"
+                                        right="22px"
+                                        width="20px"
+                                        css=" border: 2px solid #a7a7a7; border-radius: 3px;"
+                                    ></DivPos>
+                                </>
+                            }
+                        />
+                    ))}
                 </Div>
             </Div>
         </Div>
