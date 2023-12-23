@@ -206,7 +206,7 @@ const Header: React.FC<{
                             id="home"
                             colorBg={colorBg}
                             Tags={LinkHome}
-                            to="/SN/"
+                            to="/sn/"
                             children={<HomeI />}
                             title={home.title}
                             size="20px"
@@ -218,7 +218,7 @@ const Header: React.FC<{
                             colorBg={colorBg}
                             color={colorText}
                             Tags={LinkExchange}
-                            to="/SN/exchange"
+                            to="/sn/exchange"
                             title={exchange}
                             children={<ExchangeI />}
                             size="17px"
@@ -228,7 +228,7 @@ const Header: React.FC<{
                             id="link"
                             colorBg={colorBg}
                             Tags={LinkCall}
-                            to="/SN/callVideo"
+                            to="/sn/callVideo"
                             children={<CameraI />}
                             title={video}
                             size="20px"
@@ -239,7 +239,7 @@ const Header: React.FC<{
                             id="people"
                             colorBg={colorBg}
                             Tags={LinkHome}
-                            to="/SN/people"
+                            to="/sn/people"
                             children={<FriendI />}
                             title={friends.title}
                             size="20px"

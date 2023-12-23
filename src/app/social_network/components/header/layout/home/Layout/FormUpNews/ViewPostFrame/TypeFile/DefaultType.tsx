@@ -2,15 +2,10 @@ import { Button, Div, Img, P } from '~/reUsingComponents/styleComponents/styleDe
 import { useState, useEffect } from 'react';
 import { BackI, ChangeI, DotI, FullScreenI, HeartMI, ScreenI, ShareI, TitleI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { UndoI } from '~/assets/Icons/Icons';
 import LogicType from './logicType';
 import Player from '~/reUsingComponents/Videos/Player';
 import { InputT } from './Swipers/styleSwipers';
-import { Swiper, SwiperSlide } from 'swiper/react';
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Pagination } from 'swiper';
+import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
 
 const DefaultType: React.FC<{
     file: { link: string; type: string }[];
@@ -19,12 +14,6 @@ const DefaultType: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
     upload: any;
 }> = ({ file, colorText, step, setStep, upload }) => {
-    const pagination = {
-        clickable: true,
-        renderBullet: function (index: number, className: string) {
-            return '<span class="' + className + '">' + (index + 1) + '</span>';
-        },
-    };
     const {
         moreFile,
         cc,
@@ -82,49 +71,7 @@ const DefaultType: React.FC<{
                 }`}
             `}
         >
-            {cc !== null && (
-                <Div
-                    css={`
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        z-index: 103;
-                        width: 100%;
-                        height: 100%;
-                        background-color: #171718;
-                        img {
-                            object-fit: contain;
-                        }
-                        .swiper-pagination-bullet {
-                            width: 20px;
-                            height: 20px;
-                            text-align: center;
-                            line-height: 20px;
-                            font-size: 12px;
-                            opacity: 1;
-                            color: white;
-                            background-color: #373737;
-                        }
-                        .swiper-pagination-bullet-active {
-                            background-color: #219599 !important;
-                        }
-                    `}
-                >
-                    <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiper">
-                        {file.map((f) => (
-                            <SwiperSlide key={f.link}>
-                                {f?.type === 'image' ? (
-                                    <Img src={f?.link} id="baby" alt={f?.link} />
-                                ) : f?.type === 'video' ? (
-                                    <Player src={f?.link} step={step} />
-                                ) : (
-                                    ''
-                                )}
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </Div>
-            )}
+            {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             <>
                 {step > 0 && ToolDefault(0)}
                 {step === 2 && ToolDefault(2)}

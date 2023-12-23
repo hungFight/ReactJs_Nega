@@ -45,7 +45,7 @@ const LogicTitle = (
     id_loved: string,
     editTitle: boolean,
     setEditTitle: React.Dispatch<React.SetStateAction<boolean>>,
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>,
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
     setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>,
     userRequested: string | null,
     level: number | null,

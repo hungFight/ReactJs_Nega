@@ -25,7 +25,7 @@ interface PropsLanguage {
 export default function LogicView(
     user: PropsUserPer,
     userFirst: PropsUser,
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>,
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
     leng: number,
     colorText: string,
     online: string[],

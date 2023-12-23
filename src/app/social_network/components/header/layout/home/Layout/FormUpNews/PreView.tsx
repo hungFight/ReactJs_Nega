@@ -213,7 +213,9 @@ const PreviewPost: React.FC<{
         include,
         setInclude,
     );
-
+    const swiperType = 1;
+    const GridColumns = 1;
+    const Circle = 1;
     return (
         <>
             <Div
@@ -287,70 +289,67 @@ const PreviewPost: React.FC<{
                         }
                     `}
                 >
-                    {selectType === 1 && selectChild.id === 5 && (
-                        <>
-                            {dataCenteredPre.length < 3 && (
+                    {selectType === swiperType &&
+                        selectChild.id === 5 && ( //Centered
+                            <>
+                                {dataCenteredPre.length < 3 && (
+                                    <DivPos
+                                        size="18px"
+                                        top="32px"
+                                        right="19px"
+                                        css={`
+                                            z-index: 1;
+                                            label {
+                                                font-size: 1.3rem;
+                                            }
+                                            div {
+                                                width: fit-content;
+                                            }
+                                        `}
+                                        color={colorText}
+                                    >
+                                        <DivItems>
+                                            <input
+                                                id="uploadCen"
+                                                type="file"
+                                                name="file[]"
+                                                onChange={(e) => handleImageUpload(e, true)}
+                                                multiple
+                                                hidden
+                                            />
+                                            <Label htmlFor="uploadCen" color={colorText}>
+                                                Thêm Hàng
+                                            </Label>
+                                        </DivItems>
+                                    </DivPos>
+                                )}
                                 <DivPos
                                     size="18px"
-                                    top="32px"
-                                    right="19px"
+                                    top="30px"
+                                    right="105px"
                                     css={`
                                         z-index: 1;
-                                        label {
+                                        p {
                                             font-size: 1.3rem;
+                                            padding: 2px;
                                         }
-                                        div {
-                                            width: fit-content;
-                                        }
+
                                         @media (min-width: 370px) {
-                                            top: 9px;
-                                            right: 77px;
+                                            top: 32px;
+                                            right: 88px;
+                                        }
+                                        @media (min-width: 450px) {
+                                            top: 6px;
+                                            right: 165px;
                                         }
                                     `}
                                     color={colorText}
+                                    onClick={() => setColumnCentered(!ColumnCentered)}
                                 >
-                                    <DivItems>
-                                        <input
-                                            id="uploadCen"
-                                            type="file"
-                                            name="file[]"
-                                            onChange={(e) => handleImageUpload(e, true)}
-                                            multiple
-                                            hidden
-                                        />
-                                        <Label htmlFor="uploadCen" color={colorText}>
-                                            Thêm Hàng
-                                        </Label>
-                                    </DivItems>
+                                    <P>Columns</P>
                                 </DivPos>
-                            )}
-                            <DivPos
-                                size="18px"
-                                top="30px"
-                                right="105px"
-                                css={`
-                                    z-index: 1;
-                                    p {
-                                        font-size: 1.3rem;
-                                        padding: 2px;
-                                    }
-
-                                    @media (min-width: 370px) {
-                                        top: 32px;
-                                        right: 88px;
-                                    }
-                                    @media (min-width: 450px) {
-                                        top: 6px;
-                                        right: 165px;
-                                    }
-                                `}
-                                color={colorText}
-                                onClick={() => setColumnCentered(!ColumnCentered)}
-                            >
-                                <P>Columns</P>
-                            </DivPos>
-                        </>
-                    )}
+                            </>
+                        )}
                     {/* view full screen */}
                     {step === 0 && file.length > 0 && (
                         <DivPos
@@ -552,7 +551,7 @@ const PreviewPost: React.FC<{
                                             height: 100%;
                                             position: absolute;
                                             top: 3px;
-                                            justify-content: center;
+                                            justify-content: space-evenly;
                                             align-items: center;
                                             background-color: #292a2d;
                                         `}
@@ -566,7 +565,8 @@ const PreviewPost: React.FC<{
                                                             e.stopPropagation();
                                                             setAcEmo(a);
                                                             setShowAc(false);
-                                                        }}
+                                                        }} // is set above
+                                                        css=" svg{font-size: 23px !important;}"
                                                     >
                                                         {a.icon}
                                                     </Div>

@@ -17,7 +17,7 @@ const Tools: React.FC<{
     active: boolean;
     userId: string;
     dataUser: PropsUser;
-    setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+    setDataUser: React.Dispatch<React.SetStateAction<PropsUser>>;
 }> = ({ colorText, colorBg, active, userId, dataUser, setDataUser }) => {
     const [status, setStatus] = useState<React.ReactNode>(null);
     const [onOff, setOnOff] = useState<React.ReactElement>(() => (active ? <OnlineI /> : <OfflineI />));

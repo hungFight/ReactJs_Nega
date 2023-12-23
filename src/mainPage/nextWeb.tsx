@@ -62,7 +62,7 @@ export const socket = io('http://localhost:3001', { transports: ['websocket'], a
 const Website: React.FC<{
     openProfile: string[];
     dataUser: PropsUser;
-    setDataUser: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+    setDataUser: React.Dispatch<React.SetStateAction<PropsUser>>;
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }> = ({ openProfile, dataUser, setDataUser, setId_chats }) => {
     const dispatch = useDispatch();

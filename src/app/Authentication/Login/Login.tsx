@@ -79,7 +79,7 @@ const Login: React.FC<{
                                 />
                             );
                         })}
-                        <Eyes value={value.password} setShow={setShowPass} show={showPass} top="73px" />
+                        <Eyes value={value.password} setShow={setShowPass} show={showPass} top="71px" />
                         <A onClick={() => setWhatKind('changePassword')} color={colorText}>
                             {changePassword}
                         </A>

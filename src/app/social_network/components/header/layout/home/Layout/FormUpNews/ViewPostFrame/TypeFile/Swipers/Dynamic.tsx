@@ -11,6 +11,8 @@ import Player from '~/reUsingComponents/Videos/Player';
 import { DivSwiper } from './styleSwipers';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { ScreenI } from '~/assets/Icons/Icons';
+import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
+import LogicType from '../logicType';
 
 // import required modules
 
@@ -23,6 +25,18 @@ const Dynamic: React.FC<{
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ file, colorText, step, setStep }) => {
+    const {
+        moreFile,
+        cc,
+        handleStep,
+        setMoreFile,
+        ToolDefault,
+        showTitle,
+        update,
+        setUpdate,
+        showComment,
+        setShowComment,
+    } = LogicType(step, setStep, colorText);
     const [heightV, setHeightV] = useState<{ id: number; value: string }[]>([]);
     const [heightI, setHeightI] = useState<string>('');
     useEffect(() => {
@@ -84,6 +98,8 @@ const Dynamic: React.FC<{
                     }
                 `}
             >
+                {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
+
                 {step !== 0 && (
                     <DivPos
                         size="20px"

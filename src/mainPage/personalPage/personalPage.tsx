@@ -23,7 +23,7 @@ interface PropsPer {
     colorText: string;
     colorBg: number;
     online: string[];
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
     userFirst: PropsUser;
     setId_chats: React.Dispatch<
         React.SetStateAction<

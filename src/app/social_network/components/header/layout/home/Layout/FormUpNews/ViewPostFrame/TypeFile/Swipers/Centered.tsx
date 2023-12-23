@@ -11,6 +11,8 @@ import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { CloseI, ScreenI } from '~/assets/Icons/Icons';
+import LogicType from '../logicType';
+import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 
 const Centered: React.FC<{
     file: {
@@ -81,6 +83,18 @@ const Centered: React.FC<{
     for (let i = 1; i <= file.length; i++) {
         if (i >= 4) cld.push(i);
     }
+    const {
+        moreFile,
+        cc,
+        handleStep,
+        setMoreFile,
+        ToolDefault,
+        showTitle,
+        update,
+        setUpdate,
+        showComment,
+        setShowComment,
+    } = LogicType(step, setStep, colorText);
     return (
         <Div
             width="100%"
@@ -105,7 +119,7 @@ const Centered: React.FC<{
                     <ScreenI />
                 </DivPos>
             )}
-
+            {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             {dataCenteredPre.map((dt) => {
                 let cls: number[] = [];
                 for (let i = 1; i <= dt.data.length; i++) {

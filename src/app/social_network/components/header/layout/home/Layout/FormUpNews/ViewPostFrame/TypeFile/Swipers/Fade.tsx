@@ -12,6 +12,8 @@ import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { ScreenI } from '~/assets/Icons/Icons';
+import LogicType from '../logicType';
+import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 
 const Fade: React.FC<{
     file: {
@@ -22,6 +24,18 @@ const Fade: React.FC<{
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ file, colorText, step, setStep }) => {
+    const {
+        moreFile,
+        cc,
+        handleStep,
+        setMoreFile,
+        ToolDefault,
+        showTitle,
+        update,
+        setUpdate,
+        showComment,
+        setShowComment,
+    } = LogicType(step, setStep, colorText);
     return (
         <Div
             width="100%"
@@ -34,6 +48,8 @@ const Fade: React.FC<{
                 }
             `}
         >
+            {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
+
             {step !== 0 && (
                 <DivPos
                     size="20px"

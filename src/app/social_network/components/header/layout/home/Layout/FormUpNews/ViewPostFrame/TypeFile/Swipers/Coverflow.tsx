@@ -13,6 +13,8 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import { FullScreenI, PlayI, ScreenI, TitleI } from '~/assets/Icons/Icons';
 import { DivSwiper } from './styleSwipers';
 import { Textarea } from '../../../styleFormUpNews';
+import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
+import LogicType from '../logicType';
 
 const Coverflow: React.FC<{
     file: {
@@ -24,14 +26,25 @@ const Coverflow: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ file, colorText, step, setStep }) => {
     const [more, setMore] = useState<number[]>([]);
-    const [showTitle, setShowTitle] = useState<number[]>([]);
+    const [showTitleCoverflow, setShowTitle] = useState<number[]>([]);
     const [title, setTitle] = useState<{ id: number; title: string }[]>([]);
     const [content, setContent] = useState<{ id: number; title: string }[]>([]);
     const handleOnKeyup = (e: any) => {
         e.target.setAttribute('style', 'height: auto');
         e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
     };
-
+    const {
+        moreFile,
+        cc,
+        handleStep,
+        setMoreFile,
+        ToolDefault,
+        showTitle,
+        update,
+        setUpdate,
+        showComment,
+        setShowComment,
+    } = LogicType(step, setStep, colorText);
     const handleGetTitle = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         console.log(e.target.value, title);
         let check = false;
@@ -84,6 +97,8 @@ const Coverflow: React.FC<{
                     : ''}
             `}
         >
+            {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
+
             {step !== 0 && (
                 <DivPos
                     size="20px"
@@ -157,7 +172,7 @@ const Coverflow: React.FC<{
                                             `}
                                         ></Div>
                                     )}
-                                    {showTitle.length > 0 && (
+                                    {showTitleCoverflow.length > 0 && (
                                         <Div
                                             width="100%"
                                             css={`
@@ -170,13 +185,13 @@ const Coverflow: React.FC<{
                                                 padding: 10px;
                                             `}
                                         >
-                                            {showTitle.length > 0 && !showTitle.includes(index) && (
-                                                <Div onClick={() => setShowTitle([...showTitle, index])}>
+                                            {showTitleCoverflow.length > 0 && !showTitleCoverflow.includes(index) && (
+                                                <Div onClick={() => setShowTitle([...showTitleCoverflow, index])}>
                                                     <TitleI />
                                                 </Div>
                                             )}
 
-                                            {showTitle.includes(index) && step === 1 && (
+                                            {showTitleCoverflow.includes(index) && step === 1 && (
                                                 <>
                                                     <Input
                                                         placeholder="Title"
@@ -201,17 +216,19 @@ const Coverflow: React.FC<{
                                                                 css: 'color: #ac5b5b;',
                                                                 onClick: () => {
                                                                     let check = false;
-                                                                    showTitle.forEach((s) => {
+                                                                    showTitleCoverflow.forEach((s) => {
                                                                         if (s === index) {
                                                                             check = true;
                                                                         }
                                                                     });
                                                                     if (check) {
                                                                         setShowTitle(() =>
-                                                                            showTitle.filter((s) => s !== index),
+                                                                            showTitleCoverflow.filter(
+                                                                                (s) => s !== index,
+                                                                            ),
                                                                         );
                                                                     } else {
-                                                                        setShowTitle([...showTitle, index]);
+                                                                        setShowTitle([...showTitleCoverflow, index]);
                                                                     }
                                                                 },
                                                             },

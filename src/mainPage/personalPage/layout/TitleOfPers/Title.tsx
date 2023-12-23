@@ -46,7 +46,7 @@ export interface PropsMores {
 }
 const Title: React.FC<{
     userFirst: PropsUser;
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
     setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>;
     AllArray: PropsUserPer[];
     colorText: string;

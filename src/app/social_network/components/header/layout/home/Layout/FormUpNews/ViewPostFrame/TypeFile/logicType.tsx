@@ -9,6 +9,8 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
     const [showTitle, setShowTitle] = useState<boolean>(false);
     const [showComment, setShowComment] = useState<number[]>([]);
     const handleStep = (e: any, index: number) => {
+        console.log('okkkkk');
+
         if (e.target.getAttribute('class')) {
             if (
                 !e.target.getAttribute('class').includes('video-react-play-control') &&
