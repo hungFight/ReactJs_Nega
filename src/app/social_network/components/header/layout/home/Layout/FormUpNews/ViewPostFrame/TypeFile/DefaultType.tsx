@@ -51,6 +51,7 @@ const DefaultType: React.FC<{
                 height: 100%;
                 position: relative;
                 display: grid;
+                grid-auto-rows: 250px;
                 grid-template-columns: ${file.length === 1
                     ? '1fr'
                     : file.length === 4 || file.length === 2

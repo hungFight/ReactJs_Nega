@@ -305,6 +305,17 @@ const PreviewPost: React.FC<{
                                             div {
                                                 width: fit-content;
                                             }
+                                            top: 9px;
+                                            right: 74px;
+                                            padding: 3px 4px;
+                                            border-radius: 5px;
+                                            background-image: linear-gradient(
+                                                36deg,
+                                                black,
+                                                #a33a3ac2,
+                                                #195c86bd,
+                                                #ac10b0
+                                            );
                                         `}
                                         color={colorText}
                                     >
@@ -333,15 +344,11 @@ const PreviewPost: React.FC<{
                                             font-size: 1.3rem;
                                             padding: 2px;
                                         }
-
-                                        @media (min-width: 370px) {
-                                            top: 32px;
-                                            right: 88px;
-                                        }
-                                        @media (min-width: 450px) {
-                                            top: 6px;
-                                            right: 165px;
-                                        }
+                                        top: 7px;
+                                        padding: 1px 11px;
+                                        border-radius: 5px;
+                                        right: 165px;
+                                        background-color: #0a59bb;
                                     `}
                                     color={colorText}
                                     onClick={() => setColumnCentered(!ColumnCentered)}
@@ -454,9 +461,10 @@ const PreviewPost: React.FC<{
                         css={`
                             justify-content: center;
                             position: relative;
+                            max-height: 500px;
                             color: ${colorText};
                             ${step === 1
-                                ? 'height: 100%; overflow-y: overlay; position: fixed; top: 0; left: 0; right: 0; align-items: center;  background-color: #1f2021; z-index: 8888; @media(max-width: 769px){&::-webkit-scrollbar {width: 0px;}}'
+                                ? 'height: 100%;max-height: 100%; overflow-y: overlay; position: fixed; top: 0; left: 0; right: 0; align-items: center;  background-color: #1f2021; z-index: 8888; @media(max-width: 769px){&::-webkit-scrollbar {width: 0px;}}'
                                 : ''};
                         `}
                     >

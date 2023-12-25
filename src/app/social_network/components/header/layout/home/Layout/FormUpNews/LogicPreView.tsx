@@ -117,8 +117,8 @@ export default function LogicPreView(
     setInclude: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
     const dispatch = useDispatch();
+    // type of post
     const [selectType, setSelectType] = useState<number>(0);
-
     // select children of swiper
     const [selectChild, setSelectChild] = useState<{ id: number; name: string }>({
         id: 1,
@@ -196,7 +196,6 @@ export default function LogicPreView(
         if (upload.length > 0 || valueText) {
             setLoading(true);
             console.log('Option', selectType, 'private', valuePrivacy, 'Expire', typeExpire);
-         
 
             let res: any;
             let id_c: string[] = [];
@@ -319,6 +318,7 @@ export default function LogicPreView(
         }
     };
     const postTypes = [
+        // working in side OptionType
         <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} upload={upload} />,
         file.length > 3 ? (
             [

@@ -9,25 +9,13 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
     const [showTitle, setShowTitle] = useState<boolean>(false);
     const [showComment, setShowComment] = useState<number[]>([]);
     const handleStep = (e: any, index: number) => {
-        console.log('okkkkk');
-
-        if (e.target.getAttribute('class')) {
-            if (
-                !e.target.getAttribute('class').includes('video-react-play-control') &&
-                !e.target.getAttribute('class').includes('video-react-volume-menu-button') &&
-                !e.target.getAttribute('class').includes('video-react-play-progress') &&
-                !e.target.getAttribute('class').includes('video-react-icon-stepscreen') &&
-                e.target.getAttribute('id') !== 'more'
-            ) {
-                setCC(index);
-                if (step === 0) {
-                    setStep(3);
-                } else if (step === 1) {
-                    setStep(2);
-                } else if (step === 2 && e.target.getAttribute('class').includes('aaa')) {
-                    setStep(1);
-                }
-            }
+        setCC(index);
+        if (step === 0) {
+            setStep(3);
+        } else if (step === 1) {
+            setStep(2);
+        } else if (step === 2 && e.target.getAttribute('class').includes('aaa')) {
+            setStep(1);
         }
     };
 

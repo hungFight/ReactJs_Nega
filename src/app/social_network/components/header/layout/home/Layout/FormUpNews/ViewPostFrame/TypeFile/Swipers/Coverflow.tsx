@@ -98,25 +98,9 @@ const Coverflow: React.FC<{
             `}
         >
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
+            {step > 0 && ToolDefault(0)}
+            {/* {step === 2 && ToolDefault(2)} */}
 
-            {step !== 0 && (
-                <DivPos
-                    size="20px"
-                    top="-25px"
-                    right="11.5px"
-                    color={colorText}
-                    onClick={() => setStep(0)}
-                    css={`
-                        ${step > 0
-                            ? `${
-                                  step > 1 ? 'background-color: #a1a1a18a;' : 'background-color: #0304048a;'
-                              };position: fixed; top: 8px; right: 11.5px; color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px;  transition: all 0.5s linear; `
-                            : ''}
-                    `}
-                >
-                    <ScreenI />
-                </DivPos>
-            )}
             <Swiper
                 effect={'coverflow'}
                 grabCursor={true}
@@ -138,7 +122,12 @@ const Coverflow: React.FC<{
                 {file.map((f, index) => {
                     TList.push(index);
                     return (
-                        <SwiperSlide key={f.link}>
+                        <SwiperSlide
+                            key={f.link}
+                            onClick={(e) => {
+                                handleStep(e, index);
+                            }}
+                        >
                             {f.type === 'image' ? (
                                 <Div
                                     width="100%"

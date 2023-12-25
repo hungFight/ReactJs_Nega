@@ -40,6 +40,9 @@ const Circle: React.FC<{
                 position: relative;
             `}
         >
+            {' '}
+            {step > 0 && ToolDefault(0)}
+            {step === 2 && ToolDefault(2)}
             {cc !== null && (
                 <Div
                     css={`
@@ -69,8 +72,13 @@ const Circle: React.FC<{
                     `}
                 >
                     <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiper">
-                        {file.map((f) => (
-                            <SwiperSlide key={f.link}>
+                        {file.map((f, index) => (
+                            <SwiperSlide
+                                key={f.link}
+                                onClick={(e) => {
+                                    handleStep(e, index);
+                                }}
+                            >
                                 {f?.type === 'image' ? (
                                     <Img src={f?.link} id="baby" alt={f?.link} />
                                 ) : f?.type === 'video' ? (

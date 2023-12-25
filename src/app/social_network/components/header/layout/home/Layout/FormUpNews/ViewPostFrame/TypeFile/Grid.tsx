@@ -58,6 +58,9 @@ const Grid: React.FC<{
                     : ''}
             `}
         >
+            {' '}
+            {step > 0 && ToolDefault(0)}
+            {step === 2 && ToolDefault(2)}
             <Div
                 width="100%"
                 css={`
@@ -71,22 +74,6 @@ const Grid: React.FC<{
             >
                 {step !== 0 && (
                     <>
-                        <DivPos
-                            size="20px"
-                            top="-25px"
-                            right="11.5px"
-                            color={colorText}
-                            onClick={() => setStep(0)}
-                            css={`
-                                ${step > 0
-                                    ? `${
-                                          step > 1 ? 'background-color: #a1a1a18a;' : 'background-color: #0304048a;'
-                                      };position: fixed; top: 8px; right: 11.5px; color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px;  transition: all 0.5s linear; `
-                                    : ''}
-                            `}
-                        >
-                            <ScreenI />
-                        </DivPos>
                         <DivPos css="position: fixed; top: 140px; right: 12.5px; font-size: 30px; flex-direction: column; z-index: 1;">
                             <Div display="block" css="position: relative;">
                                 <Div
