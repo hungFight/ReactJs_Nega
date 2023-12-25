@@ -16,13 +16,14 @@ const Hashtag: React.FC<{
                 position: fixed;
                 width: 100%;
                 height: 660px;
-                background-color: #84848475;
+                background-color: #1d1d1da8;
                 z-index: 9999;
                 top: 42px;
                 left: 0;
-                align-items: center;
+                align-items: end;
                 @media (min-width: 400px) {
                     width: 98%;
+                    z-index: 0;
                     height: 400px;
                     translate: unset;
                     margin-top: 11px;
@@ -39,11 +40,11 @@ const Hashtag: React.FC<{
                 width="100%"
                 display="block"
                 css={`
-                    height: 80%;
+                    height: 90%;
                     padding: 5px 0;
                     position: relative;
                     color: white;
-                    background-color: #0e0e0e;
+                    background-color: #1a1a1a;
                     @media (min-width: 400px) {
                         height: 100%;
                         box-shadow: 0 0 3px #60a6c7;

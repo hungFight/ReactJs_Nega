@@ -51,6 +51,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                     top="50px"
                     right="11.5px"
                     onClick={() => {
+                        setCC(null);
                         setStep(1);
                     }}
                     css="position: fixed;  color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px; background-color: #a1a1a18a; transition: all 0.5s linear; "

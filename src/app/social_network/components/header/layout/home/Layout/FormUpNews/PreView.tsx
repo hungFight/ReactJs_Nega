@@ -434,6 +434,13 @@ const PreviewPost: React.FC<{
                                     font-family: ${font}, sans-serif;
                                     white-space: pre-wrap;
                                     word-break: break-word;
+                                    font-size: 1.3rem;
+                                    @media (min-width: 500px) {
+                                        font-size: 1.4rem;
+                                    }
+                                    @media (min-width: 768px) {
+                                        font-size: 1.5rem;
+                                    }
                                 `}
                                 dangerouslySetInnerHTML={{ __html: valueText }}
                             ></P>

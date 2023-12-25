@@ -134,7 +134,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                 `}
                             >
                                 <DivItems
-                                    bg={displayEmoji ? '#4496dd' : ''}
+                                    borderB={displayEmoji ? '1px solid white' : ''}
                                     color={colorText}
                                     position="relative"
                                     onClick={handleDisEmoji}
@@ -142,7 +142,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     🙂
                                 </DivItems>
                                 <DivItems
-                                    bg={displayFontText ? '#4496dd' : ''}
+                                    borderB={displayFontText ? '1px solid white' : ''}
                                     color={colorText}
                                     onClick={() => setDisplayFontText(!displayFontText)}
                                 >
@@ -163,7 +163,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     </Label>
                                 </DivItems>
                                 <DivItems
-                                    bg={onTags ? '#4496dd' : ''}
+                                    borderB={onTags ? '1px solid white' : ''}
                                     color={colorText}
                                     position="relative"
                                     onClick={() => setOnTags(!onTags)}
@@ -171,7 +171,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     <HashI />
                                 </DivItems>
                                 <DivItems
-                                    bg={displayFontText ? '#4496dd' : ''}
+                                    borderB={displayFontText ? '1px solid white' : ''}
                                     color={colorText}
                                     onClick={() => setDisplayFontText(!displayFontText)}
                                 >
@@ -221,6 +221,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     onChange={handleGetValue}
                                     placeholder={textarea}
                                     BoBg="transparent"
+                                    css="@media(max-width: 580px){width: 98%; margin: auto; margin-top: 10px; box-shadow: 0 0 2px #afafaf;}"
                                 ></Textarea>
                             </Div>
                             {loading && (

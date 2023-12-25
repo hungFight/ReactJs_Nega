@@ -63,6 +63,7 @@ export const Label = styled.label`
 interface PropsDivItems {
     position?: string;
     bg?: string;
+    borderB?: string;
 }
 export const DivItems = styled.div<PropsDivItems>`
     width: 30px;
@@ -71,10 +72,10 @@ export const DivItems = styled.div<PropsDivItems>`
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    border-radius: 50%;
     cursor: pointer;
     display: flex;
     margin: 0 5px;
+    border-bottom: ${(props) => props.borderB};
     background-color: ${(props) => props.bg};
     color: ${(props) => props.color};
     position: ${(props) => props.position};
@@ -123,6 +124,9 @@ export const Textarea = styled.textarea<PorpsTextarea>`
     }
     @media (min-width: 580px) {
         font-size: 1.6rem;
+    }
+    &:focus {
+        border-color: #30858c85;
     }
 `;
 interface PropsDivImage {

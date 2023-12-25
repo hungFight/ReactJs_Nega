@@ -45,7 +45,6 @@ const Cards: React.FC<{
                         align-items: center;
                         img {
                             object-fit: contain;
-                            background-color: aliceblue;
                         }
                     }
                     height: fit-content;
