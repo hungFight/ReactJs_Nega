@@ -2,10 +2,12 @@ import styled from 'styled-components';
 
 export const Form = styled.form`
     position: relative;
+    ${(props: { css?: string }) => props.css}
 `;
 interface PropsDivfrom {
     top: string;
     position?: string;
+    css?: string;
 }
 export const DivForm = styled.div<PropsDivfrom>`
     width: 100%;
@@ -14,6 +16,7 @@ export const DivForm = styled.div<PropsDivfrom>`
     transition: var(--transition-03s);
     top: ${(props) => props.top};
     position: ${(props) => props.position};
+    ${(props) => props.css}
 `;
 export const DivUpNews = styled.div`
     width: 100%;

@@ -73,14 +73,29 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
         setDataCenteredPre,
         handleClear,
     } = LogicForm(form, colorText, colorBg, user);
-
+    const [edit, setEdit] = useState<boolean>(true);
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
-
+    const yes = edit && uploadPre.length && uploadRef.current && uploadRef.current.length === uploadPre.length;
     return (
         <>
-            <DivForm top="12px">
-                <Form method="post" encType="multipart/form-data">
+            <Div
+                css={`
+                    ${yes
+                        ? 'width: 100%;  left: 0; position: fixed;  z-index: 999; background-color: #00000087; top: 0; height: 100%;'
+                        : ''}
+                `}
+                onClick={() => setEdit(false)}
+            ></Div>
+            <DivForm
+                top="12px"
+                css={`
+                    ${yes
+                        ? 'width: inherit;  display: flex; justify-content: center; z-index: 1000; background-color: #181818;  overflow: overlay; height: 100%;'
+                        : ''}
+                `}
+            >
+                <Form method="post" encType="multipart/form-data" css="width: 100%;">
                     <DivUpNews>
                         <DivOptions>
                             {displayEmoji && (
@@ -250,6 +265,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     include={include}
                                     setInclude={setInclude}
                                     hashTags={hashTags} // hashTags
+                                    setEdit={setEdit}
+                                    editForm={edit}
                                 />
                             )}
                         </DivDataFake>

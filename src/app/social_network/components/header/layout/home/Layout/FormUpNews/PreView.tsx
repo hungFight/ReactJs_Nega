@@ -11,6 +11,7 @@ import {
     FullScreenI,
     HeartI,
     IconI,
+    ImageI,
     LikeI,
     LoadingCircleI,
     LoadingI,
@@ -21,6 +22,8 @@ import {
     ScreenI,
     ShareI,
     SmileI,
+    SortFileI,
+    VideoI,
 } from '~/assets/Icons/Icons';
 import { Player } from 'video-react';
 import {
@@ -40,7 +43,7 @@ import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import OptionType from './ViewPostFrame/OptionType';
 import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
 import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import OpFeature from '~/reUsingComponents/PostOptions/OpFeature';
+import OpFeatureSetting from '~/reUsingComponents/PostOptions/OpFeature';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
 import Cards from './ViewPostFrame/TypeFile/Swipers/Cards';
@@ -122,6 +125,8 @@ const PreviewPost: React.FC<{
     include: boolean;
     setInclude: React.Dispatch<React.SetStateAction<boolean>>;
     hashTags: string[];
+    setEdit: React.Dispatch<React.SetStateAction<boolean>>;
+    editForm: boolean;
 }> = ({
     user,
     colorText,
@@ -142,6 +147,8 @@ const PreviewPost: React.FC<{
     include,
     setInclude,
     hashTags,
+    setEdit,
+    editForm,
 }) => {
     // Select type of post
     const {
@@ -216,6 +223,7 @@ const PreviewPost: React.FC<{
     const swiperType = 1;
     const GridColumns = 1;
     const Circle = 1;
+    const [editFile, setEditFile] = useState<boolean>(false);
     return (
         <>
             <Div
@@ -242,9 +250,23 @@ const PreviewPost: React.FC<{
                 >
                     Pre-View your post here
                 </Div>
-
+                {!editForm && (
+                    <Div
+                        onClick={() => setEdit(true)}
+                        css={`
+                            font-size: 1.4rem;
+                            padding: 6px;
+                            background-color: #075395;
+                            width: fit-content;
+                            border-radius: 5px;
+                            cursor: pointer;
+                        `}
+                    >
+                        Tiếp tục Edit
+                    </Div>
+                )}
                 {step < 1 && options && (
-                    <OpFeature
+                    <OpFeatureSetting
                         more={more}
                         setMore={setMore}
                         OpSelect={OpSelect}
@@ -275,6 +297,58 @@ const PreviewPost: React.FC<{
                         colorBg={colorBg}
                         file={file}
                     />
+                )}
+                {editForm && (
+                    <Div onClick={() => setEditFile(true)} width="100%" css="align-items: center;margin-bottom: 10px;">
+                        <Div
+                            width="fit-content"
+                            css="align-items:center;font-size: 1.4rem; padding: 5px; border-radius:5px; border-bottom: 1px solid #1eacdc6b; &:hover{border-color: #1eacdc;} cursor: var(--pointer);"
+                        >
+                            Chỉnh sửa
+                            <Div width="50px" css="font-size: 20px; justify-content: space-around; margin-left: 5px;">
+                                <ImageI />
+                                <VideoI />
+                            </Div>
+                        </Div>
+                    </Div>
+                )}
+                {editFile && (
+                    <Div
+                        width="100%"
+                        css={`
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            background-color: #080808a3;
+                            width: 100%;
+                            height: 100%;
+                            z-index: 1;
+                        `}
+                    >
+                        <Div width="100%" display="block">
+                            {' '}
+                            <Div onClick={() => setEditFile(false)} width="100%" css="justify-content: center">
+                                <Div
+                                    width="fit-content"
+                                    css="align-items:center;font-size: 1.4rem; padding: 5px; border-radius:5px; border-bottom: 1px solid #1eacdc6b; &:hover{border-color: #1eacdc;} cursor: var(--pointer);"
+                                >
+                                    Chỉnh sửa
+                                    <Div
+                                        width="50px"
+                                        css="font-size: 20px; justify-content: space-around; margin-left: 5px;"
+                                    >
+                                        <ImageI />
+                                        <VideoI />
+                                    </Div>
+                                </Div>
+                            </Div>
+                            <Div>
+                                <Div width="fit-content">
+                                    <SortFileI /> Sắp xếp
+                                </Div>
+                            </Div>
+                        </Div>
+                    </Div>
                 )}
                 <Div
                     wrap="wrap"

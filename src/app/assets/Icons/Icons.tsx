@@ -13,6 +13,7 @@ import {
     BsFillCameraFill,
     BsGenderTrans,
     BsBalloon,
+    BsSortNumericDown,
 } from 'react-icons/bs';
 import {
     IoImagesOutline,
@@ -23,6 +24,7 @@ import {
     IoRemoveOutline,
     IoCopy,
     IoPricetag,
+    IoImage,
 } from 'react-icons/io5';
 import { LiaExchangeAltSolid } from 'react-icons/lia';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
@@ -113,7 +115,8 @@ import { BiSolidColor } from 'react-icons/bi';
 import { PiEraserThin, PiFlowerLotusFill, PiPlayFill, PiSelectionBackgroundFill } from 'react-icons/pi';
 import { HiMiniHashtag, HiMiniPause } from 'react-icons/hi2';
 
-export const ImageI = () => <IoImagesOutline />;
+export const ImageI = () => <IoImage />;
+export const SortFileI = () => <BsSortNumericDown />;
 
 export const FixI = () => <BsThreeDotsVertical />;
 export const CloseI = () => <IoCloseOutline />;

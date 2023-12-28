@@ -96,11 +96,7 @@ const Centered: React.FC<{
         setShowComment,
     } = LogicType(step, setStep, colorText);
     return (
-        <Div
-            width="100%"
-            display="block"
-            css="height: 100%; .mySwiper{ width: 100%; margin: 5px; img{ user-select: none;}}"
-        >
+        <Div width="100%" display="block" css="height: 100%; .mySwiper{ width: 100%; img{ user-select: none;}}">
             {step > 0 && ToolDefault(0)}
             {step === 2 && ToolDefault(2)}
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}

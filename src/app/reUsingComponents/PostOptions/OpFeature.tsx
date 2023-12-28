@@ -4,7 +4,7 @@ import { BeforeI, CheckI, NextI, OclockI, PrivateI, ResetI, UndoIRegister } from
 import { DivPos } from '../styleComponents/styleComponents';
 import LogicText from './logicOpFeature';
 
-const OpFeature: React.FC<{
+const OpFeatureSetting: React.FC<{
     setOptions: React.Dispatch<React.SetStateAction<boolean>>;
     valuePrivacy: { id: number; name: string }[];
     typeExpire: { cate: number; value: number } | undefined;
@@ -277,4 +277,4 @@ const OpFeature: React.FC<{
         </Div>
     );
 };
-export default OpFeature;
+export default OpFeatureSetting;

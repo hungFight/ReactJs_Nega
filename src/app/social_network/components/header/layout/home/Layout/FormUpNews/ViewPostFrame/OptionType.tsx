@@ -76,15 +76,27 @@ const OptionType: React.FC<{
             css={`
                 margin: 8px 0;
                 align-items: center;
+                background-color: #292a2d;
+                border-radius: 5px;
                 color: ${colorText};
             `}
         >
             {file.length > 4 && (
                 <Div width="100%" css="padding: 5px;">
-                    <Div css="font-size: 2rem; padding: 4px 7px;" onClick={() => setSelectType(0)}>
-                        <BanI />
-                    </Div>
                     <Div>
+                        <Div
+                            css={`
+                                font-size: 2rem;
+                                padding: 4px 7px;
+                                &:hover {
+                                    color: #1eacdc;
+                                }
+                                ${selectType === 0 ? 'border-bottom: 1px solid #1eacdc;' : ''}
+                            `}
+                            onClick={() => setSelectType(0)}
+                        >
+                            <BanI />
+                        </Div>
                         {postTypes.map((t) => (
                             <DivItemsType
                                 key={t.name}
@@ -93,7 +105,10 @@ const OptionType: React.FC<{
                                     if (t.children) setChildren(t.children);
                                 }}
                                 css={`
-                                    ${selectType === t.id ? 'background-color: #5b5e62b8;' : ''}
+                                    &:hover {
+                                        color: #1eacdc;
+                                    }
+                                    ${selectType === t.id ? 'border-bottom: 1px solid #1eacdc;' : ''}
                                 `}
                             >
                                 {t.column ? (
@@ -147,7 +162,18 @@ const OptionType: React.FC<{
                 </Div>
             )}
             {select(1) && (
-                <Div width="100%" wrap="wrap" css="" onClick={(e) => e.stopPropagation()}>
+                <Div
+                    width="90%"
+                    wrap="wrap"
+                    css={`
+                        padding: 5px;
+                        background-color: #0b0b0b87;
+                        margin: auto;
+                        border-radius: 5px;
+                        margin-bottom: 5px;
+                    `}
+                    onClick={(e) => e.stopPropagation()}
+                >
                     {children?.map((c) => (
                         <P
                             z="1.3rem"
@@ -158,7 +184,10 @@ const OptionType: React.FC<{
                                 margin: 0 8px;
                                 border-radius: 5px;
                                 cursor: var(--pointer);
-                                ${selectChild.id === c.id ? 'background-color: #525252;' : ''}
+                                &:hover {
+                                    color: #1eacdc;
+                                }
+                                ${selectChild.id === c.id ? 'border-bottom: 1px solid #1eacdc;' : ''}
                             `}
                             onClick={() => setSelectChild(c)}
                         >

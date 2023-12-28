@@ -59,7 +59,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     let fileAmount = 25;
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, addMore?: boolean) => {
         e.stopPropagation();
-        console.log(addMore, 'addMore');
+        console.log(e.target.files, 'addMore');
         setLoading(true);
         uploadPreRef.current = [];
         uploadRef.current = [];
