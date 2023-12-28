@@ -51,6 +51,7 @@ const Grid: React.FC<{
         <Div
             width="100%"
             css={`
+                max-height: 500px;
                 margin: 4px 0;
                 background-color: ${bg};
                 ${step === 1

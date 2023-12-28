@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/effect-fade';
+import 'swiper/css/pagination';
 
 // import required modules
 import { EffectFade, Pagination } from 'swiper';
@@ -40,7 +41,7 @@ const Fade: React.FC<{
         <Div
             width="100%"
             css={`
-                max-height: 100%;
+                max-height: 500px;
                 .swiper-fade .swiper-slide {
                     background-color: #292a2d;
                     img {
@@ -59,7 +60,7 @@ const Fade: React.FC<{
                     clickable: true,
                 }}
                 modules={[EffectFade, Pagination]}
-                className="mySwiper"
+                className="mySwiperFade"
             >
                 {file.map((f, index) => (
                     <SwiperSlide

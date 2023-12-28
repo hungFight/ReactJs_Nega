@@ -48,7 +48,7 @@ const DefaultType: React.FC<{
         <Div
             width="100%"
             css={`
-                height: 100%;
+                max-height: 500px;
                 position: relative;
                 ${file.length > 1 ? ' grid-auto-rows: 250px;  display: grid;' : ''}
                 grid-template-columns: ${file.length === 1

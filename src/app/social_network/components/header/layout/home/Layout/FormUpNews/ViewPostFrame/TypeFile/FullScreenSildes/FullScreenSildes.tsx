@@ -27,7 +27,7 @@ const FullScreenSildes: React.FC<{
                 position: fixed;
                 top: 0;
                 left: 0;
-                z-index: 103;
+                z-index: 121;
                 width: 100%;
                 height: 100%;
                 background-color: #171718;
@@ -49,7 +49,7 @@ const FullScreenSildes: React.FC<{
                 }
             `}
         >
-            <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiper">
+            <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiperFull">
                 {files.map((f) => (
                     <SwiperSlide key={f.link}>
                         {f?.type === 'image' ? (

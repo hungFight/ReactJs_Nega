@@ -4,27 +4,31 @@ export const DivSwiper = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
+    max-height: 500px;
     justify-content: center;
-    .swiper-slide,
-    swiper-slide {
-        width: 33.2% !important;
+    .mySwiperCoverflow {
+        .swiper-slide,
+        swiper-slide {
+            width: 33.2% !important;
+        }
+        .swiper,
+        swiper-container {
+            position: unset !important;
+            overflow: unset !important;
+        }
+        .swiper-pagination {
+            top: unset !important;
+            bottom: -10px !important;
+            height: 10px !important;
+        }
+        .swiper-wrapper {
+            align-items: center;
+        }
+        .swiper {
+            width: 100%;
+        }
     }
-    .swiper {
-        width: 100%;
-    }
-    .swiper,
-    swiper-container {
-        position: unset !important;
-        overflow: unset !important;
-    }
-    .swiper-pagination {
-        top: unset !important;
-        bottom: -10px !important;
-        height: 10px !important;
-    }
-    .swiper-wrapper {
-        align-items: center;
-    }
+
     ${(props: { css?: string }) => props.css}
 `;
 export const InputT = styled.input`

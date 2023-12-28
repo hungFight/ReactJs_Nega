@@ -468,10 +468,9 @@ const PreviewPost: React.FC<{
                         css={`
                             justify-content: center;
                             position: relative;
-                            max-height: 500px;
                             color: ${colorText};
                             ${step === 1
-                                ? 'height: 100%;max-height: 100%; overflow-y: overlay; position: fixed; top: 0; left: 0; right: 0; align-items: center;  background-color: #1f2021; z-index: 8888; @media(max-width: 769px){&::-webkit-scrollbar {width: 0px;}}'
+                                ? 'height: 100%;max-height: 100%;  position: fixed; top: 0; left: 0; right: 0; align-items: center;  background-color: #1f2021; z-index: 120; @media(max-width: 769px){&::-webkit-scrollbar {width: 0px;}}'
                                 : ''};
                         `}
                     >

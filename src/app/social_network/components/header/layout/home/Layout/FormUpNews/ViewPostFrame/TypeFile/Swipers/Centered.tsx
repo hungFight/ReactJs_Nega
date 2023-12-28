@@ -112,7 +112,7 @@ const Centered: React.FC<{
                 console.log(cls);
 
                 return (
-                    <Div key={dt.id} width="100%" wrap="wrap" css="height: fit-content;">
+                    <Div key={dt.id} width="100%" wrap="wrap" css="   max-height: 500px;">
                         {ColumnCentered && (
                             <Div css="padding: 2px 4px;">
                                 {cls.map((c) => (

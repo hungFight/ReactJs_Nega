@@ -36,6 +36,7 @@ const Circle: React.FC<{
             width="100%"
             wrap="wrap"
             css={`
+                max-height: 500px;
                 justify-content: space-evenly;
                 position: relative;
             `}

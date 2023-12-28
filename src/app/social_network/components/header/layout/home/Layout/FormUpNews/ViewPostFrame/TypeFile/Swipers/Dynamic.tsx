@@ -90,6 +90,7 @@ const Dynamic: React.FC<{
             <Div
                 width="100%"
                 css={`
+                    max-height: 500px;
                     img {
                         object-fit: contain;
                     }
@@ -128,9 +129,7 @@ const Dynamic: React.FC<{
                                     <Div
                                         width="100%"
                                         css={`
-                                            @media (min-width: 768px) {
-                                                ${step === 0 ? `height: ${heightI};` : 'height: 100%;'}
-                                            }
+                                            height: 100%;
                                         `}
                                     >
                                         <Img src={f.link} id="baby" alt={f.link} radius="5px" />

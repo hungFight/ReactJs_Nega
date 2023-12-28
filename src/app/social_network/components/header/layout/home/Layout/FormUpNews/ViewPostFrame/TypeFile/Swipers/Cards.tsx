@@ -41,6 +41,7 @@ const Cards: React.FC<{
                 display="block"
                 width="42%"
                 css={`
+                    max-height: 500px;
                     .swiper-wrapper {
                         align-items: center;
                         img {
