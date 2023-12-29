@@ -25,7 +25,6 @@ import {
     SortFileI,
     VideoI,
 } from '~/assets/Icons/Icons';
-import { Player } from 'video-react';
 import {
     DivAction,
     DivEmoji,
@@ -51,6 +50,7 @@ import Comment from './Comment';
 import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
 import Circle from './ViewPostFrame/TypeFile/Circle';
 import LogicPreView from './LogicPreView';
+import Player from '~/reUsingComponents/Videos/Player';
 export interface PropsPreViewFormHome {
     time: {
         hour: string;
@@ -224,6 +224,7 @@ const PreviewPost: React.FC<{
     const GridColumns = 1;
     const Circle = 1;
     const [editFile, setEditFile] = useState<boolean>(false);
+    const [sortFile, setSortFile] = useState<string>('');
     return (
         <>
             <Div
@@ -322,11 +323,10 @@ const PreviewPost: React.FC<{
                             background-color: #080808a3;
                             width: 100%;
                             height: 100%;
-                            z-index: 1;
+                            z-index: 3;
                         `}
                     >
                         <Div width="100%" display="block">
-                            {' '}
                             <Div onClick={() => setEditFile(false)} width="100%" css="justify-content: center">
                                 <Div
                                     width="fit-content"
@@ -342,9 +342,117 @@ const PreviewPost: React.FC<{
                                     </Div>
                                 </Div>
                             </Div>
-                            <Div>
-                                <Div width="fit-content">
-                                    <SortFileI /> Sắp xếp
+                            <Div css="margin-top: 10px; padding: 5px;">
+                                <Div width="fit-content" css="lign-items: center;" onClick={() => setSortFile('sort')}>
+                                    <SortFileI /> <P z="1.3rem">Sắp xếp</P>
+                                </Div>
+                            </Div>
+                            <Div width="100%" wrap="wrap" css="margin: 10px 0;">
+                                {/* sort file */}
+                                {file.map((f, index) => (
+                                    <Div
+                                        width="90px"
+                                        wrap="wrap"
+                                        css="justify-content: center; padding: 2px; box-shadow: 0 0 2px #757575; border-radius: 5px; margin: 4px;"
+                                    >
+                                        <Div
+                                            width="20px"
+                                            css="height: 20px; border: 1px solid; border-radius: 3px; margin: 2px 0;"
+                                        ></Div>
+
+                                        <Div
+                                            width="100%"
+                                            css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;"
+                                        >
+                                            {' '}
+                                            <Img
+                                                src={f?.link}
+                                                id="baby"
+                                                alt={f?.link}
+                                                css={`
+                                                    z-index: -1;
+                                                    position: absolute;
+                                                    top: 0;
+                                                    left: 0;
+                                                    filter: blur(12px);
+                                                    object-fit: cover;
+                                                `}
+                                            />
+                                            {f?.type === 'image' ? (
+                                                <Img src={f?.link} id="baby" alt={f?.link} css="object-fit: contain;" />
+                                            ) : f?.type === 'video' ? (
+                                                <Player src={f?.link} step={step} />
+                                            ) : (
+                                                ''
+                                            )}
+                                        </Div>
+                                    </Div>
+                                ))}
+                            </Div>
+                            <Div css="height: 100%;">
+                                <Div width="100%" wrap="wrap" css="height: 100%; overflow-y: overlay;">
+                                    {file.map((f, index) => (
+                                        <Div
+                                            width="100%"
+                                            wrap="wrap"
+                                            key={index}
+                                            css={`
+                                                position: relative;
+                                                border: 2px solid #484848;
+                                                border-radius: 5px;
+                                                margin-bottom: 10px;
+                                                background-color: #232323;
+                                                max-height: fit-content;
+                                            `}
+                                        >
+                                            <Div
+                                                width="100%"
+                                                css={`
+                                                    height: 55px;
+                                                    background-color: #202020;
+                                                    margin-bottom: 49%;
+                                                `}
+                                            >
+                                                <Textarea
+                                                    placeholder="Content"
+                                                    bg="#faebd700"
+                                                    color={colorText}
+                                                    css="border: 0; height: 98%;"
+                                                />
+                                            </Div>
+                                            <Div
+                                                width="100%"
+                                                css="height: 193px; overflow: hidden; z-index: 5; position: absolute; bottom: 0; left-0; border-radius: 5px;"
+                                            >
+                                                {' '}
+                                                <Img
+                                                    src={f?.link}
+                                                    id="baby"
+                                                    alt={f?.link}
+                                                    css={`
+                                                        z-index: -1;
+                                                        position: absolute;
+                                                        top: 0;
+                                                        left: 0;
+                                                        filter: blur(12px);
+                                                        object-fit: cover;
+                                                    `}
+                                                />
+                                                {f?.type === 'image' ? (
+                                                    <Img
+                                                        src={f?.link}
+                                                        id="baby"
+                                                        alt={f?.link}
+                                                        css="object-fit: contain;"
+                                                    />
+                                                ) : f?.type === 'video' ? (
+                                                    <Player src={f?.link} step={step} />
+                                                ) : (
+                                                    ''
+                                                )}
+                                            </Div>
+                                        </Div>
+                                    ))}
                                 </Div>
                             </Div>
                         </Div>
