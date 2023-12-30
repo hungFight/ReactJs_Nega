@@ -80,9 +80,9 @@ const Circle: React.FC<{
                                     handleStep(e, index);
                                 }}
                             >
-                                {f?.type === 'image' ? (
+                                {f?.type.includes('image') ? (
                                     <Img src={f?.link} id="baby" alt={f?.link} />
-                                ) : f?.type === 'video' ? (
+                                ) : f?.type.includes('video') ? (
                                     <Player src={f?.link} step={step} />
                                 ) : (
                                     ''
@@ -121,9 +121,9 @@ const Circle: React.FC<{
                                 : ''} */
                         `}
                     >
-                        {f.type === 'image' ? (
+                        {f.type.includes('image') ? (
                             <Img src={f.link} alt={f.link} />
-                        ) : f.type === 'video' ? (
+                        ) : f.type.includes('video') ? (
                             <Player src={f.link} />
                         ) : (
                             ''

@@ -41,10 +41,15 @@ interface PropsFormUpNews {
     colorBg: number;
     user: PropsUserHome;
     form: PropsFormHome;
-    include: boolean;
-    setInclude: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user, include, setInclude }) => {
+export interface PropsDataFileUpload {
+    id: number;
+    link: string;
+    type: string;
+    title?: string | undefined;
+    file: Blob;
+}
+const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user }) => {
     const [displayTags, setDisplayTags] = useState<boolean>(false);
     const {
         displayEmoji,
@@ -62,21 +67,19 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
         setFontFamily,
         setDisplayFontText,
         uploadPre,
+        setuploadPre,
         loading,
-        uploadRef,
         dataTextPreView,
         token,
         userId,
         dataCentered,
         setDataCentered,
-        dataCenteredPre,
-        setDataCenteredPre,
         handleClear,
     } = LogicForm(form, colorText, colorBg, user);
     const [edit, setEdit] = useState<boolean>(true);
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
-    const yes = edit && uploadPre.length && uploadRef.current && uploadRef.current.length === uploadPre.length;
+    const yes = edit && uploadPre.length;
     return (
         <>
             <Div
@@ -246,7 +249,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                             )}
                             {(inputValue || uploadPre.length > 0) && (
                                 <PreviewPost
-                                    upload={uploadRef.current}
                                     user={user}
                                     fontFamily={fontFamily}
                                     colorText={colorText}
@@ -256,14 +258,11 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     dataText={dataTextPreView}
                                     token={token}
                                     userId={userId}
+                                    setUploadPre={setuploadPre}
                                     handleImageUpload={handleImageUpload}
                                     dataCentered={dataCentered}
                                     setDataCentered={setDataCentered}
-                                    dataCenteredPre={dataCenteredPre}
-                                    setDataCenteredPre={setDataCenteredPre}
                                     handleClear={handleClear}
-                                    include={include}
-                                    setInclude={setInclude}
                                     hashTags={hashTags} // hashTags
                                     setEdit={setEdit}
                                     editForm={edit}

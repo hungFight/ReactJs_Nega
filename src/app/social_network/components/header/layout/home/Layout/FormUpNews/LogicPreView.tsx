@@ -50,18 +50,12 @@ import axios from 'axios';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
 import { useCookies } from 'react-cookie';
+import { PropsDataFileUpload } from './FormUpNews';
 export default function LogicPreView(
     user: PropsUserHome,
     colorText: string,
     colorBg: number,
-    file: {
-        link: string;
-        type: string;
-    }[],
-    upload: {
-        file: Blob;
-        title: string;
-    }[],
+    file: PropsDataFileUpload[],
     valueText: string,
     fontFamily: {
         name: string;
@@ -75,46 +69,19 @@ export default function LogicPreView(
     dataCentered: {
         id: number;
         columns: number;
-        data: {
-            file: Blob;
-            title: string;
-        }[];
+        data: PropsDataFileUpload[];
     }[],
     setDataCentered: React.Dispatch<
         React.SetStateAction<
             {
                 id: number;
                 columns: number;
-                data: {
-                    file: Blob;
-                    title: string;
-                }[];
+                data: PropsDataFileUpload[];
             }[]
         >
     >,
-    dataCenteredPre: {
-        id: number;
-        columns: number;
-        data: {
-            link: string;
-            type: string;
-        }[];
-    }[],
-    setDataCenteredPre: React.Dispatch<
-        React.SetStateAction<
-            {
-                id: number;
-                columns: number;
-                data: {
-                    link: string;
-                    type: string;
-                }[];
-            }[]
-        >
-    >,
+
     handleClear: () => void,
-    include: boolean,
-    setInclude: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
     const dispatch = useDispatch();
     // type of post
@@ -181,10 +148,8 @@ export default function LogicPreView(
     }, [valueText]);
     useEffect(() => {
         if (selectType === 1 && selectChild.id === 5 && dataCentered.length === 0) {
-            setDataCentered([{ id: 1, columns: 4, data: upload }]);
-            setDataCenteredPre([{ id: 1, columns: 4, data: file }]);
+            setDataCentered([{ id: 1, columns: 4, data: file }]);
         }
-        console.log(dataCentered, 'ataCentered', dataCenteredPre);
     }, [selectChild]);
 
     for (let i = 0; i < file.length; i++) {
@@ -193,7 +158,7 @@ export default function LogicPreView(
         if (file[i].type === '!images' && checkImg === false) checkImg = true;
     }
     const handlePost = async () => {
-        if (upload.length > 0 || valueText) {
+        if (file.length > 0 || valueText) {
             setLoading(true);
             console.log('Option', selectType, 'private', valuePrivacy, 'Expire', typeExpire);
 
@@ -218,14 +183,14 @@ export default function LogicPreView(
 
             switch (selectType) {
                 case 0:
-                    for (let fil of upload) {
+                    for (let fil of file) {
                         if (fil.title) {
                             formData.append('files', fil.file, fil.title);
                         } else {
                             formData.append('files', fil.file);
                         }
                     }
-                    console.log('text', valueText, 'file', upload, 'fontFamily', font, Imotions);
+                    console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
                     res = await HomeAPI.setPost(formData);
                     const dataR = ServerBusy(res, dispatch);
                     setLoading(false);
@@ -241,7 +206,7 @@ export default function LogicPreView(
                             'text',
                             valueText,
                             'file',
-                            upload,
+                            file,
                             'fontFamily',
                             font,
                             'swiper',
@@ -266,10 +231,10 @@ export default function LogicPreView(
                         setLoading(false);
                         //     console.log(res, 'res');
                     } else {
-                        for (let fil of upload) {
+                        for (let fil of file) {
                             formData.append('files', fil.file);
                         }
-                        console.log('text', valueText, 'file', upload, 'fontFamily', font, 'swiper', selectChild);
+                        console.log('text', valueText, 'file', file, 'fontFamily', font, 'swiper', selectChild);
                         res = await HomeAPI.setPost(formData);
                         const dataR = ServerBusy(res, dispatch);
 
@@ -278,18 +243,7 @@ export default function LogicPreView(
                     }
                     break;
                 case 2:
-                    console.log(
-                        'text',
-                        valueText,
-                        'file',
-                        upload,
-                        'fontFamily',
-                        font,
-                        'color-bg',
-                        bg,
-                        'column',
-                        column,
-                    );
+                    console.log('text', valueText, 'file', file, 'fontFamily', font, 'color-bg', bg, 'column', column);
                     formData.append('BgColor', bg);
                     formData.append('columnOfGrid', JSON.stringify(column));
                     res = await HomeAPI.setPost(formData);
@@ -298,10 +252,10 @@ export default function LogicPreView(
                     setLoading(false);
                     break;
                 case 3:
-                    for (let fil of upload) {
+                    for (let fil of file) {
                         formData.append('files', fil.file);
                     }
-                    console.log('text', valueText, 'file', upload, 'fontFamily', font, Imotions);
+                    console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
                     res = await HomeAPI.setPost(formData);
                     const dataRs = ServerBusy(res, dispatch);
 
@@ -319,7 +273,7 @@ export default function LogicPreView(
     };
     const postTypes = [
         // working in side OptionType
-        <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} upload={upload} />,
+        <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} upload={file} />,
         file.length > 3 ? (
             [
                 <Dynamic colorText={colorText} file={file} step={step} setStep={setStep} />,
@@ -335,8 +289,6 @@ export default function LogicPreView(
                     ColumnCentered={ColumnCentered}
                     dataCentered={dataCentered}
                     setDataCentered={setDataCentered}
-                    dataCenteredPre={dataCenteredPre}
-                    setDataCenteredPre={setDataCenteredPre}
                     setColumnCen={setColumnCen}
                 />,
             ][selectChild.id - 1]
@@ -348,12 +300,19 @@ export default function LogicPreView(
     ];
     console.log(ImotionsDel, 'ImotionsDel');
 
-    // show icion private
-    useEffect(() => {
-        if (actImotion) setActImotion(false);
-    }, [include]);
     let timeS: any;
     const handleShowI = (e: any) => {
+        document.addEventListener('touchstart', handleMouseDown);
+
+        function handleMouseDown(event: any) {
+            if (event.target === e.target) {
+                // Clicked inside the div
+                console.log('Clicked inside the box', e.target);
+            } else {
+                // Clicked outside the div
+                if (actImotion) setActImotion(false);
+            }
+        }
         timeS = setTimeout(() => {
             setActImotion(true);
         }, 500);
@@ -411,5 +370,6 @@ export default function LogicPreView(
         setLoading,
         actImotion,
         setActImotion,
+        dispatch,
     };
 }

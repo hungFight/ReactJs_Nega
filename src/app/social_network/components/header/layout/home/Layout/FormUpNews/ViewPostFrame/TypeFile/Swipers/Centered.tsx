@@ -13,12 +13,10 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { CloseI, ScreenI } from '~/assets/Icons/Icons';
 import LogicType from '../logicType';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
+import { PropsDataFileUpload } from '../../../FormUpNews';
 
 const Centered: React.FC<{
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     colorText: string;
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -28,43 +26,18 @@ const Centered: React.FC<{
     dataCentered: {
         id: number;
         columns: number;
-        data: {
-            file: Blob;
-            title: string;
-        }[];
+        data: PropsDataFileUpload[];
     }[];
     setDataCentered: React.Dispatch<
         React.SetStateAction<
             {
                 id: number;
                 columns: number;
-                data: {
-                    file: Blob;
-                    title: string;
-                }[];
+                data: PropsDataFileUpload[];
             }[]
         >
     >;
-    dataCenteredPre: {
-        id: number;
-        columns: number;
-        data: {
-            link: string;
-            type: string;
-        }[];
-    }[];
-    setDataCenteredPre: React.Dispatch<
-        React.SetStateAction<
-            {
-                id: number;
-                columns: number;
-                data: {
-                    link: string;
-                    type: string;
-                }[];
-            }[]
-        >
-    >;
+
     setColumnCen: React.Dispatch<React.SetStateAction<number>>;
 }> = ({
     file,
@@ -74,8 +47,6 @@ const Centered: React.FC<{
     handleImageUpload,
     dataCentered,
     setDataCentered,
-    dataCenteredPre,
-    setDataCenteredPre,
     ColumnCentered,
     setColumnCen,
 }) => {
@@ -100,7 +71,7 @@ const Centered: React.FC<{
             {step > 0 && ToolDefault(0)}
             {step === 2 && ToolDefault(2)}
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
-            {dataCenteredPre.map((dt) => {
+            {dataCentered.map((dt) => {
                 let cls: number[] = [];
                 for (let i = 1; i <= dt.data.length; i++) {
                     if (i >= 4) cls.push(i);
@@ -133,14 +104,6 @@ const Centered: React.FC<{
                                                     return dc;
                                                 }),
                                             );
-                                            setDataCenteredPre(() =>
-                                                dataCenteredPre.map((dc) => {
-                                                    if (dc.id === dt.id) {
-                                                        dc.columns = c;
-                                                    }
-                                                    return dc;
-                                                }),
-                                            );
                                         }}
                                     >
                                         {c}
@@ -150,7 +113,6 @@ const Centered: React.FC<{
                                     css="align-items: center; cursor: var(--pointer); font-size: 20px; padding: 1px 3px;"
                                     onClick={() => {
                                         setDataCentered(() => dataCentered.filter((d) => d.id !== dt.id));
-                                        setDataCenteredPre(() => dataCenteredPre.filter((d) => d.id !== dt.id));
                                     }}
                                 >
                                     <CloseI />
@@ -174,9 +136,9 @@ const Centered: React.FC<{
                                             handleStep(e, index);
                                         }}
                                     >
-                                        {f.type === 'image' ? (
+                                        {f.type.includes('image') ? (
                                             <Img src={f.link} alt={f.link} radius="5px" />
-                                        ) : f.type === 'video' ? (
+                                        ) : f.type.includes('video') ? (
                                             <Player src={f.link} step={step} height="100%" />
                                         ) : (
                                             ''
@@ -200,9 +162,9 @@ const Centered: React.FC<{
                 {file.map((f) => {
                     return (
                         <SwiperSlide key={f.link}>
-                            {f.type === 'image' ? (
+                            {f.type.includes('image')   ? (
                                 <Img src={f.link} alt={f.link} radius="5px" />
-                            ) : f.type === 'video' ? (
+                            ) : f.type.includes('video')  ? (
                                 <Player src={f.link} step={step} height="100%" />
                             ) : (
                                 ''
@@ -223,9 +185,9 @@ const Centered: React.FC<{
                 {file.map((f) => {
                     return (
                         <SwiperSlide key={f.link}>
-                            {f.type === 'image' ? (
+                            {f.type.includes('image')   ? (
                                 <Img src={f.link} alt={f.link} radius="5px" />
-                            ) : f.type === 'video' ? (
+                            ) : f.type.includes('video')  ? (
                                 <Player src={f.link} step={step} height="100%" />
                             ) : (
                                 ''

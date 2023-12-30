@@ -816,11 +816,11 @@ const Title: React.FC<{
                             {src.map((f, index) => {
                                 return (
                                     <SwiperSlide key={f.file}>
-                                        {f.type === 'image' ? (
+                                        {f.type.includes('image')   ? (
                                             <Div width="100%" css="height: 100%">
                                                 <Img src={f.file} id="baby" alt={f.file} radius="10px" />
                                             </Div>
-                                        ) : f.type === 'video' ? (
+                                        ) : f.type.includes('video')  ? (
                                             <Player src={f.file} />
                                         ) : (
                                             ''

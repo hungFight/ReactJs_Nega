@@ -127,9 +127,9 @@ const Grid: React.FC<{
                             `}
                             onClick={(e) => handleStep(e, index)}
                         >
-                            {f.type === 'image' ? (
+                            {f.type.includes('image') ? (
                                 <Img src={f.link} alt={f.link} radius="5px" />
-                            ) : f.type === 'video' ? (
+                            ) : f.type.includes('video') ? (
                                 <Player src={f.link} />
                             ) : (
                                 ''

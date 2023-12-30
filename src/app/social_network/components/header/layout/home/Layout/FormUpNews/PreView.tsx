@@ -5,6 +5,7 @@ import {
     BanI,
     Bullseye,
     CameraI,
+    CheckI,
     DotI,
     EarthI,
     FriendI,
@@ -41,7 +42,7 @@ import Grid from './ViewPostFrame/TypeFile/Grid';
 import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import OptionType from './ViewPostFrame/OptionType';
 import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
-import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonSubmit, DivLoading, DivPos, UpLoadForm } from '~/reUsingComponents/styleComponents/styleComponents';
 import OpFeatureSetting from '~/reUsingComponents/PostOptions/OpFeature';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
@@ -51,6 +52,8 @@ import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
 import Circle from './ViewPostFrame/TypeFile/Circle';
 import LogicPreView from './LogicPreView';
 import Player from '~/reUsingComponents/Videos/Player';
+import { PropsDataFileUpload } from './FormUpNews';
+import handleFileUpload from '~/utils/handleFileUpload';
 export interface PropsPreViewFormHome {
     time: {
         hour: string;
@@ -60,14 +63,13 @@ export interface PropsPreViewFormHome {
     buttonFirst: string;
     buttonTwo: string;
 }
+type PropsIdPre = { id_pre: number };
+type MergeType = PropsDataFileUpload & PropsIdPre;
 const PreviewPost: React.FC<{
     user: PropsUserHome;
     colorText: string;
     colorBg: number;
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     fontFamily: {
         name: string;
         type: string;
@@ -76,63 +78,32 @@ const PreviewPost: React.FC<{
     dataText: PropsPreViewFormHome;
     token: string;
     userId: string;
-    upload: {
-        file: Blob;
-        title: string;
-    }[];
     handleImageUpload: (e: any, addMore?: boolean) => Promise<void>;
     dataCentered: {
         id: number;
         columns: number;
-        data: {
-            file: Blob;
-            title: string;
-        }[];
+        data: PropsDataFileUpload[];
     }[];
     setDataCentered: React.Dispatch<
         React.SetStateAction<
             {
                 id: number;
                 columns: number;
-                data: {
-                    file: Blob;
-                    title: string;
-                }[];
+                data: PropsDataFileUpload[];
             }[]
         >
     >;
-    dataCenteredPre: {
-        id: number;
-        columns: number;
-        data: {
-            link: string;
-            type: string;
-        }[];
-    }[];
-    setDataCenteredPre: React.Dispatch<
-        React.SetStateAction<
-            {
-                id: number;
-                columns: number;
-                data: {
-                    link: string;
-                    type: string;
-                }[];
-            }[]
-        >
-    >;
+
     handleClear: () => void;
-    include: boolean;
-    setInclude: React.Dispatch<React.SetStateAction<boolean>>;
     hashTags: string[];
     setEdit: React.Dispatch<React.SetStateAction<boolean>>;
     editForm: boolean;
+    setUploadPre: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
 }> = ({
     user,
     colorText,
     colorBg,
     file,
-    upload,
     valueText,
     fontFamily,
     dataText,
@@ -141,14 +112,11 @@ const PreviewPost: React.FC<{
     handleImageUpload,
     dataCentered,
     setDataCentered,
-    dataCenteredPre,
-    setDataCenteredPre,
     handleClear,
-    include,
-    setInclude,
     hashTags,
     setEdit,
     editForm,
+    setUploadPre,
 }) => {
     // Select type of post
     const {
@@ -200,12 +168,12 @@ const PreviewPost: React.FC<{
         setLoading,
         actImotion,
         setActImotion,
+        dispatch,
     } = LogicPreView(
         user,
         colorText,
         colorBg,
         file,
-        upload,
         valueText,
         fontFamily,
         dataText,
@@ -214,17 +182,35 @@ const PreviewPost: React.FC<{
         handleImageUpload,
         dataCentered,
         setDataCentered,
-        dataCenteredPre,
-        setDataCenteredPre,
         handleClear,
-        include,
-        setInclude,
     );
     const swiperType = 1;
     const GridColumns = 1;
     const Circle = 1;
     const [editFile, setEditFile] = useState<boolean>(false);
-    const [sortFile, setSortFile] = useState<string>('');
+    const [process, setProcess] = useState<string>('');
+    const [chosen, setChosen] = useState<number[]>([]);
+    const [sortData, setSortData] = useState<MergeType[]>([]);
+    console.log(chosen, 'chosen', sortData, 'sortData');
+    const handleAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('handleAddFile', e.target.files);
+
+        if (e.target.files) {
+            const { upLoad } = await handleFileUpload(e.target.files, 10, 8, 15, dispatch, 'chat', true);
+            const filUp: PropsDataFileUpload[] = [];
+            for (let i = 0; i < upLoad.length; i++) {
+                filUp.push({
+                    type: upLoad[i].type,
+                    file: upLoad[i],
+                    title: '',
+                    id: file[file.length - 1].id + i + 1,
+                    link: URL.createObjectURL(upLoad[i]),
+                });
+            }
+            setUploadPre((pre) => [...pre, ...filUp]);
+            console.log(filUp, file, 'handleAddFile');
+        }
+    };
     return (
         <>
             <Div
@@ -325,6 +311,7 @@ const PreviewPost: React.FC<{
                             height: 100%;
                             z-index: 3;
                         `}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <Div width="100%" display="block">
                             <Div onClick={() => setEditFile(false)} width="100%" css="justify-content: center">
@@ -342,53 +329,190 @@ const PreviewPost: React.FC<{
                                     </Div>
                                 </Div>
                             </Div>
-                            <Div css="margin-top: 10px; padding: 5px;">
-                                <Div width="fit-content" css="lign-items: center;" onClick={() => setSortFile('sort')}>
+                            <Div css="margin: 15px 0; padding: 5px;">
+                                <Div
+                                    width="fit-content"
+                                    css="lign-items: center; margin-right: 10px; padding: 5px 10px; border-radius: 5px; background-color: #004262;"
+                                    onClick={() => setProcess('sort')}
+                                >
                                     <SortFileI /> <P z="1.3rem">Sắp xếp</P>
                                 </Div>
+                                <Div
+                                    width="fit-content"
+                                    css="lign-items: center; padding: 5px 10px; border-radius: 5px; background-color: #004262;"
+                                >
+                                    <UpLoadForm
+                                        submit={handleAddFile}
+                                        id="addMoreFileAtEditorPreview"
+                                        colorText={colorText}
+                                        children={
+                                            <Div css="align-items: center;">
+                                                <P z="1.3rem">Thêm</P>
+                                                <Div
+                                                    width="50px"
+                                                    css="font-size: 20px; justify-content: space-around; margin-left: 5px;"
+                                                >
+                                                    <ImageI />
+                                                    <VideoI />
+                                                </Div>
+                                            </Div>
+                                        }
+                                    />
+                                </Div>
                             </Div>
-                            <Div width="100%" wrap="wrap" css="margin: 10px 0;">
-                                {/* sort file */}
-                                {file.map((f, index) => (
-                                    <Div
-                                        width="90px"
-                                        wrap="wrap"
-                                        css="justify-content: center; padding: 2px; box-shadow: 0 0 2px #757575; border-radius: 5px; margin: 4px;"
-                                    >
-                                        <Div
-                                            width="20px"
-                                            css="height: 20px; border: 1px solid; border-radius: 3px; margin: 2px 0;"
-                                        ></Div>
 
+                            {sortData.length > 0 ? (
+                                <Div width="100%" wrap="wrap" css="margin: 10px 0; background-color: #1e1e1e;">
+                                    {/* sort file */}
+                                    {sortData.map((f, index) => (
                                         <Div
-                                            width="100%"
-                                            css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;"
+                                            width="90px"
+                                            wrap="wrap"
+                                            css="justify-content: center; cursor: pointer; padding: 2px; box-shadow: 0 0 2px #757575; border-radius: 5px; margin: 4px;"
+                                            onClick={() => {
+                                                setSortData((pre) => pre.filter((r) => r.id !== f.id));
+                                                setChosen((pre) => pre.filter((r) => r !== f.id_pre));
+                                            }}
                                         >
-                                            {' '}
-                                            <Img
-                                                src={f?.link}
-                                                id="baby"
-                                                alt={f?.link}
-                                                css={`
-                                                    z-index: -1;
-                                                    position: absolute;
-                                                    top: 0;
-                                                    left: 0;
-                                                    filter: blur(12px);
-                                                    object-fit: cover;
-                                                `}
-                                            />
-                                            {f?.type === 'image' ? (
-                                                <Img src={f?.link} id="baby" alt={f?.link} css="object-fit: contain;" />
-                                            ) : f?.type === 'video' ? (
-                                                <Player src={f?.link} step={step} />
-                                            ) : (
-                                                ''
-                                            )}
+                                            <Div
+                                                width="100%"
+                                                css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;"
+                                            >
+                                                {' '}
+                                                <Img
+                                                    src={f?.link}
+                                                    id="baby"
+                                                    alt={f?.link}
+                                                    css={`
+                                                        z-index: -1;
+                                                        position: absolute;
+                                                        top: 0;
+                                                        left: 0;
+                                                        filter: blur(12px);
+                                                        object-fit: cover;
+                                                    `}
+                                                />
+                                                {f?.type.includes('image') ? (
+                                                    <Img
+                                                        src={f?.link}
+                                                        id="baby"
+                                                        alt={f?.link}
+                                                        css="object-fit: contain;"
+                                                    />
+                                                ) : f?.type.includes('video') ? (
+                                                    <Player src={f?.link} step={step} />
+                                                ) : (
+                                                    ''
+                                                )}
+                                            </Div>
                                         </Div>
+                                    ))}
+                                    <Div width="100%" css="text-align: center;">
+                                        <ButtonSubmit
+                                            title="Hoàn thành"
+                                            submit={false}
+                                            onClick={() => {
+                                                setUploadPre(
+                                                    sortData.map((r, index) => {
+                                                        r.id = index;
+                                                        return r;
+                                                    }),
+                                                );
+                                                setChosen([]);
+                                                setSortData([]);
+                                                setProcess('');
+                                            }}
+                                        />
                                     </Div>
-                                ))}
-                            </Div>
+                                </Div>
+                            ) : (
+                                ''
+                            )}
+                            {process === 'sort' && (
+                                <Div width="100%" wrap="wrap" css="margin: 10px 0; background-color: #1e1e1e;">
+                                    {/* sort file */}
+                                    {file.map((f, index) => (
+                                        <Div
+                                            width="90px"
+                                            wrap="wrap"
+                                            css={`
+                                                justify-content: center;
+                                                cursor: pointer;
+                                                padding: 2px;
+                                                box-shadow: 0 0 2px ${chosen.includes(f.id) ? '#5bffba' : '#757575'};
+                                                border-radius: 5px;
+                                                margin: 4px;
+                                            `}
+                                            onClick={() => {
+                                                if (chosen.includes(f.id)) {
+                                                    setChosen((pre) => pre.filter((r) => r !== f.id));
+                                                } else {
+                                                    setChosen((pre) => [...pre, f.id]);
+                                                }
+                                                if (!sortData.some((s) => s.id_pre === f.id)) {
+                                                    setSortData((pre) => [
+                                                        ...pre,
+                                                        {
+                                                            ...f,
+                                                            id: pre.length ? pre[pre.length - 1].id + 1 : 0 + 1,
+                                                            id_pre: f.id,
+                                                        },
+                                                    ]);
+                                                } else {
+                                                    setSortData((pre) => pre.filter((r) => r.id_pre !== f.id));
+                                                }
+                                            }}
+                                        >
+                                            <Div
+                                                width="20px"
+                                                css={`
+                                                    height: 20px;
+                                                    border: 1px solid;
+                                                    border-radius: 3px;
+                                                    margin: 2px 0;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    ${chosen.includes(f.id) ? 'color: #2cb72c;' : ''}
+                                                `}
+                                            >
+                                                {chosen.includes(f.id) && <CheckI />}
+                                            </Div>
+
+                                            <Div
+                                                width="100%"
+                                                css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;"
+                                            >
+                                                {' '}
+                                                <Img
+                                                    src={f?.link}
+                                                    id="baby"
+                                                    alt={f?.link}
+                                                    css={`
+                                                        z-index: -1;
+                                                        position: absolute;
+                                                        top: 0;
+                                                        left: 0;
+                                                        filter: blur(12px);
+                                                        object-fit: cover;
+                                                    `}
+                                                />
+                                                {f?.type.includes('image') ? (
+                                                    <Img
+                                                        src={f?.link}
+                                                        id="baby"
+                                                        alt={f?.link}
+                                                        css="object-fit: contain;"
+                                                    />
+                                                ) : f?.type.includes('video') ? (
+                                                    <Player src={f?.link} step={step} />
+                                                ) : (
+                                                    ''
+                                                )}
+                                            </Div>
+                                        </Div>
+                                    ))}
+                                </Div>
+                            )}
                             <Div css="height: 100%;">
                                 <Div width="100%" wrap="wrap" css="height: 100%; overflow-y: overlay;">
                                     {file.map((f, index) => (
@@ -438,14 +562,14 @@ const PreviewPost: React.FC<{
                                                         object-fit: cover;
                                                     `}
                                                 />
-                                                {f?.type === 'image' ? (
+                                                {f?.type.includes('image') ? (
                                                     <Img
                                                         src={f?.link}
                                                         id="baby"
                                                         alt={f?.link}
                                                         css="object-fit: contain;"
                                                     />
-                                                ) : f?.type === 'video' ? (
+                                                ) : f?.type.includes('video') ? (
                                                     <Player src={f?.link} step={step} />
                                                 ) : (
                                                     ''
@@ -474,7 +598,7 @@ const PreviewPost: React.FC<{
                     {selectType === swiperType &&
                         selectChild.id === 5 && ( //Centered
                             <>
-                                {dataCenteredPre.length < 3 && (
+                                {dataCentered.length < 3 && (
                                     <DivPos
                                         size="18px"
                                         top="32px"
@@ -716,7 +840,10 @@ const PreviewPost: React.FC<{
                                         }
                                     }
                                 `}
+                                onMouseEnter={() => {}}
                                 onTouchStart={handleShowI}
+                                // onMouseLeave={() => setActImotion(false)}
+                                onTouchMoveCapture={() => setActImotion(false)}
                                 onTouchEnd={handleClearI}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -781,11 +908,12 @@ const PreviewPost: React.FC<{
                                         position: absolute;
                                         top: 0;
                                         left: 0;
-                                        background-color: #292a2d;
+                                        box-shadow: 0 0 5px #2d2d2d;
+                                        background-color: #181818;
                                         padding: 5px 20px 8px;
                                         border-radius: 50px;
                                         z-index: 7;
-                                        ${actImotion && 'display: flex; top: -50px;'};
+                                        ${actImotion ? 'display: flex; top: -50px;' : ''}
                                         div {
                                             min-width: 40px;
                                             height: 40px;
@@ -802,7 +930,6 @@ const PreviewPost: React.FC<{
                                             key={i.id}
                                             css={`
                                                 ${i.id === 1 ? 'padding-bottom: 6px;' : ''}
-                                                ${showI?.id === i.id ? 'border: 1px solid #d6d6d6;' : ''}
                                             `}
                                             onClick={(e) => {
                                                 e.stopPropagation();

@@ -45,7 +45,6 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
 
-    const [include, setInclude] = useState<boolean>(false); // show imotion of icon
     const [dataPosts, setDataPosts] = useState<PropsDataPosts[]>([]);
     const offset = useRef<number>(0);
     const limit = 5;
@@ -94,8 +93,6 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                 justify-content: center;
                 background-color: ${bgAther};
             `}
-            onClick={() => setInclude(!include)}
-            onTouchStart={() => setInclude(!include)}
         >
             <DivPost onClick={(e) => e.stopPropagation()}>
                 <Div
@@ -166,25 +163,10 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         </P>
                     </Div>
                 </Div>
-                <FormUpNews
-                    form={form}
-                    colorBg={colorBg}
-                    colorText={colorText}
-                    user={dataUser}
-                    include={include}
-                    setInclude={setInclude}
-                />
+                <FormUpNews form={form} colorBg={colorBg} colorText={colorText} user={dataUser} />
                 <Div display="block" css="margin: 20px 0;">
                     {dataPosts.map((p) => (
-                        <Posts
-                            key={p._id}
-                            user={dataUser}
-                            colorBg={colorBg}
-                            colorText={colorText}
-                            dataPosts={p}
-                            include={include}
-                            setInclude={setInclude}
-                        />
+                        <Posts key={p._id} user={dataUser} colorBg={colorBg} colorText={colorText} dataPosts={p} />
                     ))}
                 </Div>
             </DivPost>

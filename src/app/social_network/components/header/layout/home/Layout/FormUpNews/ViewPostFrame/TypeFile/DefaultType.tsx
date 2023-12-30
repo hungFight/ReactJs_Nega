@@ -191,9 +191,9 @@ const DefaultType: React.FC<{
                                     </Div>
                                 )}
                                 <Div width="100%" css="height: 100%; position: relative; justify-content: center;">
-                                    {f?.type === 'image' ? (
+                                    {f?.type.includes('image') ? (
                                         <Img src={f?.link} id="baby" alt={f?.link} />
-                                    ) : f?.type === 'video' ? (
+                                    ) : f?.type.includes('video') ? (
                                         <Player src={f?.link} step={step} />
                                     ) : (
                                         ''

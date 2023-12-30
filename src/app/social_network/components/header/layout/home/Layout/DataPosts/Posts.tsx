@@ -10,7 +10,7 @@ import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import Cookies from '~/utils/Cookies';
 import { PropsPosts } from './interfacePosts';
 
-const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, include, setInclude }) => {
+const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts }) => {
     const { lg } = Languages();
     const { userId } = Cookies();
     const [showComment, setShowComment] = useState<boolean>(false);
@@ -32,9 +32,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, incl
     const handleClearI = () => {
         clearTimeout(timeS);
     };
-    useEffect(() => {
-        if (actImotion) setActImotion(false);
-    }, [include]);
+
     const createdAt = moment(dataPosts.createdAt).format('LLLL');
     const fromNow = moment(moment(dataPosts.createdAt).format('HH:mm:ss DD-MM-YYYY'), 'HH:mm:ss DD-MM-YYYY')
         .locale(lg)
@@ -254,7 +252,6 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, incl
                                     padding: 5px 20px 8px;
                                     border-radius: 50px;
                                     z-index: 7;
-                                    ${actImotion && 'display: flex; top: -50px;'};
                                     div {
                                         min-width: 40px;
                                         height: 40px;

@@ -123,7 +123,7 @@ const Coverflow: React.FC<{
                                     handleStep(e, index);
                                 }}
                             >
-                                {f.type === 'image' ? (
+                                {f.type.includes('image') ? (
                                     <Div
                                         width="100%"
                                         css={`
@@ -288,7 +288,7 @@ const Coverflow: React.FC<{
 
                                         <Img src={f.link} id="baby" alt={f.link} radius="5px" />
                                     </Div>
-                                ) : f.type === 'video' ? (
+                                ) : f.type.includes('video') ? (
                                     <Player src={f.link} />
                                 ) : (
                                     ''

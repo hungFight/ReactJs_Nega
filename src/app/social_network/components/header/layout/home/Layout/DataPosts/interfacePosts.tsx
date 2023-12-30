@@ -117,6 +117,4 @@ export interface PropsPosts {
     colorBg: number;
     colorText: string;
     dataPosts: PropsDataPosts;
-    include: boolean;
-    setInclude: React.Dispatch<React.SetStateAction<boolean>>;
 }

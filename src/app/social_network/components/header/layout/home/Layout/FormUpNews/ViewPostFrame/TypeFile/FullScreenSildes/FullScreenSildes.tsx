@@ -52,9 +52,9 @@ const FullScreenSildes: React.FC<{
             <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiperFull">
                 {files.map((f) => (
                     <SwiperSlide key={f.link}>
-                        {f?.type === 'image' ? (
+                        {f?.type.includes('image') ? (
                             <Img src={f?.link} id="baby" alt={f?.link} />
-                        ) : f?.type === 'video' ? (
+                        ) : f?.type.includes('video') ? (
                             <Player src={f?.link} step={step} />
                         ) : (
                             ''

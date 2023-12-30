@@ -15,7 +15,7 @@ const handleFileUpload = async (
     videoAc: boolean,
 ) => {
     const getFilesToPre: { link: string; type: string; _id: string }[] = [];
-    const upLoad: any = [];
+    const upLoad: Blob[] = [];
     const getFilesToPrePer: { file: string; type: string }[] = [];
     const upLoadPer: { file: Blob; type: string }[] = [];
     if (file && file.length < quantity) {

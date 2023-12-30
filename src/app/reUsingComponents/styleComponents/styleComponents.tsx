@@ -97,12 +97,13 @@ export const ButtonSubmit: React.FC<{
     title: string;
     bg?: string;
     css?: string;
+    submit?: boolean;
     onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}> = ({ title, bg, css, onClick }) => {
+}> = ({ title, bg, css, onClick, submit = true }) => {
     return (
         <>
             <Div bg={bg} css={css} onClick={onClick}>
-                <Button>{title}</Button>
+                <Button type={submit ? 'submit' : 'button'}>{title}</Button>
             </Div>
         </>
     );
@@ -210,7 +211,7 @@ export const DivLoading = styled.div`
 export const CallName = (gender: number) => {
     return gender === 0 ? 'Him' : gender === 1 ? 'Her' : 'Cuy';
 };
-const Form = styled.form`
+const DivV = styled.div`
     width: 100%;
     height: 100%;
     label {
@@ -226,12 +227,12 @@ export const UpLoadForm: React.FC<{
 }> = ({ id, colorText, children, submit }) => {
     return (
         <>
-            <Form method="POST" encType="multipart/form-data">
+            <DivV>
                 <input id={id} type="file" name="file[]" hidden multiple onChange={submit} />
                 <Label htmlFor={id} color={colorText}>
                     {children}
                 </Label>
-            </Form>
+            </DivV>
         </>
     );
 };
