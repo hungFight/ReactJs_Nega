@@ -87,7 +87,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                         vid.ondurationchange = function () {
                             if (vid.duration <= 15) {
                                 resolve({
-                                    id: i,
+                                    id: i + 1,
                                     link: url,
                                     type: file[i].type,
                                     file: file[i],
@@ -107,7 +107,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                     try {
                         if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= 8) {
                             uploadPreRef.current.push({
-                                id: i,
+                                id: i + 1,
                                 link: URL.createObjectURL(file[i]),
                                 type: file[i].type,
                                 file: file[i],
@@ -118,7 +118,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                             const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
                             if (sizeImage <= 8) {
                                 uploadPreRef.current.push({
-                                    id: i,
+                                    id: i + 1,
                                     link: URL.createObjectURL(compressedFile),
                                     type: file[i].type,
                                     file: compressedFile,
