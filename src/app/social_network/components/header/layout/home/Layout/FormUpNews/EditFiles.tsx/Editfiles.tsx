@@ -46,7 +46,7 @@ const EditFiles: React.FC<{
                 position: fixed;
                 top: 0;
                 left: 0;
-                background-color: #080808a3;
+                background-color: #010101bd;
                 width: 100%;
                 height: 100%;
                 z-index: 8;
@@ -82,19 +82,11 @@ const EditFiles: React.FC<{
                         onClick={() => setProcess('sort')}
                     >
                         <SortFileI /> <P z="1.3rem">Sắp xếp</P>
-                        <Div
-                            width="100%"
-                            css="position: absolute; left: 0; bottom: -9px; height: 1px; background-color: #3fade6;"
-                        ></Div>
                     </Div>
                     <Div
                         width="fit-content"
                         css="position: relative; align-items: center; padding: 5px 10px; border-radius: 5px; background-color: #004262;"
                     >
-                        <Div
-                            width="100%"
-                            css="position: absolute; cursor: var(--pointer); left: 0; bottom: -9px; height: 1px; background-color: #3fade6;"
-                        ></Div>
                         <UpLoadForm
                             submit={handleAddFile}
                             id="addMoreFileAtEditorPreview"
@@ -291,7 +283,11 @@ const EditFiles: React.FC<{
                 )}
 
                 <Div css="height: 100%;">
-                    <Div width="100%" wrap="wrap" css="height: 87%; overflow-y: overlay;">
+                    <Div
+                        width="100%"
+                        wrap="wrap"
+                        css="max-height: 87%; height: fit-content; padding: 5px 0 20px; justify-content: center; overflow-y: overlay;"
+                    >
                         {file.map((f, index) => (
                             <AllFIlesEdited
                                 key={index}

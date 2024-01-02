@@ -125,8 +125,8 @@ export const Textarea = styled.textarea<PorpsTextarea>`
     &::placeholder {
         color: white;
     }
-    @media (min-width: 580px) {
-        font-size: 1.6rem;
+    @media (min-width: 768px) {
+        font-size: 1.5rem;
     }
     &:focus {
         border-color: #30858c85;
