@@ -96,6 +96,7 @@ import {
     RiDeleteBin6Line,
     RiDragMoveFill,
     RiExchangeCnyFill,
+    RiLayout6Fill,
     RiMailSendLine,
     RiTyphoonLine,
 } from 'react-icons/ri';
@@ -112,7 +113,13 @@ import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
-import { PiEraserThin, PiFlowerLotusFill, PiPlayFill, PiSelectionBackgroundFill } from 'react-icons/pi';
+import {
+    PiEraserThin,
+    PiFlowerLotusFill,
+    PiPlayFill,
+    PiSelectionBackgroundFill,
+    PiSlideshowThin,
+} from 'react-icons/pi';
 import { HiMiniHashtag, HiMiniPause } from 'react-icons/hi2';
 
 export const ImageI = () => <IoImage />;
@@ -232,3 +239,5 @@ export const BackgroundI = () => <PiSelectionBackgroundFill />;
 export const ReplyI = () => <MdOutlineQuestionAnswer />;
 export const HashI = () => <HiMiniHashtag />;
 export const TagPostI = () => <IoPricetag />;
+export const SliderI = () => <PiSlideshowThin />;
+export const LayoutI = () => <RiLayout6Fill />;

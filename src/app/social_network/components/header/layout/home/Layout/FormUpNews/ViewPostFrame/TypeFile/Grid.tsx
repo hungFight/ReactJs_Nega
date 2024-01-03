@@ -5,6 +5,7 @@ import { ColorsI, FullScreenI, ScreenI, SquareI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import LogicType from './logicType';
+import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
 
 const Grid: React.FC<{
     column: number;
@@ -55,12 +56,13 @@ const Grid: React.FC<{
                 margin: 4px 0;
                 background-color: ${bg};
                 ${step === 1
-                    ? 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 12; overflow-y: overlay;'
+                    ? 'position: fixed; max-height:100%; top: 0; left: 0; width: 100%; height: 99%; z-index: 12; overflow-y: overlay;'
                     : ''}
             `}
         >
             {' '}
             {step > 0 && ToolDefault(0)}
+            {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             {step === 2 && ToolDefault(2)}
             <Div
                 width="100%"
@@ -73,43 +75,6 @@ const Grid: React.FC<{
                     grid-template-columns: ${file.length === 1 ? '1fr' : columns};
                 `}
             >
-                {step !== 0 && (
-                    <>
-                        <DivPos css="position: fixed; top: 140px; right: 12.5px; font-size: 30px; flex-direction: column; z-index: 1;">
-                            <Div display="block" css="position: relative;">
-                                <Div
-                                    css={`
-                                        position: absolute;
-                                        top: 0;
-                                        right: 0;
-                                        color: #4e4343;
-                                        z-index: 1;
-                                    `}
-                                    onClick={() => setShowColors(!showColors)}
-                                >
-                                    <ColorsI />
-                                </Div>
-                                {colors.map((cl) => (
-                                    <Div
-                                        key={cl.id}
-                                        css={`
-                                            width: 27px;
-                                            height: 27px;
-                                            border-radius: 5px;
-                                            transition: all 0.5s linear;
-                                            position: absolute;
-                                            top: ${cl.id * 30}px;
-                                            right: 2px;
-                                            background-color: ${cl.color};
-                                            ${!showColors && 'top: 0px; background-color: #00000000;'}
-                                        `}
-                                        onClick={() => setBg(cl.color)}
-                                    ></Div>
-                                ))}
-                            </Div>
-                        </DivPos>
-                    </>
-                )}
                 <>{step === 2 && ToolDefault(2)}</>
                 {file.map((f, index) => {
                     return (

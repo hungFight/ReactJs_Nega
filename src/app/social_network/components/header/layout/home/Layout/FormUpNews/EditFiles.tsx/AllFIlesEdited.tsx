@@ -67,7 +67,7 @@ const AllFIlesEdited: React.FC<{
                 css={`
                     margin: 2.5px;
                     position: relative;
-                    border: 2px solid #484848;
+                    border: 2px solid #2b5a57;
                     border-radius: 5px;
                     height: fit-content;
                     margin-bottom: 10px;
@@ -86,7 +86,8 @@ const AllFIlesEdited: React.FC<{
                     width="100%"
                     css={`
                         height: 55px;
-                        background-color: #202020;
+                        border-radius: 5px;
+                        background-color: #1b1b1b;
                     `}
                 >
                     <Textarea
@@ -107,12 +108,12 @@ const AllFIlesEdited: React.FC<{
                 <Div width="100%" css="height: 193px; overflow: hidden; border-radius: 5px;">
                     <Div width="100%" display="block" css="z-index: 1;height: 100%; position: relative;">
                         <Div css="position: absolute; top: 4px; right: 4px; z-index: 6;">
-                            <Div
+                            {/* <Div
                                 css="cursor: var(--pointer); font-size: 1.3rem; background-color: #085290; border-radius: 5px; padding: 4px 10px; margin: 0 2px;"
                                 onClick={() => setDecoration(true)}
                             >
                                 Chỉnh sửa
-                            </Div>
+                            </Div> */}
                             <Div
                                 css="cursor: var(--pointer); font-size: 1.3rem; background-color: #934346; border-radius: 5px; padding: 4px 10px; margin: 0 2px;"
                                 onClick={() => setUploadPre((pre) => pre.filter((r) => r.id !== f.id))}

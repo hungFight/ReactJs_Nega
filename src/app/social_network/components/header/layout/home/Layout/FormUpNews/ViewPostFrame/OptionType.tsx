@@ -4,7 +4,7 @@ import { DivItemsType, DivsetC } from './styleOptionType';
 import OnlyImages from './TypeFile/Grid';
 import Coverflow from './TypeFile/Swipers/Coverflow';
 import DefaultType from './TypeFile/DefaultType';
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 
 const OptionType: React.FC<{
     colorText: string;
@@ -32,8 +32,13 @@ const OptionType: React.FC<{
     step,
     selectType,
 }) => {
-    const [children, setChildren] = useState<{ id: number; name: string }[]>();
-    const postTypes: { name: string; id: number; column?: number; children?: { id: number; name: string }[] }[] = [
+    const [children, setChildren] = useState<{ id: number; name: string; icon?: ReactElement }[]>();
+    const postTypes: {
+        name: string;
+        id: number;
+        column?: number;
+        children?: { id: number; name: string; icon?: ReactElement }[];
+    }[] = [
         {
             name: 'Swiper',
             id: 1,
@@ -60,8 +65,7 @@ const OptionType: React.FC<{
                 },
             ],
         },
-        { name: 'Grid-Columns: ', id: 2, column: 3 },
-        { name: 'Circle', id: 3 },
+        { name: 'Layout', id: 2, children: [{ id: 1, name: 'Circle', icon: <Div>Icon</Div> }] },
     ];
     const [swiper, setSwiper] = useState<number>(0);
     console.log('I know that');
@@ -161,7 +165,7 @@ const OptionType: React.FC<{
                     </Div>
                 </Div>
             )}
-            {select(1) && (
+            {(select(1) || select(2)) && (
                 <Div
                     width="90%"
                     wrap="wrap"
@@ -175,24 +179,27 @@ const OptionType: React.FC<{
                     onClick={(e) => e.stopPropagation()}
                 >
                     {children?.map((c) => (
-                        <P
-                            z="1.3rem"
-                            key={c.id}
-                            css={`
-                                width: fit-content;
-                                padding: 5px;
-                                margin: 0 8px;
-                                border-radius: 5px;
-                                cursor: var(--pointer);
-                                &:hover {
-                                    color: #1eacdc;
-                                }
-                                ${selectChild.id === c.id ? 'border-bottom: 1px solid #1eacdc;' : ''}
-                            `}
-                            onClick={() => setSelectChild(c)}
-                        >
-                            {c.name}
-                        </P>
+                        <Div>
+                            <P
+                                z="1.3rem"
+                                key={c.id}
+                                css={`
+                                    width: fit-content;
+                                    padding: 5px;
+                                    margin: 0 8px;
+                                    border-radius: 5px;
+                                    cursor: var(--pointer);
+                                    &:hover {
+                                        color: #1eacdc;
+                                    }
+                                    ${selectChild.id === c.id ? 'border-bottom: 1px solid #1eacdc;' : ''}
+                                `}
+                                onClick={() => setSelectChild(c)}
+                            >
+                                {c.name}
+                            </P>
+                            {c.icon && c.icon}
+                        </Div>
                     ))}
                 </Div>
             )}

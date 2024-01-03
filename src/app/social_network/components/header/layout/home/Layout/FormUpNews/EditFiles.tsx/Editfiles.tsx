@@ -73,7 +73,7 @@ const EditFiles: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                <Div css="margin: 15px 0; padding: 5px;">
+                <Div css="margin: 15px 0; padding: 5px; @media(min-width: 500px){padding: 5px 20px;}">
                     {' '}
                     {/* options for editor */}
                     <Div

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { SwiperSlide } from 'swiper/react';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
 export const Peye = styled.p<{ top: string; right?: string }>`
@@ -236,3 +237,6 @@ export const UpLoadForm: React.FC<{
         </>
     );
 };
+export const SwiperSlideF = styled(SwiperSlide)`
+    ${(props: { css?: string }) => props.css}
+`;

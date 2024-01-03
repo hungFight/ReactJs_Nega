@@ -22,6 +22,7 @@ import {
     PrivateI,
     ScreenI,
     ShareI,
+    SliderI,
     SmileI,
     SortFileI,
     UndoI,
@@ -267,9 +268,10 @@ const PreviewPost: React.FC<{
                     />
                 )}
                 {editForm && (
-                    <Div onClick={() => setEditFile(true)} width="100%" css="align-items: center;margin-bottom: 10px;">
+                    <Div width="100%" css="align-items: center;margin-bottom: 10px;">
                         <Div
                             width="fit-content"
+                            onClick={() => setEditFile(true)}
                             css="align-items:center;font-size: 1.4rem; padding: 5px; border-radius:5px; border-bottom: 1px solid #1eacdc6b; &:hover{border-color: #1eacdc;} cursor: var(--pointer);"
                         >
                             Chỉnh sửa
@@ -303,74 +305,80 @@ const PreviewPost: React.FC<{
                         }
                     `}
                 >
-                    {selectType === swiperType &&
-                        selectChild.id === 5 && ( //Centered
-                            <>
-                                {dataCentered.length < 3 && (
+                    {selectType === swiperType && (
+                        <>
+                            <Div css="position: absolute; top: 37px; right: 10.15px; font-size: 20px;">
+                                <SliderI />
+                            </Div>
+                            {selectChild.id === 5 && ( //Centered
+                                <>
+                                    {dataCentered.length < 3 && (
+                                        <DivPos
+                                            size="18px"
+                                            top="32px"
+                                            right="19px"
+                                            css={`
+                                                z-index: 1;
+                                                label {
+                                                    font-size: 1.3rem;
+                                                }
+                                                div {
+                                                    width: fit-content;
+                                                }
+                                                top: 9px;
+                                                right: 74px;
+                                                padding: 3px 4px;
+                                                border-radius: 5px;
+                                                background-image: linear-gradient(
+                                                    36deg,
+                                                    black,
+                                                    #a33a3ac2,
+                                                    #195c86bd,
+                                                    #ac10b0
+                                                );
+                                            `}
+                                            color={colorText}
+                                        >
+                                            <DivItems>
+                                                <input
+                                                    id="uploadCen"
+                                                    type="file"
+                                                    name="file[]"
+                                                    onChange={(e) => handleImageUpload(e, true)}
+                                                    multiple
+                                                    hidden
+                                                />
+                                                <Label htmlFor="uploadCen" color={colorText}>
+                                                    Thêm Hàng
+                                                </Label>
+                                            </DivItems>
+                                        </DivPos>
+                                    )}
                                     <DivPos
                                         size="18px"
-                                        top="32px"
-                                        right="19px"
+                                        top="30px"
+                                        right="105px"
                                         css={`
                                             z-index: 1;
-                                            label {
+                                            p {
                                                 font-size: 1.3rem;
+                                                padding: 2px;
                                             }
-                                            div {
-                                                width: fit-content;
-                                            }
-                                            top: 9px;
-                                            right: 74px;
-                                            padding: 3px 4px;
+                                            top: 7px;
+                                            padding: 1px 11px;
                                             border-radius: 5px;
-                                            background-image: linear-gradient(
-                                                36deg,
-                                                black,
-                                                #a33a3ac2,
-                                                #195c86bd,
-                                                #ac10b0
-                                            );
+                                            right: 165px;
+                                            background-color: #0a59bb;
                                         `}
                                         color={colorText}
+                                        onClick={() => setColumnCentered(!ColumnCentered)}
                                     >
-                                        <DivItems>
-                                            <input
-                                                id="uploadCen"
-                                                type="file"
-                                                name="file[]"
-                                                onChange={(e) => handleImageUpload(e, true)}
-                                                multiple
-                                                hidden
-                                            />
-                                            <Label htmlFor="uploadCen" color={colorText}>
-                                                Thêm Hàng
-                                            </Label>
-                                        </DivItems>
+                                        <P>Columns</P>
                                     </DivPos>
-                                )}
-                                <DivPos
-                                    size="18px"
-                                    top="30px"
-                                    right="105px"
-                                    css={`
-                                        z-index: 1;
-                                        p {
-                                            font-size: 1.3rem;
-                                            padding: 2px;
-                                        }
-                                        top: 7px;
-                                        padding: 1px 11px;
-                                        border-radius: 5px;
-                                        right: 165px;
-                                        background-color: #0a59bb;
-                                    `}
-                                    color={colorText}
-                                    onClick={() => setColumnCentered(!ColumnCentered)}
-                                >
-                                    <P>Columns</P>
-                                </DivPos>
-                            </>
-                        )}
+                                </>
+                            )}
+                        </>
+                    )}
                     {/* view full screen */}
                     {step === 0 && file.length > 0 && (
                         <DivPos

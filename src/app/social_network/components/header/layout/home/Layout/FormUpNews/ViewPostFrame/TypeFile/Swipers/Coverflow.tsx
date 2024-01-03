@@ -10,7 +10,7 @@ import 'swiper/css/pagination';
 import { Player } from 'video-react';
 import { Buttons, Div, H3, Img, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
-import { FullScreenI, PlayI, ScreenI, TitleI } from '~/assets/Icons/Icons';
+import { FullScreenI, LayoutI, PlayI, ScreenI, TitleI } from '~/assets/Icons/Icons';
 import { DivSwiper } from './styleSwipers';
 import { Textarea } from '../../../styleFormUpNews';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
@@ -103,7 +103,7 @@ const Coverflow: React.FC<{
                     coverflowEffect={{
                         rotate: 0,
                         stretch: 0,
-                        depth: 120,
+                        depth: 140,
                         modifier: 1,
                         slideShadows: true,
                     }}

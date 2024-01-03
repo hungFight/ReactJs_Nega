@@ -1,19 +1,33 @@
 import { Button, Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { useState, useEffect } from 'react';
-import { BackI, ChangeI, DotI, FullScreenI, HeartMI, ScreenI, ShareI, TitleI } from '~/assets/Icons/Icons';
+import {
+    BackI,
+    BanI,
+    ChangeI,
+    ColorsI,
+    DotI,
+    FullScreenI,
+    HeartMI,
+    ScreenI,
+    ShareI,
+    TitleI,
+} from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import LogicType from './logicType';
 import Player from '~/reUsingComponents/Videos/Player';
 import { InputT } from './Swipers/styleSwipers';
 import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
+import Resize from './Resize';
 
 const DefaultType: React.FC<{
     file: { link: string; type: string }[];
     colorText: string;
     step: number;
+    bg: string;
     setStep: React.Dispatch<React.SetStateAction<number>>;
     upload: any;
-}> = ({ file, colorText, step, setStep, upload }) => {
+    setBg: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ file, colorText, step, setStep, upload, setBg, bg }) => {
     const {
         moreFile,
         cc,
@@ -26,31 +40,50 @@ const DefaultType: React.FC<{
         showComment,
         setShowComment,
     } = LogicType(step, setStep, colorText);
-    const [classify, setClassify] = useState<{ value: string; id: number }[]>([{ value: '', id: 0 }]);
+    //edit
+    const [showColors, setShowColors] = useState(false);
     const [heightV, setHeightV] = useState<string>('');
     useEffect(() => {
         setHeightV('');
-        if (file[0]?.type === ' image') {
-            var img = new Image();
-            img.src = file[0].link; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
-
-            img.addEventListener('load', function () {
-                var imageHeight = img.naturalHeight;
-                var imageWidth = img.naturalWidth;
-                console.log('Chiều cao: ' + imageHeight);
-                console.log('Chiều rộng: ' + imageWidth);
-            });
-        } else {
-        }
+        file.map((f) => {
+            if (f?.type.includes('image')) {
+                var img = new Image();
+                img.src = f.link; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
+                img.addEventListener('load', function () {
+                    var imageHeight = img.naturalHeight;
+                    var imageWidth = img.naturalWidth;
+                    console.log('Chiều cao: ' + imageHeight);
+                    console.log('Chiều rộng: ' + imageWidth);
+                    console.log('[]: ', imageWidth / imageHeight, 16 / 9);
+                });
+            } else {
+            }
+        });
     }, [file]);
-
+    const colors = [
+        { id: 0, color: 'transparent', icon: <BanI /> },
+        { id: 1, color: '#1b1919' },
+        { id: 2, color: '#fcfcfc' },
+        { id: 3, color: 'antiquewhite' },
+        { id: 4, color: 'coral' },
+        { id: 5, color: '#e37bb5' },
+        { id: 6, color: '#7185e1' },
+        { id: 7, color: '#71cbe1' },
+    ];
     return (
         <Div
             width="100%"
             css={`
-                max-height: 500px;
+                max-height: 100%;
                 position: relative;
-                ${file.length > 1 ? ' grid-auto-rows: 250px;  display: grid;' : ''}
+                gap: 2px;
+                overflow: overlay;
+                background-color: ${bg};
+                ${file.length > 1
+                    ? step === 1
+                        ? ' grid-auto-rows: unset;  display: grid;'
+                        : ' grid-auto-rows: 200px;  display: grid;'
+                    : ''}
                 grid-template-columns: ${file.length === 1
                     ? '1fr'
                     : file.length === 4 || file.length === 2
@@ -61,6 +94,7 @@ const DefaultType: React.FC<{
                 grid-template-columns: 1fr;
                 @media (min-width: 400px) {
                     grid-template-columns: 1fr 1fr;
+                    grid-auto-rows: 411px;  display: grid;
                 }
 
                 @media (min-width: 769px) {
@@ -71,11 +105,57 @@ const DefaultType: React.FC<{
                 }`}
             `}
         >
+            <DivPos
+                css={`
+                    top: ${step === 1 ? '55px' : '15px'};
+                    right: 12.5px;
+                    font-size: 30px;
+                    flex-direction: column;
+                    z-index: 1;
+                `}
+            >
+                <Div display="block" css="position: relative;">
+                    <Div
+                        css={`
+                            position: absolute;
+                            top: -5px;
+                            right: -2px;
+                            padding: 2px;
+                            background-color: ${bg || '#4e4e4e'};
+                            border-radius: 50%;
+                            color: ${bg === '#fcfcfc' ? '#1e1e1e' : '#ffffff'};
+                            z-index: 1;
+                        `}
+                        onClick={() => setShowColors(!showColors)}
+                    >
+                        <ColorsI />
+                    </Div>
+                    {colors.map((cl, index) => (
+                        <Div
+                            key={cl.id}
+                            css={`
+                                width: 27px;
+                                height: 27px;
+                                border-radius: 5px;
+                                transition: all 0.5s linear;
+                                position: absolute;
+                                top: ${(index + 1) * 30}px;
+                                right: 2px;
+                                background-color: ${cl.color};
+                                ${index === 0 ? 'color: white;' : ''}
+                                ${!showColors && 'top: 0px; background-color: #00000000; color:#00000000; '}
+                            `}
+                            onClick={() => setBg(cl.color)}
+                        >
+                            {cl?.icon}
+                        </Div>
+                    ))}
+                </Div>
+            </DivPos>
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             <>
                 {step > 0 && ToolDefault(0)}
                 {step === 2 && ToolDefault(2)}
-                {step === 1 && ToolDefault(1)}
             </>
             {file.map((f, index, arr) => {
                 if (f?.type === 'video' && !heightV) {
@@ -98,9 +178,8 @@ const DefaultType: React.FC<{
                 // check every 6 picture
                 if (step === 0 ? index < moreFile : true) {
                     return (
-                        <>
+                        <Div display="block" key={f?.link}>
                             <Div
-                                key={f?.link}
                                 id="baby"
                                 className="aaa"
                                 wrap="wrap"
@@ -122,161 +201,13 @@ const DefaultType: React.FC<{
                                         : ''} */
                                 `}
                             >
-                                {showTitle && step === 1 && (
-                                    <Div
-                                        wrap="wrap"
-                                        css={`
-                                            position: relative;
-                                            font-size: 1.5rem;
-                                            width: 100%;
-                                            padding: 5px 10px;
-                                            justify-content: center;
-                                            background-color: #424040;
-                                        `}
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <P css=" word-break: break-all;">
-                                            {classify[index]?.id === index && classify[index]?.value}
-                                        </P>
-
-                                        <Div css="font-size: 30px;" onClick={() => setUpdate(index)}>
-                                            <ChangeI />
-                                        </Div>
-                                        {update === index && (
-                                            <Div width="100%" wrap="wrap" css="justify-content: center;">
-                                                <InputT
-                                                    onFocus={(e: any) => {
-                                                        // e.target.value = '';
-                                                    }}
-                                                    value={classify.filter((c) => c.id === index)[0]?.value}
-                                                    onChange={(e: { target: { value: string } }) => {
-                                                        console.log(e.target.value, classify);
-                                                        let ok = false;
-                                                        classify.forEach((v) => {
-                                                            if (v.id === index) ok = true;
-                                                        });
-                                                        if (!ok) {
-                                                            setClassify([
-                                                                ...classify,
-                                                                { value: e.target.value, id: index },
-                                                            ]);
-                                                        } else {
-                                                            setClassify(() =>
-                                                                classify.map((v) => {
-                                                                    if (v.id === index) {
-                                                                        v.value = e.target.value;
-                                                                        return v;
-                                                                    }
-                                                                    return v;
-                                                                }),
-                                                            );
-                                                        }
-
-                                                        upload[index].title = e.target.value; // set Title of every file
-                                                    }}
-                                                />
-                                                <Button
-                                                    color={colorText}
-                                                    css="background-image: linear-gradient(45deg, black,#b83333, black);"
-                                                    onClick={() => setUpdate(-1)}
-                                                >
-                                                    Disappear
-                                                </Button>
-                                                {/* <Button color={colorText}>Change</Button>
-                                                <Button color={colorText} onClick={() => setUpdate(-1)}>
-                                                    Cancel
-                                                </Button> */}
-                                            </Div>
-                                        )}
-                                    </Div>
-                                )}
-                                <Div width="100%" css="height: 100%; position: relative; justify-content: center;">
-                                    {f?.type.includes('image') ? (
-                                        <Img src={f?.link} id="baby" alt={f?.link} />
-                                    ) : f?.type.includes('video') ? (
-                                        <Player src={f?.link} step={step} />
-                                    ) : (
-                                        ''
-                                    )}
-                                    {step === 1 && (
-                                        <>
-                                            <Div
-                                                css={`
-                                                    height: 100px;
-                                                    flex-direction: column;
-                                                    align-items: center;
-                                                    justify-content: space-evenly;
-                                                    position: absolute;
-                                                    right: 10px;
-                                                    bottom: 12%;
-                                                    font-size: 25px;
-                                                    color: #d9d9d9;
-                                                    background-color: #474747a8;
-                                                    padding: 5px;
-                                                    border-radius: 5px;
-                                                    .M.coment {
-                                                    }
-                                                `}
-                                            >
-                                                <Div>
-                                                    <HeartMI />
-                                                </Div>
-                                                <Div
-                                                    width="fit-content"
-                                                    css={`
-                                                        margin-top: 2px;
-                                                        height: fit-content;
-                                                        border-radius: 50%;
-                                                        border: 1px solid #dedede;
-                                                        font-size: 20px;
-                                                    `}
-                                                    onClick={() => setShowComment([...showComment, index])}
-                                                >
-                                                    <DotI />
-                                                </Div>
-                                                <Div>
-                                                    <ShareI />
-                                                </Div>
-                                            </Div>
-                                            {showComment.includes(index) && (
-                                                <Div
-                                                    className="comment"
-                                                    wrap="wrap"
-                                                    css={`
-                                                        width: 100%;
-                                                        height: 100%;
-                                                        position: absolute;
-                                                        bottom: 0px;
-                                                        background-color: aliceblue;
-                                                    `}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    <Div
-                                                        width="100%"
-                                                        css="height: 30px; align-items: center; justify-content: center;  background-color: #9a9a9a; "
-                                                    >
-                                                        <DivPos
-                                                            size="25px"
-                                                            top="3px"
-                                                            left="4px"
-                                                            onClick={() =>
-                                                                setShowComment(() =>
-                                                                    showComment.filter((c) => c !== index),
-                                                                )
-                                                            }
-                                                        >
-                                                            <BackI />
-                                                        </DivPos>
-                                                        <P z="1.5rem" css="">
-                                                            Comment
-                                                        </P>
-                                                    </Div>
-                                                    <Div></Div>
-                                                </Div>
-                                            )}
-                                        </>
-                                    )}
-                                </Div>
+                                <Resize
+                                    f={f}
+                                    index={index}
+                                    setShowComment={setShowComment}
+                                    showComment={showComment}
+                                    step={step}
+                                />
                                 {step === 0 && index + 1 >= moreFile && arr.length > moreFile && (
                                     <Div
                                         id="more"
@@ -294,7 +225,7 @@ const DefaultType: React.FC<{
                                             setMoreFile((pre) => pre + 6);
                                         }}
                                     >
-                                        <P>More</P>
+                                        <P>+{arr.length - moreFile}</P>
                                     </Div>
                                 )}
                             </Div>
@@ -304,8 +235,9 @@ const DefaultType: React.FC<{
                                     css={`
                                         grid-column-end: 4;
                                         grid-column-start: 1;
+                                        cursor: var(--pointer);
                                         width: 100%;
-                                        height: 100%;
+                                        position: absolute;
                                         color: white;
                                         align-items: center;
                                         justify-content: center;
@@ -316,7 +248,7 @@ const DefaultType: React.FC<{
                                     <P>Less</P>
                                 </Div>
                             )}
-                        </>
+                        </Div>
                     );
                 }
             })}

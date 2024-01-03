@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 // Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -9,8 +9,8 @@ import 'swiper/css';
 import { Pagination } from 'swiper';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { CloseI, ScreenI } from '~/assets/Icons/Icons';
+import { DivPos, SwiperSlideF } from '~/reUsingComponents/styleComponents/styleComponents';
+import { CloseI, LayoutI, ScreenI } from '~/assets/Icons/Icons';
 import LogicType from '../logicType';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import { PropsDataFileUpload } from '../../../FormUpNews';
@@ -67,7 +67,14 @@ const Centered: React.FC<{
         setShowComment,
     } = LogicType(step, setStep, colorText);
     return (
-        <Div width="100%" display="block" css="height: 100%; .mySwiper{ width: 100%; img{ user-select: none;}}">
+        <Div
+            width="100%"
+            display="block"
+            css="position: relative; height: 100%; .mySwiper{ width: 100%; img{ user-select: none;}}"
+        >
+            {/* <DivPos top="0" left="11px" index={2} size="22px">
+                <LayoutI />
+            </DivPos> */}
             {step > 0 && ToolDefault(0)}
             {step === 2 && ToolDefault(2)}
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
@@ -130,11 +137,12 @@ const Centered: React.FC<{
                         >
                             {dt.data.map((f, index) => {
                                 return (
-                                    <SwiperSlide
+                                    <SwiperSlideF
                                         key={f.link}
                                         onClick={(e) => {
                                             handleStep(e, index);
                                         }}
+                                        css="width: 100px !important; height: 100px;"
                                     >
                                         {f.type.includes('image') ? (
                                             <Img src={f.link} alt={f.link} radius="5px" />
@@ -143,59 +151,13 @@ const Centered: React.FC<{
                                         ) : (
                                             ''
                                         )}
-                                    </SwiperSlide>
+                                    </SwiperSlideF>
                                 );
                             })}
                         </Swiper>
                     </Div>
                 );
             })}
-            {/* <Swiper
-                slidesPerView={qt}
-                spaceBetween={10}
-                centeredSlides={true}
-                pagination={{
-                    clickable: true,
-                }}
-                className="mySwiper"
-            >
-                {file.map((f) => {
-                    return (
-                        <SwiperSlide key={f.link}>
-                            {f.type.includes('image')   ? (
-                                <Img src={f.link} alt={f.link} radius="5px" />
-                            ) : f.type.includes('video')  ? (
-                                <Player src={f.link} step={step} height="100%" />
-                            ) : (
-                                ''
-                            )}
-                        </SwiperSlide>
-                    );
-                })}
-            </Swiper>
-            <Swiper
-                slidesPerView={qt}
-                spaceBetween={10}
-                centeredSlides={true}
-                pagination={{
-                    clickable: true,
-                }}
-                className="mySwiper"
-            >
-                {file.map((f) => {
-                    return (
-                        <SwiperSlide key={f.link}>
-                            {f.type.includes('image')   ? (
-                                <Img src={f.link} alt={f.link} radius="5px" />
-                            ) : f.type.includes('video')  ? (
-                                <Player src={f.link} step={step} height="100%" />
-                            ) : (
-                                ''
-                            )}
-                        </SwiperSlide>
-                    );
-                })}
-            </Swiper> */}
         </Div>
     );
 };

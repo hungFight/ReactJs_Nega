@@ -273,7 +273,15 @@ export default function LogicPreView(
     };
     const postTypes = [
         // working in side OptionType
-        <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} upload={file} />,
+        <DefaultType
+            colorText={colorText}
+            file={file}
+            step={step}
+            setStep={setStep}
+            upload={file}
+            bg={bg}
+            setBg={setBg}
+        />,
         file.length > 3 ? (
             [
                 <Dynamic colorText={colorText} file={file} step={step} setStep={setStep} />,
@@ -293,9 +301,8 @@ export default function LogicPreView(
                 />,
             ][selectChild.id - 1]
         ) : (
-            <P color="#c05d5d">Please select at least 3!</P>
+            <P color="#bd5050">Please select at least 3 files!</P>
         ),
-        <Grid colorText={colorText} file={file} column={column} step={step} setStep={setStep} bg={bg} setBg={setBg} />,
         <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     ];
     console.log(ImotionsDel, 'ImotionsDel');
@@ -305,7 +312,7 @@ export default function LogicPreView(
         document.addEventListener('touchstart', handleMouseDown);
 
         function handleMouseDown(event: any) {
-            if (event.target === e.target) {
+            if (event.target === e.target || event.target === e.target.closest) {
                 // Clicked inside the div
                 console.log('Clicked inside the box', e.target);
             } else {
