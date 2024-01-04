@@ -6,13 +6,14 @@ import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { PropsFriends } from '../../../../MakingFriends/Friends';
 import Account from '~/social_network/Accoutns/Account';
 import ServerBusy from '~/utils/ServerBusy';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtils';
-import { setOpenProfile } from '~/redux/hideShow';
+import { InitialStateHideShow, setOpenProfile } from '~/redux/hideShow';
 
 const Tags: React.FC = () => {
     const offsetRef = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
+    const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const [limit, setLimit] = useState(10);
     const eleRef = useRef<any>();
     const [data, setData] = useState<PropsFriends[]>([]);
@@ -54,10 +55,9 @@ const Tags: React.FC = () => {
             css={`
                 position: fixed;
                 width: 100%;
-                height: 660px;
-                background-color: #84848475;
-                z-index: 9999;
-                top: 42px;
+                height: 100%;
+                z-index: ${openProfile.newProfile.length > 0 ? 8 : 9999};
+                top: 0px;
                 left: 0;
                 align-items: center;
                 @media (min-width: 400px) {
@@ -77,11 +77,11 @@ const Tags: React.FC = () => {
                 width="100%"
                 display="block"
                 css={`
-                    height: 80%;
+                    height: 100%;
                     padding: 0 0 5px 0;
                     position: relative;
                     color: white;
-                    background-color: #242424;
+                    background-color: #1d1d1d;
                     @media (min-width: 400px) {
                         height: 100%;
                         border-radius: 5px;

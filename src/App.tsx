@@ -385,197 +385,201 @@ function App() {
     `;
     // console.log('id_cookie', userId, userData, id_chats, chats);
 
-    // if (token && userId) {
-    return (
-        <Suspense
-            fallback={
-                <Progress
-                    title={{
-                        vn: 'Đang tải dữ liệu...',
-                        en: 'loading data...',
-                    }}
-                />
-            }
-        >
-            <Div
-                width="100%"
-                css={`
-                    justify-content: center;
-                    position: relative;
-                    @media (min-width: 1536px) {
-                        width: 1536px;
-                    }
-                `}
+    if (token && userId) {
+        return (
+            <Suspense
+                fallback={
+                    <Progress
+                        title={{
+                            vn: 'Đang tải dữ liệu...',
+                            en: 'loading data...',
+                        }}
+                    />
+                }
             >
-                {session || errorServer?.message ? (
-                    <ErrorBoundaries message={session || (errorServer?.message ?? '')} />
-                ) : (
-                    ''
-                )}
-                {/* {userFirst ? ( */}
-                <>
-                    <Website
-                        openProfile={openProfile.newProfile}
-                        dataUser={userFirst}
-                        setDataUser={setUserFirst}
-                        setId_chats={setId_chats}
-                    />
-                    <Message
-                        dataUser={userFirst}
-                        userOnline={userOnline}
-                        setId_chats={setId_chats}
-                        id_chats={id_chats}
-                    />
-                    {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
-                    <Div
-                        width="240px"
-                        wrap="wrap"
-                        ref={showChat}
-                        css={`
-                            position: absolute;
-                            top: 57px;
-                            right: 50px;
-                            z-index: 9999;
-                            transition: all 1s linear;
-                        `}
-                        onMouseEnter={handleStopClearing}
-                        onMouseLeave={handleClear}
-                    ></Div>
-                    {/* show message from messenger */}
-                    {chats.length > 0 && (
-                        <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99; @media(max-width: 450px){width: 100%;left: 0;height:93%;}">
-                            <Div css="position: relative; width: inherit;">
-                                {id_chats?.map((room, index) => {
-                                    const permanent = { index: index + 1, id: room.id_room || room.id_other };
-                                    if (chats.some((c) => c.id_room === room.id_room && c.id_other === room.id_other))
-                                        return (
-                                            <Conversation
-                                                conversationText={ConversationText[lg]}
-                                                userOnline={userOnline}
-                                                key={index}
-                                                index={index}
-                                                colorText={colorText}
-                                                colorBg={colorBg}
-                                                id_chat={room}
-                                                currentPage={currentPage}
-                                                dataFirst={userFirst}
-                                                chat={chats}
-                                                id_chats={id_chats}
-                                                top={room.top}
-                                                left={room.left}
-                                                permanent={permanent}
-                                                setId_chats={setId_chats}
-                                                mm={mm}
-                                                balloon={balloon}
-                                            />
-                                            // </>
-                                        );
-                                })}
-                            </Div>
-                        </Div>
+                <Div
+                    width="100%"
+                    css={`
+                        justify-content: center;
+                        position: relative;
+                        @media (min-width: 1536px) {
+                            width: 1536px;
+                        }
+                    `}
+                >
+                    {session || errorServer?.message ? (
+                        <ErrorBoundaries message={session || (errorServer?.message ?? '')} />
+                    ) : (
+                        ''
                     )}
-                    <Balloon
-                        userFirst={userFirst}
-                        colorText={colorText}
-                        balloon={balloon}
-                        setId_chats={setId_chats}
-                        dispatch={dispatch}
-                        established={established}
-                    />
-                    {loading && (
+                    {/* {userFirst ? ( */}
+                    <>
+                        <Website
+                            openProfile={openProfile.newProfile}
+                            dataUser={userFirst}
+                            setDataUser={setUserFirst}
+                            setId_chats={setId_chats}
+                        />
+                        <Message
+                            dataUser={userFirst}
+                            userOnline={userOnline}
+                            setId_chats={setId_chats}
+                            id_chats={id_chats}
+                        />
+                        {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
                         <Div
-                            width="100%"
+                            width="240px"
+                            wrap="wrap"
+                            ref={showChat}
                             css={`
-                                height: 100%;
                                 position: absolute;
-                                top: 0px;
-                                z-index: 888;
-                                color: ${colorText};
-                                font-size: 50px;
-                                align-items: center;
-                                justify-content: center;
-                                background-color: #2b2c2d78;
+                                top: 57px;
+                                right: 50px;
+                                z-index: 9999;
+                                transition: all 1s linear;
                             `}
-                        >
-                            <DivLoading css="width: auto;">
-                                <LoadingI />
-                            </DivLoading>
-                        </Div>
-                    )}
-                    {userData?.length > 0 && (
-                        <DivContainer
-                            width="100%"
-                            height="100%"
-                            css={css}
-                            bg={`${colorBg === 1 ? '#272727' : 'white'}`}
-                            content={leng === 1 ? 'center' : 'start'}
-                            display="flex"
-                        >
-                            {userData?.length > 1 && (
-                                <Div
-                                    css={`
-                                        display: none;
-                                        @media (max-width: 600px) {
-                                            width: auto;
-                                            height: auto;
-                                            display: flex;
-                                            position: fixed;
-                                            flex-direction: column;
-                                            top: 175px;
-                                            right: 7px;
-                                            z-index: 88;
-                                            border-radius: 50%;
-                                        }
-                                    `}
-                                >
-                                    {userData.map((rs) => {
-                                        return (
-                                            <A key={rs.id} href={`#profiles${rs.id}`}>
-                                                <Avatar
-                                                    src={rs.avatar}
-                                                    alt={rs.fullName}
-                                                    gender={rs.gender}
-                                                    radius="50%"
-                                                    id={userId}
-                                                    css=" width: 40px; height: 40px; cursor: var(--pointer);"
+                            onMouseEnter={handleStopClearing}
+                            onMouseLeave={handleClear}
+                        ></Div>
+                        {/* show message from messenger */}
+                        {chats.length > 0 && (
+                            <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99; @media(max-width: 450px){width: 100%;left: 0;height:93%;}">
+                                <Div css="position: relative; width: inherit;">
+                                    {id_chats?.map((room, index) => {
+                                        const permanent = { index: index + 1, id: room.id_room || room.id_other };
+                                        if (
+                                            chats.some(
+                                                (c) => c.id_room === room.id_room && c.id_other === room.id_other,
+                                            )
+                                        )
+                                            return (
+                                                <Conversation
+                                                    conversationText={ConversationText[lg]}
+                                                    userOnline={userOnline}
+                                                    key={index}
+                                                    index={index}
+                                                    colorText={colorText}
+                                                    colorBg={colorBg}
+                                                    id_chat={room}
+                                                    currentPage={currentPage}
+                                                    dataFirst={userFirst}
+                                                    chat={chats}
+                                                    id_chats={id_chats}
+                                                    top={room.top}
+                                                    left={room.left}
+                                                    permanent={permanent}
+                                                    setId_chats={setId_chats}
+                                                    mm={mm}
+                                                    balloon={balloon}
                                                 />
-                                            </A>
-                                        );
+                                                // </>
+                                            );
                                     })}
                                 </Div>
-                            )}
-                            {userData?.map((data, index, arr) => (
-                                <PersonalPage
-                                    AllArray={userData}
-                                    setUsersData={setUsersData}
-                                    setUserFirst={setUserFirst}
-                                    userFirst={userFirst}
-                                    colorText={colorText}
-                                    colorBg={colorBg}
-                                    user={data}
-                                    online={userOnline}
-                                    key={index}
-                                    index={index}
-                                    leng={leng}
-                                    handleCheck={handleCheck}
-                                    setId_chats={setId_chats}
-                                />
-                            ))}
-
-                            <DivPos
-                                position="fixed"
-                                size="30px"
-                                top="20px"
-                                right="11px"
-                                color={colorText}
-                                onClick={handleClick}
+                            </Div>
+                        )}
+                        <Balloon
+                            userFirst={userFirst}
+                            colorText={colorText}
+                            balloon={balloon}
+                            setId_chats={setId_chats}
+                            dispatch={dispatch}
+                            established={established}
+                        />
+                        {loading && (
+                            <Div
+                                width="100%"
+                                css={`
+                                    height: 100%;
+                                    position: absolute;
+                                    top: 0px;
+                                    z-index: 888;
+                                    color: ${colorText};
+                                    font-size: 50px;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2b2c2d78;
+                                `}
                             >
-                                <UndoI />
-                            </DivPos>
-                        </DivContainer>
-                    )}
-                </>
-                {/* ) : (
+                                <DivLoading css="width: auto;">
+                                    <LoadingI />
+                                </DivLoading>
+                            </Div>
+                        )}
+                        {userData?.length > 0 && (
+                            <DivContainer
+                                width="100%"
+                                height="100%"
+                                css={css}
+                                bg={`${colorBg === 1 ? '#272727' : 'white'}`}
+                                content={leng === 1 ? 'center' : 'start'}
+                                display="flex"
+                            >
+                                {userData?.length > 1 && (
+                                    <Div
+                                        css={`
+                                            display: none;
+                                            @media (max-width: 600px) {
+                                                width: auto;
+                                                height: auto;
+                                                display: flex;
+                                                position: fixed;
+                                                flex-direction: column;
+                                                top: 175px;
+                                                right: 7px;
+                                                z-index: 88;
+                                                border-radius: 50%;
+                                            }
+                                        `}
+                                    >
+                                        {userData.map((rs) => {
+                                            return (
+                                                <A key={rs.id} href={`#profiles${rs.id}`}>
+                                                    <Avatar
+                                                        src={rs.avatar}
+                                                        alt={rs.fullName}
+                                                        gender={rs.gender}
+                                                        radius="50%"
+                                                        id={userId}
+                                                        css=" width: 40px; height: 40px; cursor: var(--pointer);"
+                                                    />
+                                                </A>
+                                            );
+                                        })}
+                                    </Div>
+                                )}
+                                {userData?.map((data, index, arr) => (
+                                    <PersonalPage
+                                        AllArray={userData}
+                                        setUsersData={setUsersData}
+                                        setUserFirst={setUserFirst}
+                                        userFirst={userFirst}
+                                        colorText={colorText}
+                                        colorBg={colorBg}
+                                        user={data}
+                                        online={userOnline}
+                                        key={index}
+                                        index={index}
+                                        leng={leng}
+                                        handleCheck={handleCheck}
+                                        setId_chats={setId_chats}
+                                    />
+                                ))}
+
+                                <DivPos
+                                    position="fixed"
+                                    size="30px"
+                                    top="20px"
+                                    right="11px"
+                                    color={colorText}
+                                    onClick={handleClick}
+                                >
+                                    <UndoI />
+                                </DivPos>
+                            </DivContainer>
+                        )}
+                    </>
+                    {/* ) : (
                     <Progress
                         title={{
                             vn: 'Đang tải dữ liệu...',
@@ -583,28 +587,28 @@ function App() {
                         }}
                     />
                 )} */}
-            </Div>
+                </Div>
+            </Suspense>
+        );
+    }
+    return (
+        <Suspense
+            fallback={
+                <Progress
+                    title={{
+                        vn: 'Vui lòng chờ trong giây lát để thệ thông cập nhật thông tin cho bạn. Xin cảm ơn đã sử dụng dịch vụ của chúng tôi!',
+                        en: 'Please wait a while to update your information. Thank you for using our services!',
+                    }}
+                />
+            }
+        >
+            <Authentication
+                setUserFirst={setUserFirst}
+                dataLogin={{ en: login.en, vi: login.vi }}
+                dataRegister={{ vi: register.vi, en: register.en }}
+            />
         </Suspense>
     );
-    // }
-    // return (
-    //     <Suspense
-    //         fallback={
-    //             <Progress
-    //                 title={{
-    //                     vn: 'Vui lòng chờ trong giây lát để thệ thông cập nhật thông tin cho bạn. Xin cảm ơn đã sử dụng dịch vụ của chúng tôi!',
-    //                     en: 'Please wait a while to update your information. Thank you for using our services!',
-    //                 }}
-    //             />
-    //         }
-    //     >
-    //         <Authentication
-    //             setUserFirst={setUserFirst}
-    //             dataLogin={{ en: login.en, vi: login.vi }}
-    //             dataRegister={{ vi: register.vi, en: register.en }}
-    //         />
-    //     </Suspense>
-    // );
 }
 
 export default App;

@@ -11,8 +11,9 @@ import Title from './layout/TitleOfPers/Title';
 import { CheckI, CloseI, CopyI, DotI, HeartI, HeartMI, ImageI, LoadingI, UndoI } from '~/assets/Icons/Icons';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { PropsUser, PropsUserPer } from 'src/App';
-import EditP from './layout/EditP';
+import SettingEditPersonal from './layout/Setting/SettingEditPersonal';
 import LogicView from './logicPersonal';
+import SettingOtherProfile from './layout/Setting/SettingOtherProfile';
 
 interface PropsPer {
     AllArray: PropsUserPer[];
@@ -183,7 +184,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                             src={user.background}
                             alt={user?.fullName}
                             onClick={() => {
-                                if (!room.background) setRoom({ ...room, background: true });
+                                setRoom({ ...room, background: !room.background });
                             }}
                         />
                     )}
@@ -197,7 +198,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                     <Div
                         css={cssAvatar + cssMoreAva}
                         onClick={() => {
-                            if (!room.avatar) setRoom({ ...room, avatar: true });
+                            setRoom({ ...room, avatar: !room.avatar });
                         }}
                     >
                         <Avatar
@@ -205,7 +206,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                             alt={user.fullName}
                             gender={user?.gender}
                             radius="50%"
-                            css="z-index: 1; cursor: var(--pointer);"
+                            css="z-index: 1; cursor: var(--pointerM);"
                         />
                         {loading && (
                             <DivLoading
@@ -317,7 +318,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                             </DivPos>
                         )}
                     </Div>
-                    {categories === 0 && userFirst.id === user.id && (
+                    {categories === 0 && (
                         <DivPos
                             size="25px"
                             right="0"
@@ -328,7 +329,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                                     : ''};
                                 @media (min-width: 450px) {
                                     width: 50px;
-                                    top: 20px;
+                                    top: 27px;
                                     background-color: #383838;
                                     border-radius: 5px;
                                     border: 1px solid #4b4848;
@@ -339,15 +340,21 @@ const PersonalPage: React.FC<PropsPer> = ({
                             <DotI />
                         </DivPos>
                     )}
-                    {edit && userFirst.id === user.id && (
-                        <EditP
-                            editP={editDataText[lg]}
-                            onClick={handleChangeAvatar}
-                            onText={handleChangeText}
-                            colorText={colorText}
-                            editTitle={editTitle}
-                            setEditTitle={setEditTitle}
-                        />
+                    {edit && (
+                        <>
+                            {userFirst.id === user.id ? (
+                                <SettingEditPersonal
+                                    editP={editDataText[lg]}
+                                    onClick={handleChangeAvatar}
+                                    onText={handleChangeText}
+                                    colorText={colorText}
+                                    editTitle={editTitle}
+                                    setEditTitle={setEditTitle}
+                                />
+                            ) : (
+                                <SettingOtherProfile editP={editDataText[lg]} colorText={colorText} />
+                            )}
+                        </>
                     )}
                 </DivPersonalPage>
                 {categories === 2 && (

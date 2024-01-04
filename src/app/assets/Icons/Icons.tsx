@@ -28,7 +28,7 @@ import {
 } from 'react-icons/io5';
 import { LiaExchangeAltSolid } from 'react-icons/lia';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
-import { BiBullseye, BiDotsHorizontalRounded, BiReset, BiSolidSquareRounded, BiUser } from 'react-icons/bi';
+import { BiBullseye, BiDotsHorizontalRounded, BiLike, BiReset, BiSolidSquareRounded, BiUser } from 'react-icons/bi';
 import { FcSignature } from 'react-icons/fc';
 import { SiExpertsexchange } from 'react-icons/si';
 import {
@@ -168,7 +168,7 @@ export const IconI = () => <BsEmojiSmileFill />;
 export const ItalicI = () => <BsTypeItalic />;
 export const StraightI = () => <MdStraighten />;
 export const LockI = () => <BsClockHistory />;
-export const LikeI = () => <AiOutlineLike />;
+export const LikeI = () => <BiLike />;
 export const HeartI = () => <CiHeart />;
 export const ShareI = () => <IoMdShareAlt />;
 export const Bullseye = () => <BiBullseye />;

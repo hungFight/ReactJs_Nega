@@ -209,7 +209,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {onTags && (
                                 <Hashtag setHashTags={setHashTags} hashTagsInitially={hashTags} setOnTags={setOnTags} />
                             )}
-                            {/* <Tags /> */}
+                            <Tags />
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}

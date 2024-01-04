@@ -31,7 +31,7 @@ export interface PropsLogin {
 const Login: React.FC<{
     data: PropsLogin;
     setWhatKind: React.Dispatch<React.SetStateAction<string>>;
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
 }> = ({ data, setWhatKind, setUserFirst }) => {
     const {
         colorBg,

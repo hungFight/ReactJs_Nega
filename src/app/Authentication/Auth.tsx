@@ -26,7 +26,7 @@ export const Pnext = styled.p`
 const Authentication: React.FC<{
     dataLogin: PropsLogin;
     dataRegister: PropsRegisterLanguage;
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>;
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
 }> = ({ dataLogin, dataRegister, setUserFirst }) => {
     const [enable, setEnable] = useState<boolean>(true);
     const [account, setAccount] = useState<string | number>('');

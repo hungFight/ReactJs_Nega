@@ -39,21 +39,20 @@ const EditP: React.FC<{
         <>
             <Div
                 wrap="wrap"
-                css="background-color: #252525; position: absolute; right: 55px; top: -14px; border-radius: 5px; z-index: 2;"
+                css="width: 300px; box-shadow: 0px 2px 5px #121212; padding: 8px 0;background-color: #1e1f25; position: absolute; right: 55px; top: -14px; border-radius: 5px; z-index: 2;"
             >
-                <H3 css="width: 100%; text-align: center; font-size: 1.4rem; padding: 10px 5px 5px 5px;">Editor</H3>
                 {editP.map((ed) => (
                     <Div
                         key={ed.id}
                         width="100%"
                         wrap="wrap"
-                        css="justify-content: center; padding: 3px; margin: 5px; background-color: #636363; font-size: 1.4rem; form{width: 100%;}"
+                        css=" padding: 3px; margin: 5px;  font-size: 1.4rem; form{width: 100%;}"
                         onClick={(e) => handleMore(e, ed.id)}
                     >
                         <Div
                             id="edit"
                             width="100%"
-                            css="cursor: pointer; justify-content: center;"
+                            css="cursor: pointer; justify-content: start; padding-left: 15px"
                             onClick={() => {
                                 if (ed.id === 2 || ed.id === 3) onText(ed.id);
                             }}

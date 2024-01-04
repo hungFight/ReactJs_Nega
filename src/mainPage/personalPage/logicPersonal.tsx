@@ -109,8 +109,7 @@ export default function LogicView(
                             id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                         );
                         const data = ServerBusy(res, dispatch);
-
-                        console.log('number', res, id);
+                        console.log('number11', res, id);
                         if (data) {
                             setLoading(false);
                             if (id === 0) {
@@ -152,13 +151,29 @@ export default function LogicView(
                     id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                 );
                 const data = ServerBusy(res, dispatch);
-                console.log('number', data, id);
-                if (data === 1) {
+                if (data) {
                     setLoading(false);
                     if (id === 0) {
+                        console.log('number', data, id);
                         setUserFirst({ ...userFirst, background: null });
+                        setUsersData((pre) =>
+                            pre.map((us) => {
+                                if (us.id === userFirst.id) {
+                                    us.background = null;
+                                }
+                                return us;
+                            }),
+                        );
                     } else {
                         setUserFirst({ ...userFirst, avatar: null });
+                        setUsersData((pre) =>
+                            pre.map((us) => {
+                                if (us.id === userFirst.id) {
+                                    us.avatar = null;
+                                }
+                                return us;
+                            }),
+                        );
                     }
                 }
             }
@@ -174,6 +189,14 @@ export default function LogicView(
 
             if (data === valueName) {
                 setUserFirst({ ...userFirst, fullName: data });
+                setUsersData((pre) =>
+                    pre.map((us) => {
+                        if (us.id === userFirst.id) {
+                            us.fullName = data;
+                        }
+                        return us;
+                    }),
+                );
                 setCategories(0);
             } else {
                 const dateT = moment(data, 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();

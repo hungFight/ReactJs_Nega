@@ -15,7 +15,7 @@ interface PropsState {
 function LogicLogin(
     data: PropsLogin,
     setWhatKind: React.Dispatch<React.SetStateAction<string>>,
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser | undefined>>,
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
 ) {
     const [, setCookies] = useCookies(['tks', 'k_user']);
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer?.language.login);
@@ -66,7 +66,18 @@ function LogicLogin(
                 password: value.password,
             };
             const data = await authAPI.postLogin(params, setCookies);
-            setUserFirst(undefined);
+            setUserFirst({
+                id: '',
+                fullName: '',
+                avatar: null,
+                gender: 1,
+                background: '',
+                biography: '',
+                firstPage: 'en',
+                secondPage: 'en',
+                thirdPage: 'en',
+                active: true,
+            });
             if (!data) setErrText('Account is not exist or password wrong!');
         }
     };
