@@ -94,11 +94,11 @@ const Hashtag: React.FC<{
                 >
                     {hashTags.map((t) => (
                         <P
-                            z="1.3rem"
+                            z="1.4rem"
                             key={t}
                             css={`
                                 height: fit-content;
-                                padding: 2px 6px;
+                                padding: 4px 6px;
                                 border-radius: 5px;
                                 background-color: #3d3e3fb8;
                                 margin-right: 3px;
@@ -125,7 +125,10 @@ const Hashtag: React.FC<{
                         setOnTags(false);
                     }}
                 >
-                    <P z="1.3rem" css="padding: 3px 7px; border-radius: 5px;">
+                    <P
+                        z="1.4rem"
+                        css="padding: 3px 10px; border-radius: 5px; background-color: #187bd7; margin-right: 5px; @media(min-width: 768px){margin-right: 10px;}"
+                    >
                         Done
                     </P>
                 </Div>
@@ -146,10 +149,10 @@ const Hashtag: React.FC<{
                         <Div
                             css={`
                                 position: absolute;
-                                right: 11px;
+                                right: 10px;
                                 top: 30px;
                                 border-radius: 50%;
-                                padding: 5px;
+                                padding: 8px;
                                 background-color: #292929;
                                 box-shadow: 0 0 1px white;
                                 cursor: var(--pointer);
@@ -170,7 +173,7 @@ const Hashtag: React.FC<{
                         >
                             <Div
                                 width="0.5px"
-                                css="position: inherit; right: 13px; top: -34px; background-color: #727272; height: 33px;"
+                                css="position: inherit; right: 15px; top: -34px; background-color: #727272; height: 33px;"
                             ></Div>
                             <PlusI />
                         </Div>
@@ -218,11 +221,11 @@ const Hashtag: React.FC<{
                         <Div width="100%" wrap="wrap" css="padding: 10px; margin-top: 15px;">
                             {['#hello', '#world', '#nana', '#football', '#fiction', '#love', '#goodlife'].map((t) => (
                                 <P
-                                    z="1.3rem"
+                                    z="1.4rem"
                                     key={t}
                                     css={`
                                         height: fit-content;
-                                        padding: 2px 6px;
+                                        padding: 4px 6px;
                                         border-radius: 5px;
                                         background-color: #3d3e3fb8;
                                         margin-right: 3px;

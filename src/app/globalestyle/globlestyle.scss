@@ -9,9 +9,9 @@
     --transition-03s: all 0.3s linear;
     --justify-content-start: start;
     --full: 100%;
-    @media (min-width: 768px) {
-        --pointer: pointer;
-    }
+    // @media (min-width: 768px) {
+    --pointer: pointer;
+    // }
     #pickerB {
         --rgb-background: 26 27 30 !important;
     }

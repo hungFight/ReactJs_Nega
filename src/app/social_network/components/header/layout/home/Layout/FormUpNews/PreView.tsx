@@ -219,7 +219,7 @@ const PreviewPost: React.FC<{
                 >
                     Pre-View your post here
                 </Div>
-                {!editForm && (
+                {file.length > 0 && !editForm && (
                     <Div
                         onClick={() => setEdit(true)}
                         css={`
@@ -267,7 +267,7 @@ const PreviewPost: React.FC<{
                         file={file}
                     />
                 )}
-                {editForm && (
+                {file.length > 0 && editForm && (
                     <Div width="100%" css="align-items: center;margin-bottom: 10px;">
                         <Div
                             width="fit-content"
@@ -456,12 +456,12 @@ const PreviewPost: React.FC<{
                                     font-family: ${font}, sans-serif;
                                     white-space: pre-wrap;
                                     word-break: break-word;
-                                    font-size: 1.3rem;
+                                    font-size: 1.4rem;
                                     @media (min-width: 500px) {
-                                        font-size: 1.4rem;
+                                        font-size: 1.5rem;
                                     }
                                     @media (min-width: 768px) {
-                                        font-size: 1.5rem;
+                                        font-size: 1.6rem;
                                     }
                                 `}
                                 dangerouslySetInnerHTML={{ __html: valueText }}

@@ -137,7 +137,7 @@ const OpFeatureSetting: React.FC<{
                         padding: 8px;
                         margin: 3px 0;
                         background-image: ${rs.title.backgroundImage};
-                        cursor: var(--pointer);
+                        ${more.includes(rs.id) ? '' : 'cursor: var(--pointer);'}
                         ${index === 0 && 'border-top-right-radius: 5px;border-top-left-radius: 5px'};
                         ${index === arr.length - 1 && 'border-bottom-right-radius: 5px;border-bottom-left-radius: 5px'}
                     `}

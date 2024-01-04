@@ -137,7 +137,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             <Div
                                 css={`
                                     width: 100%;
-                                    height: 30px;
+                                    height: 33px;
                                     flex-wrap: wrap;
                                     padding: 0 7px;
                                     margin-top: 5px;
@@ -147,7 +147,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     justify-content: space-evenly;
                                     border: 1px solid #5d5d5d;
                                     @media (min-width: 500px) {
-                                        height: 35px;
+                                        height: 38px;
                                     }
                                 `}
                             >

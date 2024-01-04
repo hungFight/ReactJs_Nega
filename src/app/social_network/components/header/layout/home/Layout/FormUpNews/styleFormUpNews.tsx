@@ -109,7 +109,7 @@ export const Textarea = styled.textarea<PorpsTextarea>`
     width: 100%;
     height: 42px;
     display: block;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-family: inherit;
     padding: 10px 37px 10px 10px;
     margin-bottom: 10px;
@@ -126,7 +126,7 @@ export const Textarea = styled.textarea<PorpsTextarea>`
         color: white;
     }
     @media (min-width: 768px) {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
     &:focus {
         border-color: #30858c85;
