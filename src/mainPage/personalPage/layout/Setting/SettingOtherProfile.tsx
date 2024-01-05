@@ -1,12 +1,16 @@
 import { useState } from 'react';
-import { ImageI } from '~/assets/Icons/Icons';
-import { Buttons, Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
+import { PropsUserPer } from 'src/App';
+import { CheckI, CopyI, ImageI } from '~/assets/Icons/Icons';
+import { Buttons, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
 const SettingOtherProfile: React.FC<{
     editP: { name: string; id: number; icon?: { id: number; name: string }[] }[];
     colorText: string;
-}> = ({ editP, colorText }) => {
+    AllArray: PropsUserPer[];
+    userId: string;
+    setEdit: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ editP, colorText, AllArray, userId, setEdit }) => {
     const [more, setMore] = useState<number | null>(null);
 
     const handleMore = (e: any, id: number) => {};
@@ -23,27 +27,50 @@ const SettingOtherProfile: React.FC<{
     //                             </Div>
     //                         )
     return (
-        <>
+        <Div
+            wrap="wrap"
+            css="width: 300px; box-shadow: 0px 2px 5px #121212; padding: 8px 0;background-color: #1e1f25; position: absolute; right: 0px; top: -14px; border-radius: 5px; z-index: 2; @media(min-width: 370px){right: 55px;}"
+            onClick={(e) => e.stopPropagation()}
+        >
             <Div
-                wrap="wrap"
-                css="background-color: #252525; position: absolute; right: 55px; top: -14px; border-radius: 5px; z-index: 2;"
+                color={colorText}
+                width="100%"
+                css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)"
+                onClick={() => {
+                    navigator.clipboard.writeText(`${process.env.REACT_APP_ROUTE}profile?id=${userId}`);
+                    AllArray.forEach((us) => {
+                        if (us.id === userId) {
+                            document.getElementById(`profileCopyId=${userId}`)?.setAttribute('style', 'display: flex;');
+                        } else {
+                            document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
+                        }
+                    });
+                }}
             >
-                <H3 css="width: 100%; text-align: center; font-size: 1.4rem; padding: 10px 5px 5px 5px;">Editor</H3>
-                {editP.map((ed) => (
-                    <Div
-                        key={ed.id}
-                        width="100%"
-                        wrap="wrap"
-                        css="justify-content: center; padding: 3px; margin: 5px; background-color: #636363; font-size: 1.4rem; form{width: 100%;}"
-                        onClick={(e) => handleMore(e, ed.id)}
-                    >
-                        <Div id="edit" width="100%" css="cursor: pointer; justify-content: center;" onClick={() => {}}>
-                            {ed.name}
-                        </Div>
-                    </Div>
-                ))}
+                <Div
+                    id={`profileCopyId=${userId}`}
+                    display="none"
+                    css="color: #2aa02a; font-size: 22px; padding: 0 5px;"
+                >
+                    <CheckI />
+                </Div>
+                <P z="1.4rem" css="width: max-content;">
+                    Copy link of profile
+                </P>
+                <Div css="padding: 5px;">
+                    <CopyI />
+                </Div>
             </Div>
-        </>
+            <Div
+                width="100%"
+                css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)"
+                onClick={() => setEdit(false)}
+            >
+                <P z="1.4rem" css="width: max-content;">
+                    Đóng tap
+                </P>
+            </Div>
+        </Div>
     );
 };
 export default SettingOtherProfile;

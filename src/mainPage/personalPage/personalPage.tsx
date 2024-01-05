@@ -73,6 +73,7 @@ const PersonalPage: React.FC<PropsPer> = ({
         handleChangeText,
         handleVName,
         editDataText,
+        editDataTextOther,
         lg,
         cssBg,
         cssName,
@@ -90,6 +91,7 @@ const PersonalPage: React.FC<PropsPer> = ({
         dispatch,
         loads,
         setMore,
+        more,
     } = LogicView(user, userFirst, setUserFirst, leng, colorText, online, setId_chats, setUsersData, index, AllArray);
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
         return (
@@ -122,7 +124,14 @@ const PersonalPage: React.FC<PropsPer> = ({
         dispatch(setNewProfile(newPr));
     };
     return (
-        <Div id={`profiles${user.id}`} css={css} onClick={() => setMore(false)}>
+        <Div
+            id={`profiles${user.id}`}
+            css={css}
+            onClick={() => {
+                if (more) setMore(false); //option's friend button
+                if (edit) setEdit(false); // setting
+            }}
+        >
             {(room.background || room.avatar) && (
                 <DivPos
                     position="fixed"
@@ -137,39 +146,6 @@ const PersonalPage: React.FC<PropsPer> = ({
                     <UndoI />
                 </DivPos>
             )}
-            <DivPos
-                top="30px"
-                right="50%"
-                left="50%"
-                css="width: fit-content; translate: -50%; z-index: 1;  padding: 10px; border-radius: 5px; background-color: #1f1f20;"
-                color={colorText}
-                onClick={() => {
-                    navigator.clipboard.writeText(`${process.env.REACT_APP_ROUTE}profile?id=${user.id}`);
-                    AllArray.forEach((us) => {
-                        if (us.id === user.id) {
-                            document
-                                .getElementById(`profileCopyId=${user.id}`)
-                                ?.setAttribute('style', 'display: flex;');
-                        } else {
-                            document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
-                        }
-                    });
-                }}
-            >
-                <Div
-                    id={`profileCopyId=${user.id}`}
-                    display="none"
-                    css="color: #2aa02a; font-size: 22px; padding: 0 5px;"
-                >
-                    <CheckI />
-                </Div>
-                <P z="1.3rem" css="width: max-content;">
-                    {process.env.REACT_APP_ROUTE}profile?id={user.id}
-                </P>
-                <Div css="padding: 5px;">
-                    <CopyI />
-                </Div>
-            </DivPos>
 
             {AllArray.length > 1 && (
                 <DivPos size="30px" top="20px" right="11px" color={colorText} onClick={handleUndo} css="z-index: 1;">
@@ -322,18 +298,15 @@ const PersonalPage: React.FC<PropsPer> = ({
                         <DivPos
                             size="25px"
                             right="0"
-                            top="7px"
                             css={`
                                 ${edit
                                     ? 'width: 50px; background-color: #383838; border-radius: 5px !important; border: 1px solid #4b4848;'
                                     : ''};
-                                @media (min-width: 450px) {
-                                    width: 50px;
-                                    top: 27px;
-                                    background-color: #383838;
-                                    border-radius: 5px;
-                                    border: 1px solid #4b4848;
-                                }
+                                width: 50px;
+                                top: 27px;
+                                background-color: #383838;
+                                border-radius: 5px;
+                                border: 1px solid #4b4848;
                             `}
                             onClick={handleEdit}
                         >
@@ -344,15 +317,24 @@ const PersonalPage: React.FC<PropsPer> = ({
                         <>
                             {userFirst.id === user.id ? (
                                 <SettingEditPersonal
+                                    AllArray={AllArray}
+                                    userId={user.id}
                                     editP={editDataText[lg]}
                                     onClick={handleChangeAvatar}
                                     onText={handleChangeText}
                                     colorText={colorText}
                                     editTitle={editTitle}
                                     setEditTitle={setEditTitle}
+                                    setEdit={setEdit}
                                 />
                             ) : (
-                                <SettingOtherProfile editP={editDataText[lg]} colorText={colorText} />
+                                <SettingOtherProfile
+                                    editP={editDataTextOther[lg]}
+                                    setEdit={setEdit}
+                                    AllArray={AllArray}
+                                    userId={user.id}
+                                    colorText={colorText}
+                                />
                             )}
                         </>
                     )}

@@ -86,20 +86,21 @@ const LogicTitle = (
     const [subAccount, setSubAccount] = useState<boolean>(false);
     const [pass, setPass] = useState<{ id: string; kind: string; val: string }>();
     const { userId } = Cookies();
-    const itemsT: { icon: React.ReactElement; key: number; qt: number; css?: string | undefined }[] = [
-        { icon: <StarI />, key: 1, qt: mores[0].star },
+    const itemsT: { icon: React.ReactElement; key: number; qt: number; css?: string | undefined; color: string }[] = [
+        { icon: <StarI />, key: 1, qt: mores[0].star, color: '#b6b836' },
         {
             icon: <HeartMI />,
-            css: id_loved === userId ? 'color: #c73434 !important' : '',
+            css: data.id !== userFirst.id ? (id_loved === userFirst.id ? 'color: #c73434 !important' : '') : '',
             key: 2,
             qt: resTitle.love || mores[0].loverAmount,
+            color: data.id === userFirst.id ? '#b34343' : '',
         },
-        { icon: <FriendI />, key: 3, qt: mores[0].friendAmount },
-        { icon: <PeopleI />, key: 4, qt: mores[0].visitorAmount },
+        { icon: <FriendI />, key: 3, qt: mores[0].friendAmount, color: data.id === userFirst.id ? '#527cc6' : '' },
+        { icon: <PeopleI />, key: 4, qt: mores[0].visitorAmount, color: data.id === userFirst.id ? '#52c6a5' : '' },
     ];
     const itemsP = [
-        { icon: 'Followed', key: 5, qt: mores[0].followedAmount },
-        { icon: 'Following', key: 6, qt: mores[0].followingAmount },
+        { icon: 'Followed', key: 5, qt: mores[0].followedAmount, color: '' },
+        { icon: 'Following', key: 6, qt: mores[0].followingAmount, color: '' },
     ];
     const itemMemoryBar = [
         { id: 1, name: 'Post' },
@@ -142,6 +143,7 @@ const LogicTitle = (
             val: string;
             placeholder: string;
             icon: ReactElement;
+            color: string;
             length: number;
             private: ReactElement;
             letPrivate: string;
@@ -149,6 +151,7 @@ const LogicTitle = (
         gender: {
             val: string;
             placeholder: string;
+            color: string;
             icon: ReactElement;
             length: number;
             private: ReactElement;
@@ -160,6 +163,7 @@ const LogicTitle = (
             icon: ReactElement;
             length: number;
             private: ReactElement;
+            color: string;
             letPrivate: string;
         };
         relationship: {
@@ -167,6 +171,7 @@ const LogicTitle = (
             placeholder: string;
             icon: ReactElement;
             length: number;
+            color: string;
             private: ReactElement;
             letPrivate: string;
         };
@@ -174,6 +179,7 @@ const LogicTitle = (
             val: string;
             placeholder: string;
             icon: ReactElement;
+            color: string;
             length: number;
             private: ReactElement;
             letPrivate: string;
@@ -182,6 +188,7 @@ const LogicTitle = (
             val: string;
             placeholder: string;
             icon: ReactElement;
+            color: string;
             length: number;
             private: ReactElement;
             letPrivate: string;
@@ -191,6 +198,7 @@ const LogicTitle = (
             val: data.address,
             placeholder: 'Address',
             icon: <LocationI />,
+            color: '#d1a2fdc4',
             length: 240,
             private:
                 privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
@@ -200,6 +208,7 @@ const LogicTitle = (
             val: Gender(data.gender).string,
             placeholder: 'Gender',
             icon: <GenderMaleI />,
+            color: '',
             length: 1,
             private: privacy.gender === 'only' ? <PrivateI /> : privacy.gender === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.gender,
@@ -208,6 +217,7 @@ const LogicTitle = (
             val: data.birthday,
             placeholder: 'Birthday',
             icon: <BirthI />,
+            color: 'antiquewhite',
             length: 10,
             private:
                 privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
@@ -217,6 +227,7 @@ const LogicTitle = (
             val: mores[0].relationship,
             placeholder: 'Relationship',
             icon: <HeartMI />,
+            color: '#c13b55',
             length: 20,
             private:
                 privacy.relationship === 'only' ? (
@@ -232,6 +243,7 @@ const LogicTitle = (
             val: data.occupation,
             placeholder: 'Occupation',
             icon: <WorkingI />,
+            color: '#d3d859',
             length: 95,
             private:
                 privacy.occupation === 'only' ? (
@@ -246,6 +258,7 @@ const LogicTitle = (
         schoolName: {
             val: data.schoolName,
             placeholder: 'School Name',
+            color: '#2eabc0',
             icon: <SchoolI />,
             length: 95,
             private:
@@ -263,6 +276,7 @@ const LogicTitle = (
         [hobby: string]: {
             val: string[];
             placeholder: string;
+            color: string;
             icon: ReactElement;
             subVal: string;
             private: ReactElement;
@@ -271,6 +285,7 @@ const LogicTitle = (
         skill: {
             val: string[];
             placeholder: string;
+            color: string;
             icon: ReactElement;
             subVal: string;
             private: ReactElement;
@@ -279,6 +294,7 @@ const LogicTitle = (
         language: {
             val: string[];
             placeholder: string;
+            color: string;
             icon: ReactElement;
             subVal: string;
             private: ReactElement;
@@ -289,6 +305,7 @@ const LogicTitle = (
             val: data.hobby ?? [],
             placeholder: 'Hobbies',
             icon: <HobbyI />,
+            color: '#4da15f',
             subVal: '',
             private: privacy.hobby === 'only' ? <PrivateI /> : privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.hobby,
@@ -297,6 +314,7 @@ const LogicTitle = (
             val: data.skill ?? [],
             placeholder: 'Skills',
             icon: <StrengthI />,
+            color: 'deeppink',
             subVal: '',
             private: privacy.skill === 'only' ? <PrivateI /> : privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.skill,
@@ -304,6 +322,7 @@ const LogicTitle = (
         language: {
             val: mores[0].language ?? [],
             placeholder: 'Languages',
+            color: 'pink',
             icon: <LanguageI />,
             subVal: '',
             private:
@@ -315,6 +334,7 @@ const LogicTitle = (
         address: {
             val: ObjectRender.address.val,
             placeholder: 'Address',
+            color: '#d1a2fdc4',
             icon: <LocationI />,
             length: 240,
             private:
@@ -325,6 +345,7 @@ const LogicTitle = (
             val: ObjectRender.gender.val,
             placeholder: 'Gender',
             icon: <GenderMaleI />,
+            color: '',
             length: 1,
             private: privacy.gender === 'only' ? <PrivateI /> : privacy.gender === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.gender,
@@ -332,6 +353,7 @@ const LogicTitle = (
         birthday: {
             val: ObjectRender.birthday.val,
             placeholder: 'Birthday',
+            color: 'antiquewhite',
             icon: <BirthI />,
             length: 10,
             private:
@@ -341,6 +363,7 @@ const LogicTitle = (
         relationship: {
             val: ObjectRender.relationship.val,
             placeholder: 'Relationship',
+            color: '#c13b55',
             icon: <HeartMI />,
             length: 20,
             private:
@@ -357,6 +380,7 @@ const LogicTitle = (
             val: ObjectRender.occupation.val,
             placeholder: 'Occupation',
             icon: <WorkingI />,
+            color: '#d3d859',
             length: 95,
             private:
                 privacy.occupation === 'only' ? (
@@ -372,6 +396,7 @@ const LogicTitle = (
             val: ObjectRender.schoolName.val,
             placeholder: 'School Name',
             icon: <SchoolI />,
+            color: '#2eabc0',
             length: 95,
             private:
                 privacy.schoolName === 'only' ? (
@@ -389,6 +414,7 @@ const LogicTitle = (
             val: ArrayRender.hobby.val,
             placeholder: 'Hobbies',
             icon: <HobbyI />,
+            color: '#4da15f',
             subVal: '',
             private: privacy.hobby === 'only' ? <PrivateI /> : privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.hobby,
@@ -397,6 +423,7 @@ const LogicTitle = (
             val: ArrayRender.skill.val,
             placeholder: 'Skills',
             icon: <StrengthI />,
+            color: 'deeppink',
             subVal: '',
             private: privacy.skill === 'only' ? <PrivateI /> : privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.skill,
@@ -404,6 +431,7 @@ const LogicTitle = (
         language: {
             val: ArrayRender.language.val,
             placeholder: 'Languages',
+            color: 'pink',
             icon: <LanguageI />,
             subVal: '',
             private:
@@ -420,6 +448,7 @@ const LogicTitle = (
         key: string,
         length: number,
         privates: ReactElement,
+        color: string,
     ) => {
         return (
             <Div
@@ -428,7 +457,7 @@ const LogicTitle = (
                 css={`
                     align-items: center;
                     font-size: 18px;
-                    margin-bottom: 4px;
+                    margin-bottom: 6px;
                     position: relative;
                     ${editTitle ? 'cursor: var(--pointer);' : ''}
                     &:hover {
@@ -451,6 +480,7 @@ const LogicTitle = (
                     css={`
                         margin-right: 2px;
                         position: relative;
+                        color: ${color};
                         ${ObjectRender[key].val === 'Female'
                             ? 'color: #c36aca'
                             : ObjectRender[key].val === 'Male'
@@ -458,6 +488,7 @@ const LogicTitle = (
                             : ObjectRender[key].val === 'Other'
                             ? 'color: #4e9c8b;'
                             : ''};
+
                         ${editValue === key && editTitle && key !== 'gender'
                             ? 'position: absolute; top: 37px; z-index: 1;'
                             : ''}
@@ -573,7 +604,7 @@ const LogicTitle = (
                                 <Div css="position: absolute; right: 64px; top: -35px; flex-wrap: wrap; padding: 10px; border-radius: 5px; background-image: linear-gradient(45deg, #324b47, #000000eb); z-index: 1;">
                                     <H3 css="font-size: 1.8rem; width: 100%; display: flex; align-items: center;">
                                         {icon}
-                                        {' ' + key}
+                                        <P z="1.4rem">{key}</P>
                                     </H3>
                                     <P
                                         z="1.3rem"
@@ -642,6 +673,7 @@ const LogicTitle = (
                 val: data.address,
                 placeholder: 'Address',
                 icon: <LocationI />,
+                color: '#d1a2fdc4',
                 length: 240,
                 private:
                     mores[0].privacy.address === 'only' ? (
@@ -656,6 +688,7 @@ const LogicTitle = (
             gender: {
                 val: Gender(data.gender).string,
                 placeholder: 'Gender',
+                color: '',
                 icon: <GenderMaleI />,
                 length: 1,
                 private:
@@ -671,6 +704,7 @@ const LogicTitle = (
             birthday: {
                 val: data.birthday,
                 placeholder: 'Birthday',
+                color: 'antiquewhite',
                 icon: <BirthI />,
                 length: 10,
                 private:
@@ -686,6 +720,7 @@ const LogicTitle = (
             relationship: {
                 val: mores[0].relationship,
                 placeholder: 'Relationship',
+                color: '#c13b55',
                 icon: <HeartMI />,
                 length: 20,
                 private:
@@ -701,6 +736,7 @@ const LogicTitle = (
             occupation: {
                 val: data.occupation,
                 placeholder: 'Occupation',
+                color: '#d3d859',
                 icon: <WorkingI />,
                 length: 95,
                 private:
@@ -717,6 +753,7 @@ const LogicTitle = (
                 val: data.schoolName,
                 placeholder: 'School Name',
                 icon: <SchoolI />,
+                color: '#2eabc0',
                 length: 95,
                 private:
                     mores[0].privacy.schoolName === 'only' ? (
@@ -734,6 +771,7 @@ const LogicTitle = (
                 val: data.hobby,
                 placeholder: 'Hobbies',
                 icon: <HobbyI />,
+                color: '#4da15f',
                 subVal: '',
                 private:
                     mores[0].privacy.hobby === 'only' ? (
@@ -749,6 +787,7 @@ const LogicTitle = (
                 val: data.skill,
                 placeholder: 'Skills',
                 icon: <StrengthI />,
+                color: 'deeppink',
                 subVal: '',
                 private:
                     mores[0].privacy.skill === 'only' ? (
@@ -764,6 +803,7 @@ const LogicTitle = (
                 val: mores[0].language,
                 placeholder: 'Languages',
                 icon: <LanguageI />,
+                color: 'pink',
                 subVal: '',
                 private:
                     mores[0].privacy.language === 'only' ? (
@@ -781,11 +821,13 @@ const LogicTitle = (
         setSubAccountsData(data.accountUser);
     }, [data]);
     const renderArrayInfo = (
+        // array data
         res: string[],
         placeholder: string,
         icon: ReactElement,
         key: string,
         privates: ReactElement,
+        color: string,
     ) => {
         return (
             <Div
@@ -816,6 +858,7 @@ const LogicTitle = (
                     width="20px"
                     css={`
                         margin-right: 2px;
+                        color: ${color};
                         ${editValue === key && editTitle ? 'position: absolute; top: 37px;' : ''}
                     `}
                     onClick={(e) => e.stopPropagation()}
@@ -1187,7 +1230,6 @@ const LogicTitle = (
         renderArrayInfo,
         handleEdit,
         handleLogin,
-
         itemsP,
         setEditValue,
         check,

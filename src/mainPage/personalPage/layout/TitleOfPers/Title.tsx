@@ -16,6 +16,7 @@ import Eyes from '~/reUsingComponents/Eys/Eye';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import LogicTitle from './LogicTitle';
 import { setOpenProfile } from '~/redux/hideShow';
+import { useState } from 'react';
 
 export interface PropsMores {
     id: string;
@@ -139,7 +140,7 @@ const Title: React.FC<{
         level,
         userFirst,
     );
-
+    const [viewMore, setViewMore] = useState<boolean>(false); // view content
     return (
         <DivTitleP onClick={() => setAcPrivate('')}>
             <Div
@@ -162,7 +163,7 @@ const Title: React.FC<{
                                 div {
                                     color: ${i.key === 3 && [id_o, userRequested].includes(userId) && level === 2
                                         ? '#257fc2'
-                                        : colorText};
+                                        : ''};
                                 }
                                 @media (min-width: 768px) {
                                     font-size: 22px;
@@ -177,6 +178,7 @@ const Title: React.FC<{
                                 css={`
                                     align-items: center;
                                     justify-content: center;
+                                    color: ${i.color};
                                     ${i.css};
                                     cursor: var(--pointer);
                                 `}
@@ -253,17 +255,35 @@ const Title: React.FC<{
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
                 css={`
-                    margin-top: 15px;
-                    color: ${colorText};
-                    background-color: #2b2c2c;
-                    padding: 8px;
-                    box-shadow: 0 0 1px #949090;
-                    @media (max-width: 850px) {
-                        width: 100%;
-                    }
-                    @media (min-width: 1500px) {
-                        ${AllArray.length === 2 ? 'width: 49.5%' : ''};
-                    }
+                    ${viewMore
+                        ? `height: auto;
+                        color: ${colorText};
+                        background-color: #2b2c2c;
+                        padding: 8px;margin-top: 15px;
+                        box-shadow: 0 0 1px #949090;
+                        @media (max-width: 850px) {
+                            width: 100%;
+                        }
+                        @media (min-width: 1500px) {
+                            ${AllArray.length === 2 ? 'width: 49.5%' : ''};
+                        }`
+                        : `height: 0;
+                    overflow: hidden;
+                    @media (min-width: 500px) {
+                        margin-top: 15px;
+                        overflow: unset;
+                        height: auto;
+                        color: ${colorText};
+                        background-color: #2b2c2c;
+                        padding: 8px;
+                        box-shadow: 0 0 1px #949090;
+                        @media (max-width: 850px) {
+                            width: 100%;
+                        }
+                        @media (min-width: 1500px) {
+                            ${AllArray.length === 2 ? 'width: 49.5%' : ''};
+                        }
+                    }`}
                 `}
             >
                 {mores[0].position && (
@@ -282,7 +302,7 @@ const Title: React.FC<{
                             }
                         `}
                     >
-                        <Div width="20px" css="margin-right: 2px;">
+                        <Div width="20px" css="margin-right: 2px; color: #1395c9;">
                             <VerifyI />
                         </Div>
                         <P css="font-size: 1.4rem; margin-top: 2.5px;">{mores[0].position}</P>
@@ -306,7 +326,7 @@ const Title: React.FC<{
                                         <Div css="position: absolute; right: 64px; top: -35px; flex-wrap: wrap; padding: 10px; border-radius: 5px; background-image: linear-gradient(45deg, #324b47, #000000eb); z-index: 1;">
                                             <H3 css="font-size: 1.8rem; width: 100%; display: flex; align-items: center;">
                                                 <AccountI />
-                                                {' Position'}
+                                                <P z="1.4rem">Position</P>
                                             </H3>
                                             <P
                                                 z="1.3rem"
@@ -354,7 +374,6 @@ const Title: React.FC<{
                 )}
 
                 {Object.keys(ObjectRender).map((key, index) => {
-                    console.log(key, 'key', ObjectRender[key].val, ObjectRender[key].val + index);
                     if ((ObjectRender[key].val && !editTitle) || editTitle) {
                         return renderInfo(
                             ObjectRender[key].val,
@@ -363,6 +382,7 @@ const Title: React.FC<{
                             key,
                             ObjectRender[key].length,
                             ObjectRender[key].private,
+                            ObjectRender[key].color,
                         );
                     }
                 })}
@@ -371,17 +391,35 @@ const Title: React.FC<{
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
                 css={`
-                    margin-top: 15px;
-                    color: ${colorText};
-                    background-color: #2b2c2c;
-                    padding: 8px;
-                    box-shadow: 0 0 1px #949090;
-                    @media (max-width: 850px) {
-                        width: 100%;
-                    }
-                    @media (min-width: 1500px) {
-                        ${AllArray.length === 2 ? 'width: 49.5%' : ''};
-                    }
+                    ${viewMore
+                        ? ` margin-top: 15px;
+                        color: ${colorText};
+                        background-color: #2b2c2c;
+                        padding: 8px;
+                        box-shadow: 0 0 1px #949090;
+                        @media (max-width: 850px) {
+                            width: 100%;
+                        }
+                        @media (min-width: 1500px) {
+                            ${AllArray.length === 2 ? 'width: 49.5%' : ''};
+                        }`
+                        : `height: 0;
+                    overflow: hidden;
+                    @media (min-width: 500px) {
+                        overflow: unset;
+                        height: auto;
+                        margin-top: 15px;
+                        color: ${colorText};
+                        background-color: #2b2c2c;
+                        padding: 8px;
+                        box-shadow: 0 0 1px #949090;
+                        @media (max-width: 850px) {
+                            width: 100%;
+                        }
+                        @media (min-width: 1500px) {
+                            ${AllArray.length === 2 ? 'width: 49.5%' : ''};
+                        }
+                    }`}
                 `}
             >
                 {Object.keys(ArrayRender).map((key) => {
@@ -392,6 +430,7 @@ const Title: React.FC<{
                             ArrayRender[key].icon,
                             key,
                             ArrayRender[key].private,
+                            ArrayRender[key].color,
                         );
                     }
                 })}
@@ -559,7 +598,7 @@ const Title: React.FC<{
                                                                         radius="50%"
                                                                     />
                                                                 </Div>
-                                                                <P z="1.3rem" css="width: max-content; ">
+                                                                <P z="1.3rem" css="width: max-content;">
                                                                     {sub.fullName}
                                                                 </P>
                                                             </Div>
@@ -621,7 +660,7 @@ const Title: React.FC<{
                                                         ) : (
                                                             <P
                                                                 z="1.3rem"
-                                                                css="width: 100%; cursor: var(--pointer); &:hover{color: #9bd6e2;}"
+                                                                css="width: 100%; cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #0074bc; border-radius: 5px; margin-top: 10px; padding: 4px;"
                                                                 onClick={() =>
                                                                     setPass({ id: sub.id, kind: 'login', val: '' })
                                                                 }
@@ -631,7 +670,7 @@ const Title: React.FC<{
                                                         )}
                                                         <P
                                                             z="1.3rem"
-                                                            css="width: max-content; cursor: var(--pointer); &:hover{color: #9bd6e2;}"
+                                                            css="width: max-content; cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #8c45c3; border-radius: 5px; margin-top: 10px; padding: 5px;"
                                                             onClick={() =>
                                                                 dispatch(
                                                                     setOpenProfile({
@@ -745,6 +784,25 @@ const Title: React.FC<{
                     </Div>
                 )}
             </Div>
+            {viewMore ? (
+                <Div
+                    width="100%"
+                    css="@media(min-width:500px){display: none}justify-content: center; margin-top: 10px;"
+                >
+                    <P z="1.3rem" color={colorText} css="padding: 3px;" onClick={() => setViewMore(false)}>
+                        __An but__
+                    </P>
+                </Div>
+            ) : (
+                <Div
+                    width="100%"
+                    css="@media(min-width:500px){display: none}justify-content: center; margin-top: 10px;"
+                >
+                    <P z="1.3rem" color={colorText} css="padding: 3px;" onClick={() => setViewMore(true)}>
+                        __Xem them__
+                    </P>
+                </Div>
+            )}
             {editTitle && (
                 <Div width="100%" css="justify-content: right;">
                     <Button

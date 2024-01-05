@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -68,7 +69,7 @@ export const Button = styled.button<Propss>`
     ${(props) => props.css}
 `;
 interface PropsButtons {
-    text: { css: string; text: string; tx?: string; onClick?: (args?: any) => void }[];
+    text: { css: string; text: string | ReactElement; tx?: string; onClick?: (args?: any) => void }[];
 }
 export const Buttons: React.FC<PropsButtons | any> = ({ text }) => {
     return text.map((vl: { css: string; text: string; tx: string; onClick?: (args: any) => void }) => (

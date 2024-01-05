@@ -79,6 +79,7 @@ import {
     MdShutterSpeed,
     MdGroups2,
     MdOutlineQuestionAnswer,
+    MdVerified,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
 import {
@@ -96,6 +97,7 @@ import {
     RiDeleteBin6Line,
     RiDragMoveFill,
     RiExchangeCnyFill,
+    RiExchangeLine,
     RiLayout6Fill,
     RiMailSendLine,
     RiTyphoonLine,
@@ -190,7 +192,6 @@ export const ProfileCircelI = () => <CgProfile />;
 export const TyOnlineI = () => <BsFillCircleFill />;
 export const CameraI = () => <BsFillCameraFill />;
 export const TitleI = () => <MdOutlineTitle />;
-export const ChangeI = () => <RiExchangeCnyFill />;
 export const BackI = () => <IoIosArrowRoundBack />;
 export const NightI = () => <MdNightlightRound />;
 export const ColorsI = () => <BiSolidColor />;
@@ -212,7 +213,7 @@ export const HobbyI = () => <GiClover />;
 export const StrengthI = () => <GiStrong />;
 export const FlowersI = () => <GiCottonFlower />;
 export const SchoolI = () => <FaSchool />;
-export const VerifyI = () => <VscVerifiedFilled />;
+export const VerifyI = () => <MdVerified />;
 export const AccountI = () => <RiAccountPinCircleFill />;
 export const PrivacyI = () => <RiChatPrivateFill />;
 export const CopyI = () => <IoCopy />;
@@ -241,3 +242,4 @@ export const HashI = () => <HiMiniHashtag />;
 export const TagPostI = () => <IoPricetag />;
 export const SliderI = () => <PiSlideshowThin />;
 export const LayoutI = () => <RiLayout6Fill />;
+export const ChangeI = () => <RiExchangeLine />;

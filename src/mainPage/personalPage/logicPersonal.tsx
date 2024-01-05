@@ -642,6 +642,13 @@ export default function LogicView(
             { name: 'Thông tin bên dưới', id: 4 },
         ],
     };
+    const editDataTextOther: {
+        [en: string]: { name: string; id: number; icon?: { id: number; name: string }[] }[];
+        vi: { name: string; id: number; icon?: { id: number; name: string }[] }[];
+    } = {
+        en: [{ name: 'Information', id: 4 }],
+        vi: [{ name: 'Thông tin bên dưới', id: 4 }],
+    };
     const cssBg = `width: 100%;
             height: 230px;
             border-radius: 5px;
@@ -962,6 +969,7 @@ export default function LogicView(
         handleChangeText,
         handleVName,
         editDataText,
+        editDataTextOther,
         lg,
         cssBg,
         cssName,
@@ -979,5 +987,6 @@ export default function LogicView(
         dispatch,
         loads,
         setMore,
+        more,
     };
 }
