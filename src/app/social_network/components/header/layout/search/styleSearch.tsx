@@ -21,17 +21,21 @@ export const Input = styled.input`
     height: 100%;
 `;
 export const DivResults = styled.div`
-    width: 320px;
-    height: 611px;
+    width: 100%;
+    height: 100%;
     top: 45px;
-    left: -60px;
-    position: absolute;
+    left: 0px;
+    position: fixed;
     background: ${(props: { bg: string }) => props.bg};
     transition: var(--transition-03s);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     z-index: 9999;
-    @media (min-width: 430px) {
-        left: -5px;
+    @media (min-width: 360px) {
+        position: absolute;
+        width: 360px;
+        height: 610px;
+        top: 45px;
+        left: -81px;
     }
 `;

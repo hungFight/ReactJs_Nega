@@ -189,7 +189,10 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                                         onChange={handleResultSearchMore}
                                     />
                                 )}
-                                <Div css="cursor: pointer;" onClick={handleMore}>
+                                <Div
+                                    css="cursor: var(--pointer);font-size: 25px; margin-right: 10px;"
+                                    onClick={handleMore}
+                                >
                                     <DotI />
                                 </Div>
                             </Div>
@@ -212,7 +215,9 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                         <Div css="height: 91%; overflow: auto; ">
                             <Div width="100%" css="display: block;">
                                 {resultSearch.length > 0 ? (
-                                    resultSearch.map((re) => <Account key={re.id} data={re} location={location} />)
+                                    resultSearch.map((re) => (
+                                        <Account profile key={re.id} data={re} location={location} />
+                                    ))
                                 ) : (
                                     <P>{dataText.rec === 'Recently' ? 'No one of this name' : 'Không tìm thấy'}</P>
                                 )}

@@ -11,7 +11,7 @@ export const DivHeader = styled.div`
     position: fixed;
     top: 0;
     right: 0;
-    z-index: 3;
+    z-index: 999;
     box-shadow: 0 0 4px #676464;
     @media (min-width: 768px) {
         height: 50px;

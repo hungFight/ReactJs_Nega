@@ -79,6 +79,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [edit, setEdit] = useState<boolean>(true);
     const [hashTags, setHashTags] = useState<string[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
+    const [onTagU, setOnTagU] = useState<boolean>(false);
     const yes = edit && uploadPre.length;
     return (
         <>
@@ -191,7 +192,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 <DivItems
                                     borderB={displayFontText ? '1px solid white' : ''}
                                     color={colorText}
-                                    onClick={() => setDisplayFontText(!displayFontText)}
+                                    onClick={() => setOnTagU(!onTagU)}
                                 >
                                     <TagPostI />
                                 </DivItems>
@@ -209,7 +210,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {onTags && (
                                 <Hashtag setHashTags={setHashTags} hashTagsInitially={hashTags} setOnTags={setOnTags} />
                             )}
-                            <Tags />
+                            {onTagU && <Tags colorText={colorText} setOnTagU={setOnTagU} />}
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}

@@ -10,7 +10,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtils';
 import { InitialStateHideShow, setOpenProfile } from '~/redux/hideShow';
 
-const Tags: React.FC = () => {
+const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetStateAction<boolean>> }> = ({
+    colorText,
+    setOnTagU,
+}) => {
     const offsetRef = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
@@ -99,17 +102,19 @@ const Tags: React.FC = () => {
                         padding: 5px 4px;
                         font-size: 1.4rem;
                         display: flex;
-                        background-color: #3f3f3f;
                         align-items: center;
                         position: relative;
-                        color: white;
+                        color: ${colorText};
                     `}
                 >
-                    <HashI /> Hashtag
-                    <DivPos size="20px" top="5px" left="10px">
+                    tag
+                    <DivPos size="20px" top="5px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
                         <CloseI />
                     </DivPos>
                 </H3>
+                <Div width="80%" css="margin: auto;">
+                    <Input placeholder="Search" color={colorText} />
+                </Div>
                 <Div width="100%" wrap="wrap">
                     {data.map((r) => (
                         <Account
