@@ -57,7 +57,12 @@ import { PropsId_chats, PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 import { PropsReloadRD, setOnline } from '~/redux/reload';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-export const socket = io('http://localhost:3001', { transports: ['websocket'], ackTimeout: 10000 });
+export const socket = io('http://192.168.0.100:3001', {
+    path: '/socket.io',
+    host: '192.168.0.100',
+    transports: ['websocket'],
+    ackTimeout: 10000,
+});
 
 const Website: React.FC<{
     openProfile: string[];

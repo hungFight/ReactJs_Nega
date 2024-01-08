@@ -16,7 +16,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client
 import { setContext } from '@apollo/client/link/context';
 
 const client = new ApolloClient({
-    uri: 'http://localhost:3001/',
+    uri: process.env.REACT_APP_SPACESHIP,
     headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',

@@ -84,7 +84,7 @@ const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetSta
                     padding: 0 0 5px 0;
                     position: relative;
                     color: white;
-                    background-color: #1d1d1d;
+                    background-color: #2a2a2a;
                     @media (min-width: 400px) {
                         height: 100%;
                         border-radius: 5px;
@@ -94,26 +94,28 @@ const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetSta
                     e.stopPropagation();
                 }}
             >
-                <H3
-                    css={`
-                        width: 100%;
-                        box-shadow: 0px 0px 5px 0px black;
-                        justify-content: center;
-                        padding: 5px 4px;
-                        font-size: 1.4rem;
-                        display: flex;
-                        align-items: center;
-                        position: relative;
-                        color: ${colorText};
-                    `}
-                >
-                    tag
-                    <DivPos size="20px" top="5px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
-                        <CloseI />
-                    </DivPos>
-                </H3>
-                <Div width="80%" css="margin: auto;">
-                    <Input placeholder="Search" color={colorText} />
+                <Div width="100%" wrap="wrap" css="box-shadow: 0 0 3px #0d0d0d; margin-bottom: 5px">
+                    <H3
+                        css={`
+                            width: 100%;
+                            box-shadow: 0px 0px 5px 0px black;
+                            justify-content: center;
+                            padding: 5px 4px;
+                            font-size: 1.4rem;
+                            display: flex;
+                            align-items: center;
+                            position: relative;
+                            color: ${colorText};
+                        `}
+                    >
+                        tag
+                        <DivPos size="20px" top="5px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
+                            <CloseI />
+                        </DivPos>
+                    </H3>
+                    <Div width="80%" css="margin: auto;">
+                        <Input placeholder="Search" color={colorText} />
+                    </Div>
                 </Div>
                 <Div width="100%" wrap="wrap">
                     {data.map((r) => (
