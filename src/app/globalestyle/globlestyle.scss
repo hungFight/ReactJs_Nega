@@ -8,10 +8,10 @@
     --background-hover: #3c4043;
     --transition-03s: all 0.3s linear;
     --justify-content-start: start;
-    --pointer: pointer;
     --full: 100%;
     @media (min-width: 768px) {
-        --pointerM: pointer;
+        --pointerR: pointer;
+        --pointer: pointer;
     }
     #pickerB {
         --rgb-background: 26 27 30 !important;
@@ -25,6 +25,7 @@
 }
 html {
     font-size: 62.5%;
+    height: 100%;
     background: #292a2d;
 }
 body {
@@ -33,6 +34,7 @@ body {
     line-height: 1.5;
     text-rendering: optimizeSpeed;
     overflow-y: overlay;
+    height: 100%;
 }
 html *::-webkit-scrollbar {
     width: 0px;

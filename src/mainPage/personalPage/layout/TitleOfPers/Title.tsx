@@ -292,7 +292,7 @@ const Title: React.FC<{
                         css={`
                             align-items: center;
                             font-size: 20px;
-                            margin-bottom: 4px;
+                            margin-bottom: 8px;
                             position: relative;
                             ${editTitle ? 'cursor: var(--pointer);' : ''}
                             &:hover {
@@ -308,10 +308,10 @@ const Title: React.FC<{
                         <P css="font-size: 1.4rem; margin-top: 2.5px;">{mores[0].position}</P>
                         {editTitle && (
                             <DivPos
-                                top="-2px"
+                                top="0px"
                                 right="5px"
                                 size="19px"
-                                css="padding: 5px; &:hover{color: #f3f3f3;}"
+                                css="&:hover{color: #f3f3f3;} border-radius: 5px; box-shadow: 0 0 3px #838383; padding: 3px 10px;"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (acPrivate === 'position') {
@@ -323,38 +323,47 @@ const Title: React.FC<{
                             >
                                 <Div css="position: relative;">
                                     {acPrivate === 'position' && (
-                                        <Div css="position: absolute; right: 64px; top: -35px; flex-wrap: wrap; padding: 10px; border-radius: 5px; background-image: linear-gradient(45deg, #324b47, #000000eb); z-index: 1;">
-                                            <H3 css="font-size: 1.8rem; width: 100%; display: flex; align-items: center;">
+                                        <Div
+                                            width="120px"
+                                            css=" max-width: 300px; background-color: #0a3c54; position: absolute; right: 64px; top: -35px; flex-wrap: wrap; padding: 10px; border-radius: 5px; z-index: 1;"
+                                        >
+                                            <H3 css="justify-content: center; border-bottom: 1px solid; margin-bottom: 5px; padding: 0 0 5px;font-size: 1.8rem; width: 100%; display: flex; align-items: center;">
                                                 <AccountI />
                                                 <P z="1.4rem">Position</P>
                                             </H3>
                                             <P
                                                 z="1.3rem"
-                                                css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                                css="width: 100%; background-color: #2a2a2a; margin: 2px 0; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
                                                 onClick={() => setPrivacy({ ...privacy, position: 'only' })}
                                             >
                                                 Only me!
                                             </P>
                                             <P
                                                 z="1.3rem"
-                                                css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                                css="width: 100%; margin: 2px 0; background-color: #0a7ba7; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
                                                 onClick={() => setPrivacy({ ...privacy, position: 'friends' })}
                                             >
                                                 Friend
                                             </P>
                                             <P
                                                 z="1.3rem"
-                                                css="width: 100%; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
+                                                css="width: 100%; background-color: #138b6f; margin: 2px 0; text-align: center; padding: 3px 1px; &:hover{color: aliceblue;}"
                                                 onClick={() => setPrivacy({ ...privacy, position: 'everyone' })}
                                             >
                                                 Everyone
                                             </P>
+                                            <div style={{ position: 'relative' }}>
+                                                <Div
+                                                    width="33px"
+                                                    css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"
+                                                ></Div>
+                                            </div>
                                         </Div>
                                     )}
                                     <Div
                                         css={`
                                             &:hover {
-                                                color: #f3f3f3;
+                                                color: #3db972;
                                             }
                                             ${acPrivate === 'position' ? 'color: #3db972;' : ''}
                                         `}
@@ -823,7 +832,7 @@ const Title: React.FC<{
                             if (!loading && check) handleEdit();
                         }}
                     >
-                        Save
+                        {loading ? 'Saving...' : 'Save'}
                     </Button>
                 </Div>
             )}
