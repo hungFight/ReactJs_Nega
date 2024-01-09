@@ -10,13 +10,15 @@ export const StyleLanguage = styled.div`
 export const MenuLanguage = styled.div`
     width: 150px;
     display: flex;
+    padding: 10px 0;
     flex-wrap: wrap;
     position: absolute;
     padding: 5px;
-    right: -56px;
-    top: 26px;
+    box-shadow: 0 0 3px #333;
+    right: -4px;
+    top: 28px;
     cursor: pointer;
-    background-color: #535353;
+    background-color: #242323;
     border-radius: 5px;
     z-index: 1;
 `;
@@ -24,7 +26,7 @@ export const OptionLanguage = styled.button`
     width: 100%;
     background-color: transparent;
     color: white;
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
     &:hover {
         background-color: #787777;

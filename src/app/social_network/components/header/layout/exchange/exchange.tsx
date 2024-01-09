@@ -1,6 +1,12 @@
+import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+
 function personal() {
     return (
-        <div>
+        <Div
+            display="block"
+            css="    height: 100%;
+    overflow: overlay;"
+        >
             Personalpage<div>Personalpage</div>
             <div>Personalpage</div>
             <div>Personalpage</div>
@@ -31,7 +37,16 @@ function personal() {
             <div>Personalpage</div>
             <div>Personalpage</div>
             <div>Personalpage</div>
-        </div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+            <div>Personalpage</div>
+        </Div>
     );
 }
 

@@ -97,18 +97,44 @@ const EditP: React.FC<{
                     width="100%"
                     css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)"
                     onClick={() => {
-                        navigator.clipboard.writeText(`${process.env.REACT_APP_ROUTE}profile?id=${userId}`);
-                        AllArray.forEach((us) => {
-                            if (us.id === userId) {
-                                document
-                                    .getElementById(`profileCopyId=${userId}`)
-                                    ?.setAttribute('style', 'display: flex;');
-                            } else {
-                                document
-                                    .getElementById(`profileCopyId=${us.id}`)
-                                    ?.setAttribute('style', 'display: none;');
+                        const copyToClipboard = async (text: string) => {
+                            try {
+                                await navigator.clipboard.writeText(text);
+                                AllArray.forEach((us) => {
+                                    if (us.id === userId) {
+                                        document
+                                            .getElementById(`profileCopyId=${userId}`)
+                                            ?.setAttribute('style', 'display: flex;');
+                                    } else {
+                                        document
+                                            .getElementById(`profileCopyId=${us.id}`)
+                                            ?.setAttribute('style', 'display: none;');
+                                    }
+                                });
+                                console.log('Text copied to clipboard:', text);
+                            } catch (error) {
+                                console.error('Clipboard API not available. Falling back to execCommand.', error);
+                                const textarea = document.createElement('textarea');
+                                textarea.value = text;
+                                document.body.appendChild(textarea);
+                                textarea.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(textarea);
+                                AllArray.forEach((us) => {
+                                    if (us.id === userId) {
+                                        document
+                                            .getElementById(`profileCopyId=${userId}`)
+                                            ?.setAttribute('style', 'display: flex;');
+                                    } else {
+                                        document
+                                            .getElementById(`profileCopyId=${us.id}`)
+                                            ?.setAttribute('style', 'display: none;');
+                                    }
+                                });
+                                console.log('Text copied to clipboard (fallback):', text);
                             }
-                        });
+                        };
+                        copyToClipboard(`${process.env.REACT_APP_ROUTE}profile?id=${userId}`);
                     }}
                 >
                     <Div

@@ -91,6 +91,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
         password2: false,
         date: false,
     });
+    const [loading, setLoading] = useState<boolean>(false);
     const [accs, setAccs] = useState<number>(acc);
     useEffect(() => {
         if (isNaN(valuePhoneNumberEmail.value)) {
@@ -231,6 +232,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                     gender: valueGender,
                     date: valueDate,
                 };
+                setLoading(true);
                 const data = await authHttpRequest.postRegister(params);
                 if (data.status === 9999) dispatch(setTrueErrorServer(''));
                 if (data.check === 2) setRegisterStatus({ title: data.result, status: true });
@@ -242,6 +244,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                 } else if (data.check === 5) {
                     setRegisterStatus({ title: data.result, status: true });
                 }
+                setLoading(false);
             }
         } else if (
             valueUserName === '' &&
@@ -406,7 +409,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                         </DivFormGroup>
                     );
                 })}
-                <ButtonSubmit title={submit} />
+                <ButtonSubmit title={submit} loading={loading} />
                 <Pmessage color={registerStatus.status ? '#fa5f5f' : 'rgb(102 239 120)'}>
                     {registerStatus.title}
                 </Pmessage>

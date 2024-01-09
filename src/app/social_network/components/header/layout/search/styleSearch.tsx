@@ -31,6 +31,7 @@ export const DivResults = styled.div`
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     z-index: 9999;
+    box-shadow: 0 0 5px #0a0a0a;
     @media (min-width: 360px) {
         position: absolute;
         width: 360px;

@@ -667,10 +667,10 @@ export default function LogicView(
                   height: ${300 / (leng > 1 ? leng - 0.7 : leng) + 'px'};
             }
             @media (min-width: 1025px){
-                  height: ${400 / (leng > 1 ? leng - 0.7 : leng) + 'px'};
+                  height: ${320 / (leng > 1 ? leng - 0.7 : leng) + 'px'};
             };
             @media (min-width: 1201px){
-                  height: ${450 / (leng > 1 ? leng - 0.7 : leng) + 'px'};
+                  height: ${350 / (leng > 1 ? leng - 0.7 : leng) + 'px'};
             }
             @media (min-width: 1440px){
                 width: 99%;
@@ -698,7 +698,6 @@ export default function LogicView(
                 margin-bottom: 20px;
             }`;
     const css = `
-            margin: 0 3px;
             width: 100%;
             height: 100%;
             position: relative;

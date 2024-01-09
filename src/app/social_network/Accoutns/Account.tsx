@@ -62,7 +62,7 @@ const Account: React.FC<{
                     <Avatar src={data.avatar || ''} alt={data.fullName} gender={data.gender} />
                 </Div>
                 <Div css="padding:0 8px">
-                    <Hname css="font-family: 'GentiumPlusItalic', sans-serif; width: fit-content; display: flex; align-items: center; font-size: 1.5rem; font-weight: 100;">
+                    <Hname css="font-family: 'GentiumPlusItalic', sans-serif; width: fit-content; display: flex; align-items: center; font-size: 1.5rem; font-weight: 600;">
                         {data.fullName}
                     </Hname>
                 </Div>

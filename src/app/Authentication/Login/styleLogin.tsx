@@ -5,10 +5,10 @@ export const DivLanguage = styled.div`
     top: 22px;
 `;
 export const DivForm = styled.div`
-    width: 330px;
+    width: 100%;
     padding: 15px;
-    margin: auto;
     display: flex;
+    margin: auto;
     align-items: center;
     justify-content: center;
     text-align: center;

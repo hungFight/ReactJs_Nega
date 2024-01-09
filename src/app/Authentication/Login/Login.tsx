@@ -56,6 +56,7 @@ const Login: React.FC<{
         handlelanguage,
         setShowPass,
         dispatch,
+        loading,
     } = LogicLogin(data, setWhatKind, setUserFirst);
     return (
         <>
@@ -86,7 +87,7 @@ const Login: React.FC<{
                     </DivAccount>
                     {errText && <Perror> {errText}</Perror>}
                     <DivRegister onClick={handleRegister}>{register}</DivRegister>
-                    <ButtonSubmit title={submit} />
+                    <ButtonSubmit title={submit} loading={loading} />
                 </form>
             </DivForm>
         </>

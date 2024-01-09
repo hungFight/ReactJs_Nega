@@ -18,6 +18,7 @@ function LogicLogin(
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
 ) {
     const [, setCookies] = useCookies(['tks', 'k_user']);
+    const [loading, setLoading] = useState<boolean>(false);
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer?.language.login);
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [language, setLanguage] = useState<boolean>(false);
@@ -65,6 +66,7 @@ function LogicLogin(
                 nameAccount: value.nameAccount,
                 password: value.password,
             };
+            setLoading(true);
             const data = await authAPI.postLogin(params, setCookies);
             setUserFirst({
                 id: '',
@@ -78,6 +80,7 @@ function LogicLogin(
                 thirdPage: 'en',
                 active: true,
             });
+            setLoading(false);
             if (!data) setErrText('Account is not exist or password wrong!');
         }
     };
@@ -123,6 +126,7 @@ function LogicLogin(
         handlelanguage,
         setShowPass,
         dispatch,
+        loading,
     };
 }
 

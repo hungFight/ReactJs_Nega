@@ -7,7 +7,7 @@ import React, { Suspense, useEffect, useRef, useState } from 'react';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
-
+import { useNavigate } from 'react-router-dom';
 import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataText/dataLogin';
@@ -158,7 +158,7 @@ function App() {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
     const [_c, _set, _del] = useCookies(['tks', 'k_user']);
-
+    const history = useNavigate();
     const dispatch = useDispatch();
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
@@ -347,7 +347,7 @@ function App() {
             ListEl.current = eleDiv1s;
             expire(eleDiv1s);
         });
-    }, [openProfile]);
+    }, [openProfile, history]);
     const handleStopClearing = () => {
         // stop clearing the show message
         timeouts.current.forEach((t) => clearTimeout(t));
@@ -372,9 +372,9 @@ function App() {
     const leng = userData.length;
     const css = `
             position: absolute;
-            right: 0;
-            bottom: 0;
-            z-index: 11;
+            right: 0;top: 0px;
+            
+            z-index: 9991;
             overflow-y: overlay;
             &::-webkit-scrollbar {
                 width: 0px;
@@ -402,8 +402,8 @@ function App() {
                     css={`
                         justify-content: center;
                         position: relative;
-                        @media (min-width: 1536px) {
-                            width: 1536px;
+                        @media (min-width: 2000px) {
+                            width: 2000px;
                         }
                     `}
                 >
@@ -509,7 +509,7 @@ function App() {
                         {userData?.length > 0 && (
                             <DivContainer
                                 width="100%"
-                                height="100%"
+                                height="99%"
                                 css={css}
                                 bg={`${colorBg === 1 ? '#272727' : 'white'}`}
                                 content={leng === 1 ? 'center' : 'start'}
@@ -567,10 +567,10 @@ function App() {
                                 ))}
 
                                 <DivPos
-                                    position="fixed"
+                                    position="absolute"
                                     size="30px"
-                                    top="20px"
-                                    right="11px"
+                                    top="15px"
+                                    right="82px"
                                     color={colorText}
                                     onClick={handleClick}
                                 >

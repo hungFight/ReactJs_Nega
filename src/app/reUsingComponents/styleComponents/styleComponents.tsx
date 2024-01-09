@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { SwiperSlide } from 'swiper/react';
+import { LoadingI } from '~/assets/Icons/Icons';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
 export const Peye = styled.p<{ top: string; right?: string }>`
@@ -98,13 +99,22 @@ export const ButtonSubmit: React.FC<{
     title: string;
     bg?: string;
     css?: string;
+    loading?: boolean;
     submit?: boolean;
     onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}> = ({ title, bg, css, onClick, submit = true }) => {
+}> = ({ title, bg, css, onClick, submit = true, loading }) => {
     return (
         <>
             <Div bg={bg} css={css} onClick={onClick}>
-                <Button type={submit ? 'submit' : 'button'}>{title}</Button>
+                <Button type={submit ? 'submit' : 'button'}>
+                    {loading ? (
+                        <DivLoading>
+                            <LoadingI />
+                        </DivLoading>
+                    ) : (
+                        title
+                    )}
+                </Button>
             </Div>
         </>
     );

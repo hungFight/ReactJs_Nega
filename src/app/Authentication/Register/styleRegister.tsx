@@ -1,16 +1,16 @@
 import styled from 'styled-components';
 export const DivForm = styled.div`
-    width: 400px;
-    height: auto;
+    width: 100%;
     margin: auto;
+    height: auto;
     flex-wrap: wrap;
     padding: 10px;
     text-align: center;
     position: relative;
     box-shadow: 0 0 20px #0a0a0a;
     background-image: linear-gradient(324deg, #383838ed, #3cccbc47);
-    @media (max-width: 400px) {
-        max-width: 320px;
+    @media (min-width: 400px) {
+        width: 400px;
     }
 `;
 
