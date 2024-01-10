@@ -13,6 +13,7 @@ import ServerBusy from '~/utils/ServerBusy';
 import CryptoJS from 'crypto-js';
 import Languages from '~/reUsingComponents/languages';
 import { PropsReMessengerRD } from '~/redux/messenger';
+import { PropsUser } from 'src/App';
 export interface PropsDataMore {
     [en: string]: {
         options: {
@@ -43,7 +44,7 @@ export interface PropsDataMore {
         gender: number | undefined;
     };
 }
-const LogicMessenger = () => {
+const LogicMessenger = (dataUser: PropsUser) => {
     const dispatch = useDispatch();
     const { lg } = Languages();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
@@ -155,7 +156,7 @@ const LogicMessenger = () => {
             });
             setRoomNew(newD);
         });
-    }, []);
+    }, [dataUser.id]);
     useEffect(() => {
         if (roomNew) {
             const newR = rooms.filter((r) => r._id !== roomNew._id);

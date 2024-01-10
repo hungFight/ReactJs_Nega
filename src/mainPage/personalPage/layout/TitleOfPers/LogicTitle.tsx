@@ -1151,15 +1151,30 @@ const LogicTitle = (
     const handleLogin = async (id?: string, phoneOrEmail?: string, other?: string) => {
         const preId = data.id;
         if (other) {
+            // login to change account here
             if (id && phoneOrEmail && pass?.val) {
-                const res = await authAPI.subLogin(phoneOrEmail, pass.val, other, id); // account's id is logging in
+                const res: typeof data = await authAPI.subLogin(phoneOrEmail, pass.val, other, id); // account's id is logging in
                 if (res) {
-                    setUserFirst(res);
+                    res.avatar = CommonUtils.convertBase64(res.avatar);
+                    res.background = CommonUtils.convertBase64(res.background);
+                    setUserFirst({
+                        id: res.id,
+                        fullName: res.fullName,
+                        gender: res.gender,
+                        active: res.active,
+                        avatar: res.avatar,
+                        background: res.background,
+                        biography: res.biography,
+                        firstPage: res.firstPage,
+                        secondPage: res.secondPage,
+                        thirdPage: res.thirdPage,
+                    });
                     setUsersData((pre) => {
+                        // of personal
                         let checksF = false;
                         pre.forEach((us) => {
                             if (us.id === res.id) {
-                                checksF = true;
+                                checksF = true; //check is it existing?
                             }
                         });
                         if (!checksF) {
@@ -1170,7 +1185,7 @@ const LogicTitle = (
                                 return us;
                             });
                         } else {
-                            const newUs = pre.filter((us) => us.id !== data.id);
+                            const newUs = pre.filter((us) => us.id !== data.id); // remove
                             const newUsss = newUs.filter((us) => us.id !== res.id);
                             if (newUsss.length) {
                                 return newUsss.map((us) => {
@@ -1184,12 +1199,12 @@ const LogicTitle = (
                             }
                         }
                     });
+                } else {
+                    setError('false');
                 }
             }
         } else {
-            subAccountsData.forEach((us) => {
-                // if(us.account.id === id)
-            });
+            // add more here
             if (login.userName && login.password) {
                 const res: {
                     account: {
@@ -1203,19 +1218,16 @@ const LogicTitle = (
                 if (res?.account.avatar) {
                     res.account.avatar = CommonUtils.convertBase64(res.account.avatar);
                 }
-                console.log(res, 'sub');
-                if (res) setSubAccountsData([...(subAccountsData ?? []), res]);
-                if (!res) {
-                    setError(res);
-                } else {
+                if (res) {
+                    setSubAccountsData([...(subAccountsData ?? []), res]);
+                    setLogin({ userName: '', password: '' });
                     setError('ok');
+                } else {
+                    setError(null);
                 }
-                console.log(subAccountsData, 'login');
             }
         }
     };
-    console.log(subAccountsData, 'login');
-
     const handleDelSubAc = async (id: string, phoneOREmail: string) => {
         if (id && phoneOREmail) {
             const res = await userAPI.delSubAccount(id, phoneOREmail);

@@ -68,7 +68,7 @@ export interface PropsUserPer {
     birthday: string;
     background: any;
     biography: string;
-    active: string;
+    active: boolean;
     occupation: string;
     schoolName: string;
     skill: string[];

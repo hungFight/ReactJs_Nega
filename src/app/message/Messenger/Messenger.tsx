@@ -39,7 +39,7 @@ const Send: React.FC<{
         handleSearch,
         dataMore,
         lg,
-    } = LogicMessenger();
+    } = LogicMessenger(dataUser);
     const itemLg: { [en: string]: { seenBy: string; who: string }; vi: { seenBy: string; who: string } } = {
         en: {
             seenBy: 'saw',
