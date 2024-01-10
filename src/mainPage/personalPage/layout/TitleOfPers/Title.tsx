@@ -127,6 +127,8 @@ const Title: React.FC<{
         privacy,
         setPrivacy,
         whoCanSee,
+        viewMore,
+        setViewMore,
     } = LogicTitle(
         colorText,
         data,
@@ -140,7 +142,8 @@ const Title: React.FC<{
         level,
         userFirst,
     );
-    const [viewMore, setViewMore] = useState<boolean>(false); // view content
+    console.log(viewMore, 'viewMore');
+
     return (
         <DivTitleP onClick={() => setAcPrivate('')}>
             <Div
@@ -450,13 +453,16 @@ const Title: React.FC<{
                         css={`
                             align-items: center;
                             font-size: 18px;
+                            color: ${colorText};
                             margin-bottom: 4px;
                             position: relative;
-                            /* position: fixed; */
+                            @media (max-width: 400px) {
+                                position: fixed;
+                                background-color: #252525;
+                            }
                             top: 0;
                             left: 0;
                             z-index: 1;
-                            /* background-color: #252525; */
                             height: 100%;
                             ${editTitle ? 'cursor: var(--pointer);' : ''}
                             &:hover {
@@ -605,96 +611,115 @@ const Title: React.FC<{
                                                 css="margin: 0 3px; position: relative;"
                                             >
                                                 {subAccount && userFirst.id === data.id ? ( // is your
-                                                    <Div
-                                                        wrap="wrap"
-                                                        css=" justify-content: center; background-color: #4c5260;  border-radius: 5px; text-align: center; padding: 5px;"
-                                                    >
-                                                        <Div css="align-items: center;">
-                                                            <Div
-                                                                width="38px"
-                                                                css="height: 38px; margin: 4px 5px; cursor: var(--pointer);"
-                                                                onClick={() => {
-                                                                    if (userFirst.id === data.id) setSubAccount(true);
-                                                                }}
-                                                            >
-                                                                <Avatar
-                                                                    id={sub.id}
-                                                                    src={sub.avatar}
-                                                                    alt={sub.fullName}
-                                                                    currentId={data.id} // just be used here when find more 2 personal pages, by the current page id
-                                                                    gender={sub.gender}
-                                                                    radius="50%"
-                                                                />
-                                                            </Div>
-                                                            <P z="1.3rem" css="width: max-content;">
-                                                                {sub.fullName}
-                                                            </P>
-                                                        </Div>
-                                                        <Div // ----
-                                                            width="100%"
-                                                            css="height: 1px; background-color: #c7c7c7;"
-                                                        ></Div>
-
-                                                        {pass?.id === sub.id ? ( // insert value to login
-                                                            <Div width="100%" wrap="wrap" css="align-items: center;">
-                                                                <Div css="align-items: center">
-                                                                    <Input
-                                                                        type="text"
-                                                                        placeholder="password"
-                                                                        padding="8px"
-                                                                        width="224px"
-                                                                        value={pass.val}
-                                                                        color={colorText}
-                                                                        onChange={(e) =>
-                                                                            setPass({ ...pass, val: e.target.value })
-                                                                        }
-                                                                    />
-
-                                                                    <ButtonSubmit
-                                                                        title="Login"
-                                                                        css="width: 50px; margin: 0;"
-                                                                        onClick={() =>
-                                                                            handleLogin(
-                                                                                sub.id,
-                                                                                sub.phoneNumberEmail,
-                                                                                'other',
-                                                                            )
-                                                                        }
+                                                    <>
+                                                        <DivPos
+                                                            top="5px"
+                                                            right="3px"
+                                                            size="25px"
+                                                            css=" padding: 0 3px;height: fit-content; background-color: #292929; border-radius: 5px;"
+                                                            onClick={() => setSubAccount(false)}
+                                                        >
+                                                            <BackI />
+                                                        </DivPos>
+                                                        <Div
+                                                            wrap="wrap"
+                                                            css=" justify-content: center; background-color: #4c5260;  border-radius: 5px; text-align: center; padding: 5px;"
+                                                        >
+                                                            <Div css="align-items: center;">
+                                                                <Div
+                                                                    width="38px"
+                                                                    css="height: 38px; margin: 4px 5px; cursor: var(--pointer);"
+                                                                    onClick={() => {
+                                                                        if (userFirst.id === data.id)
+                                                                            setSubAccount(true);
+                                                                    }}
+                                                                >
+                                                                    <Avatar
+                                                                        id={sub.id}
+                                                                        src={sub.avatar}
+                                                                        alt={sub.fullName}
+                                                                        currentId={data.id} // just be used here when find more 2 personal pages, by the current page id
+                                                                        gender={sub.gender}
+                                                                        radius="50%"
                                                                     />
                                                                 </Div>
-                                                                {error === 'false' && (
-                                                                    <P z="1.2rem" color="#c17474">
-                                                                        Account's name or password are wrong!
-                                                                    </P>
-                                                                )}
+                                                                <P z="1.3rem" css="width: max-content;">
+                                                                    {sub.fullName}
+                                                                </P>
                                                             </Div>
-                                                        ) : (
-                                                            // show button login
-                                                            <P
+                                                            <Div // ----
+                                                                width="100%"
+                                                                css="height: 1px; background-color: #c7c7c7;"
+                                                            ></Div>
+
+                                                            {pass?.id === sub.id ? ( // insert value to login
+                                                                <Div
+                                                                    width="100%"
+                                                                    wrap="wrap"
+                                                                    css="align-items: center;"
+                                                                >
+                                                                    <Div css="align-items: center">
+                                                                        <Input
+                                                                            type="text"
+                                                                            placeholder="password"
+                                                                            padding="8px"
+                                                                            width="224px"
+                                                                            value={pass.val}
+                                                                            color={colorText}
+                                                                            onChange={(e) =>
+                                                                                setPass({
+                                                                                    ...pass,
+                                                                                    val: e.target.value,
+                                                                                })
+                                                                            }
+                                                                        />
+
+                                                                        <ButtonSubmit
+                                                                            title="Login"
+                                                                            css="width: 50px; margin: 0;"
+                                                                            onClick={() =>
+                                                                                handleLogin(
+                                                                                    sub.id,
+                                                                                    sub.phoneNumberEmail,
+                                                                                    'other',
+                                                                                )
+                                                                            }
+                                                                        />
+                                                                    </Div>
+                                                                    {error === 'false' && (
+                                                                        <P z="1.2rem" color="#c17474">
+                                                                            Account's name or password are wrong!
+                                                                        </P>
+                                                                    )}
+                                                                </Div>
+                                                            ) : (
+                                                                // show button login
+                                                                <P
+                                                                    z="1.3rem"
+                                                                    css=" cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #0074bc; border-radius: 5px; margin-top: 10px; margin-right: 10px; padding: 4px 10px;"
+                                                                    onClick={() =>
+                                                                        setPass({ id: sub.id, kind: 'login', val: '' })
+                                                                    }
+                                                                >
+                                                                    Login
+                                                                </P>
+                                                            )}
+                                                            <P //View Profile
                                                                 z="1.3rem"
-                                                                css="width: 100%; cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #0074bc; border-radius: 5px; margin-top: 10px; padding: 4px;"
+                                                                css="width: max-content; cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #8c45c3; border-radius: 5px; margin-top: 10px; padding: 5px;"
                                                                 onClick={() =>
-                                                                    setPass({ id: sub.id, kind: 'login', val: '' })
+                                                                    dispatch(
+                                                                        setOpenProfile({
+                                                                            newProfile: [sub.id],
+                                                                            currentId: userFirst.id,
+                                                                        }),
+                                                                    )
                                                                 }
                                                             >
-                                                                Login
+                                                                View Profile
                                                             </P>
-                                                        )}
-                                                        <P //View Profile
-                                                            z="1.3rem"
-                                                            css="width: max-content; cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #8c45c3; border-radius: 5px; margin-top: 10px; padding: 5px;"
-                                                            onClick={() =>
-                                                                dispatch(
-                                                                    setOpenProfile({
-                                                                        newProfile: [sub.id],
-                                                                        currentId: userFirst.id,
-                                                                    }),
-                                                                )
-                                                            }
-                                                        >
-                                                            View Profile
-                                                        </P>
-                                                    </Div>
+                                                        </Div>
+                                                    </>
                                                 ) : (
                                                     // others
                                                     <Div
@@ -722,14 +747,6 @@ const Title: React.FC<{
                                     })
                                 ) : (
                                     <P z="1.4rem">SubAccount</P>
-                                )}
-                                {subAccount && userFirst.id === data.id && (
-                                    <Div
-                                        css="cursor: var(--pointer); font-size: 25px; padding: 0 3px;height: fit-content; background-color: #4c5260; border-radius: 5px;"
-                                        onClick={() => setSubAccount(false)}
-                                    >
-                                        <BackI />
-                                    </Div>
                                 )}
                             </Div>
                         )}
@@ -783,7 +800,7 @@ const Title: React.FC<{
                                     <Div
                                         css={`
                                             &:hover {
-                                                color: #f3f3f3;
+                                                color: ${colorText};
                                             }
                                             ${acPrivate === 'subAccount' ? 'color: #3db972;' : ''}
                                         `}
@@ -802,25 +819,16 @@ const Title: React.FC<{
                     </Div>
                 )}
             </Div>
-            {viewMore ? (
-                <Div
-                    width="100%"
-                    css="@media(min-width:500px){display: none}justify-content: center; margin-top: 10px;"
-                >
-                    <P z="1.3rem" color={colorText} css="padding: 3px;" onClick={() => setViewMore(false)}>
-                        __An but__
-                    </P>
-                </Div>
-            ) : (
-                <Div
-                    width="100%"
-                    css="@media(min-width:500px){display: none}justify-content: center; margin-top: 10px;"
-                >
-                    <P z="1.3rem" color={colorText} css="padding: 3px;" onClick={() => setViewMore(true)}>
-                        __Xem them__
-                    </P>
-                </Div>
-            )}
+
+            <Div
+                width="100%"
+                onClick={() => setViewMore(!viewMore)}
+                css="@media(min-width:500px){display: none}justify-content: center; margin-top: 10px;"
+            >
+                <P z="1.3rem" color={colorText} css="padding: 3px;">
+                    {viewMore ? 'Ẩn bớt' : 'Xem thêm'}
+                </P>
+            </Div>
             {editTitle && (
                 <Div width="100%" css="justify-content: right;">
                     <Button

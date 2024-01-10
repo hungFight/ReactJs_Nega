@@ -86,6 +86,8 @@ const LogicTitle = (
     const [subAccount, setSubAccount] = useState<boolean>(false);
     const [pass, setPass] = useState<{ id: string; kind: string; val: string }>();
     const { userId } = Cookies();
+    const [viewMore, setViewMore] = useState<boolean>(false); // view content
+
     const itemsT: { icon: React.ReactElement; key: number; qt: number; css?: string | undefined; color: string }[] = [
         { icon: <StarI />, key: 1, qt: mores[0].star, color: '#b6b836' },
         {
@@ -1277,6 +1279,8 @@ const LogicTitle = (
         privacy,
         setPrivacy,
         whoCanSee,
+        viewMore,
+        setViewMore,
     };
 };
 export default LogicTitle;
