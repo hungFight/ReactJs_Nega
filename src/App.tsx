@@ -158,7 +158,6 @@ function App() {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
     const [_c, _set, _del] = useCookies(['tks', 'k_user']);
-    const history = useNavigate();
     const dispatch = useDispatch();
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
@@ -166,7 +165,10 @@ function App() {
     const { chats, balloon, established } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
     const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
-    const { userOnline, session, delIds } = useSelector((state: PropsReloadRD) => state.reload);
+    const { session } = useSelector((state: PropsReloadRD) => state.reload);
+    const userOnline = useSelector(
+        (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
+    );
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
 
     const [userFirst, setUserFirst] = useState<PropsUser>({
@@ -263,42 +265,24 @@ function App() {
     }
     useEffect(() => {
         const search = async () => {
-            const search = window.location.search;
-            if (search && openProfile.newProfile.length === 0) {
-                console.log('2222');
-
-                const ids = search.split('id=');
-                if (ids.length < 5 && ids.length > 0) {
-                    const datas = await fetch(ids);
-                    console.log('personal', ids, datas);
-                    if (datas) setUsersData(datas);
-                }
-            } else {
-                if (openProfile.newProfile.length === 1) {
-                    const data = await fetch(openProfile.newProfile);
-                    if (data)
-                        if (userData.length) {
-                            let check = false;
-                            userData.forEach((da) => {
-                                if (da.id === userId) check = true;
-                            });
-                            if (!check) {
-                                console.log('voos', data, userData);
-
-                                setUsersData((pre) => [data[0], ...pre]);
-                            } else {
-                                const newD = userData.filter((us) => us.id !== data[0].id);
-                                console.log(newD, 'newD', data);
-
-                                const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
-                                console.log(r, 'rrrss');
-                                setUsersData([...r]);
-                                console.log(userData, 'uuu');
-                            }
+            if (openProfile.newProfile.length === 1) {
+                const data = await fetch(openProfile.newProfile);
+                if (data)
+                    if (userData.length) {
+                        let check = false;
+                        userData.forEach((da) => {
+                            if (da.id === userId) check = true;
+                        });
+                        if (!check) {
+                            setUsersData((pre) => [data[0], ...pre]);
                         } else {
-                            setUsersData(data);
+                            const newD = userData.filter((us) => us.id !== data[0].id);
+                            const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
+                            setUsersData([...r]);
                         }
-                }
+                    } else {
+                        setUsersData(data);
+                    }
             }
         };
         if (userId && token && !handleCheck.current) search();
@@ -347,7 +331,7 @@ function App() {
             ListEl.current = eleDiv1s;
             expire(eleDiv1s);
         });
-    }, [openProfile, history]);
+    }, [openProfile]);
     const handleStopClearing = () => {
         // stop clearing the show message
         timeouts.current.forEach((t) => clearTimeout(t));
@@ -373,8 +357,7 @@ function App() {
     const css = `
             position: absolute;
             right: 0;top: 0px;
-            
-            z-index: 9991;
+            z-index: 999;
             overflow-y: overlay;
             &::-webkit-scrollbar {
                 width: 0px;
@@ -400,6 +383,10 @@ function App() {
                 <Div
                     width="100%"
                     css={`
+                        color: ${colorText};
+                        input {
+                            color: ${colorText};
+                        }
                         justify-content: center;
                         position: relative;
                         @media (min-width: 2000px) {
@@ -432,7 +419,7 @@ function App() {
                             wrap="wrap"
                             ref={showChat}
                             css={`
-                                position: absolute;
+                                position: fixed;
                                 top: 57px;
                                 right: 50px;
                                 z-index: 9999;
@@ -570,7 +557,7 @@ function App() {
                                     position="absolute"
                                     size="30px"
                                     top="15px"
-                                    right="82px"
+                                    right="15px"
                                     color={colorText}
                                     onClick={handleClick}
                                 >

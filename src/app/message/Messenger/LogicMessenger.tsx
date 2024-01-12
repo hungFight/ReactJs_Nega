@@ -224,8 +224,6 @@ const LogicMessenger = (dataUser: PropsUser) => {
             | undefined = ServerBusy(res, dispatch);
 
         if (data) {
-            console.log('into delete');
-
             dispatch(setDelIds(data));
             idDeleted.current.push(moreBar.id_room);
             setRooms((pre) => pre.filter((r) => r._id !== moreBar.id_room));
@@ -233,7 +231,6 @@ const LogicMessenger = (dataUser: PropsUser) => {
         setLoadDel(false);
     };
     const handleUndo = async () => {
-        console.log('Undo');
         setLoadDel(true);
         const res = await sendChatAPi.undo(moreBar.id_room);
         const data = ServerBusy(res, dispatch);
@@ -366,6 +363,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
         };
         dataMore[lg].options.push(undo[lg]);
     }
+    console.log('in a chat');
 
     return {
         userId,

@@ -33,7 +33,6 @@ import { useCookies } from 'react-cookie';
 import ServerBusy from '~/utils/ServerBusy';
 
 const LogicTitle = (
-    colorText: string,
     data: PropsUserPer,
     resTitle: {
         star: number;
@@ -507,7 +506,6 @@ const LogicTitle = (
                                         type="text"
                                         width="100%"
                                         placeholder={res || placeholder}
-                                        color={colorText}
                                         value={ObjectRender[key].val ?? ''}
                                         onChange={(e) => {
                                             if (e.target.value.length <= length) {
@@ -594,6 +592,7 @@ const LogicTitle = (
                             border-radius: 5px;
                             box-shadow: 0 0 3px #838383;
                             padding: 3px 10px;
+                            z-index: 3;
                             ${acPrivate === key ? 'box-shadow: 0 0 3px #0b78ac;' : ''}
                         `}
                         onClick={(e) => {
@@ -894,7 +893,6 @@ const LogicTitle = (
                                 className={'resetKeyss:' + key}
                                 width="75%"
                                 placeholder={placeholder}
-                                color={colorText}
                                 value={ArrayRender[key].subVal}
                                 onChange={(e) => {
                                     setArrayRender({
@@ -908,7 +906,7 @@ const LogicTitle = (
                             />
                             <ButtonSubmit
                                 title="Apply"
-                                css="margin: 0; width: 20%;"
+                                css="margin: 0; width: 20%; button{ background: #135d66;}"
                                 onClick={() => {
                                     if (
                                         !ArrayRender[key].val.some((s) => s === ArrayRender[key].subVal) &&
@@ -926,10 +924,13 @@ const LogicTitle = (
                                 }}
                             />
                             <ButtonSubmit
-                                title="That's all"
+                                title="That's all "
                                 css={`
                                     margin: 0;
                                     width: 20%;
+                                    button {
+                                        background: #914142;
+                                    }
                                 `}
                                 onClick={() => {
                                     if (
@@ -956,27 +957,20 @@ const LogicTitle = (
                                 <Span
                                     key={va}
                                     css="display: flex; border-radius: 30px; padding: 5px 9px; position: relative; background-image: linear-gradient(45deg, #39614ccc, #393162de); margin: 3px 2px; margin-right: 10px; color: #f0f0f0;"
+                                    onClick={() => {
+                                        console.log(va, ArrayRender[key].val);
+                                        const d = ArrayRender[key].val.filter((v) => v !== va);
+
+                                        setArrayRender({
+                                            ...ArrayRender,
+                                            [key]: {
+                                                ...ArrayRender[key],
+                                                val: d,
+                                            },
+                                        });
+                                    }}
                                 >
                                     {va}
-                                    <DivPos
-                                        size="20px"
-                                        top="-5px"
-                                        right="-13px"
-                                        onClick={() => {
-                                            console.log(va, ArrayRender[key].val);
-                                            const d = ArrayRender[key].val.filter((v) => v !== va);
-
-                                            setArrayRender({
-                                                ...ArrayRender,
-                                                [key]: {
-                                                    ...ArrayRender[key],
-                                                    val: d,
-                                                },
-                                            });
-                                        }}
-                                    >
-                                        <CloseI />
-                                    </DivPos>
                                 </Span>
                             ))}
                         </Div>
@@ -1004,7 +998,13 @@ const LogicTitle = (
                         top="0px"
                         right="5px"
                         size="19px"
-                        css="border-radius: 5px; box-shadow: 0 0 3px #838383; padding: 3px 10px; &:hover{color: #f3f3f3;}"
+                        css={`
+                            border-radius: 5px;
+                            box-shadow: 0 0 3px #838383;
+                            z-index: 3;
+                            padding: 3px 10px;
+                            ${acPrivate === key ? 'box-shadow: 0 0 3px #0b78ac;' : ''}
+                        `}
                         onClick={(e) => {
                             e.stopPropagation();
                             if (acPrivate === key) {
@@ -1152,6 +1152,7 @@ const LogicTitle = (
     };
     const handleLogin = async (id?: string, phoneOrEmail?: string, other?: string) => {
         const preId = data.id;
+        setError(undefined);
         if (other) {
             // login to change account here
             if (id && phoneOrEmail && pass?.val) {

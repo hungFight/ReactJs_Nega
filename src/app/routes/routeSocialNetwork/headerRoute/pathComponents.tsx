@@ -1,28 +1,31 @@
-import { Home, Exchange, CallVideo, MakingFriends } from '~/social_network/components/Header/importLayoutComponents';
+import {
+    Home,
+    Exchange,
+    CallVideo,
+    MakingFriends,
+    PersonalPage,
+} from '~/social_network/components/Header/importLayoutComponents';
 interface Routes {
     home: string;
     exchange: string;
     callVideo: string;
     people: string;
-    homeSlug: string;
-    exchangeSlug: string;
-    callVideoSlug: string;
+    profile: string;
 }
 
 const routes: Routes = {
-    home: '/sn/',
-    exchange: '/sn/exchange',
-    callVideo: '/sn/callVideo',
-    people: '/sn/people',
-    homeSlug: '/sn/:slug',
-    exchangeSlug: '/sn/exchange/:slug',
-    callVideoSlug: '/sn/callVideo/:slug',
+    home: '/social/',
+    exchange: '/social/exchange',
+    callVideo: '/social/callVideo',
+    people: '/social/people',
+    profile: '/social/profile/:slug',
 };
 const components = {
     Home,
     Exchange,
     CallVideo,
     MakingFriends,
+    PersonalPage,
 };
 
 export { routes, components };

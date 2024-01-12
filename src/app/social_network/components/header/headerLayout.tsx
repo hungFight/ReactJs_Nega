@@ -32,7 +32,7 @@ import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
 import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
-import { PropsId_chats } from 'src/App';
+import { PropsId_chats, PropsUser } from 'src/App';
 
 //button
 // to = Link tag, href = a tag
@@ -55,9 +55,10 @@ export interface PropsSN {
 }
 const Header: React.FC<{
     dataText: PropsSN;
-    dataUser: { avatar: string; fullName: string; gender: number };
+    dataUser: PropsUser;
+    setDataUser: React.Dispatch<React.SetStateAction<PropsUser>>;
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
-}> = ({ dataText, dataUser, setId_chats }) => {
+}> = ({ dataText, dataUser, setId_chats, setDataUser }) => {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['k_user', 'tks']);
     const cRef = useRef<number>(0);
@@ -77,11 +78,11 @@ const Header: React.FC<{
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [border, setBorder] = useState<string>(() => {
         const location = window.location.pathname;
-        return ['/SN/', '/SN', '/sn/', '/sn'].includes(location)
+        return ['/social/', '/social'].includes(location)
             ? 'home'
-            : ['/SN/exchange', '/SN/exchange/', '/sn/exchange', '/sn/exchange/'].includes(location)
+            : ['/social/exchange', '/social/exchange/'].includes(location)
             ? 'exch'
-            : ['/SN/callVideo', '/SN/callVideo/', '/sn/callVideo', '/sn/callVideo/'].includes(location)
+            : ['/social/callVideo', '/social/callVideo/'].includes(location)
             ? 'link'
             : 'people';
     });
@@ -206,7 +207,7 @@ const Header: React.FC<{
                             id="home"
                             colorBg={colorBg}
                             Tags={LinkHome}
-                            to="/sn/"
+                            to="/social/"
                             children={<HomeI />}
                             title={home.title}
                             size="20px"
@@ -218,28 +219,18 @@ const Header: React.FC<{
                             colorBg={colorBg}
                             color={colorText}
                             Tags={LinkExchange}
-                            to="/sn/exchange"
+                            to="/social/exchange"
                             title={exchange}
                             children={<ExchangeI />}
                             size="17px"
                             onClick={() => setBorder('exch')}
                         />
-                        <Hovertitle
-                            id="link"
-                            colorBg={colorBg}
-                            Tags={LinkCall}
-                            to="/sn/callVideo"
-                            children={<CameraI />}
-                            title={video}
-                            size="20px"
-                            color={colorText}
-                            onClick={() => setBorder('link')}
-                        />
+
                         <Hovertitle
                             id="people"
                             colorBg={colorBg}
                             Tags={LinkHome}
-                            to="/sn/people"
+                            to="/social/people"
                             children={<FriendI />}
                             title={friends.title}
                             size="20px"
@@ -253,6 +244,17 @@ const Header: React.FC<{
                                 cRef.current = 0;
                                 dispatch(setPeople(Math.random()));
                             }}
+                        />
+                        <Hovertitle
+                            id="link"
+                            colorBg={colorBg}
+                            Tags={LinkCall}
+                            to="/sn/profile"
+                            children={<CameraI />}
+                            title={video}
+                            size="20px"
+                            color={colorText}
+                            onClick={() => setBorder('link')}
                         />
                         <Div
                             width="40px"
@@ -332,6 +334,7 @@ const Header: React.FC<{
                                 dataUser={dataUser}
                                 colorBg={colorBg}
                                 colorText={colorText}
+                                setDataUser={setDataUser}
                                 setId_chats={setId_chats}
                             />
                         }

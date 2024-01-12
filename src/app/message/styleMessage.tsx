@@ -30,5 +30,5 @@ export const DivMs = styled.div<PropsDivMs>`
     justify-content: space-evenly;
     padding: 10px;
     flex-direction: column-reverse;
-    z-index: 88;
+    z-index: 1000;
 `;

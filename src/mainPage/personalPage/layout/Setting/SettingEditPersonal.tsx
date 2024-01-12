@@ -8,7 +8,7 @@ const EditP: React.FC<{
     editP: { name: string; id: number; icon?: { id: number; name: string }[] }[];
     onClick: (e?: any, id?: number) => void;
     onText: (id: number) => Promise<void>;
-    colorText: string;
+    colorText?: string;
     setEditTitle: React.Dispatch<React.SetStateAction<boolean>>;
     editTitle: boolean;
     AllArray: PropsUserPer[];

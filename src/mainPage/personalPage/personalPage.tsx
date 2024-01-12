@@ -21,7 +21,7 @@ interface PropsPer {
     user: PropsUserPer;
     leng: number;
     index: number;
-    colorText: string;
+    colorText?: string;
     colorBg: number;
     online: string[];
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
@@ -92,7 +92,7 @@ const PersonalPage: React.FC<PropsPer> = ({
         loads,
         setMore,
         more,
-    } = LogicView(user, userFirst, setUserFirst, leng, colorText, online, setId_chats, setUsersData, index, AllArray);
+    } = LogicView(user, userFirst, setUserFirst, leng, online, setId_chats, setUsersData, index, AllArray);
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
         return (
             <Div width="196px" wrap="wrap" css="position: relative; @media(min-width: 600px){width: 250px}">
@@ -140,7 +140,6 @@ const PersonalPage: React.FC<PropsPer> = ({
                     right="12px"
                     css="z-index: 1;"
                     index={8888}
-                    color={colorText}
                     onClick={() => setRoom({ avatar: false, background: false })}
                 >
                     <UndoI />
@@ -148,7 +147,7 @@ const PersonalPage: React.FC<PropsPer> = ({
             )}
 
             {AllArray.length > 1 && (
-                <DivPos size="30px" top="20px" right="11px" color={colorText} onClick={handleUndo} css="z-index: 1;">
+                <DivPos size="30px" top="20px" right="11px" onClick={handleUndo} css="z-index: 1;">
                     <UndoI />
                 </DivPos>
             )}

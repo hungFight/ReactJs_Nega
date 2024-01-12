@@ -5,7 +5,7 @@ import { InitialStateHideShow } from '~/redux/hideShow';
 import { PropsSetting } from '~/reUsingComponents/Setting/interface';
 import Header, { PropsSN } from './components/Header/HeaderLayout';
 import Settingcbl from '~/reUsingComponents/Setting/Setting';
-import { PropsId_chats } from 'src/App';
+import { PropsId_chats, PropsUser } from 'src/App';
 import { memo } from 'react';
 
 const settingData = [
@@ -45,9 +45,10 @@ const Socialnetwork: React.FC<{
         [vi: string]: InNetWork;
         en: InNetWork;
     };
-    dataUser: { avatar: string; fullName: string; gender: number };
+    setDataUser: React.Dispatch<React.SetStateAction<PropsUser>>;
+    dataUser: PropsUser;
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
-}> = ({ data, dataUser, setId_chats }) => {
+}> = ({ data, dataUser, setId_chats, setDataUser }) => {
     const lg = useSelector((state: PropsLanguage) => state.persistedReducer.language.sn);
     const { header, sett } = data[lg];
 
@@ -68,6 +69,7 @@ const Socialnetwork: React.FC<{
                     location: header.location,
                 }}
                 dataUser={dataUser}
+                setDataUser={setDataUser}
                 setId_chats={setId_chats}
             />
             <Settingcbl dataO={sett.data} LgNow={lg} turnSetting={turnSetting} />

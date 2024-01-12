@@ -8,6 +8,7 @@ import messenger from './messenger';
 import roomsChat from './roomsChat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import userOnlineRD from './userOnlineRD';
 const persistConfig = {
     key: 'root',
     version: 1,
@@ -21,7 +22,7 @@ const rootReducer = combineReducers({
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
-    reducer: { persistedReducer, hideShow, home, reload, messenger },
+    reducer: { persistedReducer, hideShow, home, reload, messenger, userOnlineRD },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {

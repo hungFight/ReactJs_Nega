@@ -3,7 +3,6 @@ import { PropsRoomChat } from '~/restAPI/chatAPI';
 
 type PropsReLoad = {
     people: number;
-    userOnline: string[];
     session: string;
     delIds:
         | {
@@ -20,10 +19,9 @@ export interface PropsReloadRD {
     reload: PropsReLoad;
 }
 const initialState: PropsReLoad = {
-    people: 0,
-    userOnline: [],
-    session: '',
-    delIds: undefined,
+    people: 0, // reload page people
+    session: '', // display server error
+    delIds: undefined, // delete in chat
 };
 const reloadPage = createSlice({
     name: 'reload',
@@ -32,11 +30,6 @@ const reloadPage = createSlice({
         setPeople: (state, action) => {
             state.people = action.payload;
         },
-
-        setOnline: (state, action) => {
-            state.userOnline = action.payload;
-        },
-
         setSession: (state, action: { payload: string }) => {
             state.session = action.payload;
         },
@@ -55,11 +48,9 @@ const reloadPage = createSlice({
                     | undefined;
             },
         ) => {
-            console.log(action.payload, 'action.payload');
-
             state.delIds = action.payload;
         },
     },
 });
-export const { setPeople, setOnline, setSession, setDelIds } = reloadPage.actions;
+export const { setPeople, setSession, setDelIds } = reloadPage.actions;
 export default reloadPage.reducer;

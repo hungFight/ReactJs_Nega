@@ -11,34 +11,29 @@ import { Alogo } from '~/social_network/components/Header/styleHeader';
 import { A, Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 interface Props {
     handleNextStart: () => void;
-    hanNextWebsite1: () => void;
-    hanNextWebsite2: () => void;
-    hanNextWebsite3: () => void;
+    hanNextWebsite: (index: number) => void;
     colorBg?: number;
     colorText?: string;
 }
 
-const ListWebBar: React.FC<Props> = ({
-    handleNextStart,
-    hanNextWebsite1,
-    hanNextWebsite2,
-    hanNextWebsite3,
-    colorBg,
-    colorText,
-}) => {
+const ListWebBar: React.FC<Props> = ({ handleNextStart, hanNextWebsite, colorBg, colorText }) => {
     const [showNextWebsite, setShowNextWebsite] = useState<boolean>(false);
     const handleshowNextBar = () => {
         setShowNextWebsite(!showNextWebsite);
     };
     const listOptions = [
         { id: 0, part: '/', icon: <HomeI />, onClick: handleNextStart },
-        { id: 1, part: '/SN', icon: <NewI />, onClick: hanNextWebsite1 },
-        { id: 2, part: '/SD', icon: <BookI />, onClick: hanNextWebsite2 },
-        { id: 3, part: '/W', icon: <WorkI />, onClick: hanNextWebsite3 },
+        { id: 1, part: '/social', icon: <NewI />, onClick: hanNextWebsite, page: 1 },
+        { id: 2, part: '/SD', icon: <BookI />, onClick: hanNextWebsite, page: 2 },
+        { id: 3, part: '/W', icon: <WorkI />, onClick: hanNextWebsite, page: 3 },
     ];
     const elements = () => {
         return listOptions.map((res) => (
-            <ButtonLink key={res.id} to={res.part} onClick={res.onClick}>
+            <ButtonLink
+                key={res.id}
+                to={res.part}
+                onClick={() => (res.page ? res.onClick(res.page) : handleNextStart())}
+            >
                 <div className={clsx(styles.website)}>{res.icon}</div>
             </ButtonLink>
         ));

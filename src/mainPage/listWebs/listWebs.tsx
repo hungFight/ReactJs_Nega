@@ -14,9 +14,10 @@ export interface PropsListWeb {
             never
         >;
         link: string;
-        next: () => void;
+        next: (index: number) => void;
         name: string;
         icon: JSX.Element;
+        page: number;
     }[];
 }
 const NextListWeb: React.FC<PropsListWeb> = ({ data }) => {
@@ -27,7 +28,12 @@ const NextListWeb: React.FC<PropsListWeb> = ({ data }) => {
         <>
             {data.map((V) => {
                 return (
-                    <V.Tag key={V.name} to={V.link} onClick={V.next} color={colorBg === 1 ? '#202124f5' : ''}>
+                    <V.Tag
+                        key={V.name}
+                        to={V.link}
+                        onClick={() => V.next(V.page)}
+                        color={colorBg === 1 ? '#202124f5' : ''}
+                    >
                         <DivPage>{V.icon}</DivPage>
                         <Ptitle>{V.name}</Ptitle>
                     </V.Tag>

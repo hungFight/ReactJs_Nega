@@ -9,12 +9,11 @@ import { GiBurningBook } from 'react-icons/gi';
 import { useCookies } from 'react-cookie';
 
 const UserBar: React.FC<{
-    colorText: string;
     colorBg: number;
     position: number;
     setPosition: React.Dispatch<React.SetStateAction<number>>;
     id_loved: string;
-}> = ({ colorText, colorBg, position, setPosition, id_loved }) => {
+}> = ({ colorBg, position, setPosition, id_loved }) => {
     const [cookies, setCookies] = useCookies(['k_user']);
     const [search, setSearch] = useState<boolean>(false);
     const [valueS, setValueS] = useState<string>('');
@@ -70,17 +69,12 @@ const UserBar: React.FC<{
                     }
                 `}
             >
-                <DivSearch color={colorText}>
+                <DivSearch>
                     <DivPos size="20px" left="6px" css="padding: 3px;" onClick={() => setPosition(0)}>
                         <UndoIRegister />
                     </DivPos>
                     {search && (
-                        <Input
-                            color={colorText}
-                            value={valueS}
-                            onChange={handleSearch}
-                            border="1px solid rgb(107 107 107 / 83%)"
-                        />
+                        <Input value={valueS} onChange={handleSearch} border="1px solid rgb(107 107 107 / 83%)" />
                     )}
                     <P
                         z="1.4rem"
@@ -109,7 +103,6 @@ const UserBar: React.FC<{
                             width: 0px;
                             height: 0px;
                         }
-                        color: ${colorText};
                     `}
                 >
                     {dataMark.map((res) => (

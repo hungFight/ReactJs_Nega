@@ -50,7 +50,7 @@ const Title: React.FC<{
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
     setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>;
     AllArray: PropsUserPer[];
-    colorText: string;
+    colorText?: string;
     colorBg: number;
     data: PropsUserPer;
     status: string;
@@ -130,7 +130,6 @@ const Title: React.FC<{
         viewMore,
         setViewMore,
     } = LogicTitle(
-        colorText,
         data,
         resTitle,
         id_loved,
@@ -258,7 +257,7 @@ const Title: React.FC<{
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
                 css={`
-                    ${viewMore
+                    ${editTitle || viewMore
                         ? `height: auto;
                         color: ${colorText};
                         background-color: #2b2c2c;
@@ -314,7 +313,12 @@ const Title: React.FC<{
                                 top="0px"
                                 right="5px"
                                 size="19px"
-                                css="&:hover{color: #f3f3f3;} border-radius: 5px; box-shadow: 0 0 3px #838383; padding: 3px 10px;"
+                                css={`
+                                    border-radius: 5px;
+                                    box-shadow: 0 0 3px #838383;
+                                    padding: 3px 10px;
+                                    ${acPrivate === 'position' ? 'box-shadow: 0 0 3px #0b78ac;' : ''}
+                                `}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (acPrivate === 'position') {
@@ -403,7 +407,7 @@ const Title: React.FC<{
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
                 css={`
-                    ${viewMore
+                    ${editTitle || viewMore
                         ? ` margin-top: 15px;
                         color: ${colorText};
                         background-color: #2b2c2c;
@@ -456,14 +460,7 @@ const Title: React.FC<{
                             color: ${colorText};
                             margin-bottom: 4px;
                             position: relative;
-                            @media (max-width: 400px) {
-                                position: fixed;
-                                background-color: #252525;
-                            }
-                            top: 0;
-                            left: 0;
                             z-index: 1;
-                            height: 100%;
                             ${editTitle ? 'cursor: var(--pointer);' : ''}
                             &:hover {
                                 ${editTitle
@@ -479,7 +476,7 @@ const Title: React.FC<{
                             width="100%"
                             css={`
                                 margin-top: 2px;
-                                font-size: 30px;
+                                font-size: 25px;
                                 justify-content: center;
                             `}
                         >
@@ -608,7 +605,7 @@ const Title: React.FC<{
                                             <Div
                                                 key={sub.id}
                                                 width="fit-content"
-                                                css="margin: 0 3px; position: relative;"
+                                                css="margin: 0 3px; position: relative; margin-bottom: 10px;"
                                             >
                                                 {subAccount && userFirst.id === data.id ? ( // is your
                                                     <>
@@ -755,7 +752,12 @@ const Title: React.FC<{
                                 top="-2px"
                                 right="5px"
                                 size="19px"
-                                css="padding: 5px; &:hover{color: #f3f3f3;}"
+                                css={`
+                                    border-radius: 5px;
+                                    box-shadow: 0 0 3px #838383;
+                                    padding: 3px 10px;
+                                    ${acPrivate === 'subAccount' ? 'box-shadow: 0 0 3px #0b78ac;' : ''}
+                                `}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (acPrivate === 'subAccount') {
@@ -795,6 +797,12 @@ const Title: React.FC<{
                                             >
                                                 Everyone
                                             </P>
+                                            <div style={{ position: 'relative' }}>
+                                                <Div
+                                                    width="33px"
+                                                    css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"
+                                                ></Div>
+                                            </div>{' '}
                                         </Div>
                                     )}
                                     <Div
@@ -819,16 +827,26 @@ const Title: React.FC<{
                     </Div>
                 )}
             </Div>
-
-            <Div
-                width="100%"
-                onClick={() => setViewMore(!viewMore)}
-                css="@media(min-width:500px){display: none}justify-content: center; margin-top: 10px;"
-            >
-                <P z="1.3rem" color={colorText} css="padding: 3px;">
-                    {viewMore ? 'Ẩn bớt' : 'Xem thêm'}
-                </P>
-            </Div>
+            {!editTitle && (
+                <Div
+                    width="100%"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setViewMore(!viewMore);
+                    }}
+                    css={`
+                        @media (min-width: 500px) {
+                            display: none;
+                        }
+                        justify-content: center;
+                        margin-top: 10px;
+                    `}
+                >
+                    <P z="1.3rem" color={colorText} css="padding: 3px;">
+                        {viewMore ? 'Ẩn bớt' : 'Xem thêm'}
+                    </P>
+                </Div>
+            )}
             {editTitle && (
                 <Div width="100%" css="justify-content: right;">
                     <Button
@@ -951,13 +969,7 @@ const Title: React.FC<{
                 ))}
             </Div>
             {position > 0 && (
-                <UserBar
-                    id_loved={id_loved}
-                    colorBg={colorBg}
-                    colorText={colorText}
-                    position={position}
-                    setPosition={setPosition}
-                />
+                <UserBar id_loved={id_loved} colorBg={colorBg} position={position} setPosition={setPosition} />
             )}
         </DivTitleP>
     );

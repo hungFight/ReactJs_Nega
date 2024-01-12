@@ -6,7 +6,7 @@ import { Label } from '~/social_network/components/Header/layout/Home/Layout/For
 
 const SettingOtherProfile: React.FC<{
     editP: { name: string; id: number; icon?: { id: number; name: string }[] }[];
-    colorText: string;
+    colorText?: string;
     AllArray: PropsUserPer[];
     userId: string;
     setEdit: React.Dispatch<React.SetStateAction<boolean>>;

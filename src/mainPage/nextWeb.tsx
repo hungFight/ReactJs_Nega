@@ -2,28 +2,12 @@
 import React, { memo, useState, useRef, useLayoutEffect, useEffect, Suspense } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { Buffer } from 'buffer';
 
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import Button from '~/reUsingComponents/Buttoms/ListButton/Buttons';
 import ListWebBar from './listWebBar/listWebBar';
-import {
-    BalloonI,
-    BookI,
-    DotI,
-    EarthI,
-    FriendI,
-    GridDotI,
-    HomeI,
-    NewI,
-    PeopleI,
-    ProfileI,
-    WebsiteI,
-    WorkI,
-} from '~/assets/Icons/Icons';
+import { BookI, EarthI, FriendI, GridDotI, NewI, ProfileI, WebsiteI, WorkI } from '~/assets/Icons/Icons';
 import Background from 'src/backbround/background';
-import { onPersonalPage, setTrueErrorServer } from '~/redux/hideShow';
-import HttpRequestUser from '~/restAPI/userAPI';
+import { onPersonalPage } from '~/redux/hideShow';
 import CurrentPageL from './CurrentPage';
 import {
     DivAvatar,
@@ -36,28 +20,24 @@ import {
     Apage,
     DivContainer,
     DivOptions,
-    PtitleOptions,
     DivDate,
     DivElements,
     DivContainerChangeC,
     DivContainerChangeP,
 } from './styleNextWeb';
 import Time from './DateTime/DateTime';
-import { changeThree } from '~/redux/languageRD';
 import Progress from '~/reUsingComponents/Progress/Progress';
 import { io } from 'socket.io-client';
 import Tools from './Tools/Tools';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Profile from './profiles/profile';
 import NextListWeb from './listWebs/ListWebs';
-import PeopleRequest from '~/restAPI/socialNetwork/peopleAPI';
 import WarningBrowser from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
-import CommonUtils from '~/utils/CommonUtils';
 import { PropsId_chats, PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
-import { PropsReloadRD, setOnline } from '~/redux/reload';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-export const socket = io('http://192.168.0.100:3001', {
+import { setOnline } from '~/redux/userOnlineRD';
+
+export const socket = io('http://192.168.0.101:3001', {
     path: '/socket.io',
     host: '192.168.0.100',
     transports: ['websocket'],
@@ -72,8 +52,9 @@ const Website: React.FC<{
 }> = ({ openProfile, dataUser, setDataUser, setId_chats }) => {
     const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-    const userOnline = useSelector((state: PropsReloadRD) => state.reload.userOnline);
-
+    const userOnline = useSelector(
+        (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
+    );
     const [cookies, setCookie] = useCookies(['tks', 'k_user']);
     const [friendsOnline, setFriendsOnline] = useState<number>(0);
     const [friends, setFriends] = useState<{ idFriend: string; idCurrentUser: string }[]>([]);
@@ -126,23 +107,23 @@ const Website: React.FC<{
     const [hrefState, setHrefState] = useState<string>('');
     function reTap() {
         if (
-            window.location.pathname.toLowerCase().includes('sn') &&
+            window.location.pathname.toLowerCase().includes('social') &&
             !window.location.pathname.toLowerCase().includes('sd') &&
             !window.location.pathname.toLowerCase().includes('w')
         ) {
-            hanNextWebsite1();
+            hanNextWebsite(1);
         } else if (
             window.location.pathname.toLowerCase().includes('sd') &&
-            !window.location.pathname.toLowerCase().includes('sn') &&
+            !window.location.pathname.toLowerCase().includes('social') &&
             !window.location.pathname.toLowerCase().includes('w')
         ) {
-            hanNextWebsite2();
+            hanNextWebsite(2);
         } else if (
             window.location.pathname.toLowerCase().includes('w') &&
             !window.location.pathname.toLowerCase().includes('sd') &&
-            !window.location.pathname.toLowerCase().includes('sn')
+            !window.location.pathname.toLowerCase().includes('social')
         ) {
-            hanNextWebsite3();
+            hanNextWebsite(3);
         } else {
             setCurrentPage(0);
             setOptionWebsite(false);
@@ -161,18 +142,11 @@ const Website: React.FC<{
         setOptionWebsite(false);
         setCurrentPage(0);
     };
-    const hanNextWebsite1 = () => {
+    const hanNextWebsite = (index: number) => {
         setOptionWebsite(true);
-        setCurrentPage(1);
+        setCurrentPage(index);
     };
-    const hanNextWebsite2 = () => {
-        setOptionWebsite(true);
-        setCurrentPage(2);
-    };
-    const hanNextWebsite3 = () => {
-        setOptionWebsite(true);
-        setCurrentPage(3);
-    };
+
     useLayoutEffect(() => {
         reTap();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -180,29 +154,30 @@ const Website: React.FC<{
 
     const props2 = {
         handleNextStart,
-        hanNextWebsite1,
-        hanNextWebsite2,
-        hanNextWebsite3,
+        hanNextWebsite,
     };
     const buttonPage = [
         {
             Tag: Apage,
-            link: '/sn',
-            next: hanNextWebsite1,
+            link: '/social',
+            next: hanNextWebsite,
+            page: 1,
             name: 'News',
             icon: <NewI />,
         },
         {
             Tag: Apage,
             link: '/sd',
-            next: hanNextWebsite2,
+            page: 2,
+            next: hanNextWebsite,
             name: 'Study',
             icon: <BookI />,
         },
         {
             Tag: Apage,
+            page: 3,
             link: '/w',
-            next: hanNextWebsite3,
+            next: hanNextWebsite,
             name: 'Work',
             icon: <WorkI />,
         },
@@ -268,7 +243,7 @@ const Website: React.FC<{
                                     css={`
                                         width: 40px;
                                         height: 40px;
-                                        position: absolute;
+                                        position: fixed;
                                         top: ${(yRef.current || 134) + 'px'};
                                         left: ${(xRef.current || 'unset') + 'px'};
                                         right: 7px;
@@ -283,11 +258,8 @@ const Website: React.FC<{
                             <CurrentPageL
                                 currentPage={currentPage}
                                 listPage={optionWebsite}
-                                dataUser={{
-                                    avatar: dataUser.avatar,
-                                    fullName: dataUser.fullName,
-                                    gender: dataUser.gender,
-                                }}
+                                setDataUser={setDataUser}
+                                dataUser={dataUser}
                                 setId_chats={setId_chats}
                             />
                         </Suspense>

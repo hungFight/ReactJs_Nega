@@ -10,6 +10,7 @@ export const DivTitleP = styled.div`
     padding: 14px;
     border-radius: 5px;
     margin-bottom: 50px;
+    position: relative;
 `;
 export const DivSearch = styled.div`
     width: 100%;

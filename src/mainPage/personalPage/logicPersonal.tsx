@@ -27,7 +27,6 @@ export default function LogicView(
     userFirst: PropsUser,
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
     leng: number,
-    colorText: string,
     online: string[],
     setId_chats: React.Dispatch<
         React.SetStateAction<
@@ -717,7 +716,7 @@ export default function LogicView(
                 min-width: 100%;
             }`;
 
-    const cssBt = `color: ${colorText};
+    const cssBt = `
             width: 118px;
             justify-content: center;
             align-items: center;
@@ -731,7 +730,6 @@ export default function LogicView(
     `;
     const cssDivPersonalPage = `
         position: relative;
-        color: ${colorText};
     @media (min-width: 600px){
         height: 60px;
     }@media (min-width: 1000px){

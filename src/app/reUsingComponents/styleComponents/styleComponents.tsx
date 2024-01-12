@@ -34,9 +34,6 @@ const Div = styled.div<{ css?: string; bg?: string }>`
     color: #ddd8d8;
     position: relative;
     ${(props) => props.css}
-    @media (min-width: 400px) {
-        /* padding: 5px 23px; */
-    }
     &::before {
         width: 53px;
         height: 84px;
@@ -97,15 +94,15 @@ const Button = styled.button`
 `;
 export const ButtonSubmit: React.FC<{
     title: string;
-    bg?: string;
+    bgImg?: string;
     css?: string;
     loading?: boolean;
     submit?: boolean;
     onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}> = ({ title, bg, css, onClick, submit = true, loading }) => {
+}> = ({ title, bgImg, css, onClick, submit = true, loading }) => {
     return (
         <>
-            <Div bg={bg} css={css} onClick={onClick}>
+            <Div bg={bgImg} css={css} onClick={onClick}>
                 <Button type={submit ? 'submit' : 'button'}>
                     {loading ? (
                         <DivLoading>
