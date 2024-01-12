@@ -18,7 +18,7 @@ const routes: Routes = {
     exchange: '/social/exchange',
     callVideo: '/social/callVideo',
     people: '/social/people',
-    profile: '/social/profile/:slug',
+    profile: '/social/profile',
 };
 const components = {
     Home,

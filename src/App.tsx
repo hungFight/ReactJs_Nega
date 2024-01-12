@@ -481,7 +481,6 @@ function App() {
                                     position: absolute;
                                     top: 0px;
                                     z-index: 888;
-                                    color: ${colorText};
                                     font-size: 50px;
                                     align-items: center;
                                     justify-content: center;
