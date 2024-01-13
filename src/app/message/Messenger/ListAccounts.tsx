@@ -80,7 +80,7 @@ const ListAccounts: React.FC<{
     const dispatch = useDispatch();
     const { userOnline } = useSelector((state: any) => {
         return {
-            userOnline: state.reload.userOnline,
+            userOnline: state.userOnlineRD.userOnline,
         };
     });
     const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
@@ -152,10 +152,9 @@ const ListAccounts: React.FC<{
                         }}
                         width="100%"
                         css={`
-                            height: 50px;
+                            height: 66px;
                             align-items: center;
                             padding: 0 3px;
-                            margin: 5px 0;
                             user-select: none;
                             position: relative;
                             color: ${colorText};
@@ -168,6 +167,9 @@ const ListAccounts: React.FC<{
                                 &:hover {
                                     background-color: #484848ba;
                                 }
+                            }
+                            @media (min-width: 500px) {
+                                height: 55px;
                             }
                         `}
                     >
@@ -194,7 +196,7 @@ const ListAccounts: React.FC<{
                             src={rs.avatar}
                             gender={rs.gender}
                             radius="50%"
-                            css="min-width: 40px; width: 40px; height: 40px; margin: 3px 5px; "
+                            css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px;width: 45px; height: 45px; } "
                         />
                         {userOnline.includes(rs.id) && (
                             <DivPos
@@ -265,6 +267,7 @@ const ListAccounts: React.FC<{
                             width="30px"
                             css={`
                                 height: 30px;
+                                font-size: 20px;
                                 border-radius: 50%;
                                 align-items: center;
                                 justify-content: center;

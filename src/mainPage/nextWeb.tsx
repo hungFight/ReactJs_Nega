@@ -36,6 +36,7 @@ import WarningBrowser from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
 import { PropsId_chats, PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 import { setOnline } from '~/redux/userOnlineRD';
+import { useNavigate } from 'react-router-dom';
 
 export const socket = io('http://192.168.0.101:3001', {
     path: '/socket.io',
@@ -55,6 +56,7 @@ const Website: React.FC<{
     const userOnline = useSelector(
         (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
     );
+    const path = useNavigate();
     const [cookies, setCookie] = useCookies(['tks', 'k_user']);
     const [friendsOnline, setFriendsOnline] = useState<number>(0);
     const [friends, setFriends] = useState<{ idFriend: string; idCurrentUser: string }[]>([]);
@@ -150,7 +152,7 @@ const Website: React.FC<{
     useLayoutEffect(() => {
         reTap();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [hrefState]);
+    }, [hrefState, path]);
 
     const props2 = {
         handleNextStart,

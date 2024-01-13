@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { SwiperSlide } from 'swiper/react';
 import { LoadingI } from '~/assets/Icons/Icons';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { Span } from './styleDefault';
 
 export const Peye = styled.p<{ top: string; right?: string }>`
     width: 30px;
@@ -106,9 +107,57 @@ export const ButtonSubmit: React.FC<{
             <Div bg={bgImg} css={css} onClick={onClick}>
                 <Button type={submit ? 'submit' : 'button'}>
                     {loading ? (
-                        <DivLoading>
-                            <LoadingI />
-                        </DivLoading>
+                        <>
+                            {title}
+                            <Span
+                                css={`
+                                    opacity: 0;
+                                    animation: bg-color-animation 0.9s infinite;
+                                    @keyframes bg-color-animation {
+                                        0% {
+                                            opacity: 0.1;
+                                        }
+                                        100% {
+                                            opacity: 1;
+                                        }
+                                    }
+                                `}
+                            >
+                                .
+                            </Span>{' '}
+                            <Span
+                                css={`
+                                    opacity: 0;
+                                    animation: bg-color-animation 0.6s infinite;
+                                    @keyframes bg-color-animation {
+                                        0% {
+                                            opacity: 0.1;
+                                        }
+                                        100% {
+                                            opacity: 1;
+                                        }
+                                    }
+                                `}
+                            >
+                                .
+                            </Span>{' '}
+                            <Span
+                                css={`
+                                    opacity: 0;
+                                    animation: bg-color-animation 0.3s infinite;
+                                    @keyframes bg-color-animation {
+                                        0% {
+                                            opacity: 0.1;
+                                        }
+                                        100% {
+                                            opacity: 1;
+                                        }
+                                    }
+                                `}
+                            >
+                                .
+                            </Span>
+                        </>
                     ) : (
                         title
                     )}

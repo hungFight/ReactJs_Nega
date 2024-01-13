@@ -84,7 +84,13 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         <FaUserCircle />
     ) : (
         <TagH
-            to={profile === 'url' ? `${window.location.pathname.split('/')[1]}/profile?id=${id}` : ''}
+            to={
+                profile === 'url'
+                    ? `${
+                          window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] : 'social'
+                      }/profile?id=${id}`
+                    : ''
+            }
             id={idH}
             width={width}
             css={css}

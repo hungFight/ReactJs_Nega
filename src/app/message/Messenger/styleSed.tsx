@@ -7,9 +7,7 @@ export const DivIconSend = styled.div`
     justify-content: center;
     align-items: center;
     color: var(--color-icon);
-
     position: relative;
-
     cursor: var(--pointer);
     &:hover {
         background-color: #3c4043;
@@ -25,9 +23,10 @@ export const DivSend = styled.div`
     z-index: 101;
     top: 0px;
     transition: var(--transition-03s);
-    box-shadow: 0 0 10px;
-    @media (min-width: 360px) {
-        width: 360px;
+    box-shadow: 0 0 10px #424242;
+    padding: 5px;
+    @media (min-width: 500px) {
+        width: 400px;
     }
 `;
 export const DivResults = styled.div`

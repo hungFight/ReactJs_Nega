@@ -129,6 +129,7 @@ const Title: React.FC<{
         whoCanSee,
         viewMore,
         setViewMore,
+        loadingSub,
     } = LogicTitle(
         data,
         resTitle,
@@ -547,8 +548,9 @@ const Title: React.FC<{
                                     <Div width="100%" css="justify-content: center;">
                                         {' '}
                                         <ButtonSubmit
+                                            loading={loadingSub}
                                             title="Login"
-                                            css="margin: 0; width: 40%;"
+                                            css="margin: 0;  width: 20%; button{ background: #135d66;}"
                                             onClick={() => handleLogin()}
                                         />
                                         <ButtonSubmit
@@ -556,6 +558,9 @@ const Title: React.FC<{
                                             css={`
                                                 margin: 0;
                                                 width: 20%;
+                                                button {
+                                                    background: #914142;
+                                                }
                                             `}
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -672,8 +677,9 @@ const Title: React.FC<{
                                                                         />
 
                                                                         <ButtonSubmit
+                                                                            loading={loadingSub}
                                                                             title="Login"
-                                                                            css="width: 50px; margin: 0;"
+                                                                            css="width: 50px; margin: 0; button{ background: #135d66;}"
                                                                             onClick={() =>
                                                                                 handleLogin(
                                                                                     sub.id,

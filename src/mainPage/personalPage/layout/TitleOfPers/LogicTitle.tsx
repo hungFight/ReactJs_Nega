@@ -81,7 +81,8 @@ const LogicTitle = (
     const inputRef = useRef<HTMLInputElement | null>(null);
     const limit = 2;
 
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false); // save
+    const [loadingSub, setLoadingSub] = useState<boolean>(false); // login in subAccount
     const [subAccount, setSubAccount] = useState<boolean>(false);
     const [pass, setPass] = useState<{ id: string; kind: string; val: string }>();
     const { userId } = Cookies();
@@ -1156,6 +1157,7 @@ const LogicTitle = (
         if (other) {
             // login to change account here
             if (id && phoneOrEmail && pass?.val) {
+                setLoadingSub(true);
                 const res: typeof data = await authAPI.subLogin(phoneOrEmail, pass.val, other, id); // account's id is logging in
                 if (res) {
                     res.avatar = CommonUtils.convertBase64(res.avatar);
@@ -1205,10 +1207,12 @@ const LogicTitle = (
                 } else {
                     setError('false');
                 }
+                setLoadingSub(false);
             }
         } else {
             // add more here
             if (login.userName && login.password) {
+                setLoadingSub(true);
                 const res: {
                     account: {
                         id: string;
@@ -1221,6 +1225,7 @@ const LogicTitle = (
                 if (res?.account.avatar) {
                     res.account.avatar = CommonUtils.convertBase64(res.account.avatar);
                 }
+                setLoadingSub(false);
                 if (res) {
                     setSubAccountsData([...(subAccountsData ?? []), res]);
                     setLogin({ userName: '', password: '' });
@@ -1282,6 +1287,7 @@ const LogicTitle = (
         whoCanSee,
         viewMore,
         setViewMore,
+        loadingSub,
     };
 };
 export default LogicTitle;
