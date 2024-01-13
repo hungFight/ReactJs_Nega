@@ -16,27 +16,10 @@ interface PropsTagP {
     button?: { css: string; text: string; onClick?: (args: any) => void }[];
     margin?: string;
     bg?: string;
-    profile?: boolean;
     cssImage?: string;
     colorText?: string;
 }
-const TagProfile: React.FC<PropsTagP> = ({
-    data,
-    onClick,
-    button,
-    margin,
-    bg,
-    colorText,
-    cssImage,
-    profile = false,
-}) => {
-    const dispatch = useDispatch();
-    const handlePlPage = (id: string) => {
-        if (profile) {
-            dispatch(setOpenProfile({ newProfile: [id] }));
-        }
-    };
-
+const TagProfile: React.FC<PropsTagP> = ({ data, onClick, button, margin, bg, colorText, cssImage }) => {
     return (
         <Div width="100%" wrap="wrap" css=" align-items: center;">
             <Div
@@ -53,12 +36,12 @@ const TagProfile: React.FC<PropsTagP> = ({
                 `}
             >
                 <Avatar
-                    profile={profile}
+                    profile="po"
                     css={cssImage}
                     src={data.avatar}
                     alt={data.fullName}
                     gender={data.gender}
-                    onClick={() => handlePlPage(data.id)}
+                    id={data.id}
                 />
                 <Div
                     width="100%"
@@ -73,7 +56,6 @@ const TagProfile: React.FC<PropsTagP> = ({
                             cursor: var(--pointer);
                         }
                     `}
-                    onClick={() => handlePlPage(data.id)}
                 >
                     <Hname>{data.fullName}</Hname>
                 </Div>

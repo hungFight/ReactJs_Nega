@@ -4,8 +4,8 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useDispatch } from 'react-redux';
 import { setOpenProfile } from '~/redux/hideShow';
 import userAPI from '~/restAPI/userAPI';
-import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
-import { Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { Div, Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault';
+import { DivImg, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const Account: React.FC<{
     data: {
@@ -26,17 +26,11 @@ const Account: React.FC<{
     };
     return (
         <>
-            <Div
+            <Smooth
+                to={`social/profile?id=${data.id}`}
                 key={data.id}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (profile) {
-                        handleHistory(data);
-                        dispatch(setOpenProfile({ newProfile: [data.id], currentId: '' }));
-                    }
-                }}
                 css={`
-                    width: 100%;
+                    width: 100% !important;
                     display: flex;
                     align-items: center;
                     position: relative;
@@ -67,7 +61,7 @@ const Account: React.FC<{
                     </Hname>
                 </Div>
                 {Element}
-            </Div>
+            </Smooth>
         </>
     );
 };

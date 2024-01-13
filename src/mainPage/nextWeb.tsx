@@ -233,7 +233,7 @@ const Website: React.FC<{
                             {!openProfile.includes(userId) && (
                                 <Avatar
                                     ref={elRef}
-                                    profile
+                                    profile="url"
                                     src={dataUser.avatar}
                                     alt={dataUser.fullName}
                                     gender={dataUser.gender}
@@ -281,7 +281,7 @@ const Website: React.FC<{
                                         `}
                                     >
                                         <Avatar
-                                            profile
+                                            profile="po"
                                             src={dataUser.avatar}
                                             alt={dataUser.fullName}
                                             gender={dataUser.gender}

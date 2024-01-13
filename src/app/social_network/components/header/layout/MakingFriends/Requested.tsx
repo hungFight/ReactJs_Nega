@@ -177,7 +177,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
                             >
                                 <DotI />
                             </Div>
-                            <TagProfle profile button={buttons} cssImage={cssImage} data={vl} />
+                            <TagProfle button={buttons} cssImage={cssImage} data={vl} />
                         </Div>
                     );
                 })}

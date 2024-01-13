@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { SwiperSlide } from 'swiper/react';
 import { LoadingI } from '~/assets/Icons/Icons';
@@ -142,12 +143,16 @@ export const DivContainer = styled.div<PropsDivContainer>`
     border-radius: ${(props) => props.radius};
     ${(props) => props.css};
 `;
-export const DivImg = styled.div<PropsDivContainer>`
+export const DivImg = styled(Link)<PropsDivContainer>`
     width: 100%;
     height: 100%;
     ${(props) => props.css};
 `;
-
+export const DivImgS = styled.div<PropsDivContainer>`
+    width: 100%;
+    height: 100%;
+    ${(props) => props.css};
+`;
 interface PropsHname {
     size?: string;
     css?: string;

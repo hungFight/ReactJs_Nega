@@ -163,7 +163,6 @@ const Friends: React.FC<{
                             <DotI />
                         </Div>
                         <TagProfle
-                            profile
                             button={[
                                 {
                                     text: 'Messenger',

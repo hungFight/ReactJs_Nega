@@ -343,7 +343,7 @@ const Strangers: React.FC<{
                             >
                                 <DotI />
                             </Div>
-                            <TagProfile profile button={buttons} cssImage={cssImage} data={vl} />
+                            <TagProfile button={buttons} cssImage={cssImage} data={vl} />
                         </Div>
                     );
                 })}

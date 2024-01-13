@@ -5,7 +5,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import Images from '../../assets/images';
 import { Img } from '../styleComponents/styleDefault';
 import { useDispatch, useSelector } from 'react-redux';
-import { DivImg } from '../styleComponents/styleComponents';
+import { DivImg, DivImgS } from '../styleComponents/styleComponents';
 import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from '../../redux/hideShow';
 import CommonUtils from '~/utils/CommonUtils';
 
@@ -21,7 +21,7 @@ interface _Avatar {
     gender: number | undefined;
     onClick?: (args: any) => void;
     css?: string;
-    profile?: boolean;
+    profile?: string;
     onTouchMove?: (args: any) => void;
     children?: React.ReactElement;
     currentId?: string; // Is current profile's id
@@ -49,7 +49,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         onClick,
         onTouchMove,
         css,
-        profile = false,
+        profile = '',
         children,
         currentId,
     } = props;
@@ -77,13 +77,21 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     };
 
     const handleOpentProfile = () => {
-        if (profile && id) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
+        if (profile === 'po' && id) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
     };
-
+    const TagH: any = profile === 'url' ? DivImg : DivImgS;
     return avatar ? (
         <FaUserCircle />
     ) : (
-        <DivImg id={idH} width={width} css={css} {...events} ref={ref} className={className}>
+        <TagH
+            to={profile === 'url' ? `${window.location.pathname.split('/')[1]}/profile?id=${id}` : ''}
+            id={idH}
+            width={width}
+            css={css}
+            {...events}
+            ref={ref}
+            className={className}
+        >
             {children}
             <Img
                 src={src || Fallback || avatarFallback}
@@ -92,7 +100,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
                 radius={radius}
                 onClick={handleOpentProfile}
             />
-        </DivImg>
+        </TagH>
     );
 });
 

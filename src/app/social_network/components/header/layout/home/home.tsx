@@ -121,7 +121,6 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 margin: 7px 7px 7px 10px;
                             }
                         `}
-                        profile={false}
                     />
                     <Div
                         css={`

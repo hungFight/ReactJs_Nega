@@ -733,6 +733,8 @@ const Title: React.FC<{
                                                             currentId={data.id}
                                                             profile={
                                                                 !(userFirst.id === data.id && userFirst.id === userId)
+                                                                    ? 'po'
+                                                                    : ''
                                                             }
                                                             gender={sub.gender}
                                                             radius="50%"

@@ -237,7 +237,7 @@ const Notification: React.FC<{
                                                     radius="50%"
                                                     gender={v.gender}
                                                     id={v.id}
-                                                    profile
+                                                    profile="url"
                                                 />
                                             </Div>
                                             <Div wrap="wrap" css="height: fit-content; align-items: center;">
