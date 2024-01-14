@@ -706,7 +706,7 @@ const OptionForItem: React.FC<{
                 left: 0;
                 height: 91%;
                 background-color: #191919e6;
-                z-index: 999;
+                z-index: 99999;
                 bottom: 0;
                 justify-content: center;
                 padding: 10px;

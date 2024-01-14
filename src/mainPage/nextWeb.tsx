@@ -38,9 +38,9 @@ import { PropsBgRD } from '~/redux/background';
 import { setOnline } from '~/redux/userOnlineRD';
 import { useNavigate } from 'react-router-dom';
 
-export const socket = io('http://192.168.0.101:3001', {
+export const socket = io('http://localhost:3001', {
     path: '/socket.io',
-    host: '192.168.0.100',
+    host: 'localhost',
     transports: ['websocket'],
     ackTimeout: 10000,
 });

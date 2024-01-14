@@ -55,7 +55,10 @@ export const DivConversation = styled.div<{ css?: string; height?: string }>`
     * {
         font-family: ZenKaku, sans-serif;
     }
-    @media (min-width: 450px) {
+    @media (min-width: 500px) {
+        width: 450px;
+    }
+    @media (min-width: 768px) {
         width: 360px;
         height: 530px;
     }

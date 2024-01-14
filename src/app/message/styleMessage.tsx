@@ -7,9 +7,7 @@ export const DivIconMs = styled.div`
     justify-content: center;
     align-items: center;
     color: var(--color-icon);
-
     position: relative;
-
     cursor: var(--pointer);
     &:hover {
         background-color: #3c4043;

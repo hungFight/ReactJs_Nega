@@ -141,7 +141,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     // if (date1.isAfter(date2)) {
     //     console.log('date1 is after date2');
     // }
-
     const { data } = useQuery({
         queryKey: [
             `getActiveStatus: ${conversation?.user.id}`,
@@ -153,11 +152,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const da: string = ServerBusy(res, dispatch);
             return da;
         },
-        enabled: !userOnline.includes(conversation?.user.id ?? 'default')
-            ? conversation?.user.id
-                ? true
-                : false
-            : false,
+        enabled: conversation?.user.id ? true : false,
     });
 
     //get image

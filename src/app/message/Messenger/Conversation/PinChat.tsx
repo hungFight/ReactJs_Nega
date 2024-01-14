@@ -221,27 +221,37 @@ const PinChat: React.FC<{
             css={`
                 user-select: none;
                 position: absolute;
-                top: 45px;
+                top: 64px;
                 left: 0;
                 width: 100%;
                 background-color: #030303c4;
                 transition: all 0.5s linear;
-                z-index: 17;
+                z-index: 23;
                 padding: 5px 0 5px 5px;
                 ${more ? 'max-height: 81%; ' : 'max-height: 39px;'}
+                @media(min-width: 768px) {
+                    top: 45px;
+                }
             `}
         >
-            <Div width={more ? '100%' : '93%'} css="position: relative;">
+            <Div
+                width={more ? '100%' : '90%'}
+                css={`
+                    position: relative;
+                    ${more ? '' : 'pointer-events: none;'}
+                `}
+            >
                 <DivPos
                     top="-8px"
                     left="-7px"
+                    index={24}
                     css={`
                         transform: rotate(297deg);
                     `}
                 >
                     📌
                 </DivPos>
-                <DivPos top="17px" left="5px" css="font-size: 1.2rem;">
+                <DivPos top="17px" index={24} left="5px" css="font-size: 1.2rem;">
                     {pins.length}
                 </DivPos>
                 <Div width="100%" display="block" wrap="wrap" css="overflow-y: overlay; justify-content: center; ">
@@ -274,10 +284,15 @@ const PinChat: React.FC<{
                 css={`
                     justify-content: center;
                     align-items: center;
+                    margin: auto;
+                    font-size: 24px;
+                    padding: 4px;
                     cursor: var(--pointer);
                     ${more
                         ? 'position: absolute; transform: rotate(178deg); right: 8px; top: 16px; height: 30px; width: 30px; font-size: 20px; background-color: #2b2b2bf2; border-radius: 50%;'
                         : 'width: 7%;'}
+                    @media(min-width: 500px) {
+                    }
                 `}
                 onClick={() => setMore(!more)}
             >

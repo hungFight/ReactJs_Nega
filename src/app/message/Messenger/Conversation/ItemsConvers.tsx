@@ -192,7 +192,9 @@ const ItemsRoom: React.FC<{
         <>
             {changedBG && (
                 <Div width="100%" css="justify-content: center;">
-                    <P z="1rem">{whoChangedBG} changed background</P>
+                    <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
+                        {whoChangedBG} changed background
+                    </P>
                 </Div>
             )}
             {displayById.map((dis) => (
@@ -209,12 +211,19 @@ const ItemsRoom: React.FC<{
                             gender={gender}
                             radius="50%"
                             css={`
-                                width: 15px;
-                                height: 15px;
-                                margin: 0 5px 5px 0;
+                                width: 20px;
+                                height: 20px;
+                                margin: 2px 5px;
+                                @media (min-width: 768px) {
+                                    width: 15px;
+                                    height: 15px;
+                                    margin: 0 5px 5px 0;
+                                }
                             `}
                         />
-                        <P z="1rem">{fullName}</P>
+                        <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem}">
+                            {fullName}
+                        </P>
                         {choicePin === dis.chatId && (
                             <DivLoading css="margin: 0 5px; width: auto; font-size: 13px;">
                                 <LoadingI />
@@ -224,13 +233,16 @@ const ItemsRoom: React.FC<{
                 </DivFlex>
             ))}
             {rc?.delete !== dataFirst.id && timeS && index !== 0 && (
-                <P css="font-size: 1rem; text-align: center;padding: 2px 0;  margin: 10px 0;">{timeS}</P>
+                <P css="font-size: 1.2rem; text-align: center;padding: 2px 0;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">
+                    {timeS}
+                </P>
             )}
             {rc.id === dataFirst.id
                 ? rc?.delete !== dataFirst.id && (
                       <>
                           <Div
                               id={`chat_to_scroll_${rc._id}`}
+                              wrap="wrap"
                               width="100%"
                               css={`
                                   padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
@@ -238,16 +250,7 @@ const ItemsRoom: React.FC<{
                                   justify-content: right;
                                   position: relative;
                                   z-index: ${roomImage?.id_room === rc._id ? 2 : 6};
-                                  ${marginTop <= -5 ? 'margin-top: 10px;' : ''}
-                                  margin-top: ${rc?.reply?.imageOrVideos.length
-                                      ? rc?.reply?.imageOrVideos.length <= 3
-                                          ? rc?.reply?.imageOrVideos.length * 45
-                                          : 150
-                                      : rc?.reply?.text
-                                      ? rc?.reply?.text.length <= 38
-                                          ? 24
-                                          : 50
-                                      : ''}px;
+                                  margin-top: 2px;
                                   .chatTime {
                                       &:hover {
                                           #showDotAtRoomChat {
@@ -279,23 +282,18 @@ const ItemsRoom: React.FC<{
                               {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
                                   <Div
                                       css={`
-                                          position: absolute;
-                                          right: 0;
-                                          max-width: 65%;
-                                          background-color: #363636;
-                                          width: fit-content;
-                                          border-radius: 5px;
-                                          padding: 5px;
-                                          bottom: 100%;
-
-                                          cursor: var(--pointer);
+                                          width: 100%;
                                           user-select: none;
+                                          justify-content: end;
                                       `}
-                                      onClick={() => {
-                                          if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
-                                      }}
                                   >
-                                      <Div width="inherit" css="position: relative;">
+                                      <Div
+                                          width="fit-content"
+                                          css="position: relative; cursor: var(--pointer); background-color: #363636; padding: 3px 5px; border-radius: 7px;"
+                                          onClick={() => {
+                                              if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
+                                          }}
+                                      >
                                           {rc?.reply?.imageOrVideos.length > 3 && (
                                               <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
                                                   + {rc.reply.imageOrVideos.length - 3}
@@ -324,7 +322,7 @@ const ItemsRoom: React.FC<{
                                                                   alt={nameReply}
                                                                   gender={genderReply}
                                                                   radius="50%"
-                                                                  css="min-width: 25px; min-height: 25px; width: 25px; height: 25px;"
+                                                                  css="min-width: 30px; min-height: 30px; width: 30px; height: 30px; @media (min-width: 768px){min-width: 25px; min-height: 25px; width: 25px; height: 25px;}"
                                                               />
                                                               <Hname css="width: 100%; font-size: 1.2rem; text-align: center">
                                                                   {nameReply}
@@ -335,7 +333,10 @@ const ItemsRoom: React.FC<{
                                                               width="100%"
                                                               css="padding: 3px; background-color: #262728; margin-top: 3px"
                                                           >
-                                                              <P z="1rem" css="width:100%;">
+                                                              <P
+                                                                  z="1.2rem"
+                                                                  css="width:100%;@media (min-width: 768px){font-size: 1rem;}"
+                                                              >
                                                                   sent on thứ hai, 20 tháng 11 năm 2023
                                                               </P>
                                                           </Div>
@@ -346,7 +347,7 @@ const ItemsRoom: React.FC<{
                                           <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
                                               {rc.reply.text && (
                                                   <P
-                                                      z="1.2rem"
+                                                      z="1.3rem"
                                                       css={`
                                                           padding: 2px;
                                                           display: -webkit-box;
@@ -358,6 +359,9 @@ const ItemsRoom: React.FC<{
                                                           text-wrap: wrap;
                                                           word-wrap: break-word;
                                                           max-width: 212px;
+                                                          @media (min-width: 768px) {
+                                                              font-size: 0.2rem;
+                                                          }
                                                       `}
                                                   >
                                                       {rc.reply.text}
@@ -516,7 +520,7 @@ const ItemsRoom: React.FC<{
                                           }}
                                       >
                                           <P
-                                              z={rc?.delete === 'all' ? '1.2rem' : '1.4rem'}
+                                              z={rc?.delete === 'all' ? '1.4rem' : '1.6rem'}
                                               css={`
                                                   margin: 0;
                                                   padding: 2px 12px 4px;
@@ -537,6 +541,9 @@ const ItemsRoom: React.FC<{
                                                       margin-right: 3px;
                                                   }
                                                   ${rc.update && 'border: 1px solid #889a21c7;'}
+                                                  @media(min-width: 768px) {
+                                                      font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
+                                                  }
                                               `}
                                           >
                                               {rc.text.t}
@@ -625,7 +632,7 @@ const ItemsRoom: React.FC<{
                                   )}
 
                                   {rc?.sending ? (
-                                      <P z="1rem" css="text-align: end;">
+                                      <P z="1.2rem" css="text-align: end; @media (min-width: 768px){font-size: 1rem;}">
                                           sending...
                                       </P>
                                   ) : (
@@ -635,9 +642,12 @@ const ItemsRoom: React.FC<{
                                                   css={`
                                                       display: ${!rc.text.t ? 'block' : 'none'};
                                                       width: 100%;
-                                                      font-size: 1rem;
+                                                      font-size: 1.2rem;
                                                       margin-right: 5px;
                                                       text-align: right;
+                                                      @media (min-width: 768px) {
+                                                          font-size: 1rem;
+                                                      }
                                                   `}
                                                   className="dateTime"
                                               >
@@ -647,14 +657,14 @@ const ItemsRoom: React.FC<{
                                               <>
                                                   <P
                                                       className="dateTime"
-                                                      css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -179px; top: 5px;"
+                                                      css="display: none; font-size: 1.2rem; margin-left: 5px; position: absolute; left: -179px; top: 5px; @media (min-width: 768px){font-size: 1rem;}"
                                                   >
                                                       {handleTime(rc.createdAt, 'date')}
                                                   </P>
                                                   {rc?.updatedAt && (rc.delete || rc?.update) && (
                                                       <P
                                                           className="dateTime dateTimeN"
-                                                          css="display: none; font-size: 1rem; margin-left: 5px; position: absolute; left: -203px; top: 18px;"
+                                                          css="display: none; font-size: 1.2rem; margin-left: 5px; position: absolute; left: -203px; top: 18px; @media (min-width: 768px){font-size: 1rem;}"
                                                       >
                                                           {rc?.update
                                                               ? phraseText.dateTime.replace
@@ -664,7 +674,7 @@ const ItemsRoom: React.FC<{
                                                   )}
                                                   <P
                                                       className="dateTime"
-                                                      css="display: none; width: 100%; font-size: 1rem; margin-right: 5px; text-align: right;"
+                                                      css="display: none; width: 100%; @media (min-width: 768px){font-size: 1rem;} font-size: 1.2rem; margin-right: 5px; text-align: right;"
                                                   >
                                                       {handleTime(rc.createdAt, 'hour')}
                                                   </P>
@@ -679,8 +689,12 @@ const ItemsRoom: React.FC<{
                                                   radius="50%"
                                                   css={`
                                                       display: none;
-                                                      width: 15px;
-                                                      height: 15px;
+                                                      width: 20px;
+                                                      height: 20px;
+                                                      @media (min-width: 768px) {
+                                                          width: 15px;
+                                                          height: 15px;
+                                                      }
                                                       position: absolute;
                                                       bottom: 12px !important;
                                                       left: -5px !important;
@@ -698,9 +712,12 @@ const ItemsRoom: React.FC<{
                                       gender={user.gender}
                                       radius="50%"
                                       css={`
-                                          min-width: 17px;
-                                          width: 15px;
-                                          height: 15px;
+                                          width: 20px;
+                                          height: 20px;
+                                          @media (min-width: 768px) {
+                                              width: 15px;
+                                              height: 15px;
+                                          }
                                           margin-right: 4px;
                                           margin-top: 3px;
                                           position: absolute;
@@ -716,8 +733,8 @@ const ItemsRoom: React.FC<{
                 : rc?.delete !== dataFirst.id && (
                       <Div
                           id={`chat_to_scroll_${rc._id}`}
-                          key={rc.text.t + index}
                           wrap="wrap"
+                          key={rc.text.t + index}
                           css={`
                               padding-right: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
                               justify-content: left;
@@ -725,16 +742,7 @@ const ItemsRoom: React.FC<{
                               margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                               position: relative;
                               z-index: ${roomImage?.id_room === rc._id ? 2 : 6};
-                              ${marginTop <= -5 ? 'margin-top: 10px;' : ''}
-                              margin-top: ${rc?.reply?.imageOrVideos.length
-                                  ? rc?.reply?.imageOrVideos.length <= 2
-                                      ? rc?.reply?.imageOrVideos.length * 45
-                                      : 150
-                                  : rc?.reply?.text
-                                  ? rc?.reply?.text.length <= 38
-                                      ? 40
-                                      : 90
-                                  : ''}px;
+                              margin-top: 2px;
                               .chatTime {
                                   .dateTime {
                                       display: block;
@@ -747,23 +755,19 @@ const ItemsRoom: React.FC<{
                       >
                           {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
                               <Div
+                                  width="100%"
                                   css={`
-                                      position: absolute;
-                                      left: 21px;
-                                      max-width: 65%;
-                                      background-color: #0a0a0ad4;
-                                      width: fit-content;
-                                      border-radius: 5px;
-                                      padding: 5px;
-                                      bottom: 100%;
-                                      cursor: var(--pointer);
                                       user-select: none;
+                                      justify-content: start;
                                   `}
-                                  onClick={() => {
-                                      if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
-                                  }}
                               >
-                                  <Div width="inherit" css="position: relative;">
+                                  <Div
+                                      width="fit-content"
+                                      onClick={() => {
+                                          if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
+                                      }}
+                                      css="position: relative; cursor: var(--pointer); background-color: #363636; padding: 3px 5px; border-radius: 7px;"
+                                  >
                                       {rc?.reply?.imageOrVideos.length > 3 && (
                                           <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
                                               + {rc.reply.imageOrVideos.length - 3}
@@ -792,7 +796,7 @@ const ItemsRoom: React.FC<{
                                                               alt={nameReply}
                                                               gender={genderReply}
                                                               radius="50%"
-                                                              css="min-width: 25px; min-height: 25px; width: 25px; height: 25px;"
+                                                              css="min-width: 30px; min-height: 30px; width: 30px; height: 30px; @media (min-width: 768px){min-width: 25px; min-height: 25px; width: 25px; height: 25px;} "
                                                           />
                                                           <Hname css="width: 100%; font-size: 1.2rem; text-align: center">
                                                               {nameReply}
@@ -803,7 +807,10 @@ const ItemsRoom: React.FC<{
                                                           width="100%"
                                                           css="padding: 3px; background-color: #262728; margin-top: 3px"
                                                       >
-                                                          <P z="1rem" css="width:100%;">
+                                                          <P
+                                                              z="1.2rem"
+                                                              css="width:100%; @media (min-width: 768px){font-size: 1rem;}"
+                                                          >
                                                               sent on thứ hai, 20 tháng 11 năm 2023
                                                           </P>
                                                       </Div>
@@ -814,7 +821,7 @@ const ItemsRoom: React.FC<{
                                       <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
                                           {rc.reply.text && (
                                               <P
-                                                  z="1.2rem"
+                                                  z="1.4rem"
                                                   css={`
                                                       padding: 2px;
                                                       display: -webkit-box;
@@ -826,6 +833,9 @@ const ItemsRoom: React.FC<{
                                                       text-wrap: wrap;
                                                       word-wrap: break-word;
                                                       max-width: 212px;
+                                                      @media (min-width: 768px) {
+                                                          font-size: 1.2rem;
+                                                      }
                                                   `}
                                               >
                                                   {rc.reply.text}
@@ -925,7 +935,7 @@ const ItemsRoom: React.FC<{
                                   alt={user.fullName}
                                   gender={user.gender}
                                   radius="50%"
-                                  css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
+                                  css="min-width: 23px; width: 23px; height: 23px; margin-right: 4px; margin-top: 3px;  @media (min-width: 768px){min-width: 17px; width: 17px; height: 17px;}"
                               />
                               <Div
                                   width="fit-content"
@@ -1009,7 +1019,7 @@ const ItemsRoom: React.FC<{
                                   {(rc.text.t || rc?.delete === 'all') && (
                                       <Div width="100%" css="justify-content: start; z-index: 11; position: relative;">
                                           <P
-                                              z={rc?.delete === 'all' ? '1.2rem' : '1.4rem'}
+                                              z={rc?.delete === 'all' ? '1.4rem' : '1.6rem'}
                                               css={`
                                                   width: fit-content;
                                                   padding: 2px 12px 4px;
@@ -1030,7 +1040,10 @@ const ItemsRoom: React.FC<{
                                                   svg {
                                                       margin-right: 3px;
                                                   }
-                                                  ${rc.update && 'border: 1px solid #889a21c7;'}
+                                                  ${rc.update &&
+                                                  'border: 1px solid #889a21c7;'}@media(min-width: 768px) {
+                                                      font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
+                                                  }
                                               `}
                                           >
                                               {rc.text.t}
@@ -1121,9 +1134,12 @@ const ItemsRoom: React.FC<{
                                           css={`
                                               display: ${!rc.text.t ? 'block' : 'none'};
                                               width: 100%;
-                                              font-size: 1rem;
+                                              font-size: 1.2rem;
                                               margin-left: 5px;
                                               text-align: left;
+                                              @media (min-width: 768px) {
+                                                  font-size: 1rem;
+                                              }
                                           `}
                                       >
                                           {handleTime(rc.createdAt, 'hour')}, {handleTime(rc.createdAt, 'date')}
@@ -1134,12 +1150,15 @@ const ItemsRoom: React.FC<{
                                               className="dateTime"
                                               css={`
                                                   display: none;
-                                                  font-size: 1rem;
+                                                  font-size: 1.2rem;
                                                   margin-left: 5px;
                                                   position: absolute;
                                                   right: -157px;
                                                   top: 5px;
-                                                  ${rc?.delete && 'right: -55px; top: 31px;'}
+                                                  ${rc?.delete &&
+                                                  'right: -55px; top: 31px;'} @media (min-width: 768px) {
+                                                      font-size: 1rem;
+                                                  }
                                               `}
                                           >
                                               {handleTime(rc.createdAt, 'date')}
@@ -1149,11 +1168,14 @@ const ItemsRoom: React.FC<{
                                                   className="dateTime dateTimeN"
                                                   css={`
                                                       display: none;
-                                                      font-size: 1rem;
+                                                      font-size: 1.2rem;
                                                       margin-left: 5px;
                                                       position: absolute;
                                                       right: -220px;
                                                       top: 21px;
+                                                      @media (min-width: 768px) {
+                                                          font-size: 1rem;
+                                                      }
                                                   `}
                                               >
                                                   {rc?.update
@@ -1164,7 +1186,7 @@ const ItemsRoom: React.FC<{
                                           )}
                                           <P
                                               className="dateTime"
-                                              css="display: none; width: 100%; font-size: 1rem; margin-left: 5px; text-align: left;"
+                                              css="display: none; width: 100%; font-size: 1rem; @media (min-width: 768px){font-size: 1rem;} margin-left: 5px; text-align: left;"
                                           >
                                               {handleTime(rc.createdAt, 'hour')}
                                           </P>

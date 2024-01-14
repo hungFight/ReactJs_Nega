@@ -71,7 +71,7 @@ const Send: React.FC<{
                         `}
                     >
                         <Div
-                            css="width: 40px; height: 100%; align-items: center; justify-content: center; font-size: 30px; "
+                            css="width: 40px; height: 100%; align-items: center; justify-content: center; font-size: 30px; @media(min-width: 500px){font-size: 25px} "
                             onClick={handleShowHide}
                         >
                             <UndoI />

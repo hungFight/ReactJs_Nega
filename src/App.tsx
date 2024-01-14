@@ -430,7 +430,7 @@ function App() {
                         ></Div>
                         {/* show message from messenger */}
                         {chats.length > 0 && (
-                            <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 99; @media(max-width: 450px){width: 100%;left: 0;height:93%;}">
+                            <Div css="position: fixed; bottom: 8px; left: 4px; z-index: 9999;@media(max-width: 500px){width: auto;} @media(max-width: 768px){width: 100%;left: 0;height:100%;}">
                                 <Div css="position: relative; width: inherit;">
                                     {id_chats?.map((room, index) => {
                                         const permanent = { index: index + 1, id: room.id_room || room.id_other };

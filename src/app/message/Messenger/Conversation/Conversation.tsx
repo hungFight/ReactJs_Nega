@@ -56,10 +56,12 @@ export interface PropsDataMoreConversation {
         load?: boolean;
         name: string;
         device?: string;
+        color?: string;
         icon: JSX.Element;
         onClick: (e?: any) => void;
     }[];
     id_room: string | undefined;
+
     id: string | undefined;
     avatar: string | undefined;
     fullName: string | undefined;
@@ -442,6 +444,7 @@ const Conversation: React.FC<{
                 id: 1,
                 name: conversationText.optionRoom.personal,
                 icon: <ProfileCircelI />,
+                color: '#2880cc',
                 onClick: () => {
                     if (conversation?.user.id && ye) dispatch(setOpenProfile({ newProfile: [conversation?.user.id] }));
                 },
@@ -476,15 +479,17 @@ const Conversation: React.FC<{
                                 <Label
                                     htmlFor={conversation?._id + 'uploadCon_BG'}
                                     color={colorText}
-                                    css="align-items: center; font-size: 1.3rem;"
+                                    css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}"
                                 >
-                                    <BackgroundI /> {conversationText.optionRoom.background}
+                                    <Div css="font-size: 25px; color: #eedec8; @media(min-width: 768px){font-size: 20px}">
+                                        <BackgroundI />
+                                    </Div>{' '}
+                                    {conversationText.optionRoom.background}
                                 </Label>
                             </form>
                             {conversation?.background && (
-                                <P
-                                    z="1.3rem"
-                                    css="width: 100%; display: flex; svg{margin-right: 3px;} align-items: baseline;"
+                                <Div
+                                    css="width: 100%; align-items: center; display: flex; svg{margin-right: 3px;} "
                                     onClick={async () => {
                                         if (conversation && conversation.background) {
                                             const res: boolean = await chatAPI.delBackground(
@@ -499,8 +504,13 @@ const Conversation: React.FC<{
                                         }
                                     }}
                                 >
-                                    <GarbageI /> Remove background
-                                </P>
+                                    <Div css="font-size: 25px; color: #e46969c9; @media(min-width: 768px){font-size: 20px}">
+                                        <GarbageI />{' '}
+                                    </Div>
+                                    <P z="1.5rem" css="@media(min-width: 768px){font-size: 1.3rem}">
+                                        Remove background
+                                    </P>
+                                </Div>
                             )}
                         </Div>
                     </>
@@ -513,6 +523,7 @@ const Conversation: React.FC<{
                     (balloon.some((b) => b === conversation?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') +
                     conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
+                color: '#e489a2',
                 onClick: () => {
                     if (conversation?._id && ye)
                         if (!balloon.some((b) => b === conversation._id)) {
@@ -682,7 +693,7 @@ const Conversation: React.FC<{
                     ? `background-image: url(${conversation?.background.v}); background-repeat: no-repeat;background-size: cover;`
                     : ''}
 
-                @media (min-width: 360px) {
+                @media (min-width: 500px) {
                     margin-right: 5px;
                 }
             `}
@@ -719,18 +730,21 @@ const Conversation: React.FC<{
                     width="100%"
                     css={`
                         align-items: center;
-                        padding: 0 8px 9px;
+                        padding: 8px 9px;
                         font-size: 25px;
                         position: absolute;
                         top: 10px;
                         left: 0;
                         background-color: transparent;
                         z-index: 960;
+                        @media (min-width: 768px) {
+                            padding: 0 8px 9px;
+                        }
                     `}
                 >
                     <Div
-                        width="30px" // delete chat box
-                        css="height: 30px; margin-right: 10px; align-items: center; justify-content: center; cursor: var(--pointer)"
+                        width="44px" // delete chat box
+                        css="height: 30px; margin-right: 10px; align-items: center; justify-content: center;  cursor: var(--pointer);font-size: 30px; @media(min-width: 500px){ width: 30px; font-size: 25px;}"
                         onClick={() => {
                             if (del.current) {
                                 dispatch(
@@ -739,6 +753,11 @@ const Conversation: React.FC<{
                                             (c) =>
                                                 c.id_other !== conversation?.user.id && c.id_room !== conversation?._id,
                                         ),
+                                    ),
+                                );
+                                setId_chats((pre) =>
+                                    pre.filter(
+                                        (c) => c.id_other !== conversation?.user.id && c.id_room !== conversation?._id,
                                     ),
                                 );
                                 // del.current.remove();
@@ -753,7 +772,7 @@ const Conversation: React.FC<{
                             alt={conversation?.user.fullName}
                             gender={conversation?.user.gender}
                             radius="50%"
-                            css="min-width: 30px; width: 30px; height: 30px; margin-right: 5px;"
+                            css="min-width: 40px; width: 40px; height: 40px; margin-right: 5px;@media(min-width: 768px){min-width: 30px; width: 30px; height: 30px;}"
                         />
                         {userOnline.includes(conversation?.user.id ?? '') && (
                             <Div
@@ -810,7 +829,7 @@ const Conversation: React.FC<{
                         overflow-y: overlay;
                         scroll-behavior: smooth;
                         padding: 0 11px 5px;
-                        bottom: 45px;
+                        bottom: 54px;
                         left: 0;
                         transition: all 0.5s linear;
                         position: absolute;
@@ -820,7 +839,7 @@ const Conversation: React.FC<{
                                 transform: translateX(calc(100% - 100vw));
                             }
                         }
-                        height: 83%;
+                        height: 81%;
                     `}
                     onScroll={() => handleScroll}
                     onTouchEnd={() => {
@@ -1058,6 +1077,7 @@ const Conversation: React.FC<{
                             <Div
                                 css={`
                                     cursor: var(--pointer);
+                                    font-size: 22px;
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -1086,7 +1106,11 @@ const Conversation: React.FC<{
                                         multiple
                                         hidden
                                     />
-                                    <Label htmlFor={conversation?._id + 'uploadCon'} color={colorText}>
+                                    <Label
+                                        htmlFor={conversation?._id + 'uploadCon'}
+                                        css="font-size: 22px;"
+                                        color={colorText}
+                                    >
                                         <CameraI />
                                     </Label>
                                 </form>
@@ -1099,7 +1123,7 @@ const Conversation: React.FC<{
                                 value={value}
                                 bg="rgb(255 255 255 / 6%)"
                                 css={`
-                                    width: 100%;
+                                    width: 65%;
                                     height: 33px;
                                     margin: 0;
                                     padding: 5px 10px;
@@ -1118,7 +1142,7 @@ const Conversation: React.FC<{
                             />
                             <Div
                                 width="34px"
-                                css="font-size: 22px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
+                                css="font-size: 25px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
                                 onClick={(e) => handleSend(conversation?._id, conversation?.user.id)}
                             >
                                 <SendOPTI />

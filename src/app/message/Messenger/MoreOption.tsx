@@ -31,14 +31,13 @@ const MoreOption: React.FC<{
             left="0"
             css={`
                 height: 100%;
-                background-color: #212121cc;
-                height: 98%;
+                height: 100%;
                 div,
                 p {
                     user-select: none;
                 }
                 z-index: 9999;
-                background-color: #29292900;
+                background-color: #000000a1;
                 border-radius: 0;
                 align-items: flex-end;
             `}
@@ -92,7 +91,10 @@ const MoreOption: React.FC<{
                         css="width: 45px; height: 45px; margin-bottom: 5px;"
                         radius="50%"
                     />
-                    <P z="1.4rem" css="width: 100%; text-align: center;">
+                    <P
+                        z="1.7rem"
+                        css="width: 100%; text-align: center; @media(min-width: 768px){font-weight: 600; font-size: 1.6rem}"
+                    >
                         {dataMore.fullName}
                     </P>
                 </Div>
@@ -114,8 +116,21 @@ const MoreOption: React.FC<{
                             if (!item.load) item.onClick();
                         }}
                     >
-                        <Div css="margin: 0 5px;">{item.icon}</Div>
-                        <P z="1.3rem">{item.name}</P>
+                        <Div
+                            css={`
+                                margin: 0 5px;
+                                font-size: 25px;
+                                @media (min-width: 768px) {
+                                    font-size: 20px;
+                                }
+                                color: ${item?.color};
+                            `}
+                        >
+                            {item.icon}
+                        </Div>
+                        <P z="1.5rem" css="@media(min-width: 768px){font-size: 1.3rem}">
+                            {item.name}
+                        </P>
                     </Div>
                 ))}
             </Div>
