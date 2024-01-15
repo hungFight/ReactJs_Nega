@@ -78,6 +78,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     } = LogicForm(form, colorText, colorBg, user);
     const [edit, setEdit] = useState<boolean>(true);
     const [hashTags, setHashTags] = useState<string[]>([]);
+    const [tags, setTags] = useState<{ id: string; avatar: string; gender: number; fullName: string }[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const yes = edit && uploadPre.length;
@@ -210,7 +211,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {onTags && (
                                 <Hashtag setHashTags={setHashTags} hashTagsInitially={hashTags} setOnTags={setOnTags} />
                             )}
-                            {onTagU && <Tags colorText={colorText} setOnTagU={setOnTagU} />}
+                            {onTagU && (
+                                <Tags colorText={colorText} setOnTagU={setOnTagU} setTags={setTags} tags={tags} />
+                            )}
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}

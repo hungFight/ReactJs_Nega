@@ -46,6 +46,7 @@ export const DivConversation = styled.div<{ css?: string; height?: string }>`
     border-radius: 5px;
     background-color: #202124;
     z-index: 8888;
+    min-width: 100%;
     height: 100%;
     ${(props) => props.css}
     .chatBar {
@@ -57,9 +58,11 @@ export const DivConversation = styled.div<{ css?: string; height?: string }>`
     }
     @media (min-width: 500px) {
         width: 450px;
+        min-width: 450px;
     }
     @media (min-width: 768px) {
         width: 360px;
+        min-width: 360px;
         height: 530px;
     }
 `;

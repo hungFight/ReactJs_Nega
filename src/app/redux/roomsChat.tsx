@@ -30,7 +30,7 @@ const roomsChatPage = createSlice({
                 }
             });
             if (!here && state.chats.length <= 5) {
-                state.chats.push(action.payload);
+                state.chats = [...state.chats, action.payload];
                 console.log(state.chats.length, 'current(state.chat)');
             }
         },

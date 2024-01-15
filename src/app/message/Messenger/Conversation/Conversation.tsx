@@ -755,11 +755,7 @@ const Conversation: React.FC<{
                                         ),
                                     ),
                                 );
-                                setId_chats((pre) =>
-                                    pre.filter(
-                                        (c) => c.id_other !== conversation?.user.id && c.id_room !== conversation?._id,
-                                    ),
-                                );
+
                                 // del.current.remove();
                             }
                         }}

@@ -10,10 +10,26 @@ import { useDispatch, useSelector } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtils';
 import { InitialStateHideShow, setOpenProfile } from '~/redux/hideShow';
 
-const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetStateAction<boolean>> }> = ({
-    colorText,
-    setOnTagU,
-}) => {
+const Tags: React.FC<{
+    colorText: string;
+    setOnTagU: React.Dispatch<React.SetStateAction<boolean>>;
+    setTags: React.Dispatch<
+        React.SetStateAction<
+            {
+                id: string;
+                avatar: string;
+                gender: number;
+                fullName: string;
+            }[]
+        >
+    >;
+    tags: {
+        id: string;
+        avatar: string;
+        gender: number;
+        fullName: string;
+    }[];
+}> = ({ colorText, setOnTagU, setTags, tags }) => {
     const offsetRef = useRef<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
@@ -42,7 +58,7 @@ const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetSta
         }
         fetchFriends();
     }, []);
-    console.log(data, 'tags');
+    console.log(tags, 'tags');
 
     const handleScroll = () => {
         const { scrollTop, clientHeight, scrollHeight } = eleRef.current;
@@ -83,9 +99,8 @@ const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetSta
                     height: 100%;
                     padding: 0 0 5px 0;
                     position: relative;
-                    color: white;
                     background-color: #2a2a2a;
-                    @media (min-width: 400px) {
+                    @media (min-width: 500px) {
                         height: 100%;
                         border-radius: 5px;
                     }
@@ -101,14 +116,13 @@ const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetSta
                             box-shadow: 0px 0px 5px 0px black;
                             justify-content: center;
                             padding: 5px 4px;
-                            font-size: 1.4rem;
+                            font-size: 1.5rem;
                             display: flex;
                             align-items: center;
                             position: relative;
-                            color: ${colorText};
                         `}
                     >
-                        tag
+                        Tag
                         <DivPos size="20px" top="5px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
                             <CloseI />
                         </DivPos>
@@ -122,6 +136,19 @@ const Tags: React.FC<{ colorText: string; setOnTagU: React.Dispatch<React.SetSta
                         <Account
                             key={r.id}
                             data={r}
+                            onClick={() => {
+                                setTags((pre) => {
+                                    if (!pre.some((v) => v.id === r.id)) {
+                                        return [
+                                            ...pre,
+                                            { id: r.id, avatar: r.avatar, fullName: r.fullName, gender: r.gender },
+                                        ];
+                                    } else {
+                                        pre = pre.filter((v) => v.id !== r.id);
+                                        return pre;
+                                    }
+                                });
+                            }}
                             Element={
                                 <>
                                     <DivPos

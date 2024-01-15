@@ -17,18 +17,27 @@ const Account: React.FC<{
     location?: string;
     Element?: ReactElement;
     css?: string;
-    profile?: boolean;
-}> = ({ data, location, Element, css, profile }) => {
+    profile?: string;
+    onClick?: (v: any) => void;
+}> = ({ data, location, Element, css, profile, onClick }) => {
     const dispatch = useDispatch();
     const handleHistory = async (res: { id: string; avatar: string; fullName: string; gender: number }) => {
         const result = await userAPI.setHistory(res);
         console.log('sss');
     };
+    const TagH: any = profile === 'url' ? Smooth : Div;
     return (
         <>
-            <Smooth
-                to={`social/profile?id=${data.id}`}
+            <TagH
+                to={
+                    profile === 'url'
+                        ? `${
+                              window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] : 'social'
+                          }/profile?id=${data.id}`
+                        : ''
+                }
                 key={data.id}
+                onClick={onClick}
                 css={`
                     width: 100% !important;
                     display: flex;
@@ -61,7 +70,7 @@ const Account: React.FC<{
                     </Hname>
                 </Div>
                 {Element}
-            </Smooth>
+            </TagH>
         </>
     );
 };

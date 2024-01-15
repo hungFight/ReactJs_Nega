@@ -216,7 +216,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                             <Div width="100%" css="display: block;">
                                 {resultSearch.length > 0 ? (
                                     resultSearch.map((re) => (
-                                        <Account profile key={re.id} data={re} location={location} />
+                                        <Account profile="url" key={re.id} data={re} location={location} />
                                     ))
                                 ) : (
                                     <P>{dataText.rec === 'Recently' ? 'No one of this name' : 'Không tìm thấy'}</P>
