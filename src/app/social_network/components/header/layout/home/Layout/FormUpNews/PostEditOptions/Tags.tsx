@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CloseI, HashI, PlusI, ProfileI, SearchI, TagPostI } from '~/assets/Icons/Icons';
+import { CheckI, CloseI, HashI, PlusI, ProfileI, SearchI, TagPostI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
@@ -155,6 +155,7 @@ const Tags: React.FC<{
                                         top="14.5px"
                                         right="57px"
                                         size="25px"
+                                        css="color: #a4dff1;"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             dispatch(setOpenProfile({ newProfile: [r.id], currentId: '' }));
@@ -166,8 +167,21 @@ const Tags: React.FC<{
                                         top="17px"
                                         right="22px"
                                         width="20px"
-                                        css=" border: 2px solid #a7a7a7; border-radius: 3px;"
-                                    ></DivPos>
+                                        css={`
+                                            border: 2px solid ${tags.some((v) => v.id === r.id) ? '#7bf05e' : '#a7a7a7'};
+                                            border-radius: 3px;
+                                        `}
+                                    >
+                                        {tags.some((v) => v.id === r.id) && (
+                                            <Div
+                                                css={`
+                                                    color: #7bf05e;
+                                                `}
+                                            >
+                                                <CheckI />
+                                            </Div>
+                                        )}
+                                    </DivPos>
                                 </>
                             }
                         />
