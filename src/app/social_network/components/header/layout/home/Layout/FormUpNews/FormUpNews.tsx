@@ -270,6 +270,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     hashTags={hashTags} // hashTags
                                     setEdit={setEdit}
                                     editForm={edit}
+                                    setTags={setTags}
+                                    tags={tags}
                                 />
                             )}
                         </DivDataFake>

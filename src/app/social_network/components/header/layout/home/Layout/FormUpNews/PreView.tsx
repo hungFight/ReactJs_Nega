@@ -17,6 +17,7 @@ import {
     LoadingCircleI,
     LoadingI,
     LockI,
+    MinusI,
     NextI,
     PlayI,
     PrivateI,
@@ -25,6 +26,7 @@ import {
     SliderI,
     SmileI,
     SortFileI,
+    TagPostI,
     UndoI,
     UndoIRegister,
     VideoI,
@@ -102,6 +104,22 @@ const PreviewPost: React.FC<{
     setEdit: React.Dispatch<React.SetStateAction<boolean>>;
     editForm: boolean;
     setUploadPre: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
+    setTags: React.Dispatch<
+        React.SetStateAction<
+            {
+                id: string;
+                avatar: string;
+                gender: number;
+                fullName: string;
+            }[]
+        >
+    >;
+    tags: {
+        id: string;
+        avatar: string;
+        gender: number;
+        fullName: string;
+    }[];
 }> = ({
     user,
     colorText,
@@ -120,6 +138,8 @@ const PreviewPost: React.FC<{
     setEdit,
     editForm,
     setUploadPre,
+    tags,
+    setTags,
 }) => {
     // Select type of post
     const {
@@ -446,6 +466,32 @@ const PreviewPost: React.FC<{
                         </DivPos>
                     </Div>
 
+                    {tags.length > 0 && (
+                        <Div width="100%" css="padding: 0 10px;margin-top: 10px; ">
+                            <Div css="margin-right: 5px">
+                                <TagPostI />
+                            </Div>
+                            {tags.map((t, index, arr) => (
+                                <Div css="" key={t.id}>
+                                    <Avatar
+                                        src={t.avatar}
+                                        alt={t.fullName}
+                                        gender={t.gender}
+                                        css="width: 20px; height: 20px; margin-right: 5px;"
+                                        radius="50%"
+                                    />
+                                    <P z="1.1rem" css="display: flex; align-items: center;">
+                                        {t.fullName}
+                                    </P>
+                                    {!(index + 1 === arr.length) && (
+                                        <Div css="font-size: 24px; align-items: center; margin:0 5px;">
+                                            <MinusI />
+                                        </Div>
+                                    )}
+                                </Div>
+                            ))}
+                        </Div>
+                    )}
                     <Div width="100%" css="padding: 5px 6px 10px 6px;">
                         {valueText && (
                             <P

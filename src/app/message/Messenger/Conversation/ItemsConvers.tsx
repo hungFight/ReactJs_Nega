@@ -313,7 +313,7 @@ const ItemsRoom: React.FC<{
                                                       top="-90px"
                                                       width="190px"
                                                       left="-82px"
-                                                      css="display: none; height: auto; user-select: none; background-color: #1b5c5ffc; padding: 5px; border-radius: 5px;"
+                                                      css="display: none; z-index: 20;height: auto; user-select: none; background-color: #1b5c5ffc; padding: 5px; border-radius: 5px;"
                                                   >
                                                       <Div wrap="wrap" width="100%">
                                                           <DivFlex css="flex-wrap: wrap;">
