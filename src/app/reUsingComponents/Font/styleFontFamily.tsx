@@ -7,7 +7,7 @@ export const DivFonts = styled.div<PropsDivFonts>`
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    padding: 9px 0;
+    padding: 9px;
     border-radius: 5px;
     overflow-y: overlay;
     position: relative;

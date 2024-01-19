@@ -53,8 +53,8 @@ const Account: React.FC<{
             >
                 <Div
                     css={`
-                        width: 35px;
-                        height: 35px;
+                        width: 40px;
+                        height: 40px;
                         align-items: inherit;
                         justify-content: center;
                         font-size: 25px;

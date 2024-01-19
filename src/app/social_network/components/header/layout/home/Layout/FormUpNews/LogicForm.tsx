@@ -36,7 +36,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
 
     const [loading, setLoading] = useState<boolean>(false);
     const [fontFamily, setFontFamily] = useState<{ name: string; type: string }>({
-        name: 'Noto Sans',
+        name: 'Robotol',
         type: 'Straight',
     });
     const handleClear = () => {

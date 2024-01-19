@@ -422,7 +422,7 @@ function App() {
                                 position: fixed;
                                 top: 57px;
                                 right: 50px;
-                                z-index: 9999;
+                                z-index: 9998;
                                 transition: all 1s linear;
                             `}
                             onMouseEnter={handleStopClearing}

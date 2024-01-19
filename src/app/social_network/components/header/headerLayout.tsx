@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import React, { memo, useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { routeheaders } from '~/routes/routeSocialNetwork/routes';
@@ -95,6 +95,9 @@ const Header: React.FC<{
     const handleReload = () => {
         console.log('ok');
     };
+
+    const navigate = useNavigate();
+
     const handleSearch = async (e: any) => {
         if (e.target.getAttribute('id') !== 'notS') setSearchC(!searchC);
         if (!searchC) {
@@ -212,7 +215,10 @@ const Header: React.FC<{
                             title={home.title}
                             size="20px"
                             color={colorText}
-                            onClick={() => setBorder('home')}
+                            onClick={() => {
+                                setBorder('home');
+                                navigate('/social/');
+                            }}
                         />
                         <Hovertitle
                             id="exch"

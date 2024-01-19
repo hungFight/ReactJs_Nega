@@ -79,7 +79,7 @@ const Tags: React.FC<{
                 top: 0px;
                 left: 0;
                 align-items: center;
-                @media (min-width: 400px) {
+                @media (min-width: 500px) {
                     width: 98%;
                     height: 400px;
                     translate: unset;
@@ -115,7 +115,7 @@ const Tags: React.FC<{
                             width: 100%;
                             box-shadow: 0px 0px 5px 0px black;
                             justify-content: center;
-                            padding: 5px 4px;
+                            padding: 10px 4px;
                             font-size: 1.5rem;
                             display: flex;
                             align-items: center;
@@ -123,7 +123,7 @@ const Tags: React.FC<{
                         `}
                     >
                         Tag
-                        <DivPos size="20px" top="5px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
+                        <DivPos size="25px" top="8px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
                             <CloseI />
                         </DivPos>
                     </H3>
@@ -131,7 +131,7 @@ const Tags: React.FC<{
                         <Input placeholder="Search" color={colorText} />
                     </Div>
                 </Div>
-                <Div width="100%" wrap="wrap">
+                <Div width="100%" wrap="wrap" css="padding: 0 5px;">
                     {data.map((r) => (
                         <Account
                             key={r.id}
@@ -152,9 +152,9 @@ const Tags: React.FC<{
                             Element={
                                 <>
                                     <DivPos
-                                        top="14.5px"
+                                        top="12.5px"
                                         right="57px"
-                                        size="25px"
+                                        size="30px"
                                         css="color: #a4dff1;"
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -164,9 +164,9 @@ const Tags: React.FC<{
                                         <ProfileI />
                                     </DivPos>
                                     <DivPos
-                                        top="17px"
+                                        top="15px"
                                         right="22px"
-                                        width="20px"
+                                        width="23px"
                                         css={`
                                             border: 2px solid ${tags.some((v) => v.id === r.id) ? '#7bf05e' : '#a7a7a7'};
                                             border-radius: 3px;

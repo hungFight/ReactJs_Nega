@@ -20,7 +20,7 @@ const FontFamilys: React.FC<{
         setFontFamily({ name, type });
     };
 
-    console.log('fontFamily');
+    console.log('fontFamily', fontFamily);
     return (
         <DivFonts bg={colorBg === 1 ? '#292a2d;' : ''}>
             <DivList color={colorText}>
@@ -39,8 +39,6 @@ const FontFamilys: React.FC<{
                                 bg={fontFamily.name === f.name ? '#345fccdb' : ''}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log('ok');
-
                                     setTypeFont(f.name);
                                     setFontFamily({ type: f.type[0].name, name: f.name });
                                 }}

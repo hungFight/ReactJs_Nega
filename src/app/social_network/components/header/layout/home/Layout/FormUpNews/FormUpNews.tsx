@@ -77,7 +77,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
         handleClear,
     } = LogicForm(form, colorText, colorBg, user);
     const [edit, setEdit] = useState<boolean>(true);
-    const [hashTags, setHashTags] = useState<string[]>([]);
+    const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>([]);
     const [tags, setTags] = useState<{ id: string; avatar: string; gender: number; fullName: string }[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
@@ -100,7 +100,16 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                         : ''}
                 `}
             >
-                <Form method="post" encType="multipart/form-data" css="width: 100%;">
+                <Form
+                    method="post"
+                    encType="multipart/form-data"
+                    css="width: 100%;"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     <DivUpNews>
                         <DivOptions>
                             {displayEmoji && (
@@ -191,7 +200,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     <HashI />
                                 </DivItems>
                                 <DivItems
-                                    borderB={displayFontText ? '1px solid white' : ''}
+                                    borderB={onTagU ? '1px solid white' : ''}
                                     color={colorText}
                                     onClick={() => setOnTagU(!onTagU)}
                                 >

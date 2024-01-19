@@ -120,7 +120,7 @@ export const Textarea = styled.textarea<PorpsTextarea>`
     outline: none;
     color: ${(props) => props.color};
     background-color: ${(props) => props.bg};
-    font-family: ${(props) => props.font}, sans-serif;
+    font-family: '${(props) => props.font}', sans-serif;
     ${(props) => props.css}
     &::placeholder {
         color: white;

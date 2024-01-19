@@ -2,14 +2,24 @@ import React, { useState } from 'react';
 import { CloseI, HashI, PlusI, SearchI, TagPostI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { v4 as primaryKey } from 'uuid';
 
 const Hashtag: React.FC<{
-    setHashTags: React.Dispatch<React.SetStateAction<string[]>>;
+    setHashTags: React.Dispatch<React.SetStateAction<{ id: string; value: string }[]>>;
     setOnTags: React.Dispatch<React.SetStateAction<boolean>>;
-    hashTagsInitially: string[];
+    hashTagsInitially: { id: string; value: string }[];
 }> = ({ setHashTags: setHash, setOnTags, hashTagsInitially }) => {
-    const [hashTags, setHashTags] = useState<string[]>(hashTagsInitially);
+    const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>(hashTagsInitially);
     const [hashTag, setHashTag] = useState<string>('');
+    const [realData, setRealData] = useState<{ id: string; value: string }[]>([
+        { id: '1', value: '#hello' },
+        { id: '2', value: '#world' },
+        { id: '3', value: '#nana' },
+        { id: '4', value: '#football' },
+        { id: '5', value: '#fiction' },
+        { id: '6', value: '#love' },
+        { id: '7', value: '#goodlife' },
+    ]);
     return (
         <Div
             css={`
@@ -21,7 +31,7 @@ const Hashtag: React.FC<{
                 top: 0;
                 left: 0;
                 align-items: end;
-                @media (min-width: 400px) {
+                @media (min-width: 500px) {
                     width: 98%;
                     z-index: 0;
                     height: 400px;
@@ -43,7 +53,7 @@ const Hashtag: React.FC<{
                     height: 100%;
                     padding: 5px 0;
                     position: relative;
-                    color: white;
+                    color: #ededed;
                     background-color: #1a1a1a;
                     @media (min-width: 400px) {
                         height: 100%;
@@ -66,7 +76,6 @@ const Hashtag: React.FC<{
                         display: flex;
                         align-items: center;
                         position: relative;
-                        color: white;
                     `}
                 >
                     <HashI /> Hashtag
@@ -94,26 +103,31 @@ const Hashtag: React.FC<{
                 >
                     {hashTags.map((t) => (
                         <P
-                            z="1.4rem"
-                            key={t}
+                            z="1.5rem"
+                            key={t.id}
                             css={`
                                 height: fit-content;
-                                padding: 4px 6px;
+                                padding: 6px 8px;
                                 border-radius: 5px;
                                 background-color: #3d3e3fb8;
                                 margin-right: 3px;
                                 cursor: var(--pointer);
                                 margin-bottom: 5px;
+                                @media (min-width: 768px) {
+                                    font-size: 1.4rem;
+                                }
                                 &:hover {
                                     background-color: #853737;
                                 }
                             `}
                             onClick={() => {
-                                if (hashTags.some((ts) => ts.toLowerCase() === t.toLowerCase()))
-                                    setHashTags((pre) => pre.filter((ts) => ts.toLowerCase() !== t.toLowerCase()));
+                                if (hashTags.some((ts) => ts.value.toLowerCase() === t.value.toLowerCase()))
+                                    setHashTags((pre) =>
+                                        pre.filter((ts) => ts.value.toLowerCase() !== t.value.toLowerCase()),
+                                    );
                             }}
                         >
-                            {t}
+                            {t.value}
                         </P>
                     ))}
                 </Div>
@@ -126,8 +140,8 @@ const Hashtag: React.FC<{
                     }}
                 >
                     <P
-                        z="1.4rem"
-                        css="padding: 3px 10px; border-radius: 5px; background-color: #187bd7; margin-right: 5px; @media(min-width: 768px){margin-right: 10px;}"
+                        z="1.5rem"
+                        css="padding: 5px 10px; border-radius: 5px; background-color: #187bd7; margin-right: 5px; @media(min-width: 768px){margin-right: 10px;}"
                     >
                         Done
                     </P>
@@ -146,47 +160,74 @@ const Hashtag: React.FC<{
                     `}
                 >
                     <Div width="100%" display="block" css="height: 100%; position: relative;">
-                        <Div
-                            css={`
-                                position: absolute;
-                                right: 10px;
-                                top: 30px;
-                                border-radius: 50%;
-                                padding: 8px;
-                                background-color: #292929;
-                                box-shadow: 0 0 1px white;
-                                cursor: var(--pointer);
-                            `}
-                            onClick={() => {
-                                const occurrences = (hashTag.match(/#/g) || []).length;
-                                if (
-                                    hashTag.length > 1 &&
-                                    occurrences === 1 &&
-                                    !hashTags.some((ts) => ts.toLowerCase() === hashTag.toLowerCase())
-                                ) {
-                                    if (!hashTags.includes(hashTag)) {
-                                        setHashTags([...hashTags, hashTag]);
-                                    }
-                                }
-                                setHashTag('');
-                            }}
-                        >
-                            <Div
-                                width="0.5px"
-                                css="position: inherit; right: 15px; top: -34px; background-color: #727272; height: 33px;"
-                            ></Div>
-                            <PlusI />
-                        </Div>
                         <Div css="margin-top: 5px; position: relative">
+                            {/* <Div
+                                width="50px"
+                                css={`
+                                    position: absolute;
+                                    right: 5px;
+                                    top: 3px;
+                                    border-radius: 5px;
+                                    justify-content: center;
+                                    padding: 8px;
+                                    background-color: #207394;
+                                    box-shadow: 0 0 1px white;
+                                    @media (min-width: 768px) {
+                                        right: 14px;
+                                    }
+                                    cursor: var(--pointer);
+                                `}
+                                onClick={() => {
+                                    const occurrences = (hashTag.match(/#/g) || []).length;
+                                    if (
+                                        hashTag.length > 1 &&
+                                        occurrences === 1 &&
+                                        !hashTags.some((ts) => ts.toLowerCase() === hashTag.toLowerCase())
+                                    ) {
+                                        if (!hashTags.includes(hashTag)) {
+                                            setHashTags([...hashTags, hashTag]);
+                                        }
+                                    }
+                                    setHashTag('');
+                                }}
+                            >
+                                <PlusI />
+                            </Div> */}
                             <Input
                                 width="75%"
-                                padding="6px 40px 6px 10px"
+                                padding="10px 40px 10px 10px"
                                 margin="auto"
                                 placeholder="Search # tag or add"
                                 border="1px solid rgb(47 47 47)"
+                                type="text"
                                 color="white"
                                 value={hashTag}
-                                onChange={(e) => setHashTag(e.target.value)}
+                                onChange={(e) => {
+                                    setHashTag(e.target.value);
+                                    const occurrences = (e.target.value.match(/#/g) || []).length;
+                                    if (e.target.value.length > 1 && occurrences === 1) {
+                                        if (
+                                            !realData.some(
+                                                (ts) => ts.value.toLowerCase() === e.target.value.toLowerCase(),
+                                            )
+                                        ) {
+                                            if (!realData.some((v) => v.id === 'dataAdd')) {
+                                                setRealData([{ id: 'dataAdd', value: e.target.value }, ...realData]);
+                                            } else {
+                                                setRealData((pre) =>
+                                                    pre.map((c) => {
+                                                        if (c.id === 'dataAdd') {
+                                                            c.value = e.target.value;
+                                                        }
+                                                        return c;
+                                                    }),
+                                                );
+                                            }
+                                        } else {
+                                            setRealData((pre) => pre.filter((l) => l.id !== 'dataAdd'));
+                                        }
+                                    }
+                                }}
                                 onFocus={() => {
                                     if (hashTag.indexOf('#') < 0) {
                                         setHashTag('#' + hashTag);
@@ -199,53 +240,59 @@ const Hashtag: React.FC<{
                                 }}
                                 onKeyUp={(e) => {
                                     if (e.key === 'Enter') {
-                                        e.preventDefault();
                                         const occurrences = (hashTag.match(/#/g) || []).length;
                                         if (
                                             hashTag.length > 1 &&
                                             occurrences === 1 &&
-                                            !hashTags.some((ts) => ts.toLowerCase() === hashTag.toLowerCase())
+                                            !hashTags.some((ts) => ts.value.toLowerCase() === hashTag.toLowerCase())
                                         ) {
-                                            if (!hashTags.includes(hashTag)) {
-                                                setHashTags([...hashTags, hashTag]);
+                                            if (!hashTags.some((v) => v.value.includes(hashTag))) {
+                                                const uId = primaryKey();
+                                                setHashTags([...hashTags, { id: uId, value: hashTag }]);
                                             }
                                         }
-                                        setHashTag('');
+                                        setHashTag('#');
                                     }
                                 }}
                             />
-                            <DivPos size="20px" right="50px" top="4px">
+                            <DivPos size="25px" right="60px" top="6px" css="@media(min-width: 768px){right: 80px}">
                                 <SearchI />
                             </DivPos>
                         </Div>
                         <Div width="100%" wrap="wrap" css="padding: 10px; margin-top: 15px;">
-                            {['#hello', '#world', '#nana', '#football', '#fiction', '#love', '#goodlife'].map((t) => (
+                            {realData.map((t) => (
                                 <P
-                                    z="1.4rem"
-                                    key={t}
+                                    z="1.5rem"
+                                    key={t.id}
                                     css={`
                                         height: fit-content;
-                                        padding: 4px 6px;
+                                        padding: 6px 8px;
                                         border-radius: 5px;
                                         background-color: #3d3e3fb8;
                                         margin-right: 3px;
+                                        @media (min-width: 768px) {
+                                            font-size: 1.4rem;
+                                        }
                                         cursor: var(--pointer);
                                         margin-bottom: 5px;
-                                        ${hashTags.some((ts) => ts.toLowerCase() === t.toLowerCase())
+                                        ${hashTags.some((ts) => ts.value.toLowerCase() === t.value.toLowerCase())
                                             ? 'background-color: #1f4749;'
+                                            : ''}
+                                        ${hashTag.toLowerCase() === t.value.toLowerCase()
+                                            ? 'background-image: linear-gradient(45deg, black, transparent);box-shadow: 0 0 3px #97b8a8;'
                                             : ''}
                                     `}
                                     onClick={() => {
-                                        if (!hashTags.some((ts) => ts.toLowerCase() === t.toLowerCase())) {
+                                        if (!hashTags.some((ts) => ts.value.toLowerCase() === t.value.toLowerCase())) {
                                             setHashTags([...hashTags, t]);
                                         } else {
                                             setHashTags((pre) =>
-                                                pre.filter((ts) => ts.toLowerCase() !== t.toLowerCase()),
+                                                pre.filter((ts) => ts.value.toLowerCase() !== t.value.toLowerCase()),
                                             );
                                         }
                                     }}
                                 >
-                                    {t}
+                                    {t.value}
                                 </P>
                             ))}
                         </Div>

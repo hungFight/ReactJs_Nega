@@ -100,7 +100,7 @@ const PreviewPost: React.FC<{
     >;
 
     handleClear: () => void;
-    hashTags: string[];
+    hashTags: { id: string; value: string }[];
     setEdit: React.Dispatch<React.SetStateAction<boolean>>;
     editForm: boolean;
     setUploadPre: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
@@ -415,8 +415,8 @@ const PreviewPost: React.FC<{
                     <Div width="100%" css="height: fit-content; margin-top: 5px; position: relative;">
                         <Div
                             css={`
-                                width: 35px;
-                                height: 35px;
+                                width: 40px;
+                                height: 40px;
                                 margin: 5px;
                             `}
                         >
@@ -427,7 +427,7 @@ const PreviewPost: React.FC<{
                             wrap="wrap"
                             css={`
                                 color: ${colorText};
-                                font-size: 1.2rem;
+                                font-size: 1.3rem;
                                 padding-top: 2px;
                                 align-items: center;
                                 margin-bottom: 4px;
@@ -436,7 +436,6 @@ const PreviewPost: React.FC<{
                             <H3
                                 css={`
                                     width: 100%;
-                                    color: ${colorText};
                                     text-overflow: ellipsis;
                                     white-space: nowrap;
                                     overflow: hidden;
@@ -444,21 +443,21 @@ const PreviewPost: React.FC<{
                             >
                                 {user?.fullName}
                             </H3>
-                            <P css=" width: 52px; font-size: 1.1rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around;">
+                            <P css=" width: 52px; font-size: 1.2rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around;">
                                 <LockI />
                                 <Span css="padding-top: 3px;">3h</Span>
                                 <Span>{valueSeePost.icon}</Span>
                             </P>
                             {valuePrivacy.length > 0 && (
-                                <Div css="margin-left: 2px">
+                                <Div css="margin-left: 2px;font-size: 15px">
                                     <PrivateI />
                                 </Div>
                             )}
                         </Div>
                         <DivPos
-                            size="21px"
+                            size="25px"
                             top="4px"
-                            right="10px"
+                            right="15px"
                             color={colorText}
                             onClick={() => setOptions(!options)}
                         >
@@ -467,29 +466,34 @@ const PreviewPost: React.FC<{
                     </Div>
 
                     {tags.length > 0 && (
-                        <Div width="100%" css="padding: 0 10px;margin-top: 10px; ">
-                            <Div css="margin-right: 5px">
+                        <Div width="100%" css="padding: 5px 10px;margin-top: 10px; ">
+                            <Div css="margin-right: 5px; height: 100%">
                                 <TagPostI />
                             </Div>
-                            {tags.map((t, index, arr) => (
-                                <Div css="" key={t.id}>
-                                    <Avatar
-                                        src={t.avatar}
-                                        alt={t.fullName}
-                                        gender={t.gender}
-                                        css="width: 20px; height: 20px; margin-right: 5px;"
-                                        radius="50%"
-                                    />
-                                    <P z="1.1rem" css="display: flex; align-items: center;">
-                                        {t.fullName}
-                                    </P>
-                                    {!(index + 1 === arr.length) && (
-                                        <Div css="font-size: 24px; align-items: center; margin:0 5px;">
-                                            <MinusI />
-                                        </Div>
-                                    )}
-                                </Div>
-                            ))}
+                            <Div width="100%" wrap="wrap">
+                                {tags.map((t, index, arr) => (
+                                    <Div css="margin-bottom: 5px;" key={t.id}>
+                                        <Avatar
+                                            src={t.avatar}
+                                            alt={t.fullName}
+                                            gender={t.gender}
+                                            css="width: 20px; height: 20px; margin-right: 5px;"
+                                            radius="50%"
+                                        />
+                                        <Smooth
+                                            to={`/social/profile?id=${t.id}`}
+                                            css="display: flex; align-items: center; font-size: 1.3rem; &:hover{color:#5f9cd1}"
+                                        >
+                                            {t.fullName}
+                                        </Smooth>
+                                        {!(index + 1 === arr.length) && (
+                                            <Div css="font-size: 24px; align-items: center; margin:0 5px;">
+                                                <MinusI />
+                                            </Div>
+                                        )}
+                                    </Div>
+                                ))}
+                            </Div>
                         </Div>
                     )}
                     <Div width="100%" css="padding: 5px 6px 10px 6px;">
@@ -502,10 +506,7 @@ const PreviewPost: React.FC<{
                                     font-family: ${font}, sans-serif;
                                     white-space: pre-wrap;
                                     word-break: break-word;
-                                    font-size: 1.4rem;
-                                    @media (min-width: 500px) {
-                                        font-size: 1.5rem;
-                                    }
+                                    font-size: 1.6rem;
                                     @media (min-width: 768px) {
                                         font-size: 1.6rem;
                                     }
@@ -518,15 +519,15 @@ const PreviewPost: React.FC<{
                         <Div width="100%" wrap="wrap" css="padding: 5px">
                             {hashTags.map((tag) => (
                                 <Smooth // link tag
-                                    key={tag}
-                                    to={`/sn/hashTags/${tag}`}
+                                    key={tag.id}
+                                    to={`/sn/hashTags/${tag.value}`}
                                     size="1.3rem"
                                     css={`
                                         margin-right: 5px;
                                         color: #5ba3e2;
                                     `}
                                 >
-                                    {tag}
+                                    {tag.value}
                                 </Smooth>
                             ))}
                         </Div>
