@@ -85,6 +85,7 @@ const Tags: React.FC<{
                     translate: unset;
                     margin-top: 11px;
                     position: unset;
+                    z-index: 1;
                 }
             `}
             onClick={(e) => {
@@ -102,7 +103,9 @@ const Tags: React.FC<{
                     background-color: #2a2a2a;
                     @media (min-width: 500px) {
                         height: 100%;
+                        box-shadow: 0 0 3px #60a6c7;
                         border-radius: 5px;
+                        background-color: transparent;
                     }
                 `}
                 onClick={(e) => {
@@ -120,6 +123,9 @@ const Tags: React.FC<{
                             display: flex;
                             align-items: center;
                             position: relative;
+                            @media (min-width: 500px) {
+                                box-shadow: unset;
+                            }
                         `}
                     >
                         Tag

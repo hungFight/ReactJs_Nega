@@ -157,8 +157,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     border-radius: 10px;
                                     justify-content: space-evenly;
                                     border: 1px solid #5d5d5d;
-                                    @media (min-width: 500px) {
-                                        height: 38px;
+                                    @media (min-width: 768px) {
+                                        height: 32px;
                                     }
                                 `}
                             >
@@ -202,7 +202,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 <DivItems
                                     borderB={onTagU ? '1px solid white' : ''}
                                     color={colorText}
-                                    onClick={() => setOnTagU(!onTagU)}
+                                    onClick={() => {
+                                        setOnTagU(!onTagU);
+                                    }}
                                 >
                                     <TagPostI />
                                 </DivItems>

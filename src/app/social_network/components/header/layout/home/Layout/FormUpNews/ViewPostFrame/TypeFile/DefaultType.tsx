@@ -105,53 +105,55 @@ const DefaultType: React.FC<{
                 }`}
             `}
         >
-            <DivPos
-                css={`
-                    top: ${step === 1 ? '55px' : '15px'};
-                    right: 12.5px;
-                    font-size: 30px;
-                    flex-direction: column;
-                    z-index: 1;
-                `}
-            >
-                <Div display="block" css="position: relative;">
-                    <Div
-                        css={`
-                            position: absolute;
-                            top: -5px;
-                            right: -2px;
-                            padding: 2px;
-                            background-color: ${bg || '#4e4e4e'};
-                            border-radius: 50%;
-                            color: ${bg === '#fcfcfc' ? '#1e1e1e' : '#ffffff'};
-                            z-index: 1;
-                        `}
-                        onClick={() => setShowColors(!showColors)}
-                    >
-                        <ColorsI />
-                    </Div>
-                    {colors.map((cl, index) => (
+            {file.length > 1 && (
+                <DivPos
+                    css={`
+                        top: ${step === 1 ? '55px' : '15px'};
+                        right: 12.5px;
+                        font-size: 30px;
+                        flex-direction: column;
+                        z-index: 1;
+                    `}
+                >
+                    <Div display="block" css="position: relative;">
                         <Div
-                            key={cl.id}
                             css={`
-                                width: 27px;
-                                height: 27px;
-                                border-radius: 5px;
-                                transition: all 0.5s linear;
                                 position: absolute;
-                                top: ${(index + 1) * 30}px;
-                                right: 2px;
-                                background-color: ${cl.color};
-                                ${index === 0 ? 'color: white;' : ''}
-                                ${!showColors && 'top: 0px; background-color: #00000000; color:#00000000; '}
+                                top: -5px;
+                                right: -2px;
+                                padding: 2px;
+                                background-color: ${bg || '#4e4e4e'};
+                                border-radius: 50%;
+                                color: ${bg === '#fcfcfc' ? '#1e1e1e' : '#ffffff'};
+                                z-index: 1;
                             `}
-                            onClick={() => setBg(cl.color)}
+                            onClick={() => setShowColors(!showColors)}
                         >
-                            {cl?.icon}
+                            <ColorsI />
                         </Div>
-                    ))}
-                </Div>
-            </DivPos>
+                        {colors.map((cl, index) => (
+                            <Div
+                                key={cl.id}
+                                css={`
+                                    width: 27px;
+                                    height: 27px;
+                                    border-radius: 5px;
+                                    transition: all 0.5s linear;
+                                    position: absolute;
+                                    top: ${(index + 1) * 30}px;
+                                    right: 2px;
+                                    background-color: ${cl.color};
+                                    ${index === 0 ? 'color: white;' : ''}
+                                    ${!showColors && 'top: 0px; background-color: #00000000; color:#00000000; '}
+                                `}
+                                onClick={() => setBg(cl.color)}
+                            >
+                                {cl?.icon}
+                            </Div>
+                        ))}
+                    </Div>
+                </DivPos>
+            )}
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             <>
                 {step > 0 && ToolDefault(0)}

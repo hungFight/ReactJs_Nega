@@ -182,6 +182,7 @@ const EditFiles: React.FC<{
                                 <Div width="100%" css="text-align: center;">
                                     <ButtonSubmit
                                         title="Hoàn thành"
+                                        css="background: #263f8b;"
                                         submit={false}
                                         onClick={() => {
                                             setUploadPre(

@@ -464,9 +464,27 @@ const PreviewPost: React.FC<{
                             <DotI />
                         </DivPos>
                     </Div>
-
+                    <Div width="100%" css="padding: 5px 6px 10px 6px;">
+                        {valueText && (
+                            <P
+                                css={`
+                                    padding: 5px;
+                                    color: ${colorText};
+                                    background-color: #292a2d;
+                                    font-family: ${font}, sans-serif;
+                                    white-space: pre-wrap;
+                                    word-break: break-word;
+                                    font-size: 1.5rem;
+                                    @media (min-width: 768px) {
+                                        font-size: 1.38rem;
+                                    }
+                                `}
+                                dangerouslySetInnerHTML={{ __html: valueText }}
+                            ></P>
+                        )}
+                    </Div>
                     {tags.length > 0 && (
-                        <Div width="100%" css="padding: 5px 10px;margin-top: 10px; ">
+                        <Div width="100%" css="padding: 0px 10px">
                             <Div css="margin-right: 5px; height: 100%">
                                 <TagPostI />
                             </Div>
@@ -496,27 +514,8 @@ const PreviewPost: React.FC<{
                             </Div>
                         </Div>
                     )}
-                    <Div width="100%" css="padding: 5px 6px 10px 6px;">
-                        {valueText && (
-                            <P
-                                css={`
-                                    padding: 5px;
-                                    color: ${colorText};
-                                    background-color: #292a2d;
-                                    font-family: ${font}, sans-serif;
-                                    white-space: pre-wrap;
-                                    word-break: break-word;
-                                    font-size: 1.6rem;
-                                    @media (min-width: 768px) {
-                                        font-size: 1.6rem;
-                                    }
-                                `}
-                                dangerouslySetInnerHTML={{ __html: valueText }}
-                            ></P>
-                        )}
-                    </Div>
                     {hashTags.length > 0 && (
-                        <Div width="100%" wrap="wrap" css="padding: 5px">
+                        <Div width="100%" wrap="wrap" css="padding: 6px">
                             {hashTags.map((tag) => (
                                 <Smooth // link tag
                                     key={tag.id}
@@ -662,7 +661,7 @@ const PreviewPost: React.FC<{
                                             })}
                                     </Div>
                                 )}
-                                <Div
+                                <Div // icons are showed when hover
                                     id="emoBar"
                                     width="fit-content"
                                     className="showI"
@@ -693,6 +692,7 @@ const PreviewPost: React.FC<{
                                             key={i.id}
                                             css={`
                                                 ${i.id === 1 ? 'padding-bottom: 6px;' : ''}
+                                                ${showI?.id === i.id ? 'border-bottom: 1px solid #b3eef5;' : ''}
                                             `}
                                             onClick={(e) => {
                                                 e.stopPropagation();

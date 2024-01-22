@@ -6,8 +6,6 @@ export const DivPost = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: 'Noto Sans', sans-serif;
-
     @media (min-width: 580px) {
         width: 580px;
     }

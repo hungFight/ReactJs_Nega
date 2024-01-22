@@ -82,12 +82,9 @@ export const DivItems = styled.div<PropsDivItems>`
     background-color: ${(props) => props.bg};
     color: ${(props) => props.color};
     position: ${(props) => props.position};
-    @media (min-width: 500px) {
-        font-size: 22px;
+    @media (min-width: 768px) {
+        font-size: 20px;
         width: 35px;
-    }
-    @media (min-width: 600px) {
-        font-size: 2.4rem;
     }
 `;
 export const DivDataFake = styled.div`
@@ -126,7 +123,7 @@ export const Textarea = styled.textarea<PorpsTextarea>`
         color: white;
     }
     @media (min-width: 768px) {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
     }
     &:focus {
         border-color: #30858c85;
