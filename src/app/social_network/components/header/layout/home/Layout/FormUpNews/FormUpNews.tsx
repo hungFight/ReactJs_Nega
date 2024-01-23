@@ -82,20 +82,15 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const yes = edit && uploadPre.length;
-    const handleSelect = () => {
+    const handleSelect = (e: any) => {
         const selection = window.getSelection();
-        if (selection) {
-            if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                const startNode = range.startContainer;
-                const startOffset = range.startOffset;
-                const endNode = range.endContainer;
-                const endOffset = range.endOffset;
-
-                console.log('Selected Text:', selection.toString());
-                console.log('Start Node:', startNode, 'Start Offset:', startOffset);
-                console.log('End Node:', endNode, 'End Offset:', endOffset);
-            }
+        const selectionStart = e.target.selectionStart;
+        const selectionEnd = e.target.selectionEnd;
+        const selectedText = e.target.value.substring(selectionStart, selectionEnd);
+        if (selection && selection.rangeCount > 0 && selectedText && selectedText !== ' ') {
+            console.log('Selected Text:', selectedText);
+            console.log('Selection Start:', selectionStart);
+            console.log('Selection End:', selectionEnd);
         }
     };
     return (
