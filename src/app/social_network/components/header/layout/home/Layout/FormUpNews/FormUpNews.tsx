@@ -82,6 +82,22 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const yes = edit && uploadPre.length;
+    const handleSelect = () => {
+        const selection = window.getSelection();
+        if (selection) {
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const startNode = range.startContainer;
+                const startOffset = range.startOffset;
+                const endNode = range.endContainer;
+                const endOffset = range.endOffset;
+
+                console.log('Selected Text:', selection.toString());
+                console.log('Start Node:', startNode, 'Start Offset:', startOffset);
+                console.log('End Node:', endNode, 'End Offset:', endOffset);
+            }
+        }
+    };
     return (
         <>
             <Div
@@ -247,6 +263,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 <Textarea
                                     className="textHome"
                                     color={colorText}
+                                    onMouseUp={handleSelect}
                                     bg={colorBg === 1 ? '#202124f5;' : ''}
                                     font={fontFamily.name + ' ' + fontFamily.type}
                                     value={inputValue.textarea}

@@ -121,10 +121,8 @@ const Hashtag: React.FC<{
                                 }
                             `}
                             onClick={() => {
-                                if (hashTags.some((ts) => ts.value.toLowerCase() === t.value.toLowerCase()))
-                                    setHashTags((pre) =>
-                                        pre.filter((ts) => ts.value.toLowerCase() !== t.value.toLowerCase()),
-                                    );
+                                if (hashTags.some((ts) => ts.value === t.value))
+                                    setHashTags((pre) => pre.filter((ts) => ts.value !== t.value));
                             }}
                         >
                             {t.value}
@@ -182,7 +180,7 @@ const Hashtag: React.FC<{
                                     if (
                                         hashTag.length > 1 &&
                                         occurrences === 1 &&
-                                        !hashTags.some((ts) => ts.toLowerCase() === hashTag.toLowerCase())
+                                        !hashTags.some((ts) => ts === hashTag)
                                     ) {
                                         if (!hashTags.includes(hashTag)) {
                                             setHashTags([...hashTags, hashTag]);
@@ -206,11 +204,7 @@ const Hashtag: React.FC<{
                                     setHashTag(e.target.value);
                                     const occurrences = (e.target.value.match(/#/g) || []).length;
                                     if (e.target.value.length > 1 && occurrences === 1) {
-                                        if (
-                                            !realData.some(
-                                                (ts) => ts.value.toLowerCase() === e.target.value.toLowerCase(),
-                                            )
-                                        ) {
+                                        if (!realData.some((ts) => ts.value === e.target.value)) {
                                             if (!realData.some((v) => v.id === 'dataAdd')) {
                                                 setRealData([{ id: 'dataAdd', value: e.target.value }, ...realData]);
                                             } else {
@@ -244,7 +238,7 @@ const Hashtag: React.FC<{
                                         if (
                                             hashTag.length > 1 &&
                                             occurrences === 1 &&
-                                            !hashTags.some((ts) => ts.value.toLowerCase() === hashTag.toLowerCase())
+                                            !hashTags.some((ts) => ts.value === hashTag)
                                         ) {
                                             if (!hashTags.some((v) => v.value.includes(hashTag))) {
                                                 const uId = primaryKey();
@@ -275,20 +269,18 @@ const Hashtag: React.FC<{
                                         }
                                         cursor: var(--pointer);
                                         margin-bottom: 5px;
-                                        ${hashTags.some((ts) => ts.value.toLowerCase() === t.value.toLowerCase())
+                                        ${hashTags.some((ts) => ts.value === t.value)
                                             ? 'background-color: #1f4749;'
                                             : ''}
-                                        ${hashTag.toLowerCase() === t.value.toLowerCase()
+                                        ${hashTag === t.value
                                             ? 'background-image: linear-gradient(45deg, black, transparent);box-shadow: 0 0 3px #97b8a8;'
                                             : ''}
                                     `}
                                     onClick={() => {
-                                        if (!hashTags.some((ts) => ts.value.toLowerCase() === t.value.toLowerCase())) {
+                                        if (!hashTags.some((ts) => ts.value === t.value)) {
                                             setHashTags([...hashTags, t]);
                                         } else {
-                                            setHashTags((pre) =>
-                                                pre.filter((ts) => ts.value.toLowerCase() !== t.value.toLowerCase()),
-                                            );
+                                            setHashTags((pre) => pre.filter((ts) => ts.value !== t.value));
                                         }
                                     }}
                                 >

@@ -60,15 +60,13 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     let fileAmount = 25;
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, addMore?: boolean) => {
         e.stopPropagation();
-        console.log(e.target.files, 'addMore');
         setLoading(true);
-        uploadPreRef.current = [];
         const file = e.target.files;
         const options = {
             maxSizeMB: 10,
         };
-
         if (file && file.length < fileAmount) {
+            uploadPreRef.current = [];
             for (let i = 0; i < file.length; i++) {
                 console.log('ffff');
 
@@ -166,7 +164,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         setdisplayEmoji(!displayEmoji);
     }, [displayEmoji]);
     const handleGetValue = (e: { target: { value: any } }) => {
-        if (e.target.value.length <= 2500) {
+        if (e.target.value.length <= 10000) {
             // Define a regex pattern to match URLs
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             const hashTagRegex = /#([^]+?)\s*#@/g;
