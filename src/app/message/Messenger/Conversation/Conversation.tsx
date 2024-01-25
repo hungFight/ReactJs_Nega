@@ -618,7 +618,7 @@ const Conversation: React.FC<{
     const handleOnKeyDown = (e: any) => {
         console.log(e.key);
         if (e.key === 'Enter') e.preventDefault();
-        if (e.key === '+') {
+        if (e.key === 'Shift') {
             e.preventDefault();
             e.target.value += '\n';
         }

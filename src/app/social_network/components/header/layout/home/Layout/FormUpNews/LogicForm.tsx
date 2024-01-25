@@ -44,19 +44,23 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         setuploadPre([]);
         setDataCentered([]);
         const inpuFile: any = document.getElementById('upload');
-        console.log(inpuFile, 'inpuFile');
-
         if (inpuFile) inpuFile.value = '';
     };
 
     const { textarea, buttonOne, buttonTwo, preView: dataTextPreView } = form;
 
     const handleOnKeyup = (e: any) => {
+        console.log(e.key);
+
+        if (e.key === 'Enter') {
+            const cursorPosition = e.target.selectionStart; // Get the cursor position
+            const textBeforeCursor = e.target.value.substring(0, cursorPosition);
+            const textAfterCursor = e.target.value.substring(cursorPosition);
+            e.target.value = textBeforeCursor + '\n' + textAfterCursor; // Add a line break
+        }
         e.target.setAttribute('style', 'height: auto');
         e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
     };
-
-    console.log(form);
     let fileAmount = 25;
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, addMore?: boolean) => {
         e.stopPropagation();
@@ -156,7 +160,6 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         setuploadPre([]);
         setInputValue({ dis: '', textarea: '' });
     };
-
     const handleEmojiSelect = (e: any) => {
         setInputValue({ textarea: inputValue.textarea + e.native, dis: inputValue.dis + e.native });
     };
@@ -166,28 +169,53 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     const handleGetValue = (e: { target: { value: any } }) => {
         if (e.target.value.length <= 10000) {
             // Define a regex pattern to match URLs
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const hashTagRegex = /#([^]+?)\s*#@/g;
+            const urlRegex = /(https?:\/\/(?!<a>)[^\s]+)/g;
+            const hashTagRegex = /#([^]+?)\s*#@/g; // #...#@
             const dp = { dis: '', textarea: '' }; //dis is displayed
-
             // Use the match method to find all matches in the text
-            const urls: string[] = e.target.value.match(urlRegex) ?? [];
             const hashs: string[] = e.target.value.match(hashTagRegex) ?? [];
-            dp.dis = e.target.value;
-
-            urls.map((u) => {
-                dp.dis = dp.dis.replace(u, `<a href='${u}' target='_blank' style='color: #6ca0ce'>${u}</a>`);
-            });
+            dp.dis = e.target.value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            function replaceTextByIndex(
+                originalString: string,
+                replacement: string,
+                startIndex: number,
+                endIndex: number,
+            ) {
+                return originalString.substring(0, startIndex) + replacement + originalString.substring(endIndex);
+            }
+            function getMatches(regex: RegExp, input: string) {
+                let match;
+                const texts = [];
+                while ((match = regex.exec(input)) !== null) {
+                    texts.push({
+                        text: `<a href='${match[0]}' target='_blank' style='color: #6ca0ce'>${match[0]}</a>`,
+                        start: match.index,
+                        end: match.index + match[0].length,
+                    });
+                }
+                let one = false;
+                texts.map((t) => {
+                    if (one) {
+                        const ff = /(?<!<a[^>]*>)(https?:\/\/[^\s<]+)(?![^<]*<\/a>)/g.exec(dp.dis);
+                        if (ff)
+                            dp.dis =
+                                dp.dis.substring(0, ff.index) +
+                                `<a href='${ff[0]}' target='_blank' style='color: #6ca0ce'>${ff[0]}</a>` +
+                                dp.dis.substring(ff.index + ff[0].length);
+                    } else {
+                        dp.dis = dp.dis.substring(0, t.start) + t.text + dp.dis.substring(t.end);
+                        one = true;
+                    }
+                });
+            }
+            getMatches(urlRegex, dp.dis);
             hashs.map((u) => {
                 const protoType = u.split(/#|#@/);
-                console.log(protoType, 'protoType', u);
-
                 dp.dis = dp.dis.replace(
                     u,
                     `<a href='/sn/hashTags/${'#' + protoType[1]}' style="color: #6ca0ce">${'#' + protoType[1]}</a>`,
                 );
             });
-            console.log(hashs, 'hashs', dp.dis);
             dp.textarea = e.target.value;
             setInputValue(dp);
         }
@@ -196,7 +224,6 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     const handleDuration = (e: { target: any }) => {
         console.log(e.target, 'here');
     };
-    console.log(uploadPre, 'uploadPre', inputValue);
     let imageL = 0;
     let videoL = 0;
     for (let i = 0; i < uploadPre.length; i++) {
