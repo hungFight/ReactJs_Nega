@@ -105,7 +105,7 @@ const Tags: React.FC<{
                         height: 100%;
                         box-shadow: 0 0 3px #60a6c7;
                         border-radius: 5px;
-                        background-color: transparent;
+                        background-color: #18191b;
                     }
                 `}
                 onClick={(e) => {

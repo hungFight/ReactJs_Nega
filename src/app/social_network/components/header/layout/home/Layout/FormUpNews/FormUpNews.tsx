@@ -3,7 +3,7 @@ import Picker from '@emoji-mart/react';
 import 'video-react/dist/video-react.css';
 import './formUpNews.scss';
 
-import { CameraI, CloseI, HashI, LoadingI, PreviewI, TagPostI } from '~/assets/Icons/Icons';
+import { CameraI, CloseI, HashI, LoadingI, PreviewI, TagPostI, TextEditorI } from '~/assets/Icons/Icons';
 
 import { Player } from 'video-react';
 import {
@@ -29,6 +29,7 @@ import { PropsUserHome } from '../../Home';
 import { useState } from 'react';
 import Hashtag from './PostEditOptions/Hashtag';
 import Tags from './PostEditOptions/Tags';
+import TextEditor from './PostEditOptions/TextEditor';
 export interface PropsFormHome {
     textarea: string;
     buttonOne: string;
@@ -76,23 +77,15 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
         setDataCentered,
         handleClear,
     } = LogicForm(form, colorText, colorBg, user);
-    const [edit, setEdit] = useState<boolean>(true);
+    const [edit, setEdit] = useState<boolean>(false);
     const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>([]);
     const [tags, setTags] = useState<{ id: string; avatar: string; gender: number; fullName: string }[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
-    const yes = edit && uploadPre.length;
-    const handleSelect = (e: any) => {
-        const selection = window.getSelection();
-        const selectionStart = e.target.selectionStart;
-        const selectionEnd = e.target.selectionEnd;
-        const selectedText = e.target.value.substring(selectionStart, selectionEnd);
-        if (selection && selection.rangeCount > 0 && selectedText && selectedText !== ' ') {
-            console.log('Selected Text:', selectedText);
-            console.log('Selection Start:', selectionStart);
-            console.log('Selection End:', selectionEnd);
-        }
-    };
+    const [onEditor, setOnEditor] = useState<boolean>(false);
+
+    const yes =
+        edit || uploadPre.length > 0 || (inputValue.dis && inputValue.textarea) || displayFontText || onTags || onTagU;
     return (
         <>
             <Div
@@ -184,7 +177,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 <DivItems
                                     borderB={displayFontText ? '1px solid white' : ''}
                                     color={colorText}
-                                    onClick={() => setDisplayFontText(!displayFontText)}
+                                    onClick={() => {
+                                        setDisplayFontText(!displayFontText);
+                                    }}
                                 >
                                     🖋️
                                 </DivItems>
@@ -206,7 +201,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     borderB={onTags ? '1px solid white' : ''}
                                     color={colorText}
                                     position="relative"
-                                    onClick={() => setOnTags(!onTags)}
+                                    onClick={() => {
+                                        setOnTags(!onTags);
+                                    }}
                                 >
                                     <HashI />
                                 </DivItems>
@@ -219,6 +216,15 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 >
                                     <TagPostI />
                                 </DivItems>
+                                <DivItems
+                                    borderB={onEditor ? '1px solid white' : ''}
+                                    color={colorText}
+                                    onClick={() => {
+                                        setOnEditor(!onEditor);
+                                    }}
+                                >
+                                    <TextEditorI />
+                                </DivItems>
                             </Div>
                             {displayFontText && (
                                 <FontFamilys
@@ -228,6 +234,14 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     setFontFamily={setFontFamily}
                                     displayEmoji={displayEmoji}
                                     setDisplayFontText={setDisplayFontText}
+                                />
+                            )}
+                            {onEditor && (
+                                <TextEditor
+                                    setOnEditor={setOnEditor}
+                                    setInputValue={setInputValue}
+                                    valueText={inputValue.dis}
+                                    font={fontFamily.name + ' ' + fontFamily.type}
                                 />
                             )}
                             {onTags && (
@@ -258,7 +272,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 <Textarea
                                     className="textHome"
                                     color={colorText}
-                                    onMouseUp={handleSelect}
                                     bg={colorBg === 1 ? '#202124f5;' : ''}
                                     font={fontFamily.name + ' ' + fontFamily.type}
                                     value={inputValue.textarea}
@@ -274,7 +287,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     <LoadingI />
                                 </DivLoading>
                             )}
-                            {(inputValue || uploadPre.length > 0) && (
+                            {((inputValue.dis && inputValue.textarea) || uploadPre.length > 0) && (
                                 <PreviewPost
                                     user={user}
                                     fontFamily={fontFamily}

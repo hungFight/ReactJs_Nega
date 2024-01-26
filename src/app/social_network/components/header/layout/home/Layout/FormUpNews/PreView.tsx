@@ -239,21 +239,6 @@ const PreviewPost: React.FC<{
                 >
                     Pre-View your post here
                 </Div>
-                {file.length > 0 && !editForm && (
-                    <Div
-                        onClick={() => setEdit(true)}
-                        css={`
-                            font-size: 1.4rem;
-                            padding: 6px;
-                            background-color: #075395;
-                            width: fit-content;
-                            border-radius: 5px;
-                            cursor: pointer;
-                        `}
-                    >
-                        Tiếp tục Edit
-                    </Div>
-                )}
                 {step < 1 && options && (
                     <OpFeatureSetting
                         more={more}

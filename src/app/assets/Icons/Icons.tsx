@@ -90,6 +90,7 @@ import {
     FaRegSmileBeam,
     FaSchool,
     FaPencilAlt,
+    FaBold,
 } from 'react-icons/fa';
 import {
     RiAccountPinCircleFill,
@@ -112,7 +113,7 @@ import {
 } from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
 import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
-import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
+import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiText, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
 import {
@@ -243,3 +244,5 @@ export const TagPostI = () => <IoPricetag />;
 export const SliderI = () => <PiSlideshowThin />;
 export const LayoutI = () => <RiLayout6Fill />;
 export const ChangeI = () => <RiExchangeLine />;
+export const TextEditorI = () => <CiText />;
+export const TextBoldI = () => <FaBold />;

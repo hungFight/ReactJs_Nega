@@ -36,7 +36,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
 
     const [loading, setLoading] = useState<boolean>(false);
     const [fontFamily, setFontFamily] = useState<{ name: string; type: string }>({
-        name: 'Robotol',
+        name: 'OpenSans',
         type: 'Straight',
     });
     const handleClear = () => {
@@ -188,7 +188,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                 const texts = [];
                 while ((match = regex.exec(input)) !== null) {
                     texts.push({
-                        text: `<a href='${match[0]}' target='_blank' style='color: #6ca0ce'>${match[0]}</a>`,
+                        text: `<a href='${match[0]}' target='_blank' style='color: #6ca0ce; user-select: none !important;'>${match[0]}</a>`,
                         start: match.index,
                         end: match.index + match[0].length,
                     });
@@ -200,7 +200,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                         if (ff)
                             dp.dis =
                                 dp.dis.substring(0, ff.index) +
-                                `<a href='${ff[0]}' target='_blank' style='color: #6ca0ce'>${ff[0]}</a>` +
+                                `<a href='${ff[0]}' target='_blank' style='color: #6ca0ce; user-select: none !important;'>${ff[0]}</a>` +
                                 dp.dis.substring(ff.index + ff[0].length);
                     } else {
                         dp.dis = dp.dis.substring(0, t.start) + t.text + dp.dis.substring(t.end);
