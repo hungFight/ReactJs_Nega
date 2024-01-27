@@ -14,42 +14,37 @@ const TextEditor: React.FC<{
         }>
     >;
 }> = ({ valueText, font, setOnEditor, setInputValue }) => {
-    const data = [{ id: 1, text: '', icon: <TextBoldI /> }];
-    const textRef = useRef<any>(null);
-
-    const handleSelect = (e: any) => {
-        const myElement = document.getElementById('myElementId');
-        if (myElement) {
-            const selection = myElement.ownerDocument.getSelection();
-            if (textRef.current && selection) {
-                const originalText = valueText; // Store the original text
-                const transformedText = textRef.current.innerHTML; // Get the HTML representation
-
-                // Get the selection range in the transformed text
-                const range = selection.getRangeAt(0);
-                const selectedText = range.toString();
-                const selectionStart = transformedText.indexOf(selectedText);
-                const selectionEnd = selectionStart + selectedText.length;
-
-                // Map the selection indices back to the original text
-                const originalSelectionStart = originalText.indexOf(selectedText);
-                const originalSelectionEnd = originalSelectionStart + selectedText.length;
-
-                if (selectedText && selectedText.trim() !== '') {
-                    console.log('Selected range:', range);
-                    console.log('Selected transformedText:', transformedText);
-                    console.log('Transformed Selection Start:', selectionStart);
-                    console.log('Transformed Selection End:', selectionEnd);
-                    console.log('Original Selection Start:', originalSelectionStart);
-                    console.log('Original Selection End:', originalSelectionEnd);
-                    setInputValue((pre) => ({
-                        textarea: pre.textarea,
-                        dis:
-                            pre.dis.substring(0, selectionStart) +
-                            `<span style='color: #6ca0ce'>${selectedText}</span>` +
-                            pre.dis.substring(selectionEnd),
+    const data = [
+        {
+            id: 1,
+            text: '',
+            icon: <TextBoldI />,
+            onClick: () => {
+                if (range) {
+                    // Surround the selected text with the created span element
+                    const span = document.createElement('span');
+                    span.style.fontWeight = 'bold';
+                    range.surroundContents(span);
+                    const updatedHTMLContent = textRef.current.innerHTML;
+                    // Update the state with the styled HTML content
+                    setInputValue((prevInputValue) => ({
+                        ...prevInputValue,
+                        dis: updatedHTMLContent,
                     }));
                 }
+            },
+        },
+    ];
+    const textRef = useRef<any>(null);
+    const [range, setRange] = useState<Range | null>(null);
+    const handleSelect = () => {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            const rg = selection.getRangeAt(0);
+            const selectedText = rg.toString();
+            if (selectedText && selectedText.trim() !== '') {
+                setRange(rg);
+                // Set the background color
             }
         }
     };
@@ -118,12 +113,14 @@ const TextEditor: React.FC<{
                         <CloseI />
                     </DivPos>
                 </H3>
-                <Div width="80%" css="margin: 10px auto; padding: 10px; border: 1px solid #ccc">
+                <Div width="80%" css="margin: 10px auto; padding: 10px; border: 1px solid #595959;border-radius: 5px;">
                     {data.map((tor) => (
-                        <Div key={tor.id}>{tor.icon}</Div>
+                        <Div key={tor.id} css="cursor: var(--pointer);" onClick={tor.onClick}>
+                            {tor.icon}
+                        </Div>
                     ))}
                 </Div>
-                <Div>
+                <Div css="justify-content: center;">
                     {valueText && (
                         <P
                             id="myElementId"

@@ -113,7 +113,20 @@ import {
 } from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
 import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
-import { CiCircleRemove, CiHeart, CiPaperplane, CiSearch, CiText, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
+import {
+    CiCircleRemove,
+    CiHeart,
+    CiPaperplane,
+    CiSearch,
+    CiText,
+    CiTextAlignCenter,
+    CiTextAlignJustify,
+    CiTextAlignLeft,
+    CiTextAlignRight,
+    CiUndo,
+    CiWifiOff,
+    CiWifiOn,
+} from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
 import {
@@ -246,3 +259,7 @@ export const LayoutI = () => <RiLayout6Fill />;
 export const ChangeI = () => <RiExchangeLine />;
 export const TextEditorI = () => <CiText />;
 export const TextBoldI = () => <FaBold />;
+export const TextLeftI = () => <CiTextAlignLeft />;
+export const TextRightI = () => <CiTextAlignRight />;
+export const TextCenterI = () => <CiTextAlignCenter />;
+export const TextJustifyI = () => <CiTextAlignJustify />;
