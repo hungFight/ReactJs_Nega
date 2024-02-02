@@ -47,7 +47,13 @@ import Grid from './ViewPostFrame/TypeFile/Grid';
 import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import OptionType from './ViewPostFrame/OptionType';
 import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
-import { ButtonSubmit, DivLoading, DivPos, UpLoadForm } from '~/reUsingComponents/styleComponents/styleComponents';
+import {
+    ButtonSubmit,
+    DivLoading,
+    DivPos,
+    ReactQuillF,
+    UpLoadForm,
+} from '~/reUsingComponents/styleComponents/styleComponents';
 import OpFeatureSetting from '~/reUsingComponents/PostOptions/OpFeature';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
@@ -60,6 +66,7 @@ import Player from '~/reUsingComponents/Videos/Player';
 import { PropsDataFileUpload } from './FormUpNews';
 import handleFileUpload from '~/utils/handleFileUpload';
 import EditFiles from './EditFiles.tsx/Editfiles';
+import ReactQuill from 'react-quill';
 export interface PropsPreViewFormHome {
     time: {
         hour: string;
@@ -71,6 +78,8 @@ export interface PropsPreViewFormHome {
 }
 
 const PreviewPost: React.FC<{
+    onChangeQuill: (value: string) => void;
+    quillRef: React.RefObject<ReactQuill>;
     user: PropsUserHome;
     colorText: string;
     colorBg: number;
@@ -121,6 +130,8 @@ const PreviewPost: React.FC<{
         fullName: string;
     }[];
 }> = ({
+    onChangeQuill,
+    quillRef,
     user,
     colorText,
     colorBg,
@@ -450,23 +461,40 @@ const PreviewPost: React.FC<{
                         </DivPos>
                     </Div>
                     <Div width="100%" css="padding: 5px 6px 10px 6px;">
-                        {valueText && (
-                            <P
-                                css={`
-                                    padding: 5px;
-                                    color: ${colorText};
-                                    background-color: #292a2d;
-                                    font-family: ${font}, sans-serif;
-                                    white-space: pre-wrap;
-                                    word-break: break-word;
+                        <ReactQuillF
+                            ref={quillRef}
+                            onChange={onChangeQuill}
+                            value={valueText}
+                            modules={{
+                                toolbar: false, // Tắt thanh công cụ
+                            }}
+                            css={`
+                                width: 100%;
+                                .ql-container.ql-snow {
+                                    border: 0;
+                                }
+                                .ql-clipboard {
+                                    display: none;
+                                }
+                                .ql-editor {
+                                    outline: none;
+                                }
+                                padding: 5px;
+                                color: ${colorText};
+                                background-color: #292a2d;
+                                font-family: ${font}, sans-serif;
+                                white-space: pre-wrap;
+                                word-break: break-word;
+                                * {
                                     font-size: 1.5rem;
-                                    @media (min-width: 768px) {
+                                }
+                                @media (min-width: 768px) {
+                                    * {
                                         font-size: 1.38rem;
                                     }
-                                `}
-                                dangerouslySetInnerHTML={{ __html: valueText }}
-                            ></P>
-                        )}
+                                }
+                            `}
+                        />
                     </Div>
                     {tags.length > 0 && (
                         <Div width="100%" css="padding: 0px 10px">

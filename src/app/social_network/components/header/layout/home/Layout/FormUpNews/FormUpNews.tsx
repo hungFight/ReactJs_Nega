@@ -1,32 +1,17 @@
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
-import 'video-react/dist/video-react.css';
 import './formUpNews.scss';
 
-import { CameraI, CloseI, HashI, LoadingI, PreviewI, TagPostI, TextEditorI } from '~/assets/Icons/Icons';
+import { CameraI, CloseI, HashI, LoadingI, TagPostI, TextEditorI } from '~/assets/Icons/Icons';
 
-import { Player } from 'video-react';
-import {
-    DivDataFake,
-    DivForm,
-    DivImage,
-    DivItems,
-    DivOptions,
-    DivUpNews,
-    DivWrapButton,
-    Form,
-    Input,
-    Label,
-    Textarea,
-} from './styleFormUpNews';
-import { Button, Buttons, Div, H3, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import HoverTitle from '~/reUsingComponents/HandleHover/HoverTitle';
+import { DivDataFake, DivForm, DivItems, DivOptions, DivUpNews, Form, Label } from './styleFormUpNews';
+import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import FontFamilys from '~/reUsingComponents/Font/FontFamilys';
 import PreviewPost, { PropsPreViewFormHome } from './PreView';
 import LogicForm from './LogicForm';
 import { PropsUserHome } from '../../Home';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Hashtag from './PostEditOptions/Hashtag';
 import Tags from './PostEditOptions/Tags';
 import TextEditor from './PostEditOptions/TextEditor';
@@ -62,8 +47,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
         fontFamily,
         inputValue,
         setInputValue,
-        handleOnKeyup,
-        handleGetValue,
         textarea,
         setFontFamily,
         setDisplayFontText,
@@ -76,6 +59,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
         dataCentered,
         setDataCentered,
         handleClear,
+        divRef,
+        handleChange,
+        quillRef,
     } = LogicForm(form, colorText, colorBg, user);
     const [edit, setEdit] = useState<boolean>(false);
     const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>([]);
@@ -83,9 +69,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const [onEditor, setOnEditor] = useState<boolean>(false);
-
-    const yes =
-        edit || uploadPre.length > 0 || (inputValue.dis && inputValue.textarea) || displayFontText || onTags || onTagU;
+    const yes = edit || uploadPre.length > 0 || inputValue || displayFontText || onTags || onTagU;
     return (
         <>
             <Div
@@ -240,7 +224,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                 <TextEditor
                                     setOnEditor={setOnEditor}
                                     setInputValue={setInputValue}
-                                    valueText={inputValue.dis}
+                                    valueText={inputValue}
                                     font={fontFamily.name + ' ' + fontFamily.type}
                                 />
                             )}
@@ -264,37 +248,27 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     color={colorText}
                                     onClick={() => {
                                         document.querySelector('.textHome')?.setAttribute('style', 'height: 42px');
-                                        setInputValue({ dis: '', textarea: '' });
+                                        setInputValue('');
                                     }}
                                 >
                                     <CloseI />
                                 </DivPos>
-                                <Textarea
-                                    className="textHome"
-                                    color={colorText}
-                                    bg={colorBg === 1 ? '#202124f5;' : ''}
-                                    font={fontFamily.name + ' ' + fontFamily.type}
-                                    value={inputValue.textarea}
-                                    onKeyUp={handleOnKeyup}
-                                    onChange={handleGetValue}
-                                    placeholder={textarea}
-                                    BoBg="transparent"
-                                    css="@media(max-width: 580px){width: 98%; margin: auto; margin-top: 10px; box-shadow: 0 0 2px #afafaf;}"
-                                ></Textarea>
                             </Div>
                             {loading && (
                                 <DivLoading>
                                     <LoadingI />
                                 </DivLoading>
                             )}
-                            {((inputValue.dis && inputValue.textarea) || uploadPre.length > 0) && (
+                            {
                                 <PreviewPost
+                                    onChangeQuill={handleChange}
+                                    quillRef={quillRef}
                                     user={user}
                                     fontFamily={fontFamily}
                                     colorText={colorText}
                                     colorBg={colorBg}
                                     file={uploadPre}
-                                    valueText={inputValue.dis}
+                                    valueText={inputValue}
                                     dataText={dataTextPreView}
                                     token={token}
                                     userId={userId}
@@ -309,7 +283,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     setTags={setTags}
                                     tags={tags}
                                 />
-                            )}
+                            }
                         </DivDataFake>
                     </DivUpNews>
                 </Form>

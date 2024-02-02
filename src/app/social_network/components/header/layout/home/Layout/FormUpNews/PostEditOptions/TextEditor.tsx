@@ -7,12 +7,7 @@ const TextEditor: React.FC<{
     valueText: string;
     font: string;
     setOnEditor: React.Dispatch<React.SetStateAction<boolean>>;
-    setInputValue: React.Dispatch<
-        React.SetStateAction<{
-            dis: string;
-            textarea: string;
-        }>
-    >;
+    setInputValue: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ valueText, font, setOnEditor, setInputValue }) => {
     const data = [
         {
@@ -27,10 +22,24 @@ const TextEditor: React.FC<{
                     range.surroundContents(span);
                     const updatedHTMLContent = textRef.current.innerHTML;
                     // Update the state with the styled HTML content
-                    setInputValue((prevInputValue) => ({
-                        ...prevInputValue,
-                        dis: updatedHTMLContent,
-                    }));
+                    setInputValue(updatedHTMLContent);
+                }
+            },
+        },
+        {
+            id: 2,
+            text: '',
+            icon: <TextBoldI />,
+            onClick: () => {
+                if (range) {
+                    // Surround the selected text with the created span element
+                    const span = document.createElement('span');
+                    span.style.fontWeight = 'bold';
+                    span.appendChild(range.extractContents());
+                    range.insertNode(span);
+                    const updatedHTMLContent = textRef.current.innerHTML;
+                    // Update the state with the styled HTML content
+                    setInputValue(updatedHTMLContent);
                 }
             },
         },
@@ -38,13 +47,21 @@ const TextEditor: React.FC<{
     const textRef = useRef<any>(null);
     const [range, setRange] = useState<Range | null>(null);
     const handleSelect = () => {
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-            const rg = selection.getRangeAt(0);
-            const selectedText = rg.toString();
-            if (selectedText && selectedText.trim() !== '') {
-                setRange(rg);
-                // Set the background color
+        const myElement = document.getElementById('myElementId');
+        if (myElement) {
+            const selection = myElement.ownerDocument.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const rg = selection.getRangeAt(0);
+                if (rg) {
+                    const selectedText = rg.toString();
+                    if (selectedText && selectedText !== ' ') {
+                        console.log(selectedText, 'start');
+                        setRange(rg);
+                        // Set the background color
+                    } else {
+                        if (range) setRange(null);
+                    }
+                }
             }
         }
     };
