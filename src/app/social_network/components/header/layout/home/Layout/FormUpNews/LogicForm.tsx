@@ -176,38 +176,18 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
             const urlRegex = /(https?:\/\/(?!<a>)[^\s]+)/g;
             const hashTagRegex = /#([^]+?)\s*#@/g; // #...#@
             let dp = false; //dis is displayed
-            let hps = false;
             // Use the match method to find all matches in the text
-            const hashs: string[] = value.match(hashTagRegex) ?? [];
             if (quillRef.current && quillRef.current.editor) {
                 const delta = quillRef.current.editor.clipboard.convert(value); // Convert HTML to Delta object
 
                 // Apply formatting using regex
                 if (delta.ops) {
-                    console.log(delta.ops, 'delta.ops');
-                    delta.ops.forEach((op) => {
+                    delta.ops.map((op, index, arr) => {
                         if (typeof op.insert === 'string') {
-                            // if (!op.insert.match(/(?<!<a[^>]*>)(https?:\/\/[^\s<]+)(?![^<]*<\/a>)/g)?.length)
-                            if (op.insert.match(urlRegex)?.length)
-                                if (op.attributes)
-                                    if (op.attributes.link) {
-                                        if (
-                                            op.attributes.link.match(/(?<!<a[^>]*>)(https?:\/\/[^\s<]+)(?![^<]*<\/a>)/g)
-                                        ) {
-                                            hps = true;
-                                            op.attributes.link += 'okk';
-                                        }
-                                    }
-                            op.insert = op.insert.replace(urlRegex, (match: string) => {
+                            op.insert = op.insert.replace(hashTagRegex, (match: any, group: any) => {
                                 dp = true;
-                                return `<a href="${match}" target="_blank" style='color: #66a6de;'>${match}</a>`;
+                                return `<a href="/sn/hashTags/${group}" style='color: #66a6de;'>#${group}</a>`;
                             });
-                            if (!op.insert.match(/(?<!<a[^>]*>)(https?:\/\/[^\s<]+)(?![^<]*<\/a>)/g)?.length)
-                                op.insert = op.insert.replace(hashTagRegex, (match: any, group: any) => {
-                                    console.log('nooooooooo', match, group, op.insert);
-                                    dp = true;
-                                    return `<a href="/sn/hashTags/${group}" style='color: #66a6de;'>#${group}</a>`;
-                                });
                         }
                     });
                     if (dp) {
@@ -222,11 +202,6 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                             });
                         new Quill(tempCont).setContents(delta);
                         if (tempCont) {
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(
-                                tempCont.getElementsByClassName('ql-editor')[0].innerHTML,
-                                'text/html',
-                            );
                             setInputValue(
                                 tempCont
                                     .getElementsByClassName('ql-editor')[0]
@@ -237,14 +212,6 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
                     } else {
                         setInputValue(value);
                     }
-                    // console.log(delta.ops, 'delta.ops');
-
-                    // quillRef.current.editor.setContents(delta);
-                    // const editor = quillRef.current.getEditor();
-                    // if (editor) {
-                    //     const htmlContent = editor.root.innerHTML;
-                    //     console.log('HTML Content:', htmlContent);
-                    // }
                 }
             }
         }

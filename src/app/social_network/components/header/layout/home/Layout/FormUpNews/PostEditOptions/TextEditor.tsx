@@ -1,28 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CloseI, TextBoldI, TextEditorI } from '~/assets/Icons/Icons';
+import ReactQuill from 'react-quill';
+import { CloseI, SelectLinkI, TextBoldI, TextEditorI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { PropsValueQuill } from '../FormUpNews';
 
 const TextEditor: React.FC<{
     valueText: string;
     font: string;
     setOnEditor: React.Dispatch<React.SetStateAction<boolean>>;
     setInputValue: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ valueText, font, setOnEditor, setInputValue }) => {
+    quillRef: React.RefObject<ReactQuill>;
+    valueQuill: React.MutableRefObject<PropsValueQuill>;
+}> = ({ valueText, font, setOnEditor, setInputValue, quillRef, valueQuill }) => {
     const data = [
         {
             id: 1,
             text: '',
-            icon: <TextBoldI />,
+            icon: <SelectLinkI />,
             onClick: () => {
-                if (range) {
-                    // Surround the selected text with the created span element
-                    const span = document.createElement('span');
-                    span.style.fontWeight = 'bold';
-                    range.surroundContents(span);
-                    const updatedHTMLContent = textRef.current.innerHTML;
-                    // Update the state with the styled HTML content
-                    setInputValue(updatedHTMLContent);
+                if (valueQuill.current.url && valueQuill.current.quill) {
+                    valueQuill.current.quill.format('link', valueQuill.current.url);
+                    valueQuill.current.quill.format('color', '#66a6de');
+                    // Update the Quill editor's content
+                    // Update the Quill editor's content
+                    setInputValue(valueQuill.current.quill.root.innerHTML);
                 }
             },
         },
@@ -31,15 +33,15 @@ const TextEditor: React.FC<{
             text: '',
             icon: <TextBoldI />,
             onClick: () => {
-                if (range) {
-                    // Surround the selected text with the created span element
-                    const span = document.createElement('span');
-                    span.style.fontWeight = 'bold';
-                    span.appendChild(range.extractContents());
-                    range.insertNode(span);
-                    const updatedHTMLContent = textRef.current.innerHTML;
-                    // Update the state with the styled HTML content
-                    setInputValue(updatedHTMLContent);
+                // Surround the selected text with the created span element https://nega #hung yes me #hung
+                if (quillRef.current) {
+                    const quill = quillRef.current.editor;
+                    // Apply bold style to selected text or at the cursor position
+                    if (quill) {
+                        quill.format('bold', true); // This sets bold style
+                        // Update the Quill editor's content
+                        setInputValue(quill.root.innerHTML);
+                    }
                 }
             },
         },
@@ -70,7 +72,6 @@ const TextEditor: React.FC<{
             css={`
                 position: fixed;
                 width: 100%;
-                height: 100%;
                 background-color: #1d1d1da8;
                 z-index: 9999;
                 top: 0;
@@ -79,7 +80,6 @@ const TextEditor: React.FC<{
                 @media (min-width: 500px) {
                     width: 98%;
                     z-index: 0;
-                    height: 400px;
                     translate: unset;
                     margin-top: 11px;
                     position: unset;
@@ -136,27 +136,6 @@ const TextEditor: React.FC<{
                             {tor.icon}
                         </Div>
                     ))}
-                </Div>
-                <Div css="justify-content: center;">
-                    {valueText && (
-                        <P
-                            id="myElementId"
-                            onMouseUp={handleSelect}
-                            ref={textRef}
-                            css={`
-                                padding: 5px;
-                                background-color: #292a2d;
-                                font-family: ${font}, sans-serif;
-                                white-space: pre-wrap;
-                                word-break: break-word;
-                                font-size: 1.5rem;
-                                @media (min-width: 768px) {
-                                    font-size: 1.38rem;
-                                }
-                            `}
-                            dangerouslySetInnerHTML={{ __html: valueText }}
-                        ></P>
-                    )}
                 </Div>
             </Div>
         </Div>

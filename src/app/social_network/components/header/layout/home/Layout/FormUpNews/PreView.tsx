@@ -63,7 +63,7 @@ import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
 import Circle from './ViewPostFrame/TypeFile/Circle';
 import LogicPreView from './LogicPreView';
 import Player from '~/reUsingComponents/Videos/Player';
-import { PropsDataFileUpload } from './FormUpNews';
+import { PropsDataFileUpload, PropsValueQuill } from './FormUpNews';
 import handleFileUpload from '~/utils/handleFileUpload';
 import EditFiles from './EditFiles.tsx/Editfiles';
 import ReactQuill from 'react-quill';
@@ -80,6 +80,7 @@ export interface PropsPreViewFormHome {
 const PreviewPost: React.FC<{
     onChangeQuill: (value: string) => void;
     quillRef: React.RefObject<ReactQuill>;
+    setInputValue: React.Dispatch<React.SetStateAction<string>>;
     user: PropsUserHome;
     colorText: string;
     colorBg: number;
@@ -129,8 +130,10 @@ const PreviewPost: React.FC<{
         gender: number;
         fullName: string;
     }[];
+    valueQuill: React.MutableRefObject<PropsValueQuill>;
 }> = ({
     onChangeQuill,
+    setInputValue,
     quillRef,
     user,
     colorText,
@@ -151,6 +154,7 @@ const PreviewPost: React.FC<{
     setUploadPre,
     tags,
     setTags,
+    valueQuill,
 }) => {
     // Select type of post
     const {
@@ -465,6 +469,25 @@ const PreviewPost: React.FC<{
                             ref={quillRef}
                             onChange={onChangeQuill}
                             value={valueText}
+                            onChangeSelection={() => {
+                                if (quillRef.current) {
+                                    const quill = quillRef.current.editor;
+                                    // Apply bold style to selected text or at the cursor position
+                                    if (quill) {
+                                        const selectionRange = quill.getSelection();
+                                        if (selectionRange) {
+                                            const selectedText = quill.getText(
+                                                selectionRange.index,
+                                                selectionRange.length,
+                                            );
+                                            if (selectedText) {
+                                                valueQuill.current.url = selectedText;
+                                                valueQuill.current.quill = quill;
+                                            }
+                                        }
+                                    }
+                                }
+                            }}
                             modules={{
                                 toolbar: false, // Tắt thanh công cụ
                             }}

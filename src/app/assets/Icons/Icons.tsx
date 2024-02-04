@@ -116,6 +116,7 @@ import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
 import {
     CiCircleRemove,
     CiHeart,
+    CiLink,
     CiPaperplane,
     CiSearch,
     CiText,
@@ -263,3 +264,4 @@ export const TextLeftI = () => <CiTextAlignLeft />;
 export const TextRightI = () => <CiTextAlignRight />;
 export const TextCenterI = () => <CiTextAlignCenter />;
 export const TextJustifyI = () => <CiTextAlignJustify />;
+export const SelectLinkI = () => <CiLink />;

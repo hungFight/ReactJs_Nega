@@ -35,6 +35,10 @@ export interface PropsDataFileUpload {
     title?: string | undefined;
     file: Blob;
 }
+export interface PropsValueQuill {
+    url: string;
+    quill?: any;
+}
 const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user }) => {
     const [displayTags, setDisplayTags] = useState<boolean>(false);
     const {
@@ -69,6 +73,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const [onEditor, setOnEditor] = useState<boolean>(false);
+    const valueQuill = useRef<PropsValueQuill>({ url: '' });
     const yes = edit || uploadPre.length > 0 || inputValue || displayFontText || onTags || onTagU;
     return (
         <>
@@ -223,8 +228,10 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {onEditor && (
                                 <TextEditor
                                     setOnEditor={setOnEditor}
+                                    valueQuill={valueQuill}
                                     setInputValue={setInputValue}
                                     valueText={inputValue}
+                                    quillRef={quillRef}
                                     font={fontFamily.name + ' ' + fontFamily.type}
                                 />
                             )}
@@ -262,6 +269,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {
                                 <PreviewPost
                                     onChangeQuill={handleChange}
+                                    valueQuill={valueQuill}
+                                    setInputValue={setInputValue}
                                     quillRef={quillRef}
                                     user={user}
                                     fontFamily={fontFamily}
