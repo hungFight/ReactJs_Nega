@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
-import { CloseI, SelectLinkI, TextBoldI, TextEditorI } from '~/assets/Icons/Icons';
+import { CloseI, SelectLinkI, TextBoldI, TextEditorI, WriteLinkI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsValueQuill } from '../FormUpNews';
@@ -15,8 +15,24 @@ const TextEditor: React.FC<{
 }> = ({ valueText, font, setOnEditor, setInputValue, quillRef, valueQuill }) => {
     const data = [
         {
-            id: 1,
+            id: 3,
             text: '',
+            color: '#63b6ff',
+            icon: <WriteLinkI />,
+            onClick: () => {
+                if (valueQuill.current.url && valueQuill.current.quill) {
+                    valueQuill.current.quill.format('link', valueQuill.current.url);
+                    valueQuill.current.quill.format('color', '#66a6de');
+                    // Show the URL input div
+
+                    setInputValue(valueQuill.current.quill.root.innerHTML);
+                }
+            },
+        },
+        {
+            id: 4,
+            text: '',
+            color: '#63b6ff',
             icon: <SelectLinkI />,
             onClick: () => {
                 if (valueQuill.current.url && valueQuill.current.quill) {
@@ -29,8 +45,9 @@ const TextEditor: React.FC<{
             },
         },
         {
-            id: 2,
+            id: 5,
             text: '',
+            color: 'aliceblue',
             icon: <TextBoldI />,
             onClick: () => {
                 // Surround the selected text with the created span element https://nega #hung yes me #hung
@@ -132,7 +149,17 @@ const TextEditor: React.FC<{
                 </H3>
                 <Div width="80%" css="margin: 10px auto; padding: 10px; border: 1px solid #595959;border-radius: 5px;">
                     {data.map((tor) => (
-                        <Div key={tor.id} css="cursor: var(--pointer);" onClick={tor.onClick}>
+                        <Div
+                            key={tor.id}
+                            css={`
+                                cursor: var(--pointer);
+                                margin: 0 2px;
+                                &:hover {
+                                    color: ${tor.color};
+                                }
+                            `}
+                            onClick={tor.onClick}
+                        >
                             {tor.icon}
                         </Div>
                     ))}

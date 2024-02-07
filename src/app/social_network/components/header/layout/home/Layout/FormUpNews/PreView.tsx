@@ -464,12 +464,78 @@ const PreviewPost: React.FC<{
                             <DotI />
                         </DivPos>
                     </Div>
-                    <Div width="100%" css="padding: 5px 6px 10px 6px;">
+
+                    <Div
+                        width="100%"
+                        css="padding: 5px 6px 10px 6px;"
+                        onMouseUp={() => {
+                            if (quillRef.current) {
+                                const quill = quillRef.current.editor;
+                                console.log('select');
+                                // Get the current selection range
+                                if (quill) {
+                                    const selectionRange = quill.getSelection();
+                                    if (selectionRange && selectionRange.length > 0) {
+                                        // Get the selected text
+                                        const selectedText = quill.getText(selectionRange.index, selectionRange.length);
+                                        if (selectedText) {
+                                            quill.format('background', 'rgb(11 68 185)');
+                                            quill.format('color', '#fff');
+                                            quill.format('position', 'relative');
+                                            quill.format('custom-class', true);
+                                            const selection = quill.getSelection();
+
+                                            if (selection) {
+                                                // Get the HTML content to be inserted
+                                                const htmlContent = `
+        <div id="urlInputDiv" style="display: none; ">
+            <input type="text" id="urlInput" placeholder="Enter URL" />
+            <button id="applyUrlButton">Apply URL</button>
+        </div>
+    `;
+                                                // Insert the HTML content at the current selection
+                                                // quill.insertEmbed(selection.index, htmlContent);
+
+                                                // Show the inserted div by changing its display style
+                                                // const urlInputDiv = document.getElementById('urlInputDiv');
+                                                // if (urlInputDiv) {
+                                                //     urlInputDiv.style.display = 'block';
+                                                // }
+                                            }
+                                            const bt = document.getElementById('applyUrlButton');
+                                            if (bt)
+                                                bt.addEventListener('click', function () {
+                                                    const ip: any = document.getElementById('urlInput');
+                                                    if (ip) {
+                                                        const url = ip.value.trim();
+                                                        const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
+                                                        if (url) {
+                                                            if (url.match(urlRegex)) {
+                                                                // Apply link with URL to the selected text
+                                                                quill.format('link', url);
+                                                                // Update the Quill editor's content
+                                                                const updatedHTMLContent = quill.root.innerHTML;
+                                                                setInputValue(updatedHTMLContent);
+                                                            } else {
+                                                                alert('Please enter a URL correctly.');
+                                                            }
+                                                        } else {
+                                                            alert('Please enter a URL.');
+                                                        }
+                                                    }
+                                                });
+                                        }
+                                    }
+                                }
+                                // Apply URL when the button is clicked
+                            }
+                        }}
+                    >
                         <ReactQuillF
                             ref={quillRef}
                             onChange={onChangeQuill}
                             value={valueText}
-                            onChangeSelection={() => {
+                            onChangeSelection={(range) => {
                                 if (quillRef.current) {
                                     const quill = quillRef.current.editor;
                                     // Apply bold style to selected text or at the cursor position
@@ -480,8 +546,10 @@ const PreviewPost: React.FC<{
                                                 selectionRange.index,
                                                 selectionRange.length,
                                             );
+                                            const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
                                             if (selectedText) {
-                                                valueQuill.current.url = selectedText;
+                                                if (selectedText.match(urlRegex)?.length)
+                                                    valueQuill.current.url = selectedText;
                                                 valueQuill.current.quill = quill;
                                             }
                                         }

@@ -173,7 +173,6 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
 
         if (value.length <= 10000) {
             // Define a regex pattern to match URLs
-            const urlRegex = /(https?:\/\/(?!<a>)[^\s]+)/g;
             const hashTagRegex = /#([^]+?)\s*#@/g; // #...#@
             let dp = false; //dis is displayed
             // Use the match method to find all matches in the text

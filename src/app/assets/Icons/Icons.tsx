@@ -25,6 +25,7 @@ import {
     IoCopy,
     IoPricetag,
     IoImage,
+    IoLinkOutline,
 } from 'react-icons/io5';
 import { LiaExchangeAltSolid } from 'react-icons/lia';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
@@ -265,3 +266,4 @@ export const TextRightI = () => <CiTextAlignRight />;
 export const TextCenterI = () => <CiTextAlignCenter />;
 export const TextJustifyI = () => <CiTextAlignJustify />;
 export const SelectLinkI = () => <CiLink />;
+export const WriteLinkI = () => <IoLinkOutline />;
