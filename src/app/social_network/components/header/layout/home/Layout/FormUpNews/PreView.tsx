@@ -131,6 +131,8 @@ const PreviewPost: React.FC<{
         fullName: string;
     }[];
     valueQuill: React.MutableRefObject<PropsValueQuill>;
+    insertURL: boolean;
+    setInsertURL: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({
     onChangeQuill,
     setInputValue,
@@ -155,6 +157,8 @@ const PreviewPost: React.FC<{
     tags,
     setTags,
     valueQuill,
+    insertURL,
+    setInsertURL,
 }) => {
     // Select type of post
     const {
@@ -467,10 +471,10 @@ const PreviewPost: React.FC<{
 
                     <Div
                         width="100%"
-                        css="padding: 5px 6px 10px 6px;"
+                        css="padding: 5px 6px 10px 6px; position: relative;"
                         onMouseUp={() => {
-                            if (quillRef.current) {
-                                const quill = quillRef.current.editor;
+                            if (valueQuill.current?.quill) {
+                                const quill = valueQuill.current.quill;
                                 console.log('select');
                                 // Get the current selection range
                                 if (quill) {
@@ -479,30 +483,8 @@ const PreviewPost: React.FC<{
                                         // Get the selected text
                                         const selectedText = quill.getText(selectionRange.index, selectionRange.length);
                                         if (selectedText) {
-                                            quill.format('background', 'rgb(11 68 185)');
-                                            quill.format('color', '#fff');
-                                            quill.format('position', 'relative');
-                                            quill.format('custom-class', true);
-                                            const selection = quill.getSelection();
-
-                                            if (selection) {
-                                                // Get the HTML content to be inserted
-                                                const htmlContent = `
-        <div id="urlInputDiv" style="display: none; ">
-            <input type="text" id="urlInput" placeholder="Enter URL" />
-            <button id="applyUrlButton">Apply URL</button>
-        </div>
-    `;
-                                                // Insert the HTML content at the current selection
-                                                // quill.insertEmbed(selection.index, htmlContent);
-
-                                                // Show the inserted div by changing its display style
-                                                // const urlInputDiv = document.getElementById('urlInputDiv');
-                                                // if (urlInputDiv) {
-                                                //     urlInputDiv.style.display = 'block';
-                                                // }
-                                            }
                                             const bt = document.getElementById('applyUrlButton');
+                                            const btCancel = document.getElementById('cancelUrlButton');
                                             if (bt)
                                                 bt.addEventListener('click', function () {
                                                     const ip: any = document.getElementById('urlInput');
@@ -524,13 +506,36 @@ const PreviewPost: React.FC<{
                                                         }
                                                     }
                                                 });
+                                            if (btCancel) {
+                                                btCancel.addEventListener('click', () => {
+                                                    console.log('cancel');
+                                                    quill.format('background', null);
+                                                    quill.format('color', null);
+                                                    setInsertURL(false);
+                                                    const urlInputDiv = document.getElementById('urlInputDiv');
+                                                    if (urlInputDiv) {
+                                                        urlInputDiv.style.display = 'none';
+                                                    }
+                                                });
+                                            }
+                                            valueQuill.current.quill = quill;
                                         }
                                     }
+                                    // if (!insertURL) {
+                                    //     quill.format('background', null);
+                                    //     quill.format('color', null);
+                                    // }
                                 }
+
                                 // Apply URL when the button is clicked
                             }
                         }}
                     >
+                        <Div id="urlInputDiv" display="none">
+                            <input type="text" id="urlInput" placeholder="Enter URL" />
+                            <Div id="applyUrlButton">Apply URL</Div>
+                            <Div id="cancelUrlButton">Huỷ bỏ</Div>
+                        </Div>
                         <ReactQuillF
                             ref={quillRef}
                             onChange={onChangeQuill}

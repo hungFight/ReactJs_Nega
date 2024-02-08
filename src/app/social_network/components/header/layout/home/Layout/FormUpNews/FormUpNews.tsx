@@ -74,6 +74,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const [onEditor, setOnEditor] = useState<boolean>(false);
     const valueQuill = useRef<PropsValueQuill>({ url: '' });
+    const [insertURL, setInsertURL] = useState<boolean>(false);
     const yes = edit || uploadPre.length > 0 || inputValue || displayFontText || onTags || onTagU;
     return (
         <>
@@ -231,6 +232,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     valueQuill={valueQuill}
                                     setInputValue={setInputValue}
                                     valueText={inputValue}
+                                    insertURL={insertURL}
+                                    setInsertURL={setInsertURL}
                                     quillRef={quillRef}
                                     font={fontFamily.name + ' ' + fontFamily.type}
                                 />
@@ -269,7 +272,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {
                                 <PreviewPost
                                     onChangeQuill={handleChange}
+                                    insertURL={insertURL}
                                     valueQuill={valueQuill}
+                                    setInsertURL={setInsertURL}
                                     setInputValue={setInputValue}
                                     quillRef={quillRef}
                                     user={user}

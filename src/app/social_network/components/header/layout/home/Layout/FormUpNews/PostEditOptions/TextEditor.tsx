@@ -12,7 +12,9 @@ const TextEditor: React.FC<{
     setInputValue: React.Dispatch<React.SetStateAction<string>>;
     quillRef: React.RefObject<ReactQuill>;
     valueQuill: React.MutableRefObject<PropsValueQuill>;
-}> = ({ valueText, font, setOnEditor, setInputValue, quillRef, valueQuill }) => {
+    setInsertURL: React.Dispatch<React.SetStateAction<boolean>>;
+    insertURL: boolean;
+}> = ({ valueText, font, setOnEditor, setInputValue, quillRef, valueQuill, setInsertURL, insertURL }) => {
     const data = [
         {
             id: 3,
@@ -20,12 +22,21 @@ const TextEditor: React.FC<{
             color: '#63b6ff',
             icon: <WriteLinkI />,
             onClick: () => {
-                if (valueQuill.current.url && valueQuill.current.quill) {
-                    valueQuill.current.quill.format('link', valueQuill.current.url);
-                    valueQuill.current.quill.format('color', '#66a6de');
+                if (valueQuill.current.quill) {
                     // Show the URL input div
-
-                    setInputValue(valueQuill.current.quill.root.innerHTML);
+                    const urlInputDiv = document.getElementById('urlInputDiv');
+                    if (urlInputDiv) {
+                        urlInputDiv.style.display = 'block';
+                    }
+                    if (!insertURL) {
+                        valueQuill.current.quill.format('background', 'rgb(11 68 185)');
+                        valueQuill.current.quill.format('color', '#fff');
+                    } else {
+                        valueQuill.current.quill.format('background', null);
+                        valueQuill.current.quill.format('color', null);
+                    }
+                    // Apply URL when the button is clicked
+                    setInsertURL((pre) => !pre);
                 }
             },
         },
