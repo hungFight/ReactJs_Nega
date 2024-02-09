@@ -37,6 +37,7 @@ export interface PropsDataFileUpload {
 }
 export interface PropsValueQuill {
     url: string;
+    text: string;
     quill?: any;
 }
 const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user }) => {
@@ -73,7 +74,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);
     const [onEditor, setOnEditor] = useState<boolean>(false);
-    const valueQuill = useRef<PropsValueQuill>({ url: '' });
+    const consider = useRef<number>(0);
+    const valueQuill = useRef<PropsValueQuill>({ url: '', text: '' });
+    const valueSelected = useRef<boolean>(false);
     const [insertURL, setInsertURL] = useState<boolean>(false);
     const yes = edit || uploadPre.length > 0 || inputValue || displayFontText || onTags || onTagU;
     return (
@@ -232,6 +235,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                                     valueQuill={valueQuill}
                                     setInputValue={setInputValue}
                                     valueText={inputValue}
+                                    valueSelected={valueSelected}
+                                    consider={consider}
                                     insertURL={insertURL}
                                     setInsertURL={setInsertURL}
                                     quillRef={quillRef}
@@ -272,6 +277,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                             {
                                 <PreviewPost
                                     onChangeQuill={handleChange}
+                                    valueSelected={valueSelected}
+                                    consider={consider}
                                     insertURL={insertURL}
                                     valueQuill={valueQuill}
                                     setInsertURL={setInsertURL}

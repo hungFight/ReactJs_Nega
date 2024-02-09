@@ -14,7 +14,21 @@ const TextEditor: React.FC<{
     valueQuill: React.MutableRefObject<PropsValueQuill>;
     setInsertURL: React.Dispatch<React.SetStateAction<boolean>>;
     insertURL: boolean;
-}> = ({ valueText, font, setOnEditor, setInputValue, quillRef, valueQuill, setInsertURL, insertURL }) => {
+    valueSelected: React.MutableRefObject<boolean>;
+    consider: React.MutableRefObject<number>;
+}> = ({
+    valueText,
+    font,
+    setOnEditor,
+    setInputValue,
+    quillRef,
+    valueQuill,
+    setInsertURL,
+    insertURL,
+    valueSelected,
+    consider,
+}) => {
+    const [chosen, setChosen] = useState<number>(0);
     const data = [
         {
             id: 3,
@@ -22,21 +36,45 @@ const TextEditor: React.FC<{
             color: '#63b6ff',
             icon: <WriteLinkI />,
             onClick: () => {
-                if (valueQuill.current.quill) {
-                    // Show the URL input div
-                    const urlInputDiv = document.getElementById('urlInputDiv');
-                    if (urlInputDiv) {
-                        urlInputDiv.style.display = 'block';
+                if (valueQuill.current.quill)
+                    valueQuill.current.quill.on('selection-change', (range: any) => {
+                        // Your logic for handling selection change
+                        console.log('Selection changed:', range);
+                    });
+                if (consider.current === 0) {
+                    if (valueQuill.current.quill) {
+                        console.log(
+                            valueQuill.current,
+                            'quill',
+                            valueSelected.current,
+                            'vselected',
+                            insertURL,
+                            consider.current,
+                        );
+
+                        // Show the URL input div
+                        const urlInputDiv = document.getElementById('urlInputDiv');
+                        if (urlInputDiv && valueSelected.current) {
+                            urlInputDiv.style.display = 'block';
+                        }
+                        if (!insertURL) {
+                            if (valueSelected.current) {
+                                valueQuill.current.quill.format('background', 'rgb(11 68 185)');
+                                valueQuill.current.quill.format('color', '#fff');
+                            }
+                        } else {
+                            valueQuill.current.quill.format('background', null);
+                            valueQuill.current.quill.format('color', null);
+                        }
+                        // Apply URL when the button is clicked
+                        if (valueSelected.current) setInsertURL((pre) => !pre);
+                        //  setInputValue(valueQuill.current.quill.root.innerHTML);
                     }
-                    if (!insertURL) {
-                        valueQuill.current.quill.format('background', 'rgb(11 68 185)');
-                        valueQuill.current.quill.format('color', '#fff');
-                    } else {
-                        valueQuill.current.quill.format('background', null);
-                        valueQuill.current.quill.format('color', null);
-                    }
-                    // Apply URL when the button is clicked
-                    setInsertURL((pre) => !pre);
+                } else {
+                    valueQuill.current.quill = null;
+                    valueQuill.current.url = '';
+                    valueQuill.current.text = '';
+                    valueSelected.current = false;
                 }
             },
         },

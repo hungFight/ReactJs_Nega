@@ -133,6 +133,8 @@ const PreviewPost: React.FC<{
     valueQuill: React.MutableRefObject<PropsValueQuill>;
     insertURL: boolean;
     setInsertURL: React.Dispatch<React.SetStateAction<boolean>>;
+    valueSelected: React.MutableRefObject<boolean>;
+    consider: React.MutableRefObject<number>;
 }> = ({
     onChangeQuill,
     setInputValue,
@@ -159,6 +161,8 @@ const PreviewPost: React.FC<{
     valueQuill,
     insertURL,
     setInsertURL,
+    valueSelected,
+    consider,
 }) => {
     // Select type of post
     const {
@@ -231,7 +235,6 @@ const PreviewPost: React.FC<{
     const Circle = 1;
 
     const [editFile, setEditFile] = useState<boolean>(false);
-
     return (
         <>
             <Div
@@ -483,6 +486,9 @@ const PreviewPost: React.FC<{
                                         // Get the selected text
                                         const selectedText = quill.getText(selectionRange.index, selectionRange.length);
                                         if (selectedText) {
+                                            valueSelected.current = true;
+                                            console.log('mouseup');
+
                                             const bt = document.getElementById('applyUrlButton');
                                             const btCancel = document.getElementById('cancelUrlButton');
                                             if (bt)
@@ -509,18 +515,26 @@ const PreviewPost: React.FC<{
                                             if (btCancel) {
                                                 btCancel.addEventListener('click', () => {
                                                     console.log('cancel');
-                                                    quill.format('background', null);
-                                                    quill.format('color', null);
+                                                    if (quillRef.current && quillRef.current.editor) {
+                                                        quillRef.current.editor.format('background', null);
+                                                        quillRef.current.editor.format('color', null);
+                                                    }
                                                     setInsertURL(false);
+                                                    valueQuill.current.text = '';
+                                                    valueSelected.current = false;
+                                                    valueQuill.current.quill = null;
                                                     const urlInputDiv = document.getElementById('urlInputDiv');
                                                     if (urlInputDiv) {
                                                         urlInputDiv.style.display = 'none';
                                                     }
                                                 });
                                             }
-                                            valueQuill.current.quill = quill;
+                                        } else {
+                                            valueSelected.current = false;
                                         }
                                     }
+                                    console.log('considerUp', consider);
+
                                     // if (!insertURL) {
                                     //     quill.format('background', null);
                                     //     quill.format('color', null);
@@ -551,12 +565,31 @@ const PreviewPost: React.FC<{
                                                 selectionRange.index,
                                                 selectionRange.length,
                                             );
+
                                             const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
                                             if (selectedText) {
+                                                consider.current = 0;
+                                                valueQuill.current.text = selectedText;
                                                 if (selectedText.match(urlRegex)?.length)
                                                     valueQuill.current.url = selectedText;
                                                 valueQuill.current.quill = quill;
+                                            } else {
+                                                valueQuill.current.text = '';
+                                                valueSelected.current = false;
+                                                valueQuill.current.quill = null;
+                                                if (insertURL) setInsertURL(false);
                                             }
+                                        } else {
+                                            console.log('consider', consider);
+
+                                            if (consider.current > 0) {
+                                                console.log('consider if', consider);
+                                                valueQuill.current.quill = null;
+                                                valueQuill.current.text = '';
+                                                valueSelected.current = false;
+                                                if (insertURL) setInsertURL(false);
+                                            }
+                                            consider.current += 1;
                                         }
                                     }
                                 }
