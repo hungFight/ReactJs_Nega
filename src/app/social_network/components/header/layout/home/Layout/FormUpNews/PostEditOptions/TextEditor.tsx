@@ -16,6 +16,7 @@ const TextEditor: React.FC<{
     insertURL: boolean;
     valueSelected: React.MutableRefObject<boolean>;
     consider: React.MutableRefObject<number>;
+    tagDivURL: React.MutableRefObject<HTMLDivElement | null>;
 }> = ({
     valueText,
     font,
@@ -27,54 +28,39 @@ const TextEditor: React.FC<{
     insertURL,
     valueSelected,
     consider,
+    tagDivURL,
 }) => {
     const [chosen, setChosen] = useState<number>(0);
+    // Transcription
     const data = [
         {
             id: 3,
             text: '',
+            ref: tagDivURL,
+            class: 'insertURL_quill',
             color: '#63b6ff',
             icon: <WriteLinkI />,
             onClick: () => {
-                if (valueQuill.current.quill)
-                    valueQuill.current.quill.on('selection-change', (range: any) => {
-                        // Your logic for handling selection change
-                        console.log('Selection changed:', range);
-                    });
-                if (consider.current === 0) {
-                    if (valueQuill.current.quill) {
-                        console.log(
-                            valueQuill.current,
-                            'quill',
-                            valueSelected.current,
-                            'vselected',
-                            insertURL,
-                            consider.current,
-                        );
+                console.log('yess', valueQuill.current);
 
+                if (consider.current <= 1) {
+                    if (valueQuill.current.quill) {
                         // Show the URL input div
                         const urlInputDiv = document.getElementById('urlInputDiv');
-                        if (urlInputDiv && valueSelected.current) {
+                        if (urlInputDiv) {
                             urlInputDiv.style.display = 'block';
                         }
                         if (!insertURL) {
-                            if (valueSelected.current) {
-                                valueQuill.current.quill.format('background', 'rgb(11 68 185)');
-                                valueQuill.current.quill.format('color', '#fff');
-                            }
+                            valueQuill.current.quill.format('background', 'rgb(11 68 185)');
+                            valueQuill.current.quill.format('color', '#fff');
                         } else {
                             valueQuill.current.quill.format('background', null);
                             valueQuill.current.quill.format('color', null);
                         }
                         // Apply URL when the button is clicked
-                        if (valueSelected.current) setInsertURL((pre) => !pre);
+                        setInsertURL((pre) => !pre);
                         //  setInputValue(valueQuill.current.quill.root.innerHTML);
                     }
-                } else {
-                    valueQuill.current.quill = null;
-                    valueQuill.current.url = '';
-                    valueQuill.current.text = '';
-                    valueSelected.current = false;
                 }
             },
         },
@@ -199,7 +185,9 @@ const TextEditor: React.FC<{
                 <Div width="80%" css="margin: 10px auto; padding: 10px; border: 1px solid #595959;border-radius: 5px;">
                     {data.map((tor) => (
                         <Div
+                            ref={tor.ref}
                             key={tor.id}
+                            className={tor.class}
                             css={`
                                 cursor: var(--pointer);
                                 margin: 0 2px;

@@ -135,6 +135,7 @@ const PreviewPost: React.FC<{
     setInsertURL: React.Dispatch<React.SetStateAction<boolean>>;
     valueSelected: React.MutableRefObject<boolean>;
     consider: React.MutableRefObject<number>;
+    tagDivURL: React.MutableRefObject<HTMLDivElement | null>;
 }> = ({
     onChangeQuill,
     setInputValue,
@@ -163,6 +164,7 @@ const PreviewPost: React.FC<{
     setInsertURL,
     valueSelected,
     consider,
+    tagDivURL,
 }) => {
     // Select type of post
     const {
@@ -235,6 +237,55 @@ const PreviewPost: React.FC<{
     const Circle = 1;
 
     const [editFile, setEditFile] = useState<boolean>(false);
+    useEffect(() => {
+        if (quillRef.current) {
+            const quill = quillRef.current.editor;
+            if (quill) {
+                const bt = document.getElementById('applyUrlButton');
+                const btCancel = document.getElementById('cancelUrlButton');
+                if (bt)
+                    bt.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const ip: any = document.getElementById('urlInput');
+                        if (ip) {
+                            const url = ip.value.trim();
+                            const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
+                            if (url) {
+                                if (url.match(urlRegex)) {
+                                    // Apply link with URL to the selected text
+                                    quill.format('link', url);
+                                    // Update the Quill editor's content
+                                    const updatedHTMLContent = quill.root.innerHTML;
+                                    setInputValue(updatedHTMLContent);
+                                } else {
+                                    alert('Please enter a URL correctly.');
+                                }
+                            } else {
+                                alert('Please enter a URL.');
+                            }
+                        }
+                    });
+                if (btCancel) {
+                    btCancel.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        console.log('cancel');
+                        if (quillRef.current && quillRef.current.editor) {
+                            quillRef.current.editor.format('background', null);
+                            quillRef.current.editor.format('color', null);
+                        }
+                        setInsertURL(false);
+                        valueQuill.current.text = '';
+                        valueSelected.current = false;
+                        valueQuill.current.quill = null;
+                        const urlInputDiv = document.getElementById('urlInputDiv');
+                        if (urlInputDiv) {
+                            urlInputDiv.style.display = 'none';
+                        }
+                    });
+                }
+            }
+        }
+    }, []);
     return (
         <>
             <Div
@@ -478,70 +529,19 @@ const PreviewPost: React.FC<{
                         onMouseUp={() => {
                             if (valueQuill.current?.quill) {
                                 const quill = valueQuill.current.quill;
-                                console.log('select');
                                 // Get the current selection range
                                 if (quill) {
                                     const selectionRange = quill.getSelection();
                                     if (selectionRange && selectionRange.length > 0) {
                                         // Get the selected text
                                         const selectedText = quill.getText(selectionRange.index, selectionRange.length);
-                                        if (selectedText) {
-                                            valueSelected.current = true;
-                                            console.log('mouseup');
-
-                                            const bt = document.getElementById('applyUrlButton');
-                                            const btCancel = document.getElementById('cancelUrlButton');
-                                            if (bt)
-                                                bt.addEventListener('click', function () {
-                                                    const ip: any = document.getElementById('urlInput');
-                                                    if (ip) {
-                                                        const url = ip.value.trim();
-                                                        const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
-                                                        if (url) {
-                                                            if (url.match(urlRegex)) {
-                                                                // Apply link with URL to the selected text
-                                                                quill.format('link', url);
-                                                                // Update the Quill editor's content
-                                                                const updatedHTMLContent = quill.root.innerHTML;
-                                                                setInputValue(updatedHTMLContent);
-                                                            } else {
-                                                                alert('Please enter a URL correctly.');
-                                                            }
-                                                        } else {
-                                                            alert('Please enter a URL.');
-                                                        }
-                                                    }
-                                                });
-                                            if (btCancel) {
-                                                btCancel.addEventListener('click', () => {
-                                                    console.log('cancel');
-                                                    if (quillRef.current && quillRef.current.editor) {
-                                                        quillRef.current.editor.format('background', null);
-                                                        quillRef.current.editor.format('color', null);
-                                                    }
-                                                    setInsertURL(false);
-                                                    valueQuill.current.text = '';
-                                                    valueSelected.current = false;
-                                                    valueQuill.current.quill = null;
-                                                    const urlInputDiv = document.getElementById('urlInputDiv');
-                                                    if (urlInputDiv) {
-                                                        urlInputDiv.style.display = 'none';
-                                                    }
-                                                });
-                                            }
-                                        } else {
-                                            valueSelected.current = false;
+                                        if (!selectedText) {
+                                            valueQuill.current.quill = null;
+                                            valueQuill.current.url = '';
+                                            valueQuill.current.text = '';
                                         }
                                     }
-                                    console.log('considerUp', consider);
-
-                                    // if (!insertURL) {
-                                    //     quill.format('background', null);
-                                    //     quill.format('color', null);
-                                    // }
                                 }
-
-                                // Apply URL when the button is clicked
                             }
                         }}
                     >
@@ -565,34 +565,39 @@ const PreviewPost: React.FC<{
                                                 selectionRange.index,
                                                 selectionRange.length,
                                             );
-
                                             const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
                                             if (selectedText) {
                                                 consider.current = 0;
+                                                console.log(consider.current, 'consider.current 1');
                                                 valueQuill.current.text = selectedText;
                                                 if (selectedText.match(urlRegex)?.length)
                                                     valueQuill.current.url = selectedText;
                                                 valueQuill.current.quill = quill;
                                             } else {
-                                                valueQuill.current.text = '';
-                                                valueSelected.current = false;
+                                                valueQuill.current.url = '';
                                                 valueQuill.current.quill = null;
+                                                valueQuill.current.text = '';
                                                 if (insertURL) setInsertURL(false);
                                             }
                                         } else {
-                                            console.log('consider', consider);
-
-                                            if (consider.current > 0) {
-                                                console.log('consider if', consider);
-                                                valueQuill.current.quill = null;
-                                                valueQuill.current.text = '';
-                                                valueSelected.current = false;
-                                                if (insertURL) setInsertURL(false);
-                                            }
                                             consider.current += 1;
+                                            // valueQuill.current.url = '';
+                                            // valueQuill.current.quill = null;
+                                            // valueQuill.current.text = '';
+                                            // if (insertURL) setInsertURL(false);
                                         }
                                     }
                                 }
+                                if (tagDivURL) {
+                                    tagDivURL.current?.addEventListener('click', (e) => {
+                                        if (consider.current !== 1) {
+                                            valueQuill.current.quill = null;
+                                            valueQuill.current.text = '';
+                                            if (insertURL) setInsertURL(false);
+                                        }
+                                    });
+                                }
+                                console.log(consider.current, 'consider.current 2');
                             }}
                             modules={{
                                 toolbar: false, // Tắt thanh công cụ
