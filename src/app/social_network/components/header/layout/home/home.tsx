@@ -8,7 +8,7 @@ import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
 import FormUpNews, { PropsFormHome } from './Layout/FormUpNews/FormUpNews';
 import Posts from './Layout/DataPosts/Posts';
 import HttpRequestUser from '~/restAPI/userAPI';
-import { Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Button, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { socket } from 'src/mainPage/nextWeb';
 import { setTrueErrorServer } from '~/redux/hideShow';
@@ -44,6 +44,9 @@ interface PropsHome {
 const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
+    const [options, setOptions] = useState<string>('');
+    const [openPostCreation, setOpenPostCreation] = useState<boolean>(false);
+    const [topScrolling, setTopScrolling] = useState<boolean>(false);
 
     const [dataPosts, setDataPosts] = useState<PropsDataPosts[]>([]);
     const offset = useRef<number>(0);
@@ -83,6 +86,15 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     }, []);
     const minWidth1 = '400px';
     const bgAther = colorBg === 1 ? '#17181af5' : colorBg;
+    const handleScroll = (e: any) => {
+        const { scrollTop, scrollLeft } = e.target;
+        if (scrollTop > 126) {
+            setTopScrolling(true);
+        } else {
+            setTopScrolling(false);
+        }
+        console.log(scrollTop, 'scrollTop');
+    };
     return (
         <Div
             width="100%"
@@ -93,79 +105,169 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                 justify-content: center;
                 background-color: ${bgAther};
             `}
+            onScroll={handleScroll}
         >
             <DivPost onClick={(e) => e.stopPropagation()}>
                 <Div
+                    wrap="wrap"
+                    width="100%"
                     css={`
-                        width: 100%;
-                        margin-top: 18px;
-                        border-radius: 10px;
-                        background-color: #494c54cf;
-                        border: 1px solid #6a6a6a;
-                        z-index: 1;
-                    `}
-                    onClick={handleOpenForm}
-                >
-                    <Avatar
-                        src={dataUser.avatar}
-                        gender={dataUser.gender}
-                        alt={dataUser.fullName}
-                        radius="50%"
-                        css={`
-                            width: 38px;
-                            height: 38px;
-                            margin: 5px;
-                            @media (min-width: ${minWidth1}) {
-                                width: 45px;
-                                height: 45px;
-                                margin: 7px 7px 7px 10px;
+                        overflow: overlay;
+                        max-height: 93%;
+                        @media (min-width: 580px) {
+                            width: 580px;
+                        }
+                        @media (max-width: 768px) {
+                            &::-webkit-scrollbar {
+                                width: 0px;
                             }
-                        `}
-                    />
+                        }
+                        ${topScrolling && openPostCreation
+                            ? 'position: fixed; z-index: 1; background-color: #18191b;'
+                            : ''}
+                    `}
+                >
                     <Div
                         css={`
-                            width: 75%;
-                            height: fit-content;
-                            color: ${colorText};
-                            margin-top: 2px;
-                            @media (min-width: ${minWidth1}) {
-                                margin-top: 6px;
-                            }
+                            width: 100%;
+                            margin-top: 18px;
+                            border-radius: 10px;
+                            background-color: #494c54cf;
+                            border: 1px solid #6a6a6a;
+                            z-index: 1;
                         `}
-                        wrap="wrap"
+                        onClick={handleOpenForm}
                     >
-                        <H3
+                        <Avatar
+                            src={dataUser.avatar}
+                            gender={dataUser.gender}
+                            alt={dataUser.fullName}
+                            radius="50%"
                             css={`
-                                width: 100%;
-                                font-size: 1.5rem;
-                                height: fit-content;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
-                                overflow: hidden;
+                                width: 38px;
+                                height: 38px;
+                                margin: 5px;
                                 @media (min-width: ${minWidth1}) {
-                                    font-size: 1.6rem;
+                                    width: 45px;
+                                    height: 45px;
+                                    margin: 7px 7px 7px 10px;
                                 }
                             `}
-                        >
-                            {dataUser.fullName}
-                        </H3>
-                        <P
+                        />
+                        <Div
                             css={`
-                                font-size: 1.2rem;
+                                width: 75%;
                                 height: fit-content;
+                                color: ${colorText};
+                                margin-top: 2px;
                                 @media (min-width: ${minWidth1}) {
+                                    margin-top: 6px;
+                                }
+                            `}
+                            wrap="wrap"
+                        >
+                            <H3
+                                css={`
+                                    width: 100%;
+                                    font-size: 1.5rem;
+                                    height: fit-content;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    @media (min-width: ${minWidth1}) {
+                                        font-size: 1.6rem;
+                                    }
+                                `}
+                            >
+                                {dataUser.fullName}
+                            </H3>
+                            <P
+                                css={`
                                     font-size: 1.2rem;
-                                }
-                            `}
-                        >
-                            {userBar.contentFirst} <span style={{ fontSize: '1rem' }}>{userBar.contentTwo}</span>
-                        </P>
+                                    height: fit-content;
+                                    @media (min-width: ${minWidth1}) {
+                                        font-size: 1.2rem;
+                                    }
+                                `}
+                            >
+                                {userBar.contentFirst} <span style={{ fontSize: '1rem' }}>{userBar.contentTwo}</span>
+                            </P>
+                        </Div>
                     </Div>
+                    <Div
+                        width="100%"
+                        css={`
+                            justify-content: right;
+                            margin-top: 8px;
+                            ${topScrolling && !openPostCreation
+                                ? 'position: fixed; z-index: 1; top: 50px; width: max-content; right: 50%; left: 50%; translate: -50%;'
+                                : ''}
+                        `}
+                    >
+                        {!openPostCreation && (
+                            <Button
+                                bg="#404349"
+                                color={colorText}
+                                type="button"
+                                css={`
+                                    background-image: linear-gradient(
+                                            45deg,
+                                            var(--yt-spec-assistive-feed-themed-gradient-1),
+                                            var(--yt-spec-assistive-feed-themed-gradient-2),
+                                            var(--yt-spec-assistive-feed-themed-gradient-3)
+                                        ),
+                                        linear-gradient(
+                                            45deg,
+                                            var(--yt-spec-assistive-feed-vibrant-gradient-1),
+                                            var(--yt-spec-assistive-feed-vibrant-gradient-2),
+                                            var(--yt-spec-assistive-feed-vibrant-gradient-3)
+                                        );
+                                    background-clip: padding-box, border-box;
+                                    background-origin: border-box, border-box;
+                                    border: 1px solid transparent;
+                                    position: relative;
+                                    &:hover:before {
+                                        background-color: #0807073b;
+                                    }
+                                    &:before {
+                                        content: '';
+                                        z-index: 1;
+                                        background-color: transparent;
+                                        transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
+                                        position: absolute;
+                                        top: 0;
+                                        bottom: 0;
+                                        left: 0;
+                                        right: 0;
+                                    }
+                                `}
+                                onClick={() => setOpenPostCreation(true)}
+                            >
+                                create a new post
+                            </Button>
+                        )}
+                    </Div>
+                    {openPostCreation && (
+                        <FormUpNews
+                            form={form}
+                            colorBg={colorBg}
+                            colorText={colorText}
+                            user={dataUser}
+                            setOpenPostCreation={setOpenPostCreation}
+                        />
+                    )}
                 </Div>
-                <FormUpNews form={form} colorBg={colorBg} colorText={colorText} user={dataUser} />
-                <Div display="block" css="margin: 20px 0;">
+                <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:96%}">
                     {dataPosts.map((p) => (
-                        <Posts key={p._id} user={dataUser} colorBg={colorBg} colorText={colorText} dataPosts={p} />
+                        <Posts
+                            setOptions={setOptions}
+                            options={options}
+                            key={p._id}
+                            user={dataUser}
+                            colorBg={colorBg}
+                            colorText={colorText}
+                            dataPosts={p}
+                        />
                     ))}
                 </Div>
             </DivPost>

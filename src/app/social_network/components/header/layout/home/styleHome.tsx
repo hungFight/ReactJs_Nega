@@ -5,6 +5,7 @@ export const DivPost = styled.div`
     height: fit-content;
     display: flex;
     flex-direction: column;
+    position: relative;
     align-items: center;
     @media (min-width: 580px) {
         width: 580px;

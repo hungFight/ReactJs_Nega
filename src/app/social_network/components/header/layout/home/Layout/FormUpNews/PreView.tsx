@@ -293,25 +293,10 @@ const PreviewPost: React.FC<{
                 css={`
                     display: block;
                     height: 100%;
-                    margin-top: 75px;
+                    margin-top: 13px;
                     position: relative;
-                    color: ${colorText};
                 `}
             >
-                <Div
-                    width="100%"
-                    css={`
-                        display: block;
-                        color: ${colorText};
-                        text-align: center;
-                        font-size: 1.5rem;
-                        margin-bottom: 5px;
-                        padding: 5px;
-                        background-color: ${colorBg === 1 ? '#292a2d' : ''};
-                    `}
-                >
-                    Pre-View your post here
-                </Div>
                 {step < 1 && options && (
                     <OpFeatureSetting
                         more={more}
@@ -901,6 +886,7 @@ const PreviewPost: React.FC<{
                                     size="1.5rem"
                                     padding="5px 15px;"
                                     bg="#d94755"
+                                    color="#fff"
                                     onClick={() => {
                                         handleClear();
                                     }}
@@ -911,6 +897,7 @@ const PreviewPost: React.FC<{
                                     type="button"
                                     size="1.5rem"
                                     padding="5px 14px"
+                                    color="#fff"
                                     bg="#2e54c6"
                                     onClick={handlePost}
                                 >

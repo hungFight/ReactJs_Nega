@@ -117,4 +117,6 @@ export interface PropsPosts {
     colorBg: number;
     colorText: string;
     dataPosts: PropsDataPosts;
+    setOptions: React.Dispatch<React.SetStateAction<string>>;
+    options: string;
 }

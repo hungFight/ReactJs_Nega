@@ -5,7 +5,7 @@ import './formUpNews.scss';
 import { CameraI, CloseI, HashI, LoadingI, TagPostI, TextEditorI } from '~/assets/Icons/Icons';
 
 import { DivDataFake, DivForm, DivItems, DivOptions, DivUpNews, Form, Label } from './styleFormUpNews';
-import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Button, Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import FontFamilys from '~/reUsingComponents/Font/FontFamilys';
 import PreviewPost, { PropsPreViewFormHome } from './PreView';
@@ -27,6 +27,7 @@ interface PropsFormUpNews {
     colorBg: number;
     user: PropsUserHome;
     form: PropsFormHome;
+    setOpenPostCreation: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export interface PropsDataFileUpload {
     id: number;
@@ -40,7 +41,7 @@ export interface PropsValueQuill {
     text: string;
     quill?: any;
 }
-const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user }) => {
+const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user, setOpenPostCreation }) => {
     const [displayTags, setDisplayTags] = useState<boolean>(false);
     const {
         displayEmoji,
@@ -67,7 +68,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
         divRef,
         handleChange,
         quillRef,
-    } = LogicForm(form, colorText, colorBg, user);
+    } = LogicForm(form, colorText, colorBg, setOpenPostCreation, user);
     const [edit, setEdit] = useState<boolean>(false);
     const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>([]);
     const [tags, setTags] = useState<{ id: string; avatar: string; gender: number; fullName: string }[]>([]);
@@ -84,18 +85,25 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
         <>
             <Div
                 css={`
-                    ${yes
-                        ? 'width: 100%;  left: 0; position: fixed;  z-index: 999; background-color: #00000087; top: 0; height: 100%;'
-                        : ''}
+                    width: 100%;
+                    left: 0;
+                    position: fixed;
+                    z-index: 999;
+                    background-color: #00000087;
+                    top: 0;
+                    height: 100%;
                 `}
-                onClick={() => setEdit(false)}
             ></Div>
             <DivForm
                 top="12px"
                 css={`
-                    ${yes
-                        ? 'width: inherit;  display: flex; justify-content: center; z-index: 1000; background-color: #181818;  overflow: overlay; height: 100%;'
-                        : ''}
+                    width: inherit;
+                    display: flex;
+                    justify-content: center;
+                    z-index: 1000;
+                    background-color: #181818;
+                    overflow: overlay;
+                    height: 100%;
                 `}
             >
                 <Form
@@ -257,25 +265,12 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user 
                         </DivOptions>
 
                         <DivDataFake>
-                            <Div width="100%" css="position: relative;">
-                                <DivPos
-                                    right="12px"
-                                    top="10px"
-                                    size="20px"
-                                    color={colorText}
-                                    onClick={() => {
-                                        document.querySelector('.textHome')?.setAttribute('style', 'height: 42px');
-                                        setInputValue('');
-                                    }}
-                                >
-                                    <CloseI />
-                                </DivPos>
-                            </Div>
                             {loading && (
                                 <DivLoading>
                                     <LoadingI />
                                 </DivLoading>
                             )}
+
                             {
                                 <PreviewPost
                                     tagDivURL={tagDivURL}

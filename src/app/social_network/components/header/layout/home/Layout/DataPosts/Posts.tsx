@@ -1,4 +1,4 @@
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import { useEffect, useRef, useState } from 'react';
 import { Div, H3, Img, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews';
@@ -10,12 +10,11 @@ import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import Cookies from '~/utils/Cookies';
 import { PropsPosts } from './interfacePosts';
 
-const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts }) => {
+const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, options, setOptions }) => {
     const { lg } = Languages();
     const { userId } = Cookies();
     const [showComment, setShowComment] = useState<boolean>(false);
     const [actImotion, setActImotion] = useState<boolean>(false);
-    const [options, setOptions] = useState<boolean>(false);
     const [imotion, setImotion] = useState<{ id: number; icon: React.ReactElement | string }>({
         id: dataPosts.feel.act,
         icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
@@ -48,25 +47,8 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts }) =>
                 color: ${colorText};
             `}
         >
-            {options && (
-                <>
-                    <P
-                        z="1.2rem"
-                        css={`
-                            width: 100%;
-                            text-align: center;
-                            background-color: #292a2d;
-                            padding: 4px;
-                            border: 1px solid #565451;
-                            @media (min-width: 580px) {
-                                font-size: 1.3rem;
-                            }
-                        `}
-                    >
-                        This post created in {createdAt}
-                    </P>
-                    {userId === dataPosts.id_user && <OpUpdate createdAt={createdAt} setOptions={setOptions} />}
-                </>
+            {options === dataPosts._id && userId === dataPosts.id_user && (
+                <OpUpdate createdAt={createdAt} setOptions={setOptions} />
             )}
             <Div
                 wrap="wrap"
@@ -130,30 +112,66 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts }) =>
                         >
                             {dataPosts.user[0].fullName}
                         </H3>
-                        <P css=" width: 90px; font-size: 1.1rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around; white-space: nowrap;">
+                        <Div css="font-size: 1.1rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around; white-space: nowrap;">
                             <LockI />
-                            <Span css="padding-top: 3px;">{fromNow}</Span>
+                            <Span css="padding-top: 3px; margin: 0 5px">{fromNow}</Span>
                             {/* <Span>{valueSeePost.icon}</Span> */}
-                        </P>
+                        </Div>
                     </Div>
-                    <DivPos size="21px" top="4px" right="10px" color={colorText} onClick={() => setOptions(!options)}>
+                    <DivPos
+                        size="21px"
+                        top="4px"
+                        right="10px"
+                        color={colorText}
+                        onClick={() => {
+                            if (!options) {
+                                setOptions(dataPosts._id);
+                            } else {
+                                if (options === dataPosts._id) {
+                                    setOptions('');
+                                } else {
+                                    setOptions(dataPosts._id);
+                                }
+                            }
+                        }}
+                    >
                         <DotI />
                     </DivPos>
                 </Div>
 
                 <Div width="100%" css="padding: 5px 6px 10px 6px;">
                     {dataPosts.content.text && (
-                        <TextAreaPre
-                            // ref={textA}
+                        <ReactQuillF
                             value={dataPosts.content.text}
+                            modules={{
+                                toolbar: false, // Tắt thanh công cụ
+                            }}
                             css={`
+                                width: 100%;
+                                .ql-container.ql-snow {
+                                    border: 0;
+                                }
+                                .ql-clipboard {
+                                    display: none;
+                                }
+                                .ql-editor {
+                                    outline: none;
+                                }
                                 padding: 5px;
                                 color: ${colorText};
                                 background-color: #292a2d;
                                 font-family: ${dataPosts.content.fontFamily}, sans-serif;
-                                resize: none;
+                                white-space: pre-wrap;
+                                word-break: break-word;
+                                * {
+                                    font-size: 1.5rem;
+                                }
+                                @media (min-width: 768px) {
+                                    * {
+                                        font-size: 1.38rem;
+                                    }
+                                }
                             `}
-                            readOnly
                         />
                     )}
                 </Div>

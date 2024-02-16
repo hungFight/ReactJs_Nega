@@ -12,7 +12,13 @@ import { Link } from 'react-router-dom';
 import { Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault';
 import ReactQuill, { Quill } from 'react-quill';
 
-export default function LogicForm(form: PropsFormHome, colorText: string, colorBg: number, user?: PropsUserHome) {
+export default function LogicForm(
+    form: PropsFormHome,
+    colorText: string,
+    colorBg: number,
+    setOpenPostCreation: React.Dispatch<React.SetStateAction<boolean>>,
+    user?: PropsUserHome,
+) {
     const dispatch = useDispatch();
     const { userId, token } = Cookies();
     const divRef = useRef<any>(null);
@@ -43,6 +49,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
     });
     const handleClear = () => {
         setInputValue('');
+        setOpenPostCreation(false);
         setuploadPre([]);
         setDataCentered([]);
         const inpuFile: any = document.getElementById('upload');

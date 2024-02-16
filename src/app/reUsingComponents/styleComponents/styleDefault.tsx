@@ -61,7 +61,7 @@ export const Button = styled.button<Propss>`
     display: flex;
     padding: ${(props) => props.padding || '5px 10px'};
     background-color: ${(props) => props.bg || 'transparent'};
-    color: ${(props) => props.color || '#fff'};
+    color: ${(props) => props.color};
     cursor: var(--pointer);
     border-radius: 5px;
     font-size: ${(props) => props.size || '1.6rem'};
