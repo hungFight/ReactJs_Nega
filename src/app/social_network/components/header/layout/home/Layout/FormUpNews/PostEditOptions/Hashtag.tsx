@@ -5,20 +5,20 @@ import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefa
 import { v4 as primaryKey } from 'uuid';
 
 const Hashtag: React.FC<{
-    setHashTags: React.Dispatch<React.SetStateAction<{ id: string; value: string }[]>>;
+    setHashTags: React.Dispatch<React.SetStateAction<{ _id: string; value: string }[]>>;
     setOnTags: React.Dispatch<React.SetStateAction<boolean>>;
-    hashTagsInitially: { id: string; value: string }[];
+    hashTagsInitially: { _id: string; value: string }[];
 }> = ({ setHashTags: setHash, setOnTags, hashTagsInitially }) => {
-    const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>(hashTagsInitially);
+    const [hashTags, setHashTags] = useState<{ _id: string; value: string }[]>(hashTagsInitially);
     const [hashTag, setHashTag] = useState<string>('');
-    const [realData, setRealData] = useState<{ id: string; value: string }[]>([
-        { id: '1', value: '#hello' },
-        { id: '2', value: '#world' },
-        { id: '3', value: '#nana' },
-        { id: '4', value: '#football' },
-        { id: '5', value: '#fiction' },
-        { id: '6', value: '#love' },
-        { id: '7', value: '#goodlife' },
+    const [realData, setRealData] = useState<{ _id: string; value: string }[]>([
+        { _id: '1', value: '#hello' },
+        { _id: '2', value: '#world' },
+        { _id: '3', value: '#nana' },
+        { _id: '4', value: '#football' },
+        { _id: '5', value: '#fiction' },
+        { _id: '6', value: '#love' },
+        { _id: '7', value: '#goodlife' },
     ]);
     return (
         <Div
@@ -104,7 +104,7 @@ const Hashtag: React.FC<{
                     {hashTags.map((t) => (
                         <P
                             z="1.5rem"
-                            key={t.id}
+                            key={t._id}
                             css={`
                                 height: fit-content;
                                 padding: 6px 8px;
@@ -205,12 +205,12 @@ const Hashtag: React.FC<{
                                     const occurrences = (e.target.value.match(/#/g) || []).length;
                                     if (e.target.value.length > 1 && occurrences === 1) {
                                         if (!realData.some((ts) => ts.value === e.target.value)) {
-                                            if (!realData.some((v) => v.id === 'dataAdd')) {
-                                                setRealData([{ id: 'dataAdd', value: e.target.value }, ...realData]);
+                                            if (!realData.some((v) => v._id === 'dataAdd')) {
+                                                setRealData([{ _id: 'dataAdd', value: e.target.value }, ...realData]);
                                             } else {
                                                 setRealData((pre) =>
                                                     pre.map((c) => {
-                                                        if (c.id === 'dataAdd') {
+                                                        if (c._id === 'dataAdd') {
                                                             c.value = e.target.value;
                                                         }
                                                         return c;
@@ -218,7 +218,7 @@ const Hashtag: React.FC<{
                                                 );
                                             }
                                         } else {
-                                            setRealData((pre) => pre.filter((l) => l.id !== 'dataAdd'));
+                                            setRealData((pre) => pre.filter((l) => l._id !== 'dataAdd'));
                                         }
                                     }
                                 }}
@@ -242,7 +242,7 @@ const Hashtag: React.FC<{
                                         ) {
                                             if (!hashTags.some((v) => v.value.includes(hashTag))) {
                                                 const uId = primaryKey();
-                                                setHashTags([...hashTags, { id: uId, value: hashTag }]);
+                                                setHashTags([...hashTags, { _id: uId, value: hashTag }]);
                                             }
                                         }
                                         setHashTag('#');
@@ -257,7 +257,7 @@ const Hashtag: React.FC<{
                             {realData.map((t) => (
                                 <P
                                     z="1.5rem"
-                                    key={t.id}
+                                    key={t._id}
                                     css={`
                                         height: fit-content;
                                         padding: 6px 8px;

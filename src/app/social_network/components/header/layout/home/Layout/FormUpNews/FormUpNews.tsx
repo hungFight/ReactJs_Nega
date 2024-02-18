@@ -70,7 +70,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
         quillRef,
     } = LogicForm(form, colorText, colorBg, setOpenPostCreation, user);
     const [edit, setEdit] = useState<boolean>(false);
-    const [hashTags, setHashTags] = useState<{ id: string; value: string }[]>([]);
+    const [hashTags, setHashTags] = useState<{ _id: string; value: string }[]>([]);
     const [tags, setTags] = useState<{ id: string; avatar: string; gender: number; fullName: string }[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);
     const [onTagU, setOnTagU] = useState<boolean>(false);

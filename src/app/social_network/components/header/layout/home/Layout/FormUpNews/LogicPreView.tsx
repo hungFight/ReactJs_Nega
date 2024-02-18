@@ -82,6 +82,16 @@ export default function LogicPreView(
     >,
 
     handleClear: () => void,
+    hashTags: {
+        _id: string;
+        value: string;
+    }[],
+    tags: {
+        id: string;
+        avatar: string;
+        gender: number;
+        fullName: string;
+    }[],
 ) {
     const dispatch = useDispatch();
     // type of post
@@ -105,7 +115,7 @@ export default function LogicPreView(
     const [showComment, setShowComment] = useState<boolean>(false);
     const [actImotion, setActImotion] = useState<boolean>(false);
     const [showI, setShowI] = useState<{ id: number; icon: string } | undefined>();
-    const [acEmo, setAcEmo] = useState<{ id: number; icon: React.ReactElement }>({ id: 1, icon: <LikeI /> });
+    const [acEmo, setAcEmo] = useState<{ id: number; icon: React.ReactElement }>({ id: 1, icon: <LikeI /> }); // display a button as like to press
     const textA = useRef<any>();
 
     // options of setting
@@ -167,6 +177,8 @@ export default function LogicPreView(
             const formData = new FormData();
             formData.append('text', valueText);
             formData.append('category', String(selectType));
+            formData.append('hashTags', String(hashTags));
+            formData.append('tags', String(tags.map((t) => t.id)));
             formData.append('fontFamily', font);
             formData.append('privacy', JSON.stringify(valuePrivacy));
             formData.append('act', JSON.stringify(acEmo.id));
@@ -182,7 +194,7 @@ export default function LogicPreView(
             console.log('valuePrivacy', valuePrivacy, valueSeePost, 'valueSeePost');
 
             switch (selectType) {
-                case 0:
+                case 0: // default
                     for (let fil of file) {
                         if (fil.title) {
                             formData.append('files', fil.file, fil.title);

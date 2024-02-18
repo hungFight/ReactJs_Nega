@@ -19,6 +19,7 @@ import Cookies from '~/utils/Cookies';
 import { PropsDataPosts } from './Layout/DataPosts/interfacePosts';
 import { setSession } from '~/redux/reload';
 import ServerBusy from '~/utils/ServerBusy';
+import { PostsI, ShortStoryI, YoutubeI } from '~/assets/Icons/Icons';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 
@@ -44,6 +45,7 @@ interface PropsHome {
 const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
+    const [category, setCategory] = useState<string>('post');
     const [options, setOptions] = useState<string>('');
     const [openPostCreation, setOpenPostCreation] = useState<boolean>(false);
     const [topScrolling, setTopScrolling] = useState<boolean>(false);
@@ -88,13 +90,21 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const bgAther = colorBg === 1 ? '#17181af5' : colorBg;
     const handleScroll = (e: any) => {
         const { scrollTop, scrollLeft } = e.target;
-        if (scrollTop > 126) {
-            setTopScrolling(true);
-        } else {
-            setTopScrolling(false);
+        if (!openPostCreation) {
+            if (scrollTop > 126) {
+                setTopScrolling(true);
+            } else {
+                setTopScrolling(false);
+            }
         }
         console.log(scrollTop, 'scrollTop');
     };
+    const bgIsChosen =
+        'background-image: linear-gradient(45deg,var(--yt-spec-assistive-feed-themed-gradient-1),var(--yt-spec-assistive-feed-themed-gradient-2),var(--yt-spec-assistive-feed-themed-gradient-3)),linear-gradient(45deg,var(--yt-spec-assistive-feed-vibrant-gradient-1),var(--yt-spec-assistive-feed-vibrant-gradient-2),var(--yt-spec-assistive-feed-vibrant-gradient-3)); background-clip: padding-box, border-box; background-origin: border-box, border-box; border: 1px solid transparent;';
+    const post = category === 'post';
+    const story = category === 'story';
+    const youtube = category === 'youtube';
+    const DivItemCss = `margin-right: 10px;padding: 5px;cursor: pointer;position: relative;font-size: 20px;padding: 5px 20px;border-radius: 5px;border: 1px solid #5e5d5c;`;
     return (
         <Div
             width="100%"
@@ -195,58 +205,212 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         </Div>
                     </Div>
                     <Div
-                        width="100%"
                         css={`
-                            justify-content: right;
-                            margin-top: 8px;
+                            padding: 0 5px;
+                            margin-top: 5px;
+                            padding-bottom: 41px;
                             ${topScrolling && !openPostCreation
-                                ? 'position: fixed; z-index: 1; top: 50px; width: max-content; right: 50%; left: 50%; translate: -50%;'
+                                ? 'z-index: 1;background-color: #07070759;border-radius: 5px;padding-top: 5px;position: fixed; z-index: 1; @media(min-width: 768px){top: 50px;}top: 34px; width: max-content; right: 50%; left: 50%; translate: -50%;'
                                 : ''}
                         `}
+                        wrap="wrap"
                     >
-                        {!openPostCreation && (
-                            <Button
-                                bg="#404349"
-                                color={colorText}
-                                type="button"
+                        <Div width="100%" css="align-items: center;">
+                            <Div
                                 css={`
-                                    background-image: linear-gradient(
-                                            45deg,
-                                            var(--yt-spec-assistive-feed-themed-gradient-1),
-                                            var(--yt-spec-assistive-feed-themed-gradient-2),
-                                            var(--yt-spec-assistive-feed-themed-gradient-3)
-                                        ),
-                                        linear-gradient(
-                                            45deg,
-                                            var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                            var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                            var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                        );
-                                    background-clip: padding-box, border-box;
-                                    background-origin: border-box, border-box;
-                                    border: 1px solid transparent;
-                                    position: relative;
-                                    &:hover:before {
-                                        background-color: #0807073b;
-                                    }
-                                    &:before {
-                                        content: '';
-                                        z-index: 1;
-                                        background-color: transparent;
-                                        transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                        position: absolute;
-                                        top: 0;
-                                        bottom: 0;
-                                        left: 0;
-                                        right: 0;
+                                    ${DivItemCss}
+                                    ${post ? bgIsChosen : ''}
+                                    &:hover {
+                                        color: #85a5cc;
                                     }
                                 `}
-                                onClick={() => setOpenPostCreation(true)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCategory('post');
+                                }}
                             >
-                                create a new post
-                            </Button>
-                        )}
+                                <PostsI />
+                                {post && !openPostCreation && (
+                                    <Button
+                                        bg="#404349"
+                                        color={colorText}
+                                        type="button"
+                                        css={`
+                                            position: absolute;
+                                            top: 35px;
+                                            width: max-content;
+                                            left: 0;
+                                            background-image: linear-gradient(
+                                                    45deg,
+                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
+                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
+                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
+                                                ),
+                                                linear-gradient(
+                                                    45deg,
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
+                                                );
+                                            background-clip: padding-box, border-box;
+                                            background-origin: border-box, border-box;
+                                            border: 1px solid transparent;
+                                            &:hover:before {
+                                                background-color: #0807073b;
+                                            }
+                                            &:before {
+                                                content: '';
+                                                z-index: 1;
+                                                background-color: transparent;
+                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
+                                                position: absolute;
+                                                top: 0;
+                                                bottom: 0;
+                                                left: 0;
+                                                right: 0;
+                                            }
+                                            @media (max-width: 350px) {
+                                                font-size: 1.5rem;
+                                            }
+                                        `}
+                                        onClick={() => setOpenPostCreation(true)}
+                                    >
+                                        create a new post
+                                    </Button>
+                                )}
+                            </Div>
+                            <Div
+                                css={`
+                                    ${DivItemCss}
+                                    ${story ? bgIsChosen : ''}
+                                    &:hover {
+                                        color: #fde2fb;
+                                    }
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCategory('story');
+                                }}
+                            >
+                                <ShortStoryI />
+                                {story && !openPostCreation && (
+                                    <Button
+                                        bg="#404349"
+                                        color={colorText}
+                                        type="button"
+                                        css={`
+                                            position: absolute;
+                                            top: 35px;
+                                            width: max-content;
+                                            left: 0;
+                                            background-image: linear-gradient(
+                                                    45deg,
+                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
+                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
+                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
+                                                ),
+                                                linear-gradient(
+                                                    45deg,
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
+                                                );
+                                            background-clip: padding-box, border-box;
+                                            background-origin: border-box, border-box;
+                                            border: 1px solid transparent;
+                                            &:hover:before {
+                                                background-color: #0807073b;
+                                            }
+                                            &:before {
+                                                content: '';
+                                                z-index: 1;
+                                                background-color: transparent;
+                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
+                                                position: absolute;
+                                                top: 0;
+                                                bottom: 0;
+                                                left: 0;
+                                                right: 0;
+                                            }
+                                            @media (max-width: 350px) {
+                                                font-size: 1.5rem;
+                                            }
+                                            right: 50%;
+                                            left: 50%;
+                                            translate: -50%;
+                                        `}
+                                        onClick={() => setOpenPostCreation(true)}
+                                    >
+                                        create a new story
+                                    </Button>
+                                )}
+                            </Div>{' '}
+                            <Div
+                                css={`
+                                    ${DivItemCss}
+                                    ${youtube ? bgIsChosen : ''}
+                                    &:hover {
+                                        color: #fde2fb;
+                                    }
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCategory('youtube');
+                                }}
+                            >
+                                <YoutubeI />
+                                {youtube && !openPostCreation && (
+                                    <Button
+                                        bg="#404349"
+                                        color={colorText}
+                                        type="button"
+                                        css={`
+                                            position: absolute;
+                                            top: 35px;
+                                            width: max-content;
+                                            right: 0;
+                                            background-image: linear-gradient(
+                                                    45deg,
+                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
+                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
+                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
+                                                ),
+                                                linear-gradient(
+                                                    45deg,
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
+                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
+                                                );
+                                            background-clip: padding-box, border-box;
+                                            background-origin: border-box, border-box;
+                                            border: 1px solid transparent;
+                                            &:hover:before {
+                                                background-color: #0807073b;
+                                            }
+                                            &:before {
+                                                content: '';
+                                                z-index: 1;
+                                                background-color: transparent;
+                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
+                                                position: absolute;
+                                                top: 0;
+                                                bottom: 0;
+                                                left: 0;
+                                                right: 0;
+                                            }
+                                            @media (max-width: 350px) {
+                                                font-size: 1.5rem;
+                                            }
+                                        `}
+                                        onClick={() => setOpenPostCreation(true)}
+                                    >
+                                        create a new story
+                                    </Button>
+                                )}
+                            </Div>
+                        </Div>
                     </Div>
+                    <Div></Div>
                     {openPostCreation && (
                         <FormUpNews
                             form={form}
@@ -257,7 +421,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         />
                     )}
                 </Div>
-                <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:96%}">
+                <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
                     {dataPosts.map((p) => (
                         <Posts
                             setOptions={setOptions}

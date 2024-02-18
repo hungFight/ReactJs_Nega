@@ -110,7 +110,7 @@ const PreviewPost: React.FC<{
     >;
 
     handleClear: () => void;
-    hashTags: { id: string; value: string }[];
+    hashTags: { _id: string; value: string }[];
     setEdit: React.Dispatch<React.SetStateAction<boolean>>;
     editForm: boolean;
     setUploadPre: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
@@ -231,6 +231,8 @@ const PreviewPost: React.FC<{
         dataCentered,
         setDataCentered,
         handleClear,
+        hashTags,
+        tags,
     );
     const swiperType = 1;
     const GridColumns = 1;
@@ -650,7 +652,7 @@ const PreviewPost: React.FC<{
                         <Div width="100%" wrap="wrap" css="padding: 6px">
                             {hashTags.map((tag) => (
                                 <Smooth // link tag
-                                    key={tag.id}
+                                    key={tag._id}
                                     to={`/sn/hashTags/${tag.value}`}
                                     size="1.3rem"
                                     css={`

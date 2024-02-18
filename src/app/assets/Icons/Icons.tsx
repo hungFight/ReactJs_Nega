@@ -51,6 +51,7 @@ import {
 } from 'react-icons/ai';
 import {
     GiBurningBook,
+    GiClapperboard,
     GiClover,
     GiCottonFlower,
     GiEarthAfricaEurope,
@@ -59,6 +60,7 @@ import {
     GiForwardSun,
     GiNewspaper,
     GiPin,
+    GiPostOffice,
     GiStrong,
 } from 'react-icons/gi';
 import {
@@ -137,6 +139,7 @@ import {
     PiPlayFill,
     PiSelectionBackgroundFill,
     PiSlideshowThin,
+    PiVideoThin,
 } from 'react-icons/pi';
 import { HiMiniHashtag, HiMiniPause } from 'react-icons/hi2';
 
@@ -267,3 +270,6 @@ export const TextCenterI = () => <CiTextAlignCenter />;
 export const TextJustifyI = () => <CiTextAlignJustify />;
 export const SelectLinkI = () => <CiLink />;
 export const WriteLinkI = () => <IoLinkOutline />;
+export const ShortStoryI = () => <GiClapperboard />;
+export const PostsI = () => <GiPostOffice />;
+export const YoutubeI = () => <PiVideoThin />;
