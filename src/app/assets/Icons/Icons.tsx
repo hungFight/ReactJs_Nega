@@ -15,6 +15,7 @@ import {
     BsBalloon,
     BsSortNumericDown,
 } from 'react-icons/bs';
+import { TiCloudStorage, TiCloudStorageOutline } from 'react-icons/ti';
 import {
     IoImagesOutline,
     IoLogoYoutube,
@@ -83,6 +84,7 @@ import {
     MdGroups2,
     MdOutlineQuestionAnswer,
     MdVerified,
+    MdOutlineTipsAndUpdates,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
 import {
@@ -273,3 +275,5 @@ export const WriteLinkI = () => <IoLinkOutline />;
 export const ShortStoryI = () => <GiClapperboard />;
 export const PostsI = () => <GiPostOffice />;
 export const YoutubeI = () => <PiVideoThin />;
+export const StorageI = () => <TiCloudStorageOutline />;
+export const InventionI = () => <MdOutlineTipsAndUpdates />;

@@ -1,4 +1,4 @@
-import { CloseI, GarbageI } from '~/assets/Icons/Icons';
+import { CloseI, EyedI, EyemI, GarbageI, InventionI, PinI, StorageI } from '~/assets/Icons/Icons';
 import { DivPos } from '../styleComponents/styleComponents';
 import { Div, P } from '../styleComponents/styleDefault';
 
@@ -6,7 +6,23 @@ const OpUpdate: React.FC<{ createdAt: string; setOptions: React.Dispatch<React.S
     createdAt,
     setOptions,
 }) => {
-    const options = [{ type: "Post's data", children: [{ id: 1, name: 'Move to trash', icon: <GarbageI /> }] }];
+    const options = [
+        {
+            type: 'background',
+            children: [
+                { id: 1, name: 'Gim on personal profile', icon: <PinI /> },
+                { id: 2, name: 'Temporary of hiding', icon: <EyedI /> },
+            ],
+        },
+        {
+            type: 'data',
+            children: [
+                { id: 1, name: 'Update', icon: <InventionI /> },
+                { id: 2, name: 'Move to repository', icon: <StorageI /> },
+                { id: 3, name: 'Move to trash', icon: <GarbageI /> },
+            ],
+        },
+    ];
     return (
         <Div
             width="100%"
@@ -35,16 +51,20 @@ const OpUpdate: React.FC<{ createdAt: string; setOptions: React.Dispatch<React.S
             <Div
                 width="100%"
                 display="block"
-                css="height: auto;padding: 5px;background-color: #fff; color: #171717; font-size: 1.5rem; border-top-left-radius: 5px; border-top-right-radius: 5px;"
+                css="height: auto;padding: 10px;background-color: #fff; color: #171717;  border-top-left-radius: 5px; border-top-right-radius: 5px;"
             >
                 {options.map((o) => (
-                    <Div key={o.type} display="block" css={``}>
-                        <P css="border-top-left-radius: 5px;border-top-right-radius: 5px; padding-left: 5px; background-color: #b8b8b8; font-weight: 600;">
-                            {o.type}
-                        </P>
+                    <Div
+                        key={o.type}
+                        display="block"
+                        css={`
+                            margin-bottom: 10px;
+                        `}
+                    >
+                        <P css="border-top-left-radius: 20px;border-top-right-radius: 20px; border: 1px solid #969696; padding: 2px; background-color: #b8b8b8; font-weight: 600;"></P>
                         {o.children.map((c) => (
-                            <Div key={c.id} css="align-items: center;">
-                                <Div>{c.icon}</Div>
+                            <Div key={c.id} css="align-items: center; cursor: var(--pointerR);padding-left: 5px;">
+                                <Div css="margin-right: 5px">{c.icon}</Div>
                                 <P>{c.name}</P>
                             </Div>
                         ))}
