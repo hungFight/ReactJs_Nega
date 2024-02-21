@@ -27,7 +27,9 @@ interface PropsFormUpNews {
     colorBg: number;
     user: PropsUserHome;
     form: PropsFormHome;
-    setOpenPostCreation: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpenPostCreation: () => void;
+    originalInputValue?: string;
+    editF?: boolean;
 }
 export interface PropsDataFileUpload {
     id: number;
@@ -41,7 +43,15 @@ export interface PropsValueQuill {
     text: string;
     quill?: any;
 }
-const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user, setOpenPostCreation }) => {
+const FormUpNews: React.FC<PropsFormUpNews> = ({
+    form,
+    colorText,
+    colorBg,
+    user,
+    setOpenPostCreation,
+    originalInputValue,
+    editF,
+}) => {
     const [displayTags, setDisplayTags] = useState<boolean>(false);
     const {
         displayEmoji,
@@ -68,8 +78,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
         divRef,
         handleChange,
         quillRef,
-    } = LogicForm(form, colorText, colorBg, setOpenPostCreation, user);
-    const [edit, setEdit] = useState<boolean>(false);
+    } = LogicForm(form, colorText, colorBg, setOpenPostCreation, user, originalInputValue);
+    const [edit, setEdit] = useState<boolean>(editF || false);
     const [hashTags, setHashTags] = useState<{ _id: string; value: string }[]>([]);
     const [tags, setTags] = useState<{ id: string; avatar: string; gender: number; fullName: string }[]>([]);
     const [onTags, setOnTags] = useState<boolean>(false);

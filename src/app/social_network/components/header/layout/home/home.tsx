@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { createRef, Fragment, Key, memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createRef, Fragment, Key, memo, ReactElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DivPost } from './styleHome';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,6 +45,8 @@ interface PropsHome {
 const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
+    const [formThat, setFormThat] = useState<ReactElement | null>(null);
+
     const [category, setCategory] = useState<string>('post');
     const [options, setOptions] = useState<string>('');
     const [openPostCreation, setOpenPostCreation] = useState<boolean>(false);
@@ -208,7 +210,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         css={`
                             padding: 0 5px;
                             margin-top: 5px;
-                            padding-bottom: 41px;
+                            ${!openPostCreation ? 'padding-bottom: 41px;' : ''}
                             ${topScrolling && !openPostCreation
                                 ? 'z-index: 1;background-color: #07070759;border-radius: 5px;padding-top: 5px;position: fixed; z-index: 1; @media(min-width: 768px){top: 50px;}top: 34px; width: max-content; right: 50%; left: 50%; translate: -50%;'
                                 : ''}
@@ -411,19 +413,23 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         </Div>
                     </Div>
                     <Div></Div>
-                    {openPostCreation && (
+                    {openPostCreation ? (
                         <FormUpNews
                             form={form}
                             colorBg={colorBg}
                             colorText={colorText}
                             user={dataUser}
-                            setOpenPostCreation={setOpenPostCreation}
+                            setOpenPostCreation={() => setOpenPostCreation(false)}
                         />
+                    ) : (
+                        formThat
                     )}
                 </Div>
                 <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
                     {dataPosts.map((p) => (
                         <Posts
+                            setFormThat={setFormThat}
+                            form={form}
                             setOptions={setOptions}
                             options={options}
                             key={p._id}

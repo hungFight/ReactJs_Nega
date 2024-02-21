@@ -16,8 +16,9 @@ export default function LogicForm(
     form: PropsFormHome,
     colorText: string,
     colorBg: number,
-    setOpenPostCreation: React.Dispatch<React.SetStateAction<boolean>>,
+    setOpenPostCreation: () => void,
     user?: PropsUserHome,
+    originalInputValue?: string,
 ) {
     const dispatch = useDispatch();
     const { userId, token } = Cookies();
@@ -27,7 +28,7 @@ export default function LogicForm(
     const [displayFontText, setDisplayFontText] = useState<boolean>(false);
 
     const [uploadPre, setuploadPre] = useState<PropsDataFileUpload[]>([]);
-    const [inputValue, setInputValue] = useState<string>('');
+    const [inputValue, setInputValue] = useState<string>(originalInputValue || '');
 
     const uploadPreRef = useRef<PropsDataFileUpload[]>([]);
     // upload submit
@@ -49,7 +50,7 @@ export default function LogicForm(
     });
     const handleClear = () => {
         setInputValue('');
-        setOpenPostCreation(false);
+        setOpenPostCreation();
         setuploadPre([]);
         setDataCentered([]);
         const inpuFile: any = document.getElementById('upload');
@@ -67,8 +68,7 @@ export default function LogicForm(
         if (file && file.length < fileAmount) {
             uploadPreRef.current = [];
             for (let i = 0; i < file.length; i++) {
-                console.log('ffff');
-
+                console.log(file[i], 'file[i]');
                 if (
                     file[i].type.includes('video/mp4') ||
                     file[i].type.includes('video/mov') ||
@@ -99,7 +99,8 @@ export default function LogicForm(
                 } else if (
                     file[i].type.includes('image/jpg') ||
                     file[i].type.includes('image/jpeg') ||
-                    file[i].type.includes('image/png')
+                    file[i].type.includes('image/png') ||
+                    file[i].type.includes('image/webp')
                 ) {
                     try {
                         if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= 8) {

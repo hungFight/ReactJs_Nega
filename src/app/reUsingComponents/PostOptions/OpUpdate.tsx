@@ -2,10 +2,11 @@ import { CloseI, EyedI, EyemI, GarbageI, InventionI, PinI, StorageI } from '~/as
 import { DivPos } from '../styleComponents/styleComponents';
 import { Div, P } from '../styleComponents/styleDefault';
 
-const OpUpdate: React.FC<{ createdAt: string; setOptions: React.Dispatch<React.SetStateAction<string>> }> = ({
-    createdAt,
-    setOptions,
-}) => {
+const OpUpdate: React.FC<{
+    createdAt: string;
+    setOptions: React.Dispatch<React.SetStateAction<string>>;
+    onClick: () => void;
+}> = ({ createdAt, setOptions, onClick }) => {
     const options = [
         {
             type: 'background',
@@ -35,6 +36,7 @@ const OpUpdate: React.FC<{ createdAt: string; setOptions: React.Dispatch<React.S
                 z-index: 999;
                 background-color: #151515b0;
             `}
+            onClick={() => setOptions('')}
         >
             {/* <Div
                 width="100%"
@@ -52,16 +54,11 @@ const OpUpdate: React.FC<{ createdAt: string; setOptions: React.Dispatch<React.S
                 width="100%"
                 display="block"
                 css="height: auto;padding: 10px;background-color: #fff; color: #171717;  border-top-left-radius: 5px; border-top-right-radius: 5px;"
+                onClick={(e) => e.stopPropagation()}
             >
                 {options.map((o) => (
-                    <Div
-                        key={o.type}
-                        display="block"
-                        css={`
-                            margin-bottom: 10px;
-                        `}
-                    >
-                        <P css="border-top-left-radius: 20px;border-top-right-radius: 20px; border: 1px solid #969696; padding: 2px; background-color: #b8b8b8; font-weight: 600;"></P>
+                    <Div key={o.type} display="block" css={``} onClick={onClick}>
+                        <P css="border-top-left-radius: 20px;margin: 10px 0; border-top-right-radius: 20px; border: 1px solid #969696; padding: 2px; background-color: #b8b8b8; font-weight: 600;"></P>
                         {o.children.map((c) => (
                             <Div key={c.id} css="align-items: center; cursor: var(--pointerR);padding-left: 5px;">
                                 <Div css="margin-right: 5px">{c.icon}</Div>

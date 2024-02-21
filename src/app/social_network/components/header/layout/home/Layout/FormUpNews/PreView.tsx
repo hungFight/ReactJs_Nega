@@ -332,7 +332,7 @@ const PreviewPost: React.FC<{
                         file={file}
                     />
                 )}
-                {file.length > 0 && editForm && (
+                {file.length > 0 && (
                     <Div width="100%" css="align-items: center;margin-bottom: 10px;">
                         <Div
                             width="fit-content"

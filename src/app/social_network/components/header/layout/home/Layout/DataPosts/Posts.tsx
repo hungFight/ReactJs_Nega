@@ -9,8 +9,18 @@ import Languages from '~/reUsingComponents/languages';
 import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import Cookies from '~/utils/Cookies';
 import { PropsPosts } from './interfacePosts';
+import FormUpNews from '../FormUpNews/FormUpNews';
 
-const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, options, setOptions }) => {
+const Posts: React.FC<PropsPosts> = ({
+    user,
+    colorBg,
+    colorText,
+    dataPosts,
+    options,
+    setOptions,
+    setFormThat,
+    form,
+}) => {
     const { lg } = Languages();
     const { userId } = Cookies();
     const [showComment, setShowComment] = useState<boolean>(false);
@@ -48,7 +58,23 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, opti
             `}
         >
             {options === dataPosts._id && userId === dataPosts.id_user && (
-                <OpUpdate createdAt={createdAt} setOptions={setOptions} />
+                <OpUpdate
+                    createdAt={createdAt}
+                    setOptions={setOptions}
+                    onClick={() =>
+                        setFormThat(
+                            <FormUpNews
+                                form={form}
+                                colorBg={colorBg}
+                                colorText={colorText}
+                                user={user}
+                                editF={true}
+                                originalInputValue={dataPosts.content.text}
+                                setOpenPostCreation={() => setFormThat(null)}
+                            />,
+                        )
+                    }
+                />
             )}
             <Div
                 wrap="wrap"
@@ -139,13 +165,14 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataPosts, opti
                     </DivPos>
                 </Div>
 
-                <Div width="100%" css="padding: 5px 6px 10px 6px;">
+                <Div width="100%" css="padding: 5px 6px 10px 6px;" onClick={(e) => e.stopPropagation()}>
                     {dataPosts.content.text && (
                         <ReactQuillF
                             value={dataPosts.content.text}
                             modules={{
                                 toolbar: false, // Tắt thanh công cụ
                             }}
+                            readOnly={true}
                             css={`
                                 width: 100%;
                                 .ql-container.ql-snow {

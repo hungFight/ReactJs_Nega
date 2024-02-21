@@ -1,4 +1,6 @@
+import { ReactElement } from 'react';
 import { PropsUserHome } from '../../Home';
+import { PropsFormHome } from '../FormUpNews/FormUpNews';
 
 interface feel {
     amount: number;
@@ -119,4 +121,8 @@ export interface PropsPosts {
     dataPosts: PropsDataPosts;
     setOptions: React.Dispatch<React.SetStateAction<string>>;
     options: string;
+    setFormThat: React.Dispatch<
+        React.SetStateAction<ReactElement<any, string | React.JSXElementConstructor<any>> | null>
+    >;
+    form: PropsFormHome;
 }
