@@ -203,7 +203,7 @@ const Hashtag: React.FC<{
                                 onChange={(e) => {
                                     setHashTag(e.target.value);
                                     const occurrences = (e.target.value.match(/#/g) || []).length;
-                                    if (e.target.value.length > 1 && occurrences === 1) {
+                                    if (occurrences === 1) {
                                         if (!realData.some((ts) => ts.value === e.target.value)) {
                                             if (!realData.some((v) => v._id === 'dataAdd')) {
                                                 setRealData([{ _id: 'dataAdd', value: e.target.value }, ...realData]);
@@ -220,6 +220,9 @@ const Hashtag: React.FC<{
                                         } else {
                                             setRealData((pre) => pre.filter((l) => l._id !== 'dataAdd'));
                                         }
+                                    }
+                                    if (!e.target.value || e.target.value === '#') {
+                                        setRealData((pre) => pre.filter((l) => l._id !== 'dataAdd'));
                                     }
                                 }}
                                 onFocus={() => {
@@ -242,6 +245,14 @@ const Hashtag: React.FC<{
                                         ) {
                                             if (!hashTags.some((v) => v.value.includes(hashTag))) {
                                                 const uId = primaryKey();
+                                                setRealData((pre) =>
+                                                    pre.map((c) => {
+                                                        if (c._id === 'dataAdd') {
+                                                            c._id = uId;
+                                                        }
+                                                        return c;
+                                                    }),
+                                                );
                                                 setHashTags([...hashTags, { _id: uId, value: hashTag }]);
                                             }
                                         }

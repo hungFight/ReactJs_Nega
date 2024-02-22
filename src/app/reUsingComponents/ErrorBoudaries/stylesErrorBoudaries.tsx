@@ -11,7 +11,7 @@ export const DivMessage = styled.div`
     right: 50%;
     left: 50%;
     translate: -50% -50%;
-    z-index: 1000;
+    z-index: 999999;
     background-color: #24242426;
     align-items: center;
 `;

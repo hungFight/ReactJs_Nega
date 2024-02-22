@@ -65,7 +65,7 @@ export default function LogicForm(
         const options = {
             maxSizeMB: 10,
         };
-        if (file && file.length < fileAmount) {
+        if (file?.length && file.length < fileAmount) {
             uploadPreRef.current = [];
             for (let i = 0; i < file.length; i++) {
                 console.log(file[i], 'file[i]');

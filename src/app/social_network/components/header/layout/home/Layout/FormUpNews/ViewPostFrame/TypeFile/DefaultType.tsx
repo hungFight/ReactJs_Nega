@@ -86,9 +86,10 @@ const DefaultType: React.FC<{
                     : ''}
                 grid-template-columns: ${file.length === 1
                     ? '1fr'
-                    : file.length === 4 || file.length === 2
+                    : file.length === 4 || file.length === 2 || file.length === 3
                     ? '1fr 1fr'
                     : '1fr 1fr 1fr'};
+
                 ${step === 1 &&
                 `
                 grid-template-columns: 1fr;
@@ -180,7 +181,15 @@ const DefaultType: React.FC<{
                 // check every 6 picture
                 if (step === 0 ? index < moreFile : true) {
                     return (
-                        <Div display="block" key={f?.link}>
+                        <Div
+                            display="block"
+                            key={f?.link}
+                            css={`
+                                ${arr.length === 3 && arr.length === index + 1 ? 'grid-column: span 2' : ''}
+                                ${arr.length === 5 && arr.length === index + 1 ? 'grid-column: span 2' : ''}
+                                    ${arr.length === 7 && arr.length === index + 1 ? 'grid-column: span 3' : ''}
+                            `}
+                        >
                             <Div
                                 id="baby"
                                 className="aaa"

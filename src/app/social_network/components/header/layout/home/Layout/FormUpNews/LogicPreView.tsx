@@ -177,7 +177,7 @@ export default function LogicPreView(
             const formData = new FormData();
             formData.append('text', valueText);
             formData.append('category', String(selectType));
-            formData.append('hashTags', String(hashTags));
+            formData.append('hashTags', JSON.stringify(hashTags));
             formData.append('tags', String(tags.map((t) => t.id)));
             formData.append('fontFamily', font);
             formData.append('privacy', JSON.stringify(valuePrivacy));

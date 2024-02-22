@@ -60,7 +60,8 @@ const handleFileUpload = async (
             } else if (
                 file[i].type.includes('image/jpg') ||
                 file[i].type.includes('image/jpeg') ||
-                file[i].type.includes('image/png')
+                file[i].type.includes('image/png') ||
+                file[i].type.includes('image/webp')
             ) {
                 try {
                     if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= imageSize) {
