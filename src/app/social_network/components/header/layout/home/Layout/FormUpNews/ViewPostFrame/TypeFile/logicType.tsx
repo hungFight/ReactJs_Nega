@@ -36,7 +36,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                         ${step > 0
                             ? `${
                                   step > 1 ? 'background-color: #a1a1a18a;' : 'background-color: #0304048a;'
-                              };position: fixed; top: 8px; right: 11.5px; color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px;  transition: all 0.5s linear; `
+                              };position: fixed; top: 8px; right: 11.5px; color: #e2d2d2; font-size: 22px; z-index: 999; width: 35px; height: 35px;  transition: all 0.5s linear; `
                             : ''}
                     `}
                 >

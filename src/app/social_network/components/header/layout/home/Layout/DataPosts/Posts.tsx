@@ -10,6 +10,7 @@ import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import Cookies from '~/utils/Cookies';
 import { PropsPosts } from './interfacePosts';
 import FormUpNews from '../FormUpNews/FormUpNews';
+import DefaultType from '../FormUpNews/ViewPostFrame/TypeFile/DefaultType';
 
 const Posts: React.FC<PropsPosts> = ({
     user,
@@ -41,11 +42,46 @@ const Posts: React.FC<PropsPosts> = ({
     const handleClearI = () => {
         clearTimeout(timeS);
     };
+    console.log(dataPosts, 'dataPosts');
 
     const createdAt = moment(dataPosts.createdAt).format('LLLL');
     const fromNow = moment(moment(dataPosts.createdAt).format('HH:mm:ss DD-MM-YYYY'), 'HH:mm:ss DD-MM-YYYY')
         .locale(lg)
         .fromNow();
+    // const postTypes = [
+    //     // working in side OptionType
+    //     <DefaultType
+    //         colorText={colorText}
+    //         file={file}
+    //         step={step}
+    //         setStep={setStep}
+    //         upload={file}
+    //         bg={bg}
+    //         setBg={setBg}
+    //     />,
+    //     file.length > 3 ? (
+    //         [
+    //             <Dynamic colorText={colorText} file={file} step={step} setStep={setStep} />,
+    //             <Fade colorText={colorText} file={file} step={step} setStep={setStep} />,
+    //             <Cards colorText={colorText} file={file} step={step} setStep={setStep} />,
+    //             <Coverflow colorText={colorText} file={file} step={step} setStep={setStep} />,
+    //             <Centered
+    //                 colorText={colorText}
+    //                 file={file}
+    //                 step={step}
+    //                 setStep={setStep}
+    //                 handleImageUpload={handleImageUpload}
+    //                 ColumnCentered={ColumnCentered}
+    //                 dataCentered={dataCentered}
+    //                 setDataCentered={setDataCentered}
+    //                 setColumnCen={setColumnCen}
+    //             />,
+    //         ][selectChild.id - 1]
+    //     ) : (
+    //         <P color="#bd5050">Please select at least 3 files!</P>
+    //     ),
+    //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
+    // ];
     return (
         <Div
             width="100%"
@@ -238,6 +274,13 @@ const Posts: React.FC<PropsPosts> = ({
                         `}
                     ></Div>
                 </Div> */}
+                <DefaultType
+                    colorText={colorText}
+                    file={dataPosts.content.options.default.map((f) => f.file)}
+                    step={step}
+                    setStep={setStep}
+                    bg={''}
+                />
                 <Div
                     width="100%"
                     css={`

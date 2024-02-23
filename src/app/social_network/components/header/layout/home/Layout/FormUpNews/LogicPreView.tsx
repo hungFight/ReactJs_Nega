@@ -104,9 +104,9 @@ export default function LogicPreView(
     // column of centered
     const [ColumnCentered, setColumnCentered] = useState<boolean>(false);
     const [columnCen, setColumnCen] = useState<number>(4);
-    // column and bg of grid
+    // column of grid
     const [column, setColumn] = useState<number>(3);
-    const [bg, setBg] = useState<string>('#1b1919');
+    const [bg, setBg] = useState<string>('#1b1919'); //default
     // steps of feature
     const [step, setStep] = useState<number>(0);
     // show option of post
@@ -202,6 +202,8 @@ export default function LogicPreView(
                             formData.append('files', fil.file);
                         }
                     }
+                    formData.append('bg_default', bg);
+
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
                     res = await HomeAPI.setPost(formData);
                     const dataR = ServerBusy(res, dispatch);
@@ -285,15 +287,7 @@ export default function LogicPreView(
     };
     const postTypes = [
         // working in side OptionType
-        <DefaultType
-            colorText={colorText}
-            file={file}
-            step={step}
-            setStep={setStep}
-            upload={file}
-            bg={bg}
-            setBg={setBg}
-        />,
+        <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} bg={bg} setBg={setBg} />,
         file.length > 3 ? (
             [
                 <Dynamic colorText={colorText} file={file} step={step} setStep={setStep} />,

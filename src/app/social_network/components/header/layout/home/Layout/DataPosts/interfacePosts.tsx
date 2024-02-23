@@ -78,7 +78,7 @@ export interface PropsDataPosts {
                         },
                     ];
                 };
-                file: string;
+                file: { link: string; type: string };
                 love: { id_user: string[] };
                 title: string;
                 _id: string;

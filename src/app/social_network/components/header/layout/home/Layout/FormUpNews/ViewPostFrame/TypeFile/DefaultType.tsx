@@ -25,9 +25,8 @@ const DefaultType: React.FC<{
     step: number;
     bg: string;
     setStep: React.Dispatch<React.SetStateAction<number>>;
-    upload: any;
-    setBg: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ file, colorText, step, setStep, upload, setBg, bg }) => {
+    setBg?: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ file, colorText, step, setStep, setBg, bg }) => {
     const {
         moreFile,
         cc,
@@ -147,7 +146,9 @@ const DefaultType: React.FC<{
                                     ${index === 0 ? 'color: white;' : ''}
                                     ${!showColors && 'top: 0px; background-color: #00000000; color:#00000000; '}
                                 `}
-                                onClick={() => setBg(cl.color)}
+                                onClick={() => {
+                                    if (setBg) setBg(cl.color);
+                                }}
                             >
                                 {cl?.icon}
                             </Div>
