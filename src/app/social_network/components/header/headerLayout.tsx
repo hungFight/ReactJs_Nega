@@ -108,9 +108,6 @@ const Header: React.FC<{
         }
         console.log(searchC, '--');
     };
-
-    console.log(exchange, 'home', colorBg);
-
     return (
         <>
             <DivHeader bg={colorBg}>

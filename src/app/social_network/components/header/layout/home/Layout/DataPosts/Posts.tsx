@@ -1,6 +1,6 @@
 import { DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import { useEffect, useRef, useState } from 'react';
-import { Div, H3, Img, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, H3, Img, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews';
 import { DotI, HeartI, LikeI, LockI, ShareI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -93,7 +93,7 @@ const Posts: React.FC<PropsPosts> = ({
                 color: ${colorText};
             `}
         >
-            {options === dataPosts._id && userId === dataPosts.id_user && (
+            {options === dataPosts._id && user.id=== dataPosts.id_user && (
                 <OpUpdate
                     createdAt={createdAt}
                     setOptions={setOptions}
@@ -147,7 +147,7 @@ const Posts: React.FC<PropsPosts> = ({
                     >
                         <Avatar
                             radius="50%"
-                            src={dataPosts.user[0].Avatar}
+                            src={dataPosts.user[0].avatar}
                             alt={dataPosts.user[0].fullName}
                             gender={dataPosts.user[0].gender}
                         />
@@ -238,6 +238,23 @@ const Posts: React.FC<PropsPosts> = ({
                         />
                     )}
                 </Div>
+                {dataPosts.hashTag?.length > 0 && (
+                    <Div width="100%" wrap="wrap" css="padding: 6px">
+                        {dataPosts.hashTag.map((tag) => (
+                            <Smooth // link tag
+                                key={tag._id}
+                                to={`/sn/hashTags/${tag.value}`}
+                                size="1.3rem"
+                                css={`
+                                    margin-right: 5px;
+                                    color: #5ba3e2;
+                                `}
+                            >
+                                {tag.value}
+                            </Smooth>
+                        ))}
+                    </Div>
+                )}
                 <Div
                     width="100%"
                     css={`
@@ -280,6 +297,7 @@ const Posts: React.FC<PropsPosts> = ({
                     step={step}
                     setStep={setStep}
                     bg={''}
+                    link={true}
                 />
                 <Div
                     width="100%"

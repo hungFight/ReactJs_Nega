@@ -10,11 +10,11 @@ import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleCompon
 import FontFamilys from '~/reUsingComponents/Font/FontFamilys';
 import PreviewPost, { PropsPreViewFormHome } from './PreView';
 import LogicForm from './LogicForm';
-import { PropsUserHome } from '../../Home';
 import { useRef, useState } from 'react';
 import Hashtag from './PostEditOptions/Hashtag';
 import Tags from './PostEditOptions/Tags';
 import TextEditor from './PostEditOptions/TextEditor';
+import { PropsUser } from 'src/App';
 export interface PropsFormHome {
     textarea: string;
     buttonOne: string;
@@ -25,7 +25,7 @@ export interface PropsFormHome {
 interface PropsFormUpNews {
     colorText: string;
     colorBg: number;
-    user: PropsUserHome;
+    user: PropsUser;
     form: PropsFormHome;
     setOpenPostCreation: () => void;
     originalInputValue?: string;

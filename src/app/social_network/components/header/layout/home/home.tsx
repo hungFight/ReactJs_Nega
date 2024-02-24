@@ -20,14 +20,10 @@ import { PropsDataPosts } from './Layout/DataPosts/interfacePosts';
 import { setSession } from '~/redux/reload';
 import ServerBusy from '~/utils/ServerBusy';
 import { PostsI, ShortStoryI, YoutubeI } from '~/assets/Icons/Icons';
+import { PropsUser } from 'src/App';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 
-export interface PropsUserHome {
-    avatar: string;
-    fullName: string;
-    gender: number;
-}
 export interface PropsTextHome {
     userBar: {
         contentFirst: string;
@@ -39,7 +35,7 @@ interface PropsHome {
     colorBg: number;
     colorText: string;
     home: PropsTextHome;
-    dataUser: PropsUserHome;
+    dataUser: PropsUser;
 }
 
 const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
@@ -47,7 +43,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const { userBar, form } = home;
     const [formThat, setFormThat] = useState<ReactElement | null>(null);
 
-    const [category, setCategory] = useState<string>('post');
+    const [category, setCategory] = useState<{ id: string; icon: ReactElement }>({ id: 'post', icon: <PostsI /> });
     const [options, setOptions] = useState<string>('');
     const [openPostCreation, setOpenPostCreation] = useState<boolean>(false);
     const [topScrolling, setTopScrolling] = useState<boolean>(false);
@@ -58,6 +54,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const handleOpenForm = () => {
         console.log('ok very good');
     };
+    console.log(document, 'previousDocument', colorBg);
 
     useEffect(() => {
         async function fetch() {
@@ -67,7 +64,11 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                 try {
                     await Promise.all(
                         data.map(async (n, index) => {
-                            n.user.map((u) => (u.Avatar = CommonUtils.convertBase64(u.Avatar)));
+                            if (n.user[0].id === "It's me") {
+                                n.user[0] = dataUser;
+                            } else {
+                                n.user[0].avatar = CommonUtils.convertBase64(n.user[0].avatar);
+                            }
                             if (n.category === 0) {
                                 await Promise.all(
                                     n.content.options.default.map(async (d, index2) => {
@@ -107,9 +108,9 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     };
     const bgIsChosen =
         'background-image: linear-gradient(45deg,var(--yt-spec-assistive-feed-themed-gradient-1),var(--yt-spec-assistive-feed-themed-gradient-2),var(--yt-spec-assistive-feed-themed-gradient-3)),linear-gradient(45deg,var(--yt-spec-assistive-feed-vibrant-gradient-1),var(--yt-spec-assistive-feed-vibrant-gradient-2),var(--yt-spec-assistive-feed-vibrant-gradient-3)); background-clip: padding-box, border-box; background-origin: border-box, border-box; border: 1px solid transparent;';
-    const post = category === 'post';
-    const story = category === 'story';
-    const youtube = category === 'youtube';
+    const post = category.id === 'post';
+    const story = category.id === 'story';
+    const youtube = category.id === 'youtube';
     const DivItemCss = `margin-right: 10px;padding: 5px;cursor: pointer;position: relative;font-size: 20px;padding: 5px 20px;border-radius: 5px;border: 1px solid #5e5d5c;`;
     return (
         <Div
@@ -211,13 +212,11 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         </Div>
                     </Div>
                     <Div
+                        width="100%"
                         css={`
                             padding: 0 5px;
                             margin-top: 5px;
-                            ${!openPostCreation ? 'padding-bottom: 41px;' : ''}
-                            ${topScrolling && !openPostCreation ? '' : ''}
                         `}
-                        wrap="wrap"
                     >
                         <Div width="100%" css="align-items: center;">
                             <Div
@@ -230,58 +229,10 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCategory('post');
+                                    setCategory({ id: 'post', icon: <PostsI /> });
                                 }}
                             >
                                 <PostsI />
-                                {post && !openPostCreation && (
-                                    <Button
-                                        bg="#404349"
-                                        color={colorText}
-                                        type="button"
-                                        css={`
-                                            position: absolute;
-                                            top: 35px;
-                                            width: max-content;
-                                            left: 0;
-                                            background-image: linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
-                                                ),
-                                                linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                                );
-                                            background-clip: padding-box, border-box;
-                                            background-origin: border-box, border-box;
-                                            border: 1px solid transparent;
-                                            &:hover:before {
-                                                background-color: #0807073b;
-                                            }
-                                            &:before {
-                                                content: '';
-                                                z-index: 1;
-                                                background-color: transparent;
-                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                                position: absolute;
-                                                top: 0;
-                                                bottom: 0;
-                                                left: 0;
-                                                right: 0;
-                                            }
-                                            @media (max-width: 350px) {
-                                                font-size: 1.5rem;
-                                            }
-                                        `}
-                                        onClick={() => setOpenPostCreation(true)}
-                                    >
-                                        create a new post
-                                    </Button>
-                                )}
                             </Div>
                             <Div
                                 css={`
@@ -293,61 +244,10 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCategory('story');
+                                    setCategory({ id: 'story', icon: <ShortStoryI /> });
                                 }}
                             >
                                 <ShortStoryI />
-                                {story && !openPostCreation && (
-                                    <Button
-                                        bg="#404349"
-                                        color={colorText}
-                                        type="button"
-                                        css={`
-                                            position: absolute;
-                                            top: 35px;
-                                            width: max-content;
-                                            left: 0;
-                                            background-image: linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
-                                                ),
-                                                linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                                );
-                                            background-clip: padding-box, border-box;
-                                            background-origin: border-box, border-box;
-                                            border: 1px solid transparent;
-                                            &:hover:before {
-                                                background-color: #0807073b;
-                                            }
-                                            &:before {
-                                                content: '';
-                                                z-index: 1;
-                                                background-color: transparent;
-                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                                position: absolute;
-                                                top: 0;
-                                                bottom: 0;
-                                                left: 0;
-                                                right: 0;
-                                            }
-                                            @media (max-width: 350px) {
-                                                font-size: 1.5rem;
-                                            }
-                                            right: 50%;
-                                            left: 50%;
-                                            translate: -50%;
-                                        `}
-                                        onClick={() => setOpenPostCreation(true)}
-                                    >
-                                        create a new story
-                                    </Button>
-                                )}
                             </Div>{' '}
                             <Div
                                 css={`
@@ -359,59 +259,18 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCategory('youtube');
+                                    setCategory({ id: 'youtube', icon: <YoutubeI /> });
                                 }}
                             >
                                 <YoutubeI />
-                                {youtube && !openPostCreation && (
-                                    <Button
-                                        bg="#404349"
-                                        color={colorText}
-                                        type="button"
-                                        css={`
-                                            position: absolute;
-                                            top: 35px;
-                                            width: max-content;
-                                            right: 0;
-                                            background-image: linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
-                                                ),
-                                                linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                                );
-                                            background-clip: padding-box, border-box;
-                                            background-origin: border-box, border-box;
-                                            border: 1px solid transparent;
-                                            &:hover:before {
-                                                background-color: #0807073b;
-                                            }
-                                            &:before {
-                                                content: '';
-                                                z-index: 1;
-                                                background-color: transparent;
-                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                                position: absolute;
-                                                top: 0;
-                                                bottom: 0;
-                                                left: 0;
-                                                right: 0;
-                                            }
-                                            @media (max-width: 350px) {
-                                                font-size: 1.5rem;
-                                            }
-                                        `}
-                                        onClick={() => setOpenPostCreation(true)}
-                                    >
-                                        create a new story
-                                    </Button>
-                                )}
                             </Div>
+                        </Div>
+                        <Div
+                            width="190px"
+                            css="font-size: 1.5rem; cursor: var(--pointerR); align-items: center; justify-content: space-evenly; border-radius: 5px;;background-image: linear-gradient(45deg,var(--yt-spec-assistive-feed-themed-gradient-1),var(--yt-spec-assistive-feed-themed-gradient-2),var(--yt-spec-assistive-feed-themed-gradient-3)),linear-gradient(45deg,var(--yt-spec-assistive-feed-vibrant-gradient-1),var(--yt-spec-assistive-feed-vibrant-gradient-2),var(--yt-spec-assistive-feed-vibrant-gradient-3)); background-clip: padding-box, border-box; background-origin: border-box, border-box; border: 1px solid transparent;"
+                            onClick={() => setOpenPostCreation(true)}
+                        >
+                            Apply ideas {category.icon}
                         </Div>
                     </Div>
                     <Div
@@ -447,58 +306,10 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCategory('post');
+                                    setCategory({ id: 'post', icon: <PostsI /> });
                                 }}
                             >
                                 <PostsI />
-                                {post && !openPostCreation && (
-                                    <Button
-                                        bg="#404349"
-                                        color={colorText}
-                                        type="button"
-                                        css={`
-                                            position: absolute;
-                                            top: 35px;
-                                            width: max-content;
-                                            left: 0;
-                                            background-image: linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
-                                                ),
-                                                linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                                );
-                                            background-clip: padding-box, border-box;
-                                            background-origin: border-box, border-box;
-                                            border: 1px solid transparent;
-                                            &:hover:before {
-                                                background-color: #0807073b;
-                                            }
-                                            &:before {
-                                                content: '';
-                                                z-index: 1;
-                                                background-color: transparent;
-                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                                position: absolute;
-                                                top: 0;
-                                                bottom: 0;
-                                                left: 0;
-                                                right: 0;
-                                            }
-                                            @media (max-width: 350px) {
-                                                font-size: 1.5rem;
-                                            }
-                                        `}
-                                        onClick={() => setOpenPostCreation(true)}
-                                    >
-                                        create a new post
-                                    </Button>
-                                )}
                             </Div>
                             <Div
                                 css={`
@@ -510,61 +321,10 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCategory('story');
+                                    setCategory({ id: 'story', icon: <ShortStoryI /> });
                                 }}
                             >
                                 <ShortStoryI />
-                                {story && !openPostCreation && (
-                                    <Button
-                                        bg="#404349"
-                                        color={colorText}
-                                        type="button"
-                                        css={`
-                                            position: absolute;
-                                            top: 35px;
-                                            width: max-content;
-                                            left: 0;
-                                            background-image: linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
-                                                ),
-                                                linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                                );
-                                            background-clip: padding-box, border-box;
-                                            background-origin: border-box, border-box;
-                                            border: 1px solid transparent;
-                                            &:hover:before {
-                                                background-color: #0807073b;
-                                            }
-                                            &:before {
-                                                content: '';
-                                                z-index: 1;
-                                                background-color: transparent;
-                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                                position: absolute;
-                                                top: 0;
-                                                bottom: 0;
-                                                left: 0;
-                                                right: 0;
-                                            }
-                                            @media (max-width: 350px) {
-                                                font-size: 1.5rem;
-                                            }
-                                            right: 50%;
-                                            left: 50%;
-                                            translate: -50%;
-                                        `}
-                                        onClick={() => setOpenPostCreation(true)}
-                                    >
-                                        create a new story
-                                    </Button>
-                                )}
                             </Div>{' '}
                             <Div
                                 css={`
@@ -576,58 +336,10 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 `}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setCategory('youtube');
+                                    setCategory({ id: 'youtube', icon: <YoutubeI /> });
                                 }}
                             >
                                 <YoutubeI />
-                                {youtube && !openPostCreation && (
-                                    <Button
-                                        bg="#404349"
-                                        color={colorText}
-                                        type="button"
-                                        css={`
-                                            position: absolute;
-                                            top: 35px;
-                                            width: max-content;
-                                            right: 0;
-                                            background-image: linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-themed-gradient-1),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-2),
-                                                    var(--yt-spec-assistive-feed-themed-gradient-3)
-                                                ),
-                                                linear-gradient(
-                                                    45deg,
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-1),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-2),
-                                                    var(--yt-spec-assistive-feed-vibrant-gradient-3)
-                                                );
-                                            background-clip: padding-box, border-box;
-                                            background-origin: border-box, border-box;
-                                            border: 1px solid transparent;
-                                            &:hover:before {
-                                                background-color: #0807073b;
-                                            }
-                                            &:before {
-                                                content: '';
-                                                z-index: 1;
-                                                background-color: transparent;
-                                                transition: background-color 0.5s cubic-bezier(0.05, 0, 0, 1);
-                                                position: absolute;
-                                                top: 0;
-                                                bottom: 0;
-                                                left: 0;
-                                                right: 0;
-                                            }
-                                            @media (max-width: 350px) {
-                                                font-size: 1.5rem;
-                                            }
-                                        `}
-                                        onClick={() => setOpenPostCreation(true)}
-                                    >
-                                        create a new story
-                                    </Button>
-                                )}
                             </Div>
                         </Div>
                     </Div>

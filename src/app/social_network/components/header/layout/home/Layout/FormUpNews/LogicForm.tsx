@@ -4,20 +4,20 @@ import { ImageI, VideoI } from '~/assets/Icons/Icons';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import { useDispatch } from 'react-redux';
 import { PropsDataFileUpload, PropsFormHome } from './FormUpNews';
-import { PropsUserHome } from '../../Home';
 import CommonUtils from '~/utils/CommonUtils';
 import { useCookies } from 'react-cookie';
 import Cookies from '~/utils/Cookies';
 import { Link } from 'react-router-dom';
 import { Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault';
 import ReactQuill, { Quill } from 'react-quill';
+import { PropsUser } from 'src/App';
 
 export default function LogicForm(
     form: PropsFormHome,
     colorText: string,
     colorBg: number,
     setOpenPostCreation: () => void,
-    user?: PropsUserHome,
+    user?: PropsUser,
     originalInputValue?: string,
 ) {
     const dispatch = useDispatch();

@@ -1,58 +1,21 @@
-import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { Button, Div, H3, Img, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
-import { PropsUserHome } from '../../Home';
-import {
-    BanI,
-    Bullseye,
-    CameraI,
-    DotI,
-    EarthI,
-    FriendI,
-    FullScreenI,
-    HeartI,
-    IconI,
-    LikeI,
-    LockI,
-    NextI,
-    PlayI,
-    PrivateI,
-    ScreenI,
-    ShareI,
-    SmileI,
-} from '~/assets/Icons/Icons';
-import { Player } from 'video-react';
-import {
-    DivAction,
-    DivEmoji,
-    DivItems,
-    DivWrapButton,
-    Label,
-    SpanAmount,
-    TextAreaPre,
-    Textarea,
-} from './styleFormUpNews';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { FriendI, HeartI, LikeI } from '~/assets/Icons/Icons';
+import { useEffect, useRef, useState } from 'react';
 import Coverflow from './ViewPostFrame/TypeFile/Swipers/Coverflow';
-import Grid from './ViewPostFrame/TypeFile/Grid';
-import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
-import OptionType from './ViewPostFrame/OptionType';
 import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import OpText from '~/reUsingComponents/PostOptions/OpFeature';
-import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
-import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
 import Cards from './ViewPostFrame/TypeFile/Swipers/Cards';
-import Comment from './Comment';
 import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
-import Circle from './ViewPostFrame/TypeFile/Circle';
 import { PropsPreViewFormHome } from './PreView';
-import axios from 'axios';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
-import { useCookies } from 'react-cookie';
 import { PropsDataFileUpload } from './FormUpNews';
+import { PropsUser } from 'src/App';
+import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
+import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
+import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
+import Circle from './ViewPostFrame/TypeFile/Circle';
 export default function LogicPreView(
-    user: PropsUserHome,
+    user: PropsUser,
     colorText: string,
     colorBg: number,
     file: PropsDataFileUpload[],

@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
-import { PropsUserHome } from '../../Home';
 import { PropsFormHome } from '../FormUpNews/FormUpNews';
+import { PropsUser } from 'src/App';
 
 interface feel {
     amount: number;
@@ -32,9 +32,10 @@ interface feel {
 }
 export interface PropsDataPosts {
     _id: string;
-    user: { Avatar: Buffer; fullName: string; gender: number }[];
+    user: { id: string; avatar: Buffer | undefined; fullName: string; gender: number }[];
     category: number;
     id_user: string;
+    hashTag: { _id: string; value: string }[];
     feel: feel;
     commentsOne: {
         id_user: string;
@@ -115,7 +116,7 @@ export interface PropsDataPosts {
 }
 
 export interface PropsPosts {
-    user: PropsUserHome;
+    user: PropsUser;
     colorBg: number;
     colorText: string;
     dataPosts: PropsDataPosts;

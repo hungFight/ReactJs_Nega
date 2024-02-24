@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import { LinkProps } from 'react-router-dom';
+import { StyledComponent } from 'styled-components';
 import { BackI, DotI, HeartMI, ShareI } from '~/assets/Icons/Icons';
 import Player from '~/reUsingComponents/Videos/Player';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
@@ -13,10 +15,18 @@ const Resize: React.FC<{
     showComment: number[];
     index: number;
     setShowComment: (value: React.SetStateAction<number[]>) => void;
-}> = ({ f, step, setShowComment, showComment, index }) => {
+    link?: boolean;
+}> = ({ f, step, setShowComment, showComment, index, link }) => {
     // not done
     return (
-        <Div width="100%" css="height: 100%; position: relative; justify-content: center;">
+        <Div
+            width="100%"
+            css="height: 100%; position: relative; justify-content: center; cursor: var(--pointer)"
+            onClick={() => {
+                if (link) {
+                }
+            }}
+        >
             {f?.type.includes('image') ? (
                 <Img
                     src={f?.link}

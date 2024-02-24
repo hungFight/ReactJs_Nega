@@ -18,6 +18,7 @@ import Player from '~/reUsingComponents/Videos/Player';
 import { InputT } from './Swipers/styleSwipers';
 import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
 import Resize from './Resize';
+import { Link } from 'react-router-dom';
 
 const DefaultType: React.FC<{
     file: { link: string; type: string }[];
@@ -26,7 +27,8 @@ const DefaultType: React.FC<{
     bg: string;
     setStep: React.Dispatch<React.SetStateAction<number>>;
     setBg?: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ file, colorText, step, setStep, setBg, bg }) => {
+    link?: boolean;
+}> = ({ file, colorText, step, setStep, setBg, bg, link }) => {
     const {
         moreFile,
         cc,
@@ -69,6 +71,7 @@ const DefaultType: React.FC<{
         { id: 6, color: '#7185e1' },
         { id: 7, color: '#71cbe1' },
     ];
+    const Tag = link ? Div : Link;
     return (
         <Div
             width="100%"
@@ -214,6 +217,7 @@ const DefaultType: React.FC<{
                                 `}
                             >
                                 <Resize
+                                    link={link}
                                     f={f}
                                     index={index}
                                     setShowComment={setShowComment}

@@ -1,72 +1,30 @@
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { A, Button, Div, H3, Img, Links, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
-import { PropsUserHome } from '../../Home';
+import { A, Button, Div, H3, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import {
-    BanI,
-    Bullseye,
-    CameraI,
-    CheckI,
     DotI,
-    EarthI,
-    FriendI,
     FullScreenI,
-    HeartI,
     IconI,
     ImageI,
-    LikeI,
     LoadingCircleI,
-    LoadingI,
     LockI,
     MinusI,
-    NextI,
-    PlayI,
     PrivateI,
-    ScreenI,
     ShareI,
     SliderI,
-    SmileI,
-    SortFileI,
     TagPostI,
-    UndoI,
-    UndoIRegister,
     VideoI,
 } from '~/assets/Icons/Icons';
-import {
-    DivAction,
-    DivEmoji,
-    DivItems,
-    DivWrapButton,
-    Label,
-    SpanAmount,
-    TextAreaPre,
-    Textarea,
-} from './styleFormUpNews';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import Coverflow from './ViewPostFrame/TypeFile/Swipers/Coverflow';
-import Grid from './ViewPostFrame/TypeFile/Grid';
-import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
+import { DivAction, DivEmoji, DivItems, DivWrapButton, Label } from './styleFormUpNews';
+import { useEffect, useState } from 'react';
 import OptionType from './ViewPostFrame/OptionType';
-import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
-import {
-    ButtonSubmit,
-    DivLoading,
-    DivPos,
-    ReactQuillF,
-    UpLoadForm,
-} from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import OpFeatureSetting from '~/reUsingComponents/PostOptions/OpFeature';
-import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
-import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
-import Cards from './ViewPostFrame/TypeFile/Swipers/Cards';
 import Comment from './Comment';
-import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
-import Circle from './ViewPostFrame/TypeFile/Circle';
 import LogicPreView from './LogicPreView';
-import Player from '~/reUsingComponents/Videos/Player';
 import { PropsDataFileUpload, PropsValueQuill } from './FormUpNews';
-import handleFileUpload from '~/utils/handleFileUpload';
 import EditFiles from './EditFiles.tsx/Editfiles';
 import ReactQuill from 'react-quill';
+import { PropsUser } from 'src/App';
 export interface PropsPreViewFormHome {
     time: {
         hour: string;
@@ -81,7 +39,7 @@ const PreviewPost: React.FC<{
     onChangeQuill: (value: string) => void;
     quillRef: React.RefObject<ReactQuill>;
     setInputValue: React.Dispatch<React.SetStateAction<string>>;
-    user: PropsUserHome;
+    user: PropsUser;
     colorText: string;
     colorBg: number;
     file: PropsDataFileUpload[];
