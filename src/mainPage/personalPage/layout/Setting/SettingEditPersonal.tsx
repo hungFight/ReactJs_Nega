@@ -47,7 +47,6 @@ const EditP: React.FC<{
                             css="cursor: pointer; justify-content: start; padding-left: 15px"
                             onClick={() => {
                                 if (ed.id === 2 || ed.id === 3) onText(ed.id);
-                                setEdit(false);
                             }}
                         >
                             {ed.name}

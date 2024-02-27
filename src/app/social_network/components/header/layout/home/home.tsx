@@ -112,6 +112,9 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const story = category.id === 'story';
     const youtube = category.id === 'youtube';
     const DivItemCss = `margin-right: 10px;padding: 5px;cursor: pointer;position: relative;font-size: 20px;padding: 5px 20px;border-radius: 5px;border: 1px solid #5e5d5c;`;
+    const previousDocument = window.history.state;
+    console.log(previousDocument, 'previousDocument');
+
     return (
         <Div
             width="100%"
@@ -267,7 +270,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         </Div>
                         <Div
                             width="190px"
-                            css="font-size: 1.5rem; cursor: var(--pointerR); align-items: center; justify-content: space-evenly; border-radius: 5px;;background-image: linear-gradient(45deg,var(--yt-spec-assistive-feed-themed-gradient-1),var(--yt-spec-assistive-feed-themed-gradient-2),var(--yt-spec-assistive-feed-themed-gradient-3)),linear-gradient(45deg,var(--yt-spec-assistive-feed-vibrant-gradient-1),var(--yt-spec-assistive-feed-vibrant-gradient-2),var(--yt-spec-assistive-feed-vibrant-gradient-3)); background-clip: padding-box, border-box; background-origin: border-box, border-box; border: 1px solid transparent;"
+                            css="font-size: 1.4rem; cursor: var(--pointerR); align-items: center; justify-content: space-evenly; border-radius: 5px;;background-image: linear-gradient(45deg,var(--yt-spec-assistive-feed-themed-gradient-1),var(--yt-spec-assistive-feed-themed-gradient-2),var(--yt-spec-assistive-feed-themed-gradient-3)),linear-gradient(45deg,var(--yt-spec-assistive-feed-vibrant-gradient-1),var(--yt-spec-assistive-feed-vibrant-gradient-2),var(--yt-spec-assistive-feed-vibrant-gradient-3)); background-clip: padding-box, border-box; background-origin: border-box, border-box; border: 1px solid transparent;"
                             onClick={() => setOpenPostCreation(true)}
                         >
                             Apply ideas {category.icon}
@@ -356,21 +359,23 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         formThat
                     )}
                 </Div>
-                <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
-                    {dataPosts.map((p) => (
-                        <Posts
-                            setFormThat={setFormThat}
-                            form={form}
-                            setOptions={setOptions}
-                            options={options}
-                            key={p._id}
-                            user={dataUser}
-                            colorBg={colorBg}
-                            colorText={colorText}
-                            dataPosts={p}
-                        />
-                    ))}
-                </Div>
+                {post && (
+                    <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
+                        {dataPosts.map((p) => (
+                            <Posts
+                                setFormThat={setFormThat}
+                                form={form}
+                                setOptions={setOptions}
+                                options={options}
+                                key={p._id}
+                                user={dataUser}
+                                colorBg={colorBg}
+                                colorText={colorText}
+                                dataPosts={p}
+                            />
+                        ))}
+                    </Div>
+                )}
             </DivPost>
         </Div>
     );

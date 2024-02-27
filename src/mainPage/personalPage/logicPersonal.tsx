@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { v4 as primaryKey } from 'uuid';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +14,7 @@ import ServerBusy from '~/utils/ServerBusy';
 import { Buffer } from 'buffer';
 import { ExpandI, LoadingI } from '~/assets/Icons/Icons';
 import { onChats } from '~/redux/roomsChat';
+import httpFile from '~/utils/httpFile';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -86,51 +88,55 @@ export default function LogicView(
         setEdit(false);
         const data = e?.target.files;
         if (data?.length > 0) {
-            const file = data[0];
-
-            console.log('eee');
-
+            const file: File = data[0];
             if (file) {
                 if (
                     file.type.includes('image/jpg') ||
                     file.type.includes('image/jpeg') ||
-                    file.type.includes('image/png')
+                    file.type.includes('image/png') ||
+                    file.type.includes('image/webp')
                 ) {
                     const img = URL.createObjectURL(file);
                     const sizeImage = Number((file.size / 1024 / 1024).toFixed(1));
                     if (sizeImage <= 8) {
                         setLoading(true);
-                        const base64: any = await CommonUtils.getBase64(file);
-                        const buff = Buffer.from(base64);
-                        const res = await userAPI.changesOne(
-                            userFirst.id,
-                            buff, // mysql
-                            id === 0 ? { background: 'background' } : { avatar: 'avatar' },
-                        );
-                        const data = ServerBusy(res, dispatch);
-                        console.log('number11', res, id);
-                        if (data) {
-                            setLoading(false);
-                            if (id === 0) {
-                                setUserFirst({ ...userFirst, background: img });
-                                setUsersData((pre) =>
-                                    pre.map((us) => {
-                                        if (us.id === userFirst.id) {
-                                            us.background = img;
-                                        }
-                                        return us;
-                                    }),
-                                );
-                            } else {
-                                setUserFirst({ ...userFirst, avatar: img });
-                                setUsersData((pre) =>
-                                    pre.map((us) => {
-                                        if (us.id === userFirst.id) {
-                                            us.avatar = img;
-                                        }
-                                        return us;
-                                    }),
-                                );
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        const fileUploaded = await httpFile.post<string | false>('files/addFile', formData);
+                        if (fileUploaded.data) {
+                            const res = await userAPI.changesOne(
+                                userFirst.id,
+                                id === 0 ? { background: 'background' } : { avatar: 'avatar' },
+                                {
+                                    id_file: fileUploaded.data,
+                                    type: file.type,
+                                    name: file.name,
+                                },
+                            );
+                            const data = ServerBusy(res, dispatch);
+                            if (data) {
+                                setLoading(false);
+                                if (id === 0) {
+                                    setUserFirst({ ...userFirst, background: img });
+                                    setUsersData((pre) =>
+                                        pre.map((us) => {
+                                            if (us.id === userFirst.id) {
+                                                us.background = img;
+                                            }
+                                            return us;
+                                        }),
+                                    );
+                                } else {
+                                    setUserFirst({ ...userFirst, avatar: img });
+                                    setUsersData((pre) =>
+                                        pre.map((us) => {
+                                            if (us.id === userFirst.id) {
+                                                us.avatar = img;
+                                            }
+                                            return us;
+                                        }),
+                                    );
+                                }
                             }
                         }
 
@@ -146,7 +152,7 @@ export default function LogicView(
                 setLoading(true);
                 const res = await userAPI.changesOne(
                     userFirst.id,
-                    null,
+
                     id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                 );
                 const data = ServerBusy(res, dispatch);
@@ -181,7 +187,7 @@ export default function LogicView(
     const handleNameU = async () => {
         if (valueName && valueName.length <= 30 && valueName !== userFirst.fullName) {
             setLoading(true);
-            const res = await userAPI.changesOne(userFirst.id, valueName, { fullName: 'fullName' }); // return new Name
+            const res = await userAPI.changesOne(userFirst.id, { fullName: 'fullName' }, valueName); // return new Name
             const data = ServerBusy(res, dispatch);
             setLoading(false);
             console.log(data, 'change');
@@ -560,7 +566,7 @@ export default function LogicView(
     };
     const handleLoves = async () => {
         if (user.isLoved[0]?.userId !== userFirst.id) {
-            const res = await userAPI.changesOne(user.id, '', { mores: { loverAmount: 'love' } });
+            const res = await userAPI.changesOne(user.id, { mores: { loverAmount: 'love' } });
             const data = ServerBusy(res, dispatch);
 
             setUsersData((pre) =>
@@ -577,7 +583,7 @@ export default function LogicView(
             );
             console.log('data loved', user);
         } else {
-            const res = await userAPI.changesOne(user.id, '', { mores: { loverAmount: 'unLove' } });
+            const res = await userAPI.changesOne(user.id, { mores: { loverAmount: 'unLove' } });
             const data = ServerBusy(res, dispatch);
             setUsersData((pre) =>
                 pre.map((us) => {

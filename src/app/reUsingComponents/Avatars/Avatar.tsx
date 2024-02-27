@@ -8,10 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DivImg, DivImgS } from '../styleComponents/styleComponents';
 import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from '../../redux/hideShow';
 import CommonUtils from '~/utils/CommonUtils';
+import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 
 interface _Avatar {
     className?: string;
     idH?: string;
+    id_file?: string;
     id?: string;
     src?: any;
     alt?: string | undefined;
@@ -34,6 +36,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         id,
         src,
         alt,
+        id_file,
         width,
         radius,
         gender,
@@ -71,6 +74,14 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
             setAvatar(false);
         }
     };
+    useEffect(() => {
+        const avatarH = async () => {
+            if (id_file) {
+                const srcAv = await fileWorkerAPI.getFile(id_file);
+            }
+        };
+        avatarH();
+    }, []);
     const events = {
         onClick,
         onTouchMove,

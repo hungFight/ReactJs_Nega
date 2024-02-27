@@ -35,6 +35,14 @@ const OpUpdate: React.FC<{
                 top: 0px;
                 z-index: 999;
                 background-color: #151515b0;
+                @media (min-width: 580px) {
+                    height: auto;
+                    position: absolute;
+                    width: 50%;
+                    right: 47px;
+                    border-radius: 5px;
+                    z-index: 1;
+                }
             `}
             onClick={() => setOptions('')}
         >
@@ -53,14 +61,17 @@ const OpUpdate: React.FC<{
             <Div
                 width="100%"
                 display="block"
-                css="height: auto;padding: 10px;background-color: #fff; color: #171717;  border-top-left-radius: 5px; border-top-right-radius: 5px;"
+                css="height: auto;padding: 10px;background-color: #fff; color: #171717;  border-top-left-radius: 5px; border-top-right-radius: 5px;  @media (min-width: 580px) {border-radius: 5px;}"
                 onClick={(e) => e.stopPropagation()}
             >
                 {options.map((o) => (
                     <Div key={o.type} display="block" css={``} onClick={onClick}>
                         <P css="border-top-left-radius: 20px;margin: 10px 0; border-top-right-radius: 20px; border: 1px solid #969696; padding: 2px; background-color: #b8b8b8; font-weight: 600;"></P>
                         {o.children.map((c) => (
-                            <Div key={c.id} css="align-items: center; cursor: var(--pointerR);padding-left: 5px;">
+                            <Div
+                                key={c.id}
+                                css="align-items: center; cursor: var(--pointerR);padding-left: 5px; &:hover{background-color: #c1c1c1;border-radius: 5px;}"
+                            >
                                 <Div css="margin-right: 5px">{c.icon}</Div>
                                 <P>{c.name}</P>
                             </Div>

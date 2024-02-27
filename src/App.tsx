@@ -36,6 +36,7 @@ import { ConversationText } from './dataText/DataMessenger';
 import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
 import Balloon from './mainPage/Balloon/Balloon';
+import axios from 'axios';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -203,6 +204,11 @@ function App() {
     // });
     const handleCheck = useRef<boolean>(false);
     async function fetch(id: string | string[], first?: string) {
+        // const response = await axios.get('http://localhost:3002/api/v1/files/getFile');
+        // console.log('response', response.data);
+        // const base64Data = CommonUtils.convertBase64GridFS({ type: 'image/webp', file: response.data });
+        // console.log('response', base64Data);
+        // setFileUrl(base64Data);
         if (!first) setLoading(true);
         const res: PropsUserPer[] | PropsUser = await userAPI.getById(
             id,
@@ -263,6 +269,7 @@ function App() {
             timeouts.current.push(timeOut);
         }
     }
+    const [fileUrl, setFileUrl] = useState('');
     useEffect(() => {
         const search = async () => {
             if (openProfile.newProfile.length === 1) {

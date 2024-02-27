@@ -177,7 +177,8 @@ const PersonalPage: React.FC<PropsPer> = ({
                         }}
                     >
                         <Avatar
-                            src={user.avatar}
+                            id_file={user.avatar}
+                            src=""
                             alt={user.fullName}
                             gender={user?.gender}
                             radius="50%"

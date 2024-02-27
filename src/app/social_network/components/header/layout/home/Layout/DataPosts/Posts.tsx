@@ -82,6 +82,15 @@ const Posts: React.FC<PropsPosts> = ({
     //     ),
     //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     // ];
+    const [Imotions, setImotions] = useState<{ id: number; icon: string }[]>([
+        { id: 1, icon: '👍' },
+        { id: 2, icon: '❤️' },
+        { id: 3, icon: '😂' },
+        { id: 4, icon: '😍' },
+        { id: 5, icon: '😘' },
+        { id: 6, icon: '😱' },
+        { id: 7, icon: '😡' },
+    ]);
     return (
         <Div
             width="100%"
@@ -93,7 +102,7 @@ const Posts: React.FC<PropsPosts> = ({
                 color: ${colorText};
             `}
         >
-            {options === dataPosts._id && user.id=== dataPosts.id_user && (
+            {options === dataPosts._id && user.id === dataPosts.id_user && (
                 <OpUpdate
                     createdAt={createdAt}
                     setOptions={setOptions}
@@ -312,89 +321,126 @@ const Posts: React.FC<PropsPosts> = ({
                     onClick={(e: any) => e.stopPropagation()}
                     onTouchStart={(e) => e.stopPropagation()}
                 >
-                    {dataPosts.feel.only.length > 0 && (
-                        <DivAction
-                            id="parent"
+                    <Div
+                        css={`
+                            width: 100%;
+                            color: ${colorText};
+                            font-size: 1.8rem;
+                        `}
+                    >
+                        <Div
                             css={`
+                                width: fit-content;
+                                border-radius: 11px;
+                                margin: 8px;
                                 @media (min-width: 768px) {
-                                    &:hover {
-                                        #emoBarPost {
-                                            display: flex;
-                                            top: -50px;
-                                        }
+                                    &:hover .emoji div {
+                                        margin: 0 7px;
+                                    }
+                                    &:hover .emoji div span {
+                                        display: block;
                                     }
                                 }
                             `}
-                            onTouchStart={handleShowI}
-                            onTouchEnd={handleClearI}
-                            onClick={() => {
-                                if (!actImotion) {
-                                    if (typeof imotion.icon === 'string') {
-                                        setImotion({
-                                            id: dataPosts.feel.act,
-                                            icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
-                                        });
-                                    } else {
-                                        dataPosts.feel.only.map((i, index, arr) => {
-                                            if (i.id === imotion.id) {
-                                                setImotion(i);
-                                            }
-                                        });
-                                    }
-                                }
-                            }}
                         >
-                            {imotion.icon}
-                            <Div
-                                id="emoBarPost"
-                                width="fit-content"
-                                className="showI"
-                                display="none"
-                                css={`
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    background-color: #292a2d;
-                                    padding: 5px 20px 8px;
-                                    border-radius: 50px;
-                                    z-index: 7;
-                                    div {
-                                        min-width: 40px;
-                                        height: 40px;
-                                        padding-top: 2px;
-                                        font-size: 28px;
-                                        margin: 0;
-                                        border-radius: 50%;
-                                        cursor: var(--pointer);
-                                    }
-                                `}
-                            >
-                                {dataPosts.feel.only.map((i, index, arr) => (
-                                    <DivEmoji
-                                        key={i.id}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setImotion({ id: i.id, icon: i.icon });
-                                            setActImotion(false);
-                                        }}
-                                    >
-                                        {i.icon}
-                                    </DivEmoji>
+                            <Div className="emoji" css="margin-left: 2px; align-items: flex-end;">
+                                {Object.keys(dataPosts.feel.emo).map((key, index) => (
+                                    <>
+                                        {dataPosts.feel.emo[key] ? (
+                                            <DivEmoji key={key}>{Imotions[index + 1].icon}</DivEmoji>
+                                        ) : (
+                                            ''
+                                        )}
+                                    </>
                                 ))}
                             </Div>
-                        </DivAction>
-                    )}
-                    {/* compare with id of option in  post's OpText */}
-                    {!dataPosts.private.some((p) => p.id === 2) && (
-                        <DivAction onClick={() => setShowComment(true)}>
-                            <P css="font-size: 1.3rem;">...Comments</P>
-                        </DivAction>
-                    )}
-                    {!dataPosts.private.some((p) => p.id === 3) && (
-                        <DivAction>
-                            <ShareI />
-                        </DivAction>
-                    )}
+                        </Div>
+                    </Div>
+                    <Div>
+                        {dataPosts.feel.only.length > 0 && (
+                            <DivAction
+                                id="parent"
+                                css={`
+                                    @media (min-width: 768px) {
+                                        &:hover {
+                                            #emoBarPost {
+                                                display: flex;
+                                                top: -50px;
+                                            }
+                                        }
+                                    }
+                                `}
+                                onTouchStart={handleShowI}
+                                onTouchEnd={handleClearI}
+                                onClick={() => {
+                                    if (!actImotion) {
+                                        if (typeof imotion.icon === 'string') {
+                                            setImotion({
+                                                id: dataPosts.feel.act,
+                                                icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
+                                            });
+                                        } else {
+                                            dataPosts.feel.only.map((i, index, arr) => {
+                                                if (i.id === imotion.id) {
+                                                    setImotion(i);
+                                                }
+                                            });
+                                        }
+                                    }
+                                }}
+                            >
+                                {imotion.icon}
+                                <Div
+                                    id="emoBarPost"
+                                    width="fit-content"
+                                    className="showI"
+                                    display="none"
+                                    css={`
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        background-color: #292a2d;
+                                        padding: 5px 20px 8px;
+                                        border-radius: 50px;
+                                        z-index: 7;
+                                        div {
+                                            min-width: 40px;
+                                            height: 40px;
+                                            padding-top: 2px;
+                                            font-size: 28px;
+                                            margin: 0;
+                                            border-radius: 50%;
+                                            cursor: var(--pointer);
+                                        }
+                                    `}
+                                >
+                                    {dataPosts.feel.only.map((i, index, arr) => (
+                                        <DivEmoji
+                                            key={i.id}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setImotion({ id: i.id, icon: i.icon });
+                                                setActImotion(false);
+                                            }}
+                                        >
+                                            {i.icon}
+                                        </DivEmoji>
+                                    ))}
+                                </Div>
+                            </DivAction>
+                        )}
+                        {/* compare with id of option in  post's OpText */}
+                        {!dataPosts.private.some((p) => p.id === 2) && (
+                            <DivAction onClick={() => setShowComment(true)}>
+                                <P css="font-size: 1.3rem;">...Comments</P>
+                            </DivAction>
+                        )}
+                        {!dataPosts.private.some((p) => p.id === 3) && (
+                            <DivAction>
+                                <ShareI />
+                            </DivAction>
+                        )}
+                    </Div>
                 </Div>
                 {/* {showComment && <Comment colorText={colorText} anony={valuePrivacy} setShowComment={setShowComment} />} */}
             </Div>

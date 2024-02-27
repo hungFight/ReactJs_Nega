@@ -4,31 +4,33 @@ import { PropsUser } from 'src/App';
 
 interface feel {
     amount: number;
-    like: {
-        act: number;
-        id_user: string[];
+    emo: {
+        [like: string]: {
+            act: number;
+            id_user: string[];
+        };
+        love: {
+            act: number;
+            id_user: string[];
+        };
+        smile: {
+            act: number;
+            id_user: string[];
+        };
+        sad: {
+            act: number;
+            id_user: string[];
+        };
+        angry: {
+            act: number;
+            id_user: string[];
+        };
     };
-    love: {
-        act: number;
-        id_user: string[];
-    };
-    smile: {
-        act: number;
-        id_user: string[];
-    };
-    sad: {
-        act: number;
-        id_user: string[];
-    };
-    angry: {
-        act: number;
-        id_user: string[];
-    };
+    act: number;
     only: {
         id: number;
         icon: string;
     }[];
-    act: number;
 }
 export interface PropsDataPosts {
     _id: string;

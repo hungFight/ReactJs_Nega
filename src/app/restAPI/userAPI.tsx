@@ -63,30 +63,7 @@ class HttpRequestUser {
                 mores,
             });
             console.log(res, 'res');
-            if (Array.isArray(res.data)) {
-                return res.data.map((dt) => {
-                    if (dt.avatar) {
-                        const av = CommonUtils.convertBase64(dt.avatar);
-                        dt.avatar = av;
-                        console.log(res, 'sss');
-                    }
-                    if (dt.background) {
-                        const av = CommonUtils.convertBase64(dt.background);
-                        dt.background = av;
-                    }
-                    return dt;
-                });
-            } else {
-                if (res?.data.avatar) {
-                    const av = CommonUtils.convertBase64(res.data.avatar);
-                    res.data.avatar = av;
-                }
-                if (res?.data.background) {
-                    const av = CommonUtils.convertBase64(res.data.background);
-                    res.data.background = av;
-                }
-                return res.data;
-            }
+            return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
             return errorHandling(err);
@@ -162,10 +139,10 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
-    changesOne = async (id: string, value: any, params: PropsParamsById) => {
+    changesOne = async (id: string, params: PropsParamsById, value?: any) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.patch<string | number | Buffer>('/user/changesOne', {
+            const res = await Axios.patch<string | number>('/user/changesOne', {
                 params: {
                     id,
                     params,
