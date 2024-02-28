@@ -13,7 +13,6 @@ import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 interface _Avatar {
     className?: string;
     idH?: string;
-    id_file?: string;
     id?: string;
     src?: any;
     alt?: string | undefined;
@@ -36,19 +35,9 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         id,
         src,
         alt,
-        id_file,
         width,
         radius,
         gender,
-        fallback: Fallback = gender === 0
-            ? Images.defaultAvatarMale
-            : gender === 1
-            ? Images.defaultAvatarFemale
-            : gender === 11
-            ? Images.anonymousMale
-            : gender === 12
-            ? Images.anonymousFemale
-            : Images.defaultAvataLgbt,
         onClick,
         onTouchMove,
         css,
@@ -58,15 +47,26 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     } = props;
     const dispatch = useDispatch();
     const [avatar, setAvatar] = useState<boolean>(false);
-    const [avatarFallback, setAvatarFallback] = useState<string>('');
+    const [avatarFallback, setAvatarFallback] = useState<string>(
+        src ? `${process.env.REACT_APP_SERVER_FILE_V1}files/getFile/${src}` : '',
+    );
     // useEffect(() => {
     //     setAvatarFallback(!src ? Fallback : src);
     // }, [Fallback, src]);
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = () => {
         console.log('err avatar');
-
-        setAvatarFallback(Fallback);
+        setAvatarFallback(
+            gender === 0
+                ? Images.defaultAvatarMale
+                : gender === 1
+                ? Images.defaultAvatarFemale
+                : gender === 11
+                ? Images.anonymousMale
+                : gender === 12
+                ? Images.anonymousFemale
+                : Images.defaultAvataLgbt,
+        );
         setRepetitions((pev) => pev + 1);
         if (repetitions >= 2) {
             setAvatar(true);
@@ -75,13 +75,9 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         }
     };
     useEffect(() => {
-        const avatarH = async () => {
-            if (id_file) {
-                const srcAv = await fileWorkerAPI.getFile(id_file);
-            }
-        };
-        avatarH();
-    }, []);
+        if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_V1}files/getFile/${src}`)
+            setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_V1}files/getFile/${src}`);
+    }, [src]);
     const events = {
         onClick,
         onTouchMove,
@@ -91,6 +87,8 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         if (profile === 'po' && id) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
     };
     const TagH: any = profile === 'url' ? DivImg : DivImgS;
+    console.log(avatarFallback, 'avatarFallback');
+
     return avatar ? (
         <FaUserCircle />
     ) : (
@@ -111,7 +109,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         >
             {children}
             <Img
-                src={src || Fallback || avatarFallback}
+                src={avatarFallback}
                 alt={alt}
                 onError={handleErrorImage}
                 radius={radius}

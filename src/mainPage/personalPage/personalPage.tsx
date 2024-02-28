@@ -14,6 +14,7 @@ import { PropsUser, PropsUserPer } from 'src/App';
 import SettingEditPersonal from './layout/Setting/SettingEditPersonal';
 import LogicView from './logicPersonal';
 import SettingOtherProfile from './layout/Setting/SettingOtherProfile';
+import Image from '~/reUsingComponents/Avatars/Image';
 
 interface PropsPer {
     AllArray: PropsUserPer[];
@@ -155,9 +156,9 @@ const PersonalPage: React.FC<PropsPer> = ({
                 <Div css={cssBg}>
                     {/* {user?.background && ( */}
                     {user.background && (
-                        <Img
+                        <Image
                             src={user.background}
-                            alt={user?.fullName}
+                            fullName={user?.fullName}
                             onClick={() => {
                                 setRoom({ ...room, background: !room.background });
                             }}
@@ -177,8 +178,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                         }}
                     >
                         <Avatar
-                            id_file={user.avatar}
-                            src=""
+                            src={user.avatar}
                             alt={user.fullName}
                             gender={user?.gender}
                             radius="50%"

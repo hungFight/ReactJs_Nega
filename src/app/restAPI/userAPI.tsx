@@ -51,7 +51,6 @@ interface PropsMoresGetting {
     privacy: boolean;
     createdAt?: boolean;
 }
-const cookies = new Cookies();
 class HttpRequestUser {
     getById = async (id: string | string[], params: PropsParamsById, mores: PropsMoresGetting, first?: string) => {
         try {
@@ -62,7 +61,6 @@ class HttpRequestUser {
                 params: params,
                 mores,
             });
-            console.log(res, 'res');
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;

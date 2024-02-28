@@ -5,10 +5,6 @@ class HttpFile {
     constructor() {
         this.instance = axios.create({
             baseURL: process.env.REACT_APP_SERVER_FILE_V1,
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
         });
     }
 }

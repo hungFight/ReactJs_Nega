@@ -149,7 +149,7 @@ const Title: React.FC<{
             <Div
                 width="100%"
                 wrap="wrap"
-                css="justify-content: space-evenly; background-color: #2b2c2c; padding: 9px 0; border-radius: 5px; box-shadow: 0 0 1px #949090;"
+                css="justify-content: space-evenly; background-color: #222222; padding: 9px 0; border-radius: 5px; box-shadow: 0 0 1px #949090;"
             >
                 <Div>
                     {itemsT.map((i) => (
@@ -258,10 +258,10 @@ const Title: React.FC<{
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
                 css={`
+                    background-color: #222222;
                     ${editTitle || viewMore
                         ? `height: auto;
                         color: ${colorText};
-                        background-color: #2b2c2c;
                         padding: 8px;margin-top: 15px;
                         box-shadow: 0 0 1px #949090;
                         @media (max-width: 850px) {
@@ -277,7 +277,6 @@ const Title: React.FC<{
                         overflow: unset;
                         height: auto;
                         color: ${colorText};
-                        background-color: #2b2c2c;
                         padding: 8px;
                         box-shadow: 0 0 1px #949090;
                         @media (max-width: 850px) {
@@ -408,10 +407,10 @@ const Title: React.FC<{
                 width={`${AllArray.length > 1 ? '100%' : '49.5%'}`}
                 display="block"
                 css={`
+                    background-color: #222222;
                     ${editTitle || viewMore
                         ? ` margin-top: 15px;
                         color: ${colorText};
-                        background-color: #2b2c2c;
                         padding: 8px;
                         box-shadow: 0 0 1px #949090;
                         @media (max-width: 850px) {
@@ -427,7 +426,6 @@ const Title: React.FC<{
                         height: auto;
                         margin-top: 15px;
                         color: ${colorText};
-                        background-color: #2b2c2c;
                         padding: 8px;
                         box-shadow: 0 0 1px #949090;
                         @media (max-width: 850px) {

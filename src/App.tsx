@@ -204,11 +204,6 @@ function App() {
     // });
     const handleCheck = useRef<boolean>(false);
     async function fetch(id: string | string[], first?: string) {
-        // const response = await axios.get('http://localhost:3002/api/v1/files/getFile');
-        // console.log('response', response.data);
-        // const base64Data = CommonUtils.convertBase64GridFS({ type: 'image/webp', file: response.data });
-        // console.log('response', base64Data);
-        // setFileUrl(base64Data);
         if (!first) setLoading(true);
         const res: PropsUserPer[] | PropsUser = await userAPI.getById(
             id,

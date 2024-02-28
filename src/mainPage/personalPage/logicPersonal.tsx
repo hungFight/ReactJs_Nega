@@ -80,10 +80,7 @@ export default function LogicView(
     const following = user.followings[0]?.following || user.followed[0]?.following;
 
     const follwed = user.followings[0]?.followed || user.followed[0]?.followed;
-
     const DivRef = useRef<HTMLDivElement | null>(null);
-    console.log(user, 'userRequest');
-
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
         setEdit(false);
         const data = e?.target.files;
@@ -102,6 +99,9 @@ export default function LogicView(
                         setLoading(true);
                         const formData = new FormData();
                         formData.append('file', file);
+                        if (user.avatar || user.background) {
+                            formData.append('old_id', id === 0 ? user.background : user.avatar);
+                        }
                         const fileUploaded = await httpFile.post<string | false>('files/addFile', formData);
                         if (fileUploaded.data) {
                             const res = await userAPI.changesOne(
@@ -111,33 +111,34 @@ export default function LogicView(
                                     id_file: fileUploaded.data,
                                     type: file.type,
                                     name: file.name,
+                                    old_id: id === 0 ? user.background : user.avatar,
                                 },
                             );
                             const data = ServerBusy(res, dispatch);
                             if (data) {
-                                setLoading(false);
                                 if (id === 0) {
-                                    setUserFirst({ ...userFirst, background: img });
+                                    setUserFirst({ ...userFirst, background: fileUploaded.data });
                                     setUsersData((pre) =>
                                         pre.map((us) => {
                                             if (us.id === userFirst.id) {
-                                                us.background = img;
+                                                us.background = fileUploaded.data;
                                             }
                                             return us;
                                         }),
                                     );
                                 } else {
-                                    setUserFirst({ ...userFirst, avatar: img });
+                                    setUserFirst({ ...userFirst, avatar: fileUploaded.data });
                                     setUsersData((pre) =>
                                         pre.map((us) => {
                                             if (us.id === userFirst.id) {
-                                                us.avatar = img;
+                                                us.avatar = fileUploaded.data;
                                             }
                                             return us;
                                         }),
                                     );
                                 }
                             }
+                            setLoading(false);
                         }
 
                         //   uploadRef.current.push({ link: URL.createObjectURL(compressedFile), type: 'image' });
@@ -147,13 +148,17 @@ export default function LogicView(
                 }
             }
         } else {
+            //delete
             console.log('delete', id, data, user.avatar);
             if (user.avatar || user.background) {
+                const fileUploaded = await httpFile.post<string | false>('files/deleteFile', {
+                    id_file: user.avatar || user.background,
+                });
                 setLoading(true);
                 const res = await userAPI.changesOne(
                     userFirst.id,
-
                     id === 0 ? { background: 'background' } : { avatar: 'avatar' },
+                    { id_file: user.avatar || user.background },
                 );
                 const data = ServerBusy(res, dispatch);
                 if (data) {
@@ -678,12 +683,12 @@ export default function LogicView(
                   height: ${350 / (leng > 1 ? leng - 0.7 : leng) + 'px'};
             }
             @media (min-width: 1440px){
-                width: 99%;
+                width: 100%;
                 margin: auto;
             }
             ${
                 room.background
-                    ? 'position: fixed; width: 100%; height:  100% !important; background-color:#000000fa; top: 0; left: 0; z-index: 888; margin: 0;img{object-fit: contain;}'
+                    ? 'position: fixed; width: 100%; height:  100% !important; background-color:#000000fa; top: 0; left: 0; z-index: 999; margin: 0;img{object-fit: contain;}'
                     : ''
             }
             `;
@@ -760,7 +765,7 @@ export default function LogicView(
             }
             ${
                 room.avatar
-                    ? 'position: fixed; width: 100% !important; height:  100% !important; background-color:#000000fa; border-radius: 0; border: 0; top: 0; left: 0; z-index: 888; margin: 0;img{object-fit: contain; border-radius: 0;}'
+                    ? 'position: fixed; width: 100% !important; height:  100% !important; background-color:#000000fa; border-radius: 0; border: 0; top: 0; left: 0; z-index: 999; margin: 0;img{object-fit: contain; border-radius: 0;}'
                     : ''
             }
             `;
