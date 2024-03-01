@@ -11,6 +11,7 @@ import Languages from '~/reUsingComponents/languages';
 import Player from '~/reUsingComponents/Videos/Player';
 import chatAPI from '~/restAPI/chatAPI';
 import { UseMutationResult } from '@tanstack/react-query';
+import Image from '~/reUsingComponents/Avatars/Image';
 
 const ItemPin: React.FC<{
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
@@ -204,10 +205,10 @@ const ItemPin: React.FC<{
                 <Div wrap="wrap" width="27%">
                     {r.imageOrVideos.map((f) => (
                         <Div key={f._id} width="30px" css="height: 30px; margin: 2px; ">
-                            {f.type.search('image/') >= 0 ? (
-                                <Img src={f.v} alt={f._id} radius="5px" />
+                            {f.type === 'image' ? (
+                                <Image src={f._id} fullName={f._id} radius="5px" />
                             ) : (
-                                <Player src={f.v} />
+                                <Player src={f._id} />
                             )}
                         </Div>
                     ))}

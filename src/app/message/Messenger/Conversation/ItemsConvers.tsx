@@ -40,7 +40,7 @@ const ItemsRoom: React.FC<{
                   byWhoCreatedAt: string;
                   imageOrVideos: {
                       v: string;
-                      type?: string | undefined;
+                      type: string;
                       icon: string;
                       _id: string;
                   }[];
@@ -58,7 +58,7 @@ const ItemsRoom: React.FC<{
               byWhoCreatedAt: string;
               imageOrVideos: {
                   v: string;
-                  type?: string | undefined;
+                  type: string;
                   icon: string;
                   _id: string;
               }[];
@@ -74,7 +74,7 @@ const ItemsRoom: React.FC<{
     background?: {
         v: string;
         type: string;
-        id: string;
+        _id: string;
         userId: string;
         latestChatId: string;
     };

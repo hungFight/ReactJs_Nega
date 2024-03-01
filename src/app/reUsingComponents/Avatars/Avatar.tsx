@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { memo, useState, useEffect, useLayoutEffect, useCallback, forwardRef, Ref } from 'react';
+import React, { memo, useState, useEffect, useLayoutEffect, useCallback, forwardRef, Ref, useRef } from 'react';
 
 import { FaUserCircle } from 'react-icons/fa';
 import Images from '../../assets/images';
@@ -9,6 +9,7 @@ import { DivImg, DivImgS } from '../styleComponents/styleComponents';
 import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from '../../redux/hideShow';
 import CommonUtils from '~/utils/CommonUtils';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
+import subImage from '~/utils/subImage';
 
 interface _Avatar {
     className?: string;
@@ -47,26 +48,25 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     } = props;
     const dispatch = useDispatch();
     const [avatar, setAvatar] = useState<boolean>(false);
-    const [avatarFallback, setAvatarFallback] = useState<string>(
-        src ? `${process.env.REACT_APP_SERVER_FILE_V1}files/getFile/${src}` : '',
-    );
+    const [avatarFallback, setAvatarFallback] = useState<string>(() => subImage(src, gender));
     // useEffect(() => {
     //     setAvatarFallback(!src ? Fallback : src);
     // }, [Fallback, src]);
+    console.log(gender, alt, 'avatarFallback', className);
+
+    const srcSub =
+        gender === 0
+            ? Images.defaultAvatarMale
+            : gender === 1
+            ? Images.defaultAvatarFemale
+            : gender === 11
+            ? Images.anonymousMale
+            : gender === 12
+            ? Images.anonymousFemale
+            : Images.defaultAvataLgbt;
     const [repetitions, setRepetitions] = useState<number>(0);
-    const handleErrorImage = () => {
-        console.log('err avatar');
-        setAvatarFallback(
-            gender === 0
-                ? Images.defaultAvatarMale
-                : gender === 1
-                ? Images.defaultAvatarFemale
-                : gender === 11
-                ? Images.anonymousMale
-                : gender === 12
-                ? Images.anonymousFemale
-                : Images.defaultAvataLgbt,
-        );
+    const handleErrorImage = (e: any) => {
+        e.target.src = srcSub;
         setRepetitions((pev) => pev + 1);
         if (repetitions >= 2) {
             setAvatar(true);
@@ -75,8 +75,9 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         }
     };
     useEffect(() => {
-        if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_V1}files/getFile/${src}`)
-            setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_V1}files/getFile/${src}`);
+        if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${src}`)
+            setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${src}`);
+        if (!src && avatarFallback) setAvatarFallback('');
     }, [src]);
     const events = {
         onClick,
@@ -87,7 +88,6 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         if (profile === 'po' && id) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
     };
     const TagH: any = profile === 'url' ? DivImg : DivImgS;
-    console.log(avatarFallback, 'avatarFallback');
 
     return avatar ? (
         <FaUserCircle />

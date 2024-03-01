@@ -90,16 +90,6 @@ const LogicMessenger = (dataUser: PropsUser) => {
             const newD: typeof data = await new Promise((resolve, reject) => {
                 const newRR = Promise.all(
                     data?.map(async (d) => {
-                        if (d.background) {
-                            const dataB = await gridFS.getFile(d.background.v, d.background.type);
-                            const buffer = ServerBusy(dataB, dispatch);
-                            if (dataB?.message === 'File not found') {
-                                d.background.v = '';
-                            } else {
-                                const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                d.background.v = base64;
-                            }
-                        }
                         if (d.room.text?.t) {
                             if (d.room?.secondary) {
                                 const bytes = CryptoJS.AES.decrypt(d.room.text?.t, `chat_${d.room.secondary}`);
@@ -131,13 +121,6 @@ const LogicMessenger = (dataUser: PropsUser) => {
             data.users = [data.user];
             const newD = await new Promise<PropsRoomChat>(async (resolve, reject) => {
                 try {
-                    await Promise.all(
-                        data.room.imageOrVideos.map(async (d, index) => {
-                            const buffer = await gridFS.getFile(d.v);
-                            const base64 = CommonUtils.convertBase64GridFS(buffer.file);
-                            data.room.imageOrVideos[index].v = base64;
-                        }),
-                    );
                     if (data.room.text?.t) {
                         if (data.room?.secondary) {
                             const bytes = CryptoJS.AES.decrypt(data.room.text?.t, `chat_${data.room.secondary}`);

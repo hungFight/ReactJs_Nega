@@ -7,10 +7,10 @@ import { PropsId_chats } from 'src/App';
 export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
 
 class Messenger {
-    send = async (formData: any) => {
+    send = async (fda: any) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsRoomChat>('/messenger/sendChat', formData);
+            const res = await Axios.post<PropsRoomChat>('/messenger/sendChat', fda);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -21,13 +21,6 @@ class Messenger {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get<PropsRoomChat[]>('/messenger/getRoom', { params: { limit, offset } });
-            res.data.map((sc) => {
-                sc.users.map((us) => {
-                    if (us?.avatar) us.avatar = CommonUtils.convertBase64(us.avatar);
-                });
-                // if (sc.room.user?.avatar) sc.room.user.avatar = CommonUtils.convertBase64(sc.room.user.avatar);
-            });
-
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

@@ -311,18 +311,6 @@ const Conversation: React.FC<{
             if (dataV) {
                 const newData = await new Promise<PropsChat>(async (resolve, reject) => {
                     const modifiedData: any = { ...dataV };
-                    if (modifiedData.background) {
-                        const dataB = await gridFS.getFile(modifiedData.background.v, modifiedData.background.type);
-                        const buffer = ServerBusy(dataB, dispatch);
-                        if (dataB?.message === 'File not found') {
-                            modifiedData.background.v = '';
-                        } else {
-                            const base64 = CommonUtils.convertBase64GridFS(buffer);
-                            modifiedData.background.v = base64;
-                        }
-                        const a = CommonUtils.convertBase64(modifiedData.user?.avatar);
-                        if (a) modifiedData.user.avatar = a;
-                    }
                     await Promise.all(
                         modifiedData.room?.map(
                             async (
@@ -339,27 +327,6 @@ const Conversation: React.FC<{
                                         `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
                                     );
                                 }
-                                await Promise.all(
-                                    rr.imageOrVideos.map(
-                                        async (
-                                            fl: { _id: string; v: string; icon: string; type: string },
-                                            index2: number,
-                                        ) => {
-                                            const dataI = await gridFS.getFile(fl.v, fl?.type);
-                                            const buffer = ServerBusy(dataI, dispatch);
-                                            if (dataI?.message === 'File not found') {
-                                                modifiedData.room[index1].imageOrVideos[index2].v =
-                                                    dataI?.type?.search('image/') >= 0
-                                                        ? "Image doesn't exist"
-                                                        : "Video doesn't exist";
-                                            } else {
-                                                const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                                modifiedData.room[index1] = rr;
-                                                modifiedData.room[index1].imageOrVideos[index2].v = base64;
-                                            }
-                                        },
-                                    ),
-                                );
                             },
                         ),
                     );
@@ -383,7 +350,7 @@ const Conversation: React.FC<{
             const fileC: any = upLoad[0];
             const formData = new FormData();
             if (fileC) {
-                if (conversation.background) formData.append('background', conversation.background.id);
+                if (conversation.background) formData.append('background', conversation.background._id);
                 formData.append('latestChatId', conversation.room[0]._id);
                 formData.append('userId', dataFirst.id);
                 formData.append('conversationId', conversation._id); // assign file and _id of the file upload
@@ -395,7 +362,7 @@ const Conversation: React.FC<{
                             return {
                                 ...pre,
                                 background: {
-                                    id: fileC._id,
+                                    _id: fileC._id,
                                     v: getFilesToPre[0].link,
                                     type: getFilesToPre[0].type,
                                     userId: res.userId,
@@ -494,7 +461,7 @@ const Conversation: React.FC<{
                                         if (conversation && conversation.background) {
                                             const res: boolean = await chatAPI.delBackground(
                                                 conversation._id,
-                                                conversation.background.id,
+                                                conversation.background._id,
                                             );
                                             if (res)
                                                 setConversation((pre) => {
@@ -634,7 +601,7 @@ const Conversation: React.FC<{
               imageOrVideos:
                   | {
                         v: string;
-                        type?: string | undefined;
+                        type: string;
                         icon: string;
                         _id: string;
                     }[];
@@ -690,7 +657,7 @@ const Conversation: React.FC<{
                 transition: all 0.5s linear;
                 background-blend-mode: soft-light;
                 ${conversation?.background
-                    ? `background-image: url(${conversation?.background.v}); background-repeat: no-repeat;background-size: cover;`
+                    ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${conversation?.background._id}); background-repeat: no-repeat;background-size: cover;`
                     : ''}
 
                 @media (min-width: 500px) {
@@ -763,13 +730,18 @@ const Conversation: React.FC<{
                         <UndoI />
                     </Div>
                     <Div width="85%" css="align-items: center; position: relative">
-                        <Avatar
-                            src={conversation?.user.avatar}
-                            alt={conversation?.user.fullName}
-                            gender={conversation?.user.gender}
-                            radius="50%"
-                            css="min-width: 40px; width: 40px; height: 40px; margin-right: 5px;@media(min-width: 768px){min-width: 30px; width: 30px; height: 30px;}"
-                        />
+                        {conversation && conversation.user.gender >= 0 ? (
+                            <Avatar
+                                src={conversation?.user.avatar}
+                                alt={conversation?.user.fullName}
+                                className="hello"
+                                gender={conversation?.user.gender}
+                                radius="50%"
+                                css="min-width: 40px; width: 40px; height: 40px; margin-right: 5px;@media(min-width: 768px){min-width: 30px; width: 30px; height: 30px;}"
+                            />
+                        ) : (
+                            ''
+                        )}
                         {userOnline.includes(conversation?.user.id ?? '') && (
                             <Div
                                 css={`

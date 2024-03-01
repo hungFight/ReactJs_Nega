@@ -19,7 +19,7 @@ const MoreOption: React.FC<{
     background?: {
         v: string;
         type: string;
-        id: string;
+        _id: string;
         userId: string;
         latestChatId: string;
     };

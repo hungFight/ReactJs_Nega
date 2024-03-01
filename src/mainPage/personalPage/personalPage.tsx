@@ -22,7 +22,7 @@ interface PropsPer {
     user: PropsUserPer;
     leng: number;
     index: number;
-    colorText?: string;
+    colorText: string;
     colorBg: number;
     online: string[];
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
@@ -94,6 +94,8 @@ const PersonalPage: React.FC<PropsPer> = ({
         setMore,
         more,
     } = LogicView(user, userFirst, setUserFirst, leng, online, setId_chats, setUsersData, index, AllArray);
+    console.log(colorText, 'colorText');
+
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
         return (
             <Div width="196px" wrap="wrap" css="position: relative; @media(min-width: 600px){width: 250px}">

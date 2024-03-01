@@ -38,7 +38,7 @@ const OptionForItem: React.FC<{
                   byWhoCreatedAt: string;
                   imageOrVideos: {
                       v: string;
-                      type?: string | undefined;
+                      type: string;
                       icon: string;
                       _id: string;
                   }[];
@@ -55,7 +55,7 @@ const OptionForItem: React.FC<{
         byWhoCreatedAt: string;
         imageOrVideos: {
             v: string;
-            type?: string | undefined;
+            type: string;
             icon: string;
             _id: string;
         }[];

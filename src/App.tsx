@@ -37,6 +37,7 @@ import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
 import Balloon from './mainPage/Balloon/Balloon';
 import axios from 'axios';
+import subImage from '~/utils/subImage';
 
 const DivOpacity = styled.div`
     width: 100%;
@@ -303,13 +304,7 @@ function App() {
             const elePState = document.createElement('p');
             eleDiv1.className = 'showChatDiv1';
             eleImg.className = 'showChatImg';
-            eleImg.src = data.user.avatar
-                ? CommonUtils.convertBase64(Buffer.from(data.user.avatar))
-                : data.user.gender === 0
-                ? Images.defaultAvatarMale
-                : data.user.gender === 1
-                ? Images.defaultAvatarFemale
-                : Images.defaultAvataLgbt;
+            eleImg.src = subImage(data.user.avatar, data.user.gender);
             eleImg.alt = data.user.fullName;
             eleDiv2.className = 'showChatDiv2';
             eleDiv2.style.color = colorText;

@@ -16,7 +16,8 @@ const Personalpage: React.FC<{
             }[]
         >
     >;
-}> = ({ dataUser, setDataUser, setId_chats }) => {
+    colorText: string;
+}> = ({ dataUser, setDataUser, setId_chats, colorText }) => {
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
     const handleCheck = useRef<boolean>(false);
     const userOnline = useSelector(
@@ -82,6 +83,7 @@ const Personalpage: React.FC<{
             {userData?.map((data, index, arr) => (
                 <PersonalPage
                     AllArray={userData}
+                    colorText={colorText}
                     setUsersData={setUsersData}
                     setUserFirst={setDataUser}
                     userFirst={dataUser}

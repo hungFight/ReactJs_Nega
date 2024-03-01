@@ -15,6 +15,7 @@ import { Buffer } from 'buffer';
 import { ExpandI, LoadingI } from '~/assets/Icons/Icons';
 import { onChats } from '~/redux/roomsChat';
 import httpFile from '~/utils/httpFile';
+import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -82,6 +83,7 @@ export default function LogicView(
     const follwed = user.followings[0]?.followed || user.followed[0]?.followed;
     const DivRef = useRef<HTMLDivElement | null>(null);
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
+        const avBg = id === 0 ? user.background : user.avatar;
         setEdit(false);
         const data = e?.target.files;
         if (data?.length > 0) {
@@ -100,38 +102,44 @@ export default function LogicView(
                         const formData = new FormData();
                         formData.append('file', file);
                         if (user.avatar || user.background) {
-                            formData.append('old_id', id === 0 ? user.background : user.avatar);
+                            formData.append('old_id', avBg);
                         }
-                        const fileUploaded = await httpFile.post<string | false>('files/addFile', formData);
-                        if (fileUploaded.data) {
+                        const fileUploaded: {
+                            id: string;
+                            tail: string;
+                            type: string;
+                        } = await fileWorkerAPI.addFile(formData);
+                        console.log(fileUploaded, 'fileUploaded');
+                        const idF = fileUploaded.id;
+                        if (idF) {
                             const res = await userAPI.changesOne(
                                 userFirst.id,
                                 id === 0 ? { background: 'background' } : { avatar: 'avatar' },
                                 {
-                                    id_file: fileUploaded.data,
+                                    id_file: idF,
                                     type: file.type,
                                     name: file.name,
-                                    old_id: id === 0 ? user.background : user.avatar,
+                                    old_id: avBg,
                                 },
                             );
                             const data = ServerBusy(res, dispatch);
                             if (data) {
                                 if (id === 0) {
-                                    setUserFirst({ ...userFirst, background: fileUploaded.data });
+                                    setUserFirst({ ...userFirst, background: idF });
                                     setUsersData((pre) =>
                                         pre.map((us) => {
                                             if (us.id === userFirst.id) {
-                                                us.background = fileUploaded.data;
+                                                us.background = idF;
                                             }
                                             return us;
                                         }),
                                     );
                                 } else {
-                                    setUserFirst({ ...userFirst, avatar: fileUploaded.data });
+                                    setUserFirst({ ...userFirst, avatar: idF });
                                     setUsersData((pre) =>
                                         pre.map((us) => {
                                             if (us.id === userFirst.id) {
-                                                us.avatar = fileUploaded.data;
+                                                us.avatar = idF;
                                             }
                                             return us;
                                         }),
@@ -149,41 +157,41 @@ export default function LogicView(
             }
         } else {
             //delete
-            console.log('delete', id, data, user.avatar);
+            console.log('delete', id, data, user);
             if (user.avatar || user.background) {
-                const fileUploaded = await httpFile.post<string | false>('files/deleteFile', {
-                    id_file: user.avatar || user.background,
-                });
-                setLoading(true);
-                const res = await userAPI.changesOne(
-                    userFirst.id,
-                    id === 0 ? { background: 'background' } : { avatar: 'avatar' },
-                    { id_file: user.avatar || user.background },
-                );
-                const data = ServerBusy(res, dispatch);
-                if (data) {
-                    setLoading(false);
-                    if (id === 0) {
-                        console.log('number', data, id);
-                        setUserFirst({ ...userFirst, background: null });
-                        setUsersData((pre) =>
-                            pre.map((us) => {
-                                if (us.id === userFirst.id) {
-                                    us.background = null;
-                                }
-                                return us;
-                            }),
-                        );
-                    } else {
-                        setUserFirst({ ...userFirst, avatar: null });
-                        setUsersData((pre) =>
-                            pre.map((us) => {
-                                if (us.id === userFirst.id) {
-                                    us.avatar = null;
-                                }
-                                return us;
-                            }),
-                        );
+                const fileUploaded = await fileWorkerAPI.deleteFile(avBg);
+                if (fileUploaded) {
+                    setLoading(true);
+                    const res = await userAPI.changesOne(
+                        userFirst.id,
+                        id === 0 ? { background: 'background' } : { avatar: 'avatar' },
+                        { id_file: avBg },
+                    );
+                    const data = ServerBusy(res, dispatch);
+                    if (data) {
+                        setLoading(false);
+                        if (id === 0) {
+                            console.log('number', data, id);
+                            setUserFirst({ ...userFirst, background: null });
+                            setUsersData((pre) =>
+                                pre.map((us) => {
+                                    if (us.id === userFirst.id) {
+                                        us.background = null;
+                                    }
+                                    return us;
+                                }),
+                            );
+                        } else {
+                            setUserFirst({ ...userFirst, avatar: null });
+                            setUsersData((pre) =>
+                                pre.map((us) => {
+                                    if (us.id === userFirst.id) {
+                                        us.avatar = null;
+                                    }
+                                    return us;
+                                }),
+                            );
+                        }
                     }
                 }
             }
