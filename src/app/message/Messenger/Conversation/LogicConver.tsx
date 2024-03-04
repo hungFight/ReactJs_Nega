@@ -517,12 +517,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const formData = new FormData();
             const id_s = uuidv4();
             const fda: any = {};
-            fda.value = encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`);
+            if (value) fda.value = encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`);
             if (conversationId) formData.append('conversationId', conversationId); // conversation._id
             if (id_) fda.id_room = id_; // id of the room
             if (id_s && !conversation._id) fda.id_s = id_s; // first it have no _id of the conversationId then id_s is replaced
             if (id_other) fda.id_others = id_other;
-            if (urlS.length) fda.id_files = urlS;
+            if (urlS.length) fda.valueInfoFile = urlS;
 
             const res = await sendChatAPI.send(fda);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);

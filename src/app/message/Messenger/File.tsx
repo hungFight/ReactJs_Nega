@@ -33,12 +33,6 @@ const FileConversation: React.FC<{
     fixed?: boolean;
     room?: boolean;
 }> = ({ type = '', v, icon, ERef, del, who, setRoomImage, roomImage, id_room, id_file, fixed }) => {
-    const image = type.search('image/') >= 0;
-    console.log(image, 'image', type, type.search('image/'));
-
-    useEffect(() => {
-        // if (v.length < 50 && !v.search('data')) setReload(true); // check data format
-    }, [v]);
     return (
         <Div
             className={`${roomImage?.id_file === id_file && fixed ? 'roomOfChat' : 'roomIf'} `}
@@ -104,8 +98,12 @@ const FileConversation: React.FC<{
                     <ImageI />
                     {v}
                 </P>
-            ) : image ? (
-                <Img id="roomImageChat" src={v} radius="5px" />
+            ) : type === 'image' ? (
+                <Img
+                    id="roomImageChat"
+                    src={`${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${id_file}`}
+                    radius="5px"
+                />
             ) : (
                 <Player src={v} radius="5px" />
             )}
