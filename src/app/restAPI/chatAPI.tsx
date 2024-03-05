@@ -84,14 +84,13 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    delChatAll = async (conversationId: string, chatId: string, userId: string, id_file: string[]) => {
+    delChatAll = async (conversationId: string, chatId: string, userId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>('/messenger/delChatAll', {
                 conversationId,
                 chatId,
                 userId,
-                id_file,
             });
             return res.data;
         } catch (error) {
@@ -113,10 +112,39 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    updateChat = async (formData: FormData) => {
+    updateChat = async (formData: {
+        value: string;
+        conversationId: string;
+        update: string;
+        id_chat: string;
+        userId: string;
+        id_other: string;
+    }): Promise<{
+        _id: string;
+        id: string;
+        text: {
+            t: string;
+            icon: string;
+        };
+        delete?: string;
+        update?: string;
+        secondary?: string;
+        length?: number;
+        imageOrVideos: {
+            v: string;
+            type: string;
+            icon: string;
+            tail: string;
+            _id: string;
+        }[];
+        sending?: boolean;
+        seenBy: string[];
+        updatedAt: string;
+        createdAt: string;
+    } | null> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/updateChat', formData);
+            const res = await Axios.post('/messenger/updateChat', { ...formData });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

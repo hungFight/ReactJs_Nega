@@ -38,8 +38,7 @@ const handleFileUpload = async (
                                 console.log(vid.duration);
                                 if (vid.duration <= videoTime) {
                                     fil._id = _id; // _id flow setupload's _id
-
-                                    resolve({ file: fil, pre: { _id, link: url, type: fil.type } });
+                                    resolve({ file: fil, pre: { _id, link: url, type: fil.type.split('/')[0] } });
                                 } else {
                                     dispatch(
                                         setTrueErrorServer('Our length of the video must be less than 16 seconds!'),
@@ -66,19 +65,22 @@ const handleFileUpload = async (
                 try {
                     if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= imageSize) {
                         if (type === 'per') {
-                            upLoadPer.push({ file: file[i], type: file[i].type });
-                            getFilesToPrePer.push({ file: URL.createObjectURL(file[i]), type: file[i].type });
+                            upLoadPer.push({ file: file[i], type: file[i].type.split('/')[0] });
+                            getFilesToPrePer.push({
+                                file: URL.createObjectURL(file[i]),
+                                type: file[i].type.split('/')[0],
+                            });
                         } else {
                             fil._id = _id; // _id flow setupload's _id
                             upLoad.push(fil);
-                            getFilesToPre.push({ _id, link: URL.createObjectURL(fil), type: fil.type });
+                            getFilesToPre.push({ _id, link: URL.createObjectURL(fil), type: fil.type.split('/')[0] });
                         }
                     } else {
                         const compressedFile: any = CommonUtils.compress(file[i]);
                         const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
                         if (sizeImage <= imageSize) {
                             if (type === 'per') {
-                                upLoadPer.push({ file: file[i], type: file[i].type });
+                                upLoadPer.push({ file: file[i], type: file[i].type.split('/')[0] });
                                 getFilesToPrePer.push({
                                     file: URL.createObjectURL(compressedFile),
                                     type: file[i].type,
@@ -89,7 +91,7 @@ const handleFileUpload = async (
                                 getFilesToPre.push({
                                     _id,
                                     link: URL.createObjectURL(compressedFile),
-                                    type: fil.type,
+                                    type: fil.type.split('/')[0],
                                 });
                             }
                         } else {

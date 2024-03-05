@@ -48,7 +48,7 @@ export interface PropsItemRoom {
     length?: number;
     imageOrVideos: {
         type: string;
-        v: string;
+        tail: string;
         icon: string;
         _id: string;
     }[];
@@ -62,7 +62,6 @@ export interface PropsItemRoom {
         id_replied: string;
         text: string;
         imageOrVideos: {
-            v: string;
             type: string;
             icon: string;
             link?: string;
@@ -499,10 +498,10 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 formDataFile.append('files', uploadIn?.up[i], uploadIn?.up[i]._id); // assign file and _id of the file upload
             }
 
-            const urlS: { _id: string; type: string; tail: string }[] = await fileWorkerAPI.addFiles(formDataFile);
+            const urlS = await fileWorkerAPI.addFiles(formDataFile);
             const id_ = uuidv4();
             const images = urlS.map((i) => {
-                return { _id: i._id, v: i._id, icon: '', type: i.type }; // get key for _id
+                return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
             });
             const chat: any = {
                 createdAt: DateTime(),
@@ -513,7 +512,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 id: userId,
                 _id: id_,
             };
-            if (conversation) conversation.room.unshift(chat);
+            conversation.room.unshift(chat);
             const formData = new FormData();
             const id_s = uuidv4();
             const fda: any = {};
@@ -526,7 +525,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
 
             const res = await sendChatAPI.send(fda);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
-            if (data && conversation) {
+            if (data) {
                 rr.current = '';
                 conversation.room = conversation.room.map((r) => {
                     if (r.sending) r.sending = false;

@@ -14,20 +14,20 @@ class fileWorkerAPI {
             return errorHandling(err);
         }
     };
-    addFiles = async (formData: FormData) => {
+    addFiles = async (formData: FormData): Promise<{ id: string; type: string; tail: string }[]> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.post<{ _id: string; type: string; tail: string }[]>(`/addFiles`, formData);
+            const res = await httpFile.post(`/addFiles`, formData);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
             return errorHandling(err);
         }
     };
-    deleteFile = async (id: string) => {
+    deleteFile = async (ids: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.post<{ _id: string; type: string; tail: string }[]>(`/deleteFile`, { id });
+            const res = await httpFile.post<boolean>(`/deleteFile`, { ids });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

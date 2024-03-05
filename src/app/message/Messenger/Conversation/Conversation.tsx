@@ -600,7 +600,6 @@ const Conversation: React.FC<{
               byWhoCreatedAt: string;
               imageOrVideos:
                   | {
-                        v: string;
                         type: string;
                         icon: string;
                         _id: string;

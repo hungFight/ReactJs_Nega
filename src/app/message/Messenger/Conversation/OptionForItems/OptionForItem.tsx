@@ -25,6 +25,7 @@ import fileGridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setRoomChat } from '~/redux/messenger';
+import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 
 const OptionForItem: React.FC<{
     setOptions: React.Dispatch<
@@ -37,7 +38,6 @@ const OptionForItem: React.FC<{
                   who: string;
                   byWhoCreatedAt: string;
                   imageOrVideos: {
-                      v: string;
                       type: string;
                       icon: string;
                       _id: string;
@@ -54,7 +54,6 @@ const OptionForItem: React.FC<{
         who: string;
         byWhoCreatedAt: string;
         imageOrVideos: {
-            v: string;
             type: string;
             icon: string;
             _id: string;
@@ -135,27 +134,29 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        const res = await chatAPI.delChatAll(
-                            conversation._id,
-                            optionsForItem._id,
-                            optionsForItem.id,
-                            id_file,
-                        );
-                        const data: string | null = ServerBusy(res, dispatch);
-                        if (data)
-                            setConversation((pre) => {
-                                if (pre) {
-                                    pre.room = pre.room.map((r) => {
-                                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                            r.delete = 'all';
-                                            r.text.t = '';
-                                            r.imageOrVideos = [];
-                                        }
-                                        return r;
-                                    });
-                                }
-                                return pre;
-                            });
+                        const id_file_deleted = await fileWorkerAPI.deleteFile(id_file);
+                        if (id_file_deleted) {
+                            const res = await chatAPI.delChatAll(
+                                conversation._id,
+                                optionsForItem._id,
+                                optionsForItem.id,
+                            );
+                            const data: string | null = ServerBusy(res, dispatch);
+                            if (data)
+                                setConversation((pre) => {
+                                    if (pre) {
+                                        pre.room = pre.room.map((r) => {
+                                            if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                                r.delete = 'all';
+                                                r.text.t = '';
+                                                r.imageOrVideos = [];
+                                            }
+                                            return r;
+                                        });
+                                    }
+                                    return pre;
+                                });
+                        }
                         setOptions(undefined);
                         setLoading('');
                     }
@@ -238,28 +239,30 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        const res = await chatAPI.delChatAll(
-                            conversation._id,
-                            optionsForItem._id,
-                            optionsForItem.id,
-                            id_file,
-                        );
-                        const data: typeof res = ServerBusy(res, dispatch);
-                        if (data) {
-                            setConversation((pre) => {
-                                if (pre) {
-                                    pre.room = pre.room.map((r) => {
-                                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                            r.delete = 'all';
-                                            r.text.t = '';
-                                            r.imageOrVideos = [];
-                                        }
-                                        return r;
-                                    });
-                                }
-                                return pre;
-                            });
-                            setOptions(undefined);
+                        const id_file_deleted = await fileWorkerAPI.deleteFile(id_file);
+                        if (id_file_deleted) {
+                            const res = await chatAPI.delChatAll(
+                                conversation._id,
+                                optionsForItem._id,
+                                optionsForItem.id,
+                            );
+                            const data: typeof res = ServerBusy(res, dispatch);
+                            if (data) {
+                                setConversation((pre) => {
+                                    if (pre) {
+                                        pre.room = pre.room.map((r) => {
+                                            if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                                r.delete = 'all';
+                                                r.text.t = '';
+                                                r.imageOrVideos = [];
+                                            }
+                                            return r;
+                                        });
+                                    }
+                                    return pre;
+                                });
+                                setOptions(undefined);
+                            }
                         }
                         setLoading('');
                     }
@@ -534,6 +537,8 @@ const OptionForItem: React.FC<{
             e.target.value += '\n';
         }
     };
+    console.log(optionsForItem, 'optionsForItem');
+
     const handleChange = async () => {
         if (
             conversation &&
@@ -543,80 +548,52 @@ const OptionForItem: React.FC<{
         ) {
             setLoading('updating...');
             const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
+            const id_deleted = await fileWorkerAPI.deleteFile(id_files);
+            if (id_deleted) {
+            }
             const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
             const vl = value ? encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`) : '';
             const formData = new FormData();
-            formData.append('value', vl);
-            console.log(fileUpload, 'fileUpload');
-            formData.append('conversationId', conversation._id);
-            formData.append('id_filesDel', JSON.stringify(id_files));
-            formData.append('update', 'true');
-            formData.append('id_chat', optionsForItem._id); // id of the room
-            formData.append('userId', optionsForItem.id); // id of the room
-            formData.append('id_other', conversation.user.id); // id of the room
             for (let i = 0; i < fileUpload?.up.length; i++) {
-                formData.append('files', fileUpload?.up[i], fileUpload?.up[i]._id); // assign file and _id of the file upload
+                formData.append('file', fileUpload?.up[i]); // assign file and _id of the file upload
             }
-            const res = await chatAPI.updateChat(formData);
-            const data: {
-                _id: string;
-                id: string;
-                text: {
-                    t: string;
-                    icon: string;
-                };
-                delete?: string;
-                update?: string;
-                secondary?: string;
-                length?: number;
-                imageOrVideos: {
-                    v: string;
-                    type?: string;
-                    icon: string;
-                    link?: string;
-                    _id: string;
-                }[];
-                sending?: boolean;
-                seenBy: string[];
-                updatedAt: string;
-                createdAt: string;
-            } | null = ServerBusy(res, dispatch);
-
-            if (data) {
-                if (data.text.t)
-                    data.text.t = decrypt(data.text.t, `chat_${data.secondary ? data.secondary : conversation._id}`);
-                const newR: any = await new Promise((resolve, reject) => {
-                    //room
-                    data.imageOrVideos.map(async (i, index) => {
-                        const dataF = await fileGridFS.getFile(i.v, i?.type);
-                        const buffer = ServerBusy(dataF, dispatch);
-                        if (dataF?.message === 'File not found') {
-                            data.imageOrVideos[index].v =
-                                dataF?.type?.search('image/') >= 0 ? "Image doesn't exist" : "Video doesn't exist";
-                        } else {
-                            const base64 = CommonUtils.convertBase64GridFS(buffer);
-                            data.imageOrVideos[index].v = base64;
-                        }
-                    });
-                    resolve(data);
-                });
-                setConversation({
-                    ...conversation,
-                    room: conversation.room.map((r) => {
-                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                            if (fileUpload?.up.length && newR.imageOrVideos) {
-                                r.imageOrVideos = newR.imageOrVideos;
+            const value_added = await fileWorkerAPI.addFiles(formData);
+            const vlAt = {
+                value: vl,
+                conversationId: conversation._id,
+                update: 'true',
+                id_chat: optionsForItem._id,
+                userId: optionsForItem.id,
+                id_other: conversation.user.id,
+                ids: value_added,
+            };
+            if (value_added.length) {
+                const res = await chatAPI.updateChat(vlAt);
+                const data: typeof res = ServerBusy(res, dispatch);
+                if (data) {
+                    if (data.text.t)
+                        data.text.t = decrypt(
+                            data.text.t,
+                            `chat_${data.secondary ? data.secondary : conversation._id}`,
+                        );
+                    setConversation({
+                        ...conversation,
+                        room: conversation.room.map((r) => {
+                            if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                                if (fileUpload?.up.length && data.imageOrVideos) {
+                                    r.imageOrVideos = data.imageOrVideos;
+                                }
+                                r.text.t = data.text.t;
                             }
-                            r.text.t = newR.text.t;
-                        }
-                        return r;
-                    }),
-                });
-                if (!fileUpload?.up.length) setOptions(undefined);
-                setChangeCus(undefined);
-                setLoading('Change successful');
-            } else {
-                setLoading('Change failed');
+                            return r;
+                        }),
+                    });
+                    if (!fileUpload?.up.length) setOptions(undefined);
+                    setChangeCus(undefined);
+                    setLoading('Change successful');
+                } else {
+                    setLoading('Change failed');
+                }
             }
         }
     };
@@ -881,23 +858,10 @@ const OptionForItem: React.FC<{
                         >
                             {changeCus !== 'reply' && fileUpload?.pre.length
                                 ? fileUpload.pre.map((fl) => (
-                                      <FileConversation
-                                          key={fl._id}
-                                          type={fl?.type}
-                                          v={fl.link}
-                                          ERef={ERef}
-                                          del={del}
-                                      />
+                                      <FileConversation key={fl._id} type={fl?.type} id_pre={fl.link} />
                                   ))
                                 : optionsForItem.imageOrVideos.map((fl, index) => (
-                                      <FileConversation
-                                          key={fl._id}
-                                          type={fl?.type}
-                                          v={fl.v}
-                                          icon={fl.icon}
-                                          ERef={ERef}
-                                          del={del}
-                                      />
+                                      <FileConversation key={fl._id} type={fl?.type} id_file={fl._id} icon={fl.icon} />
                                   ))}
                         </Div>
                     </Div>
@@ -975,7 +939,7 @@ const OptionForItem: React.FC<{
                             onClick={(e) => e.stopPropagation()}
                         >
                             {fileUpload?.pre.map((fl) => (
-                                <FileConversation key={fl._id} type={fl?.type} v={fl.link} ERef={ERef} del={del} />
+                                <FileConversation key={fl._id} type={fl?.type} id_pre={fl.link} />
                             ))}
                         </Div>
                     </Div>

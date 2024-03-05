@@ -39,7 +39,6 @@ const ItemsRoom: React.FC<{
                   who: string;
                   byWhoCreatedAt: string;
                   imageOrVideos: {
-                      v: string;
                       type: string;
                       icon: string;
                       _id: string;
@@ -57,7 +56,6 @@ const ItemsRoom: React.FC<{
               who: string;
               byWhoCreatedAt: string;
               imageOrVideos: {
-                  v: string;
                   type: string;
                   icon: string;
                   _id: string;
@@ -186,7 +184,7 @@ const ItemsRoom: React.FC<{
         console.log('end');
         if (alarm.current) clearTimeout(alarm.current);
     };
-    console.log(alarm.current, 'marginTop');
+    console.log(rc, 'marginTop');
 
     return (
         <>
@@ -392,11 +390,7 @@ const ItemsRoom: React.FC<{
                                                                           key={fl._id + '103' + index}
                                                                           type={fl?.type}
                                                                           id_file={fl._id}
-                                                                          v={fl.v}
                                                                           icon={fl.icon}
-                                                                          ERef={ERef}
-                                                                          del={del}
-                                                                          who="you"
                                                                       />
                                                                   );
                                                               }
@@ -445,16 +439,16 @@ const ItemsRoom: React.FC<{
                                       position: relative;
                                       max-width: 100%;
                                       justify-content: right;
+                                      &:hover {
+                                          #showDotAtRoomChat {
+                                              display: flex;
+                                          }
+                                      }
                                       ${rc.imageOrVideos.length < 1 ? 'display: block;' : 'flex-grow: 1;'}
                                       ${rc.text.t &&
                                       `&::after {display: block; content: ''; width: 100%; height: ${
                                           rc.imageOrVideos.length > 0 ? '10%' : '100%'
                                       }; position: absolute; top: 0;left: 0;}`}
-                                &:hover {
-                                          #showDotAtRoomChat {
-                                              display: flex;
-                                          }
-                                      }
                                   `}
                                   onTouchEnd={handleTouchEnd}
                                   onTouchStart={(e) => {
@@ -496,7 +490,7 @@ const ItemsRoom: React.FC<{
                                               onClick={() => {
                                                   setOptions({
                                                       _id: rc._id,
-                                                      id: rc.id,
+                                                      id: rc.id, // id_user
                                                       text: rc.text.t,
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,
@@ -586,11 +580,7 @@ const ItemsRoom: React.FC<{
                                                                   key={fl._id + '11' + index}
                                                                   type={fl?.type}
                                                                   id_file={fl._id}
-                                                                  v={fl.v}
                                                                   icon={fl.icon}
-                                                                  ERef={ERef}
-                                                                  del={del}
-                                                                  who="you"
                                                                   roomImage={roomImage}
                                                                   setRoomImage={setRoomImage}
                                                                   fixed
@@ -600,11 +590,7 @@ const ItemsRoom: React.FC<{
                                                                   key={fl._id + '12' + index}
                                                                   type={fl?.type}
                                                                   id_file={fl._id}
-                                                                  v={fl.v}
                                                                   icon={fl.icon}
-                                                                  ERef={ERef}
-                                                                  del={del}
-                                                                  who="you"
                                                                   roomImage={roomImage}
                                                                   setRoomImage={setRoomImage}
                                                               />
@@ -617,11 +603,7 @@ const ItemsRoom: React.FC<{
                                                           key={fl._id + '10' + index}
                                                           type={fl?.type}
                                                           id_file={fl._id}
-                                                          v={fl.v}
                                                           icon={fl.icon}
-                                                          ERef={ERef}
-                                                          del={del}
-                                                          who="you"
                                                           roomImage={roomImage}
                                                           setRoomImage={setRoomImage}
                                                       />
@@ -866,11 +848,7 @@ const ItemsRoom: React.FC<{
                                                                       key={fl._id + '103' + index}
                                                                       type={fl?.type}
                                                                       id_file={fl._id}
-                                                                      v={fl.v}
                                                                       icon={fl.icon}
-                                                                      ERef={ERef}
-                                                                      del={del}
-                                                                      who="you"
                                                                   />
                                                               );
                                                           }
@@ -1080,29 +1058,21 @@ const ItemsRoom: React.FC<{
                                                       return (
                                                           <>
                                                               <FileConversation
-                                                                  key={fl.v + index + '13' + index}
+                                                                  key={fl._id + index + '13' + index}
                                                                   id_room={rc._id}
                                                                   type={fl?.type}
-                                                                  v={fl.v}
                                                                   id_file={fl._id}
-                                                                  del={del}
                                                                   icon={fl.icon}
-                                                                  ERef={ERef}
-                                                                  who="other"
                                                                   roomImage={roomImage}
                                                                   setRoomImage={setRoomImage}
                                                                   fixed
                                                               />
                                                               <FileConversation
-                                                                  key={fl.v + index + '14' + index}
+                                                                  key={fl._id + index + '14' + index}
                                                                   id_room={rc._id}
                                                                   type={fl?.type}
-                                                                  v={fl.v}
                                                                   id_file={fl._id}
-                                                                  del={del}
                                                                   icon={fl.icon}
-                                                                  ERef={ERef}
-                                                                  who="other"
                                                                   roomImage={roomImage}
                                                                   setRoomImage={setRoomImage}
                                                               />
@@ -1111,15 +1081,11 @@ const ItemsRoom: React.FC<{
                                                   }
                                                   return (
                                                       <FileConversation
-                                                          key={fl.v + index + '15' + index}
+                                                          key={fl._id + index + '15' + index}
                                                           id_room={rc._id}
                                                           type={fl?.type}
-                                                          v={fl.v}
                                                           id_file={fl._id}
-                                                          del={del}
                                                           icon={fl.icon}
-                                                          ERef={ERef}
-                                                          who="other"
                                                           roomImage={roomImage}
                                                           setRoomImage={setRoomImage}
                                                       />

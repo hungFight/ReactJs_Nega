@@ -76,21 +76,6 @@ const PinChat: React.FC<{
                         da.map(async (d, index) => {
                             if (d.text.t)
                                 d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversationId}`);
-                            await Promise.all(
-                                d.imageOrVideos.map(async (f, index2) => {
-                                    const aa = await gridFS.getFile(f.v, f?.type);
-                                    const buffer = ServerBusy(aa, dispatch);
-                                    if (aa?.message === 'File not found') {
-                                        rr[index].imageOrVideos[index2].v =
-                                            aa?.type?.search('image/') >= 0
-                                                ? "Image doesn't exist"
-                                                : "Video doesn't exist";
-                                    } else {
-                                        const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                        rr[index].imageOrVideos[index2].v = base64;
-                                    }
-                                }),
-                            );
                         }),
                     );
                     resolve(rr);
@@ -187,21 +172,6 @@ const PinChat: React.FC<{
                         da.map(async (d, index) => {
                             if (d.text.t)
                                 d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversationId}`);
-                            await Promise.all(
-                                d.imageOrVideos.map(async (f, index2) => {
-                                    const aa = await gridFS.getFile(f.v, f?.type);
-                                    const buffer = ServerBusy(aa, dispatch);
-                                    if (aa?.message === 'File not found') {
-                                        rr[index].imageOrVideos[index2].v =
-                                            aa?.type?.search('image/') >= 0
-                                                ? "Image doesn't exist"
-                                                : "Video doesn't exist";
-                                    } else {
-                                        const base64 = CommonUtils.convertBase64GridFS(buffer);
-                                        rr[index].imageOrVideos[index2].v = base64;
-                                    }
-                                }),
-                            );
                         }),
                     );
                     resolve(rr);

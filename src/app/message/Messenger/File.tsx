@@ -7,13 +7,10 @@ import sendChatAPi from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 
 const FileConversation: React.FC<{
-    del: React.MutableRefObject<HTMLDivElement | null>;
+    id_pre?: string;
     id_room?: string;
     type?: string;
-    v: string;
     icon?: string;
-    ERef?: any;
-    who?: string;
     roomImage?:
         | {
               id_room: string;
@@ -32,7 +29,7 @@ const FileConversation: React.FC<{
     >;
     fixed?: boolean;
     room?: boolean;
-}> = ({ type = '', v, icon, ERef, del, who, setRoomImage, roomImage, id_room, id_file, fixed }) => {
+}> = ({ type = '', setRoomImage, roomImage, id_room, id_file, fixed, id_pre }) => {
     return (
         <Div
             className={`${roomImage?.id_file === id_file && fixed ? 'roomOfChat' : 'roomIf'} `}
@@ -73,39 +70,17 @@ const FileConversation: React.FC<{
                     previewing
                 </DivPos>
             )}
-            {v?.search('exist') >= 0 ? ( // notify info when file doesn't exist
-                <P
-                    z="1.2rem"
-                    css={`
-                        width: fit-content;
-                        margin: 0;
-                        padding: 2px 12px 4px;
-                        border-radius: 7px;
-                        border-top-left-radius: 13px;
-                        border-bottom-left-radius: 13px;
-                        display: flex;
-                        align-items: center;
-                        background-color: #1d1c1c;
-                        border: 1px solid #4e4d4b;
-                        svg {
-                            margin-right: 3px;
-                        }
-                        div {
-                            z-index: 1;
-                        }
-                    `}
-                >
-                    <ImageI />
-                    {v}
-                </P>
-            ) : type === 'image' ? (
+            {type === 'image' ? (
                 <Img
                     id="roomImageChat"
-                    src={`${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${id_file}`}
+                    src={id_pre ? id_pre : `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${id_file}`}
                     radius="5px"
                 />
             ) : (
-                <Player src={v} radius="5px" />
+                <Player
+                    src={id_pre ? id_pre : `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${id_file}`}
+                    radius="5px"
+                />
             )}
         </Div>
     );
