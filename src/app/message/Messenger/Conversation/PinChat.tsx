@@ -34,6 +34,7 @@ const PinChat: React.FC<{
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
     setItemPin: React.Dispatch<React.SetStateAction<PropsPinC | undefined>>;
     one: React.MutableRefObject<boolean>;
+    itemPinData: React.MutableRefObject<PropsItemRoom[]>;
 }> = ({
     conversationId,
     pins,
@@ -47,6 +48,7 @@ const PinChat: React.FC<{
     setConversation,
     setItemPin,
     one,
+    itemPinData,
 }) => {
     const [more, setMore] = useState<boolean>(false);
     const [otherPin, setOtherPin] = useState<{
@@ -80,7 +82,7 @@ const PinChat: React.FC<{
                     );
                     resolve(rr);
                 });
-
+                itemPinData.current = newR;
                 return newR;
             } catch (error) {
                 console.log(error);
@@ -102,6 +104,7 @@ const PinChat: React.FC<{
                     // Thêm newData vào mảng dữ liệu cũ (oldData)
                     console.log(oldData, 'oldData', [newData, ...(oldData ?? [])]);
                     if (itemPin) setItemPin(undefined);
+                    itemPinData.current = [newData, ...(oldData ?? [])];
                     return [newData, ...(oldData ?? [])]; //PropsRooms[]
                 });
 
@@ -132,6 +135,7 @@ const PinChat: React.FC<{
                         if (pre) return { ...pre, pins: pre.pins.filter((p) => p._id !== xd.pinId) };
                         return pre;
                     });
+                    itemPinData.current = oldData.filter((od: { _id: string }) => od._id !== xd.roomId);
                     return oldData.filter((od: { _id: string }) => od._id !== xd.roomId); //PropsRooms[]
                 });
 

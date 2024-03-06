@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from '~/utils/Cookies';
-
-import { Buffer } from 'buffer';
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 // Import Swiper styles
 import 'swiper/css';

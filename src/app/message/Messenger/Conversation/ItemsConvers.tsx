@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PropsChat, PropsItemRoom, PropsPinC } from './LogicConver';
+import { PropsChat, PropsImageOrVideos, PropsItemRoom, PropsPinC } from './LogicConver';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -38,11 +38,8 @@ const ItemsRoom: React.FC<{
                   secondary?: string | undefined;
                   who: string;
                   byWhoCreatedAt: string;
-                  imageOrVideos: {
-                      type: string;
-                      icon: string;
-                      _id: string;
-                  }[];
+                  id_pin?: string;
+                  imageOrVideos: PropsImageOrVideos[];
               }
             | undefined
         >
@@ -55,11 +52,7 @@ const ItemsRoom: React.FC<{
               secondary?: string | undefined;
               who: string;
               byWhoCreatedAt: string;
-              imageOrVideos: {
-                  type: string;
-                  icon: string;
-                  _id: string;
-              }[];
+              imageOrVideos: PropsImageOrVideos[];
           }
         | undefined;
     dataFirst: PropsUser;
@@ -496,6 +489,7 @@ const ItemsRoom: React.FC<{
                                                       imageOrVideos: rc.imageOrVideos,
                                                       who: 'you',
                                                       byWhoCreatedAt: rc.createdAt,
+                                                      id_pin: rc._id,
                                                   });
                                               }}
                                           >
@@ -526,15 +520,19 @@ const ItemsRoom: React.FC<{
                                                   text-wrap: wrap;
                                                   width: max-content;
                                                   word-wrap: break-word;
+                                                  display: -webkit-box;
+                                                  -webkit-line-clamp: 1;
+                                                  -webkit-box-orient: vertical;
+                                                  overflow: hidden;
                                                   max-width: 100%;
-                                                  background-color: ${rc?.delete === 'all'
-                                                      ? '#1d1c1c; display: flex;'
-                                                      : '#1a383b'};
+                                                  background-color: ${rc?.delete === 'all' ? '#1d1c1c;' : '#1a383b'};
                                                   border: 1px solid #4e4d4b;
                                                   svg {
                                                       margin-right: 3px;
+                                                      position: relative;
+                                                      top: 2px;
                                                   }
-                                                  ${rc.update && 'border: 1px solid #889a21c7;'}
+                                                  ${rc.update === dataFirst.id && 'border: 1px solid #889a21c7;'}
                                                   @media(min-width: 768px) {
                                                       font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
                                                   }
@@ -565,8 +563,8 @@ const ItemsRoom: React.FC<{
                                                           object-fit: contain;
                                                       }
                                                       border-radius: 5px;
-                                                      ${rc.update && 'border: 1px solid #889a21c7;'}
                                                   }
+                                                  ${rc.update === dataFirst.id && 'border: 1px solid #889a21c7;'}
                                                   ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                               `}
                                               onClick={(e) => e.stopPropagation()}
@@ -725,6 +723,7 @@ const ItemsRoom: React.FC<{
                               position: relative;
                               z-index: ${roomImage?.id_room === rc._id ? 2 : 6};
                               margin-top: 2px;
+
                               .chatTime {
                                   .dateTime {
                                       display: block;
@@ -815,6 +814,7 @@ const ItemsRoom: React.FC<{
                                                       text-wrap: wrap;
                                                       word-wrap: break-word;
                                                       max-width: 212px;
+
                                                       @media (min-width: 768px) {
                                                           font-size: 1.2rem;
                                                       }
@@ -1008,20 +1008,26 @@ const ItemsRoom: React.FC<{
                                                   text-wrap: wrap;
                                                   word-wrap: break-word;
                                                   max-width: 100%;
+                                                  display: -webkit-box;
+                                                  -webkit-line-clamp: 1;
+                                                  -webkit-box-orient: vertical;
+                                                  overflow: hidden;
                                                   border-bottom-right-radius: 13px;
+                                                  @media (min-width: 768px) {
+                                                      font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
+                                                  }
                                                   background-color: ${rc?.delete === 'all'
-                                                      ? '#1d1c1c; display: flex;'
+                                                      ? '#1d1c1c;'
                                                       : background
                                                       ? '#272727bd'
                                                       : '#393838bd'};
                                                   border: 1px solid #4e4d4b;
                                                   svg {
                                                       margin-right: 3px;
+                                                      position: relative;
+                                                      top: 2px;
                                                   }
-                                                  ${rc.update &&
-                                                  'border: 1px solid #889a21c7;'}@media(min-width: 768px) {
-                                                      font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
-                                                  }
+                                                  ${rc.update === user.id ? 'border: 1px solid #889a21c7;' : ''}
                                               `}
                                           >
                                               {rc.text.t}
@@ -1049,7 +1055,7 @@ const ItemsRoom: React.FC<{
                                                       }
                                                   }
                                                   border-radius: 5px;
-                                                  ${rc.update && 'border: 1px solid #889a21c7;'}
+                                                  ${rc.update === user.id && 'border: 1px solid #889a21c7;'}
                                                   ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                               `}
                                           >

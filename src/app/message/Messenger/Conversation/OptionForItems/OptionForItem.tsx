@@ -12,7 +12,7 @@ import {
 } from '~/assets/Icons/Icons';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../../File';
-import { PropsChat, PropsPinC } from '../LogicConver';
+import { PropsChat, PropsImageOrVideos, PropsItemRoom, PropsPinC } from '../LogicConver';
 import Languages from '~/reUsingComponents/languages';
 import chatAPI, { PropsRoomChat } from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
@@ -26,42 +26,25 @@ import CommonUtils from '~/utils/CommonUtils';
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setRoomChat } from '~/redux/messenger';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
-
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { queryClient } from 'src';
+export interface PropsOptionForItem {
+    _id: string;
+    id: string;
+    text: string;
+    secondary?: string | undefined;
+    who: string;
+    byWhoCreatedAt: string;
+    id_pin?: string;
+    imageOrVideos: PropsImageOrVideos[];
+}
 const OptionForItem: React.FC<{
-    setOptions: React.Dispatch<
-        React.SetStateAction<
-            | {
-                  _id: string;
-                  id: string;
-                  text: string;
-                  secondary?: string | undefined;
-                  who: string;
-                  byWhoCreatedAt: string;
-                  imageOrVideos: {
-                      type: string;
-                      icon: string;
-                      _id: string;
-                  }[];
-              }
-            | undefined
-        >
-    >;
-    optionsForItem: {
-        _id: string;
-        id: string;
-        text: string;
-        secondary?: string | undefined;
-        who: string;
-        byWhoCreatedAt: string;
-        imageOrVideos: {
-            type: string;
-            icon: string;
-            _id: string;
-        }[];
-    };
+    setOptions: React.Dispatch<React.SetStateAction<PropsOptionForItem | undefined>>;
+    optionsForItem: PropsOptionForItem;
+    itemPin: PropsPinC | undefined;
     ERef: React.MutableRefObject<any>;
     del: React.MutableRefObject<HTMLDivElement | null>;
-    conversation: PropsChat | undefined;
+    conversation: PropsChat;
     colorText: string;
     setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
     setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
@@ -82,6 +65,7 @@ const OptionForItem: React.FC<{
               id_file: string;
           }
         | undefined;
+    itemPinData: React.MutableRefObject<PropsItemRoom[]>;
 }> = ({
     setOptions,
     optionsForItem,
@@ -95,6 +79,8 @@ const OptionForItem: React.FC<{
     id_you,
     setRoomImage,
     roomImage,
+    itemPin,
+    itemPinData,
 }) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
@@ -104,6 +90,42 @@ const OptionForItem: React.FC<{
     const [changeCus, setChangeCus] = useState<string | undefined>(undefined);
     const [replyText, setReplyText] = useState<string>('');
     const dispatch = useDispatch();
+    const upPin = useMutation(
+        // update data in useQuery
+        async (newData: { file: PropsImageOrVideos[] | undefined; text: string }) => {
+            return newData;
+        },
+        {
+            onMutate: (newData) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = itemPinData.current ?? [];
+                // Cập nhật cache tạm thời với dữ liệu mới
+                queryClient.setQueryData(['Pins chat', conversation._id], (oldData: any) => {
+                    //PropsItemRoom[]
+                    if (optionsForItem.id_pin) {
+                        oldData.map((t: { _id: string; imageOrVideos: PropsImageOrVideos[]; text: { t: string } }) => {
+                            if (t._id === optionsForItem._id) {
+                                if (newData.file) t.imageOrVideos = newData.file;
+                                if (newData.text) t.text.t = newData.text;
+                            }
+                            return t;
+                        });
+                    }
+                    return oldData; //PropsRooms[]
+                });
+
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['Pins chat', conversation._id], context?.previousData);
+            },
+            onSettled: () => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                queryClient.invalidateQueries(['Pins chat', conversation._id]);
+            },
+        },
+    );
     const optionsForItemDataYou: {
         [en: string]: {
             id: string;
@@ -548,16 +570,13 @@ const OptionForItem: React.FC<{
         ) {
             setLoading('updating...');
             const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
-            const id_deleted = await fileWorkerAPI.deleteFile(id_files);
-            if (id_deleted) {
-            }
             const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
             const vl = value ? encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`) : '';
             const formData = new FormData();
             for (let i = 0; i < fileUpload?.up.length; i++) {
                 formData.append('file', fileUpload?.up[i]); // assign file and _id of the file upload
             }
-            const value_added = await fileWorkerAPI.addFiles(formData);
+            const value_added = fileUpload?.up.length ? await fileWorkerAPI.addFiles(formData) : [];
             const vlAt = {
                 value: vl,
                 conversationId: conversation._id,
@@ -566,34 +585,34 @@ const OptionForItem: React.FC<{
                 userId: optionsForItem.id,
                 id_other: conversation.user.id,
                 ids: value_added,
+                old_ids: id_files,
             };
-            if (value_added.length) {
-                const res = await chatAPI.updateChat(vlAt);
-                const data: typeof res = ServerBusy(res, dispatch);
-                if (data) {
-                    if (data.text.t)
-                        data.text.t = decrypt(
-                            data.text.t,
-                            `chat_${data.secondary ? data.secondary : conversation._id}`,
-                        );
-                    setConversation({
-                        ...conversation,
-                        room: conversation.room.map((r) => {
-                            if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                if (fileUpload?.up.length && data.imageOrVideos) {
-                                    r.imageOrVideos = data.imageOrVideos;
-                                }
-                                r.text.t = data.text.t;
+            const res = await chatAPI.updateChat(vlAt);
+            const data: typeof res = ServerBusy(res, dispatch);
+            if (data) {
+                if (data.text.t)
+                    data.text.t = decrypt(data.text.t, `chat_${data.secondary ? data.secondary : conversation._id}`);
+                setConversation({
+                    ...conversation,
+                    room: conversation.room.map((r) => {
+                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                            if (fileUpload?.up.length && data.imageOrVideos) {
+                                r.imageOrVideos = data.imageOrVideos;
                             }
-                            return r;
-                        }),
-                    });
-                    if (!fileUpload?.up.length) setOptions(undefined);
-                    setChangeCus(undefined);
-                    setLoading('Change successful');
-                } else {
-                    setLoading('Change failed');
-                }
+                            r.text.t = data.text.t;
+                            upPin.mutate({
+                                file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
+                                text: data.text.t ? data.text.t : '',
+                            });
+                        }
+                        return r;
+                    }),
+                });
+                setLoading('Change successful');
+                setChangeCus(undefined);
+                setOptions(undefined);
+            } else {
+                setLoading('Change failed');
             }
         }
     };

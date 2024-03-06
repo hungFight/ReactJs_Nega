@@ -131,6 +131,8 @@ const ItemPin: React.FC<{
             : r.id === user.id
             ? user.gender
             : 0;
+    console.log(whoAvatar, dataFirst, 'dataFirst');
+
     return (
         <Div
             ref={elem}

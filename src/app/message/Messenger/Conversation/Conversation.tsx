@@ -37,7 +37,7 @@ import { setDelIds } from '~/redux/reload';
 import sendChatAPi from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { useSelector } from 'react-redux';
-import OptionForItem from './OptionForItems/OptionForItem';
+import OptionForItem, { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/nextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessenger';
@@ -159,13 +159,15 @@ const Conversation: React.FC<{
         choicePin,
         setChoicePin,
         targetChild,
+        itemPin,
+        setItemPin,
+        itemPinData,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
     if (conversation?._id) {
         if (!mm.current.some((m) => m.id === conversation?._id && index === m.index)) {
             mm.current.push({ id: conversation._id, index });
         }
     }
-    const [itemPin, setItemPin] = useState<PropsPinC>();
     const [moves, setMoves] = useState<string[]>([]);
     const [mouse, setMouse] = useState<string[]>([]);
     const one = useRef<boolean>(true);
@@ -585,28 +587,12 @@ const Conversation: React.FC<{
     const handleOnKeyDown = (e: any) => {
         console.log(e.key);
         if (e.key === 'Enter') e.preventDefault();
-        if (e.key === 'Shift') {
+        if (e.key === 'Alt') {
             e.preventDefault();
             e.target.value += '\n';
         }
     };
-    const [optionsForItem, setOptions] = useState<
-        | {
-              _id: string;
-              id: string;
-              text: string;
-              secondary?: string;
-              who: string;
-              byWhoCreatedAt: string;
-              imageOrVideos:
-                  | {
-                        type: string;
-                        icon: string;
-                        _id: string;
-                    }[];
-          }
-        | undefined
-    >(undefined);
+    const [optionsForItem, setOptions] = useState<PropsOptionForItem | undefined>(undefined);
     const [changeText, setChangeText] = useState<ReactElement>(
         <Div>
             <Textarea placeholder="Change text" />
@@ -676,9 +662,10 @@ const Conversation: React.FC<{
                         <LoadingI />
                     </DivLoading>
                 )}
-                {optionsForItem && (
+                {conversation && optionsForItem && (
                     <OptionForItem
                         id_you={dataFirst.id}
+                        itemPin={itemPin}
                         setItemPin={setItemPin}
                         setOptions={setOptions}
                         ERef={ERef}
@@ -690,6 +677,7 @@ const Conversation: React.FC<{
                         setEmoji={setEmoji}
                         roomImage={roomImage}
                         setRoomImage={setRoomImage}
+                        itemPinData={itemPinData}
                     />
                 )}
                 <Div
@@ -770,7 +758,7 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {conversation?.pins?.length ? (
+                {conversation && conversation?.pins?.length ? (
                     <PinChat
                         one={one}
                         itemPin={itemPin}
@@ -784,6 +772,7 @@ const Conversation: React.FC<{
                         room={conversation.room}
                         name={conversation.user.fullName}
                         setConversation={setConversation}
+                        itemPinData={itemPinData}
                     />
                 ) : (
                     ''

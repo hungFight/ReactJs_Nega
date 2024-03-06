@@ -1,4 +1,9 @@
-import { PropsChat, PropsConversationCustoms, PropsRoom } from '~/Message/Messenger/Conversation/LogicConver';
+import {
+    PropsChat,
+    PropsConversationCustoms,
+    PropsImageOrVideos,
+    PropsRoom,
+} from '~/Message/Messenger/Conversation/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
@@ -130,13 +135,7 @@ class Messenger {
         update?: string;
         secondary?: string;
         length?: number;
-        imageOrVideos: {
-            v: string;
-            type: string;
-            icon: string;
-            tail: string;
-            _id: string;
-        }[];
+        imageOrVideos: PropsImageOrVideos[];
         sending?: boolean;
         seenBy: string[];
         updatedAt: string;

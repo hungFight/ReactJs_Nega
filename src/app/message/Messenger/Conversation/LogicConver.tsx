@@ -16,7 +16,7 @@ import { PropsReloadRD } from '~/redux/reload';
 import Languages from '~/reUsingComponents/languages';
 import ServerBusy from '~/utils/ServerBusy';
 import moment from 'moment';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import userAPI from '~/restAPI/userAPI';
 import { PropsBgRD } from '~/redux/background';
 import handleFileUpload from '~/utils/handleFileUpload';
@@ -25,6 +25,7 @@ import { setRoomChat } from '~/redux/messenger';
 import { PropsId_chats } from 'src/App';
 import gridFS from '~/restAPI/gridFS';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
+import { queryClient } from 'src';
 export interface PropsPinC {
     chatId: string;
     userId: string;
@@ -34,6 +35,13 @@ export interface PropsPinC {
 }
 export interface PropsRooms {
     room: PropsItemRoom[];
+}
+export interface PropsImageOrVideos {
+    type: string;
+    tail: string;
+    link?: string;
+    icon: string;
+    _id: string;
 }
 export interface PropsItemRoom {
     _id: string;
@@ -46,12 +54,7 @@ export interface PropsItemRoom {
     update?: string;
     secondary?: string;
     length?: number;
-    imageOrVideos: {
-        type: string;
-        tail: string;
-        icon: string;
-        _id: string;
-    }[];
+    imageOrVideos: PropsImageOrVideos[];
     sending?: boolean;
     seenBy: string[];
     updatedAt: string;
@@ -61,12 +64,7 @@ export interface PropsItemRoom {
         id_reply: string;
         id_replied: string;
         text: string;
-        imageOrVideos: {
-            type: string;
-            icon: string;
-            link?: string;
-            _id: string;
-        }[];
+        imageOrVideos: PropsImageOrVideos[];
     };
 }
 export interface PropsRoom {
@@ -126,6 +124,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const rr = useRef<string>('');
     // pin page
     const [choicePin, setChoicePin] = useState<string>('');
+    const [itemPin, setItemPin] = useState<PropsPinC>();
+    const itemPinData = useRef<PropsItemRoom[]>([]);
 
     const [conversation, setConversation] = useState<PropsChat>();
     const [dataSent, setDataSent] = useState<PropsItemRoom | undefined>();
@@ -153,7 +153,48 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         },
         enabled: conversation?.user.id ? true : false,
     });
-
+    const upPin = useMutation(
+        // update data in useQuery
+        async (newData: { _id: string; chatId: string; data: { file: PropsImageOrVideos[]; text: string } }) => {
+            return newData;
+        },
+        {
+            onMutate: (newData) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = itemPinData.current ?? [];
+                // Cập nhật cache tạm thời với dữ liệu mới
+                queryClient.setQueryData(['Pins chat', newData._id], (oldData: any) => {
+                    //PropsItemRoom[]
+                    console.log(itemPinData.current, 'itemPind', newData, oldData);
+                    oldData.map((t: { _id: string; imageOrVideos: PropsImageOrVideos[]; text: { t: string } }) => {
+                        if (t._id === newData.chatId) {
+                            if (newData.data.file) t.imageOrVideos = newData.data.file;
+                            if (newData.data.text)
+                                t.text.t = decrypt(
+                                    newData.data.text,
+                                    `chat_${
+                                        conversation?.room.filter((r) => r._id === t._id)[0]?.secondary
+                                            ? conversation?.room.filter((r) => r._id === t._id)[0]?.secondary
+                                            : conversation?._id
+                                    }`,
+                                );
+                        }
+                        return t;
+                    });
+                    return oldData; //PropsRooms[]
+                });
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['Pins chat', newData._id], context?.previousData);
+            },
+            onSettled: (newData) => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                if (newData) queryClient.invalidateQueries(['Pins chat', newData._id]);
+            },
+        },
+    );
     //get image
     const fetchChat = async (moreChat: boolean = false) => {
         if (!emptyRef.current && !loading) {
@@ -243,15 +284,15 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     }phrase_chatRoom`;
     useEffect(() => {
         console.log('eeeee');
-        if (code) {
-            socket.on(`conversation_deleteBG_room_${conversation?._id}`, () => {
+        if (code && conversation) {
+            socket.on(`conversation_deleteBG_room_${conversation._id}`, () => {
                 setConversation((pre) => {
                     if (pre) return { ...pre, background: undefined };
                     return pre;
                 });
             });
             socket.on(
-                `conversation_changeBG_room_${conversation?._id}`,
+                `conversation_changeBG_room_${conversation._id}`,
                 async (dataBG: { type: string; v: string; _id: string; userId: string; latestChatId: string }) => {
                     if (dataBG && dataBG.userId !== id_you) {
                         setConversation((pre) => {
@@ -263,7 +304,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             );
 
             socket.on(
-                `Conversation_chat_deleteAll_${conversation?._id}`,
+                `Conversation_chat_deleteAll_${conversation._id}`,
                 (deleteData: { chatId: string; userId: string; updatedAt: string }) => {
                     if (deleteData && deleteData.userId !== id_you) {
                         setConversation((pre) => {
@@ -286,10 +327,14 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 },
             );
             socket.on(
-                `Conversation_chat_update_${conversation?._id}`,
+                `Conversation_chat_update_${conversation._id}`,
                 async (updateData: { chatId: string; data: PropsItemRoom; userId: string }) => {
                     console.log(updateData, 'updateData');
-
+                    upPin.mutate({
+                        _id: conversation._id,
+                        chatId: updateData.chatId,
+                        data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
+                    });
                     if (updateData.userId !== id_you && conversation) {
                         const newR: PropsItemRoom = await new Promise(async (resolve, reject) => {
                             const d = updateData.data;
@@ -297,8 +342,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);
                             resolve(d);
                         });
-                        console.log(newR, 'updateData newR');
-
                         setConversation((pre) => {
                             if (pre)
                                 return {
@@ -316,12 +359,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 },
             );
 
-            socket.on(`phrase_chatRoom_response_${conversation?._id}_${id_you}`, (res) => {
+            socket.on(`phrase_chatRoom_response_${conversation._id}_${id_you}`, (res) => {
                 console.log('in_roomChat_personal_receive_and_saw con');
                 setWch(res);
             });
             socket.on(
-                `user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`,
+                `user_${conversation?.user.id}_in_roomChat_${conversation._id}_personal_receive`,
                 (res: { length: number; id: string }) => {
                     setWritingBy(res);
                 },
@@ -337,13 +380,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     idChat: data.room._id,
                 });
                 const newD: any = await new Promise(async (resolve, reject) => {
-                    // room
-                    // if (data.room.text.t)
-                    //     data.room.text.t = decrypt(
-                    //         data.room.text.t,
-                    //         `chat_${data.room.secondary ? data.room.secondary : data.room._id}`,
-                    //     );
-
                     if (data.room?.reply) {
                         if (data.room.reply.text) {
                             data.room.reply.text = decrypt(
@@ -356,13 +392,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 });
                 if (newD.text?.t) {
                     if (newD?.secondary) {
-                        const bytes = CryptoJS.AES.decrypt(newD.text?.t, `chat_${newD.secondary}`);
-                        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+                        const decryptedData = decrypt(newD.text?.t, `chat_${newD.secondary}`);
                         newD.text.t = decryptedData;
                     } else {
-                        const bytes = CryptoJS.AES.decrypt(newD.text?.t, `chat_${conversation?._id}`);
-                        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-                        newD.text.t = decryptedData;
+                        const bytdecryptedDatas = decrypt(newD.text?.t, `chat_${conversation?._id}`);
+                        newD.text.t = bytdecryptedDatas;
                     }
                 }
                 data.users.push(data.user);
@@ -498,7 +532,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 formDataFile.append('files', uploadIn?.up[i], uploadIn?.up[i]._id); // assign file and _id of the file upload
             }
 
-            const urlS = await fileWorkerAPI.addFiles(formDataFile);
+            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(formDataFile) : [];
             const id_ = uuidv4();
             const images = urlS.map((i) => {
                 return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
@@ -521,7 +555,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             if (id_) fda.id_room = id_; // id of the room
             if (id_s && !conversation._id) fda.id_s = id_s; // first it have no _id of the conversationId then id_s is replaced
             if (id_other) fda.id_others = id_other;
-            if (urlS.length) fda.valueInfoFile = urlS;
+            fda.valueInfoFile = urlS;
 
             const res = await sendChatAPI.send(fda);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
@@ -584,5 +618,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         choicePin,
         setChoicePin,
         targetChild,
+        itemPin,
+        setItemPin,
+        itemPinData,
     };
 }
