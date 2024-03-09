@@ -259,7 +259,7 @@ const ItemsRoom: React.FC<{
                                       .dateTime {
                                           top: unset;
                                           bottom: 1px;
-                                          left: -31px;
+                                          left: 0px;
                                       }
                                       .dateTimeN {
                                           bottom: -10px;
@@ -337,14 +337,10 @@ const ItemsRoom: React.FC<{
                                           </Div>
                                           <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
                                               {rc.reply.text && (
-                                                  <P
-                                                      z="1.3rem"
+                                                  <Div
                                                       css={`
+                                                          font-size: 1.3rem;
                                                           padding: 2px;
-                                                          display: -webkit-box;
-                                                          -webkit-line-clamp: 2;
-                                                          -webkit-box-orient: vertical;
-                                                          overflow: hidden;
                                                           width: fit-content;
                                                           white-space: pre;
                                                           text-wrap: wrap;
@@ -353,10 +349,12 @@ const ItemsRoom: React.FC<{
                                                           @media (min-width: 768px) {
                                                               font-size: 0.2rem;
                                                           }
+                                                          ${rc.delete
+                                                              ? 'display: -webkit-box;overflow: hidden;-webkit-line-clamp: 2;-webkit-box-orient: vertical;'
+                                                              : ''}
                                                       `}
-                                                  >
-                                                      {rc.reply.text}
-                                                  </P>
+                                                      dangerouslySetInnerHTML={{ __html: rc.reply.text }}
+                                                  ></Div>
                                               )}
                                               {rc?.reply?.imageOrVideos.length > 0 && (
                                                   <Div
@@ -507,11 +505,11 @@ const ItemsRoom: React.FC<{
                                               handleWatchMore(elWatChTime.current);
                                           }}
                                       >
-                                          <P
-                                              z={rc?.delete === 'all' ? '1.4rem' : '1.6rem'}
+                                          <Div
+                                              display="block"
                                               css={`
                                                   margin: 0;
-                                                  padding: 2px 12px 4px;
+                                                  padding: 4px 12px;
                                                   border-radius: 7px;
                                                   white-space: pre;
                                                   border-top-left-radius: 13px;
@@ -520,28 +518,27 @@ const ItemsRoom: React.FC<{
                                                   text-wrap: wrap;
                                                   width: max-content;
                                                   word-wrap: break-word;
-                                                  display: -webkit-box;
-                                                  -webkit-line-clamp: 1;
-                                                  -webkit-box-orient: vertical;
-                                                  overflow: hidden;
                                                   max-width: 100%;
                                                   background-color: ${rc?.delete === 'all' ? '#1d1c1c;' : '#1a383b'};
                                                   border: 1px solid #4e4d4b;
+                                                  font-size: ${rc?.delete === 'all' ? '1.4rem' : '1.6rem'};
                                                   svg {
                                                       margin-right: 3px;
                                                       position: relative;
                                                       top: 2px;
                                                   }
-                                                  ${rc.update === dataFirst.id && 'border: 1px solid #889a21c7;'}
+                                                  ${rc.update === dataFirst.id ? 'border: 1px solid #889a21c7;' : ''}
                                                   @media(min-width: 768px) {
                                                       font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
                                                   }
+                                                  ${rc.delete
+                                                      ? '  overflow: hidden; display: -webkit-box;-webkit-line-clamp: 1;-webkit-box-orient: vertical;'
+                                                      : ''}
                                               `}
-                                          >
-                                              {rc.text.t}
-                                              {rc?.delete === 'all' && <GarbageI />}
-                                              {rc?.delete === 'all' && "You've deleted"}
-                                          </P>
+                                              dangerouslySetInnerHTML={{
+                                                  __html: rc.text.t + `${rc?.delete === 'all' ? "You've deleted" : ''}`,
+                                              }}
+                                          ></Div>
                                       </Div>
                                   )}
                                   {rc.imageOrVideos.length > 0 && (
@@ -801,14 +798,10 @@ const ItemsRoom: React.FC<{
                                       </Div>
                                       <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
                                           {rc.reply.text && (
-                                              <P
-                                                  z="1.4rem"
+                                              <Div
                                                   css={`
+                                                      font-size: 1.4rem;
                                                       padding: 2px;
-                                                      display: -webkit-box;
-                                                      -webkit-line-clamp: 2;
-                                                      -webkit-box-orient: vertical;
-                                                      overflow: hidden;
                                                       width: fit-content;
                                                       white-space: pre;
                                                       text-wrap: wrap;
@@ -818,10 +811,12 @@ const ItemsRoom: React.FC<{
                                                       @media (min-width: 768px) {
                                                           font-size: 1.2rem;
                                                       }
+                                                      ${rc.delete === 'all'
+                                                          ? 'display: -webkit-box; overflow: hidden;-webkit-line-clamp: 2;-webkit-box-orient: vertical;'
+                                                          : ''}
                                                   `}
-                                              >
-                                                  {rc.reply.text}
-                                              </P>
+                                                  dangerouslySetInnerHTML={{ __html: rc.reply.text }}
+                                              ></Div>
                                           )}
                                           {rc?.reply?.imageOrVideos.length > 0 && (
                                               <Div
@@ -996,11 +991,10 @@ const ItemsRoom: React.FC<{
                                   )}
                                   {(rc.text.t || rc?.delete === 'all') && (
                                       <Div width="100%" css="justify-content: start; z-index: 11; position: relative;">
-                                          <P
-                                              z={rc?.delete === 'all' ? '1.4rem' : '1.6rem'}
+                                          <Div
                                               css={`
                                                   width: fit-content;
-                                                  padding: 2px 12px 4px;
+                                                  padding: 4px 12px;
                                                   border-radius: 7px;
                                                   border-top-right-radius: 13px;
                                                   align-items: center;
@@ -1008,10 +1002,10 @@ const ItemsRoom: React.FC<{
                                                   text-wrap: wrap;
                                                   word-wrap: break-word;
                                                   max-width: 100%;
-                                                  display: -webkit-box;
-                                                  -webkit-line-clamp: 1;
-                                                  -webkit-box-orient: vertical;
-                                                  overflow: hidden;
+                                                  font-size: ${rc?.delete === 'all' ? '1.4rem' : '1.6rem'};
+                                                  ${rc.delete === 'all'
+                                                      ? ' display: -webkit-box; -webkit-line-clamp: 1;-webkit-box-orient: vertical;overflow: hidden;'
+                                                      : ''}
                                                   border-bottom-right-radius: 13px;
                                                   @media (min-width: 768px) {
                                                       font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
@@ -1029,11 +1023,12 @@ const ItemsRoom: React.FC<{
                                                   }
                                                   ${rc.update === user.id ? 'border: 1px solid #889a21c7;' : ''}
                                               `}
-                                          >
-                                              {rc.text.t}
-                                              {rc?.delete === 'all' && <GarbageI />}
-                                              {rc?.delete === 'all' && `${user.fullName} has deleted`}
-                                          </P>
+                                              dangerouslySetInnerHTML={{
+                                                  __html: `${rc.text.t} ${
+                                                      rc?.delete === 'all' ? `${user.fullName} has deleted` : ''
+                                                  }`,
+                                              }}
+                                          ></Div>
                                       </Div>
                                   )}
                                   {rc.imageOrVideos.length > 0 && (

@@ -96,6 +96,51 @@ export interface PropsConversationCustoms {
     }[];
     createdAt: string;
 }
+export function regexCus(val: string): string {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const hashTagRegex = /#([^]+?)\s*#@/g;
+    const hashs: string[] = val.match(hashTagRegex) ?? [];
+    val = val.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (val) {
+        function getMatches(regex: RegExp, input: string) {
+            let match;
+            const texts = [];
+            while ((match = regex.exec(input)) !== null) {
+                texts.push({
+                    text: `<a href='${match[0]}' target='_blank' class='regexCus' style='color: #68b1f1;text-decoration: underline;'>${match[0]}</a>`,
+                    start: match.index,
+                    end: match.index + match[0].length,
+                });
+            }
+            let one = false;
+            texts.map((t) => {
+                if (one) {
+                    const ff = /(?<!<a[^>]*>)(https?:\/\/[^\s<]+)(?![^<]*<\/a>)/g.exec(val);
+                    if (ff)
+                        val =
+                            val.substring(0, ff.index) +
+                            `<a href='${ff[0]}' target='_blank' class='regexCus' style='color: #68b1f1;text-decoration: underline;'>${ff[0]}</a>` +
+                            val.substring(ff.index + ff[0].length);
+                } else {
+                    val = val.substring(0, t.start) + t.text + val.substring(t.end);
+                    console.log('ffs val', t, val);
+                    one = true;
+                }
+            });
+        }
+        getMatches(urlRegex, val);
+        hashs.map((u) => {
+            const protoType = u.split(/#|#@/);
+            val = val.replace(
+                u,
+                `<a href='/sn/hashTags/${
+                    '#' + protoType[1]
+                }' class='regexCus' style="color: #68b1f1;text-decoration: underline;">${'#' + protoType[1]}</a>`,
+            );
+        });
+    }
+    return val;
+}
 export type PropsChat = PropsConversationCustoms & PropsRooms;
 export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
     const dispatch = useDispatch();
@@ -214,6 +259,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                             rr.text.t,
                             `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
                         );
+                        modifiedData.room[index1].text.t = regexCus(modifiedData.room[index1].text.t);
                     }
                     if (rr?.reply && modifiedData.room[index1].reply) {
                         if (rr.reply.text) {
@@ -222,27 +268,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
                             );
                         }
-                        // if (rr.reply.imageOrVideos.length) {
-                        //     await Promise.all(
-                        //         rr.reply.imageOrVideos.map(async (file, indexReFi) => {
-                        //             if (indexReFi <= 2) {
-                        //                 const data = await fileGridFS.getFile(file._id, file?.type);
-                        //                 const buffer = ServerBusy(data, dispatch);
-                        //                 if (data?.message === 'File not found') {
-                        //                     modifiedData.room[index1].reply.imageOrVideos[indexReFi].v =
-                        //                         data?.type?.search('image/') >= 0
-                        //                             ? "Image doesn't exist"
-                        //                             : "Video doesn't exist";
-                        //                 } else {
-                        //                     const base64 = CommonUtils.convertBase64GridFS(buffer);
-                        //                     modifiedData.room[index1].reply.imageOrVideos[indexReFi].v = base64;
-                        //                 }
-                        //             }
-                        //         }),
-                        //     );
-                        // }
                     }
-                    // await Promise.all(
                     //     rr.imageOrVideos.map(
                     //         async (fl: { _id: string; icon: string; type: string }, index2: number) => {
                     //             const data = await fileGridFS.getFile(fl._id, fl?.type);
@@ -338,8 +364,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     if (updateData.userId !== id_you && conversation) {
                         const newR: PropsItemRoom = await new Promise(async (resolve, reject) => {
                             const d = updateData.data;
-                            if (d.text.t)
+                            if (d.text.t) {
                                 d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);
+                                d.text.t = regexCus(d.text.t);
+                            }
+
                             resolve(d);
                         });
                         setConversation((pre) => {
@@ -394,9 +423,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     if (newD?.secondary) {
                         const decryptedData = decrypt(newD.text?.t, `chat_${newD.secondary}`);
                         newD.text.t = decryptedData;
+                        newD.text.t = regexCus(newD.text.t);
                     } else {
                         const bytdecryptedDatas = decrypt(newD.text?.t, `chat_${conversation?._id}`);
                         newD.text.t = bytdecryptedDatas;
+                        newD.text.t = regexCus(newD.text.t);
                     }
                 }
                 data.users.push(data.user);
@@ -541,7 +572,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 createdAt: DateTime(),
                 imageOrVideos: images,
                 seenBy: [],
-                text: { t: value, icon: '' },
+                text: { t: regexCus(value), icon: '' },
                 sending: true,
                 id: userId,
                 _id: id_,

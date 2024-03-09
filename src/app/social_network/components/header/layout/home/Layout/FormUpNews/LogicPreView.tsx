@@ -14,6 +14,7 @@ import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
 import Circle from './ViewPostFrame/TypeFile/Circle';
+import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 export default function LogicPreView(
     user: PropsUser,
     colorText: string,
@@ -137,41 +138,59 @@ export default function LogicPreView(
 
             let res: any;
             let id_c: string[] = [];
-            const formData = new FormData();
-            formData.append('text', valueText);
-            formData.append('category', String(selectType));
-            formData.append('hashTags', JSON.stringify(hashTags));
-            formData.append('tags', String(tags.map((t) => t.id)));
-            formData.append('fontFamily', font);
-            formData.append('privacy', JSON.stringify(valuePrivacy));
-            formData.append('act', JSON.stringify(acEmo.id));
-            formData.append(
-                'whoSeePost',
-                JSON.stringify({
+            const formDataFake: {
+                text: string;
+                category: string;
+                hashTags: string;
+                tags: string;
+                fontFamily: string;
+                privacy: string;
+                act: string;
+                whoSeePost: string;
+                imotions: string;
+                id_file:
+                    | null
+                    | {
+                          id: string;
+                          type: string;
+                          tail: string;
+                          title?: string | undefined;
+                      }[];
+            } = {
+                text: valueText,
+                category: String(selectType),
+                hashTags: JSON.stringify(hashTags),
+                tags: String(tags.map((t) => t.id)),
+                fontFamily: font,
+                privacy: JSON.stringify(valuePrivacy),
+                act: JSON.stringify(acEmo.id),
+                whoSeePost: JSON.stringify({
                     id: valueSeePost.id,
                     name: valueSeePost.name,
                 }),
-            );
-            formData.append('imotions', JSON.stringify(Imotions));
-
+                imotions: JSON.stringify(Imotions),
+                id_file: null,
+            };
+            const formData = new FormData();
             console.log('valuePrivacy', valuePrivacy, valueSeePost, 'valueSeePost');
-
             switch (selectType) {
                 case 0: // default
                     for (let fil of file) {
                         if (fil.title) {
-                            formData.append('files', fil.file, fil.title);
+                            formData.append('file', fil.file, fil.title);
+                            formData.append('title', 'ok');
                         } else {
-                            formData.append('files', fil.file);
+                            formData.append('file', fil.file);
                         }
                     }
                     formData.append('bg_default', bg);
-
+                    const returnDataAdded = await fileWorkerAPI.addFile(formData);
+                    formDataFake.id_file = returnDataAdded;
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
-                    res = await HomeAPI.setPost(formData);
-                    const dataR = ServerBusy(res, dispatch);
-                    setLoading(false);
-                    console.log(res, 'res');
+                    // res = await HomeAPI.setPost(formData);
+                    // const dataR = ServerBusy(res, dispatch);
+                    // setLoading(false);
+                    // console.log(res, 'res');
                     // id_c = res.id_c;
 
                     break;

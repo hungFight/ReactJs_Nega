@@ -5,7 +5,6 @@ import React, { Suspense, useEffect, useRef, useState } from 'react';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { useNavigate } from 'react-router-dom';
 import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataText/dataLogin';
@@ -16,17 +15,15 @@ import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault'
 import Progress from './app/reUsingComponents/Progress/Progress';
 import ErrorBoundaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
 import { socket } from './mainPage/nextWeb';
-import { BalloonI, DotI, LoadingI, TyOnlineI, UndoI } from '~/assets/Icons/Icons';
-import CommonUtils from '~/utils/CommonUtils';
+import { LoadingI, UndoI } from '~/assets/Icons/Icons';
 import userAPI from '~/restAPI/userAPI';
 import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
 import { PropsReloadRD } from '~/redux/reload';
 import { PropsBgRD } from '~/redux/background';
-import Images from '~/assets/images';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
-import { useQuery, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
 import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
 import { decrypt } from '~/utils/crypto';
@@ -34,9 +31,7 @@ import { ConversationText } from './dataText/DataMessenger';
 import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
 import Balloon from './mainPage/Balloon/Balloon';
-import axios from 'axios';
 import subImage from '~/utils/subImage';
-
 const DivOpacity = styled.div`
     width: 100%;
     height: 100%;
@@ -170,7 +165,6 @@ function App() {
         (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
     );
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
-
     const [userFirst, setUserFirst] = useState<PropsUser>({
         id: '',
         fullName: '',
@@ -202,7 +196,7 @@ function App() {
     //     skip: !userId || !token,
     // });
     const handleCheck = useRef<boolean>(false);
-    async function fetch(id: string | string[], first?: string) {
+    async function fetchF(id: string | string[], first?: string) {
         if (!first) setLoading(true);
         const res: PropsUserPer[] | PropsUser = await userAPI.getById(
             id,
@@ -241,7 +235,7 @@ function App() {
         );
         const data: typeof res = ServerBusy(res, dispatch);
         console.log(data, 'dfaf');
-
+        // Tìm ảnh trong mã HTML và lấy URL của ảnh đầu tiên
         if (!Array.isArray(data)) {
             setUserFirst(data);
         } else {
@@ -267,7 +261,7 @@ function App() {
     useEffect(() => {
         const search = async () => {
             if (openProfile.newProfile.length === 1) {
-                const data = await fetch(openProfile.newProfile);
+                const data = await fetchF(openProfile.newProfile);
                 if (data)
                     if (userData.length) {
                         let check = false;
@@ -344,7 +338,7 @@ function App() {
 
     useEffect(() => {
         if (userId && token) {
-            fetch(userId, 'only');
+            fetchF(userId, 'only');
         }
     }, [userId]);
 

@@ -214,3 +214,9 @@ img {
     margin-top: 5px;
     margin-left: 10px;
 }
+.regexCus {
+    &:hover {
+        color: #c7d8e6 !important;
+        text-decoration: none !important;
+    }
+}

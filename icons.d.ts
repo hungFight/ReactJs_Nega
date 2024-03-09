@@ -1,3 +1,4 @@
+declare module 'react-html-parser';
 declare module '@iconscout/react-unicons' {
     import { SVGProps } from 'react';
 

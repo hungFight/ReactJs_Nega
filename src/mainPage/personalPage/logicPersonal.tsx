@@ -104,13 +104,9 @@ export default function LogicView(
                         if (user.avatar || user.background) {
                             formData.append('old_id', avBg);
                         }
-                        const fileUploaded: {
-                            id: string;
-                            tail: string;
-                            type: string;
-                        } = await fileWorkerAPI.addFile(formData);
+                        const fileUploaded = await fileWorkerAPI.addFile(formData);
                         console.log(fileUploaded, 'fileUploaded');
-                        const idF = fileUploaded.id;
+                        const idF = fileUploaded[0].id;
                         if (idF) {
                             const res = await userAPI.changesOne(
                                 userFirst.id,
