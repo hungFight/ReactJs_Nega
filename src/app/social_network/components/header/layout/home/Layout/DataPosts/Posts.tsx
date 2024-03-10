@@ -357,7 +357,7 @@ const Posts: React.FC<PropsPosts> = ({
                         </Div>
                     </Div>
                     <Div>
-                        {dataPosts.feel.only.length > 0 && (
+                        {dataPosts.feel.onlyEmo.length > 0 && (
                             <DivAction
                                 id="parent"
                                 css={`
@@ -380,7 +380,7 @@ const Posts: React.FC<PropsPosts> = ({
                                                 icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
                                             });
                                         } else {
-                                            dataPosts.feel.only.map((i, index, arr) => {
+                                            dataPosts.feel.onlyEmo.map((i, index, arr) => {
                                                 if (i.id === imotion.id) {
                                                     setImotion(i);
                                                 }
@@ -414,7 +414,7 @@ const Posts: React.FC<PropsPosts> = ({
                                         }
                                     `}
                                 >
-                                    {dataPosts.feel.only.map((i, index, arr) => (
+                                    {dataPosts.feel.onlyEmo.map((i, index, arr) => (
                                         <DivEmoji
                                             key={i.id}
                                             onClick={(e) => {

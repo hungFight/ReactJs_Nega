@@ -58,8 +58,8 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
 
     useEffect(() => {
         async function fetch() {
-            const res: PropsDataPosts[] = await homeAPI.getPosts(limit, offset.current, 'friend');
-            const data: PropsDataPosts[] = ServerBusy(res, dispatch);
+            const res = await homeAPI.getPosts(limit, offset.current, 'friend');
+            const data: typeof res = ServerBusy(res, dispatch);
             const newData: any = await new Promise(async (resolve, reject) => {
                 try {
                     await Promise.all(
@@ -68,18 +68,6 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 n.user[0] = dataUser;
                             } else {
                                 n.user[0].avatar = CommonUtils.convertBase64(n.user[0].avatar);
-                            }
-                            if (n.category === 0) {
-                                await Promise.all(
-                                    n.content.options.default.map(async (d, index2) => {
-                                        if (d.file.link) {
-                                            const file = await fileGridFS.getFile(d.file.link);
-                                            data[index].content.options.default[index2].file.link =
-                                                CommonUtils.convertBase64GridFS(file);
-                                            data[index].content.options.default[index2].file.type = file.type;
-                                        }
-                                    }),
-                                );
                             }
                         }),
                     );

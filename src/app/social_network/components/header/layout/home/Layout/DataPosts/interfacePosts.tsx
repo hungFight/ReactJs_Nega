@@ -26,11 +26,11 @@ interface feel {
             id_user: string[];
         };
     };
-    act: number;
-    only: {
+    onlyEmo: {
         id: number;
         icon: string;
     }[];
+    act: number;
 }
 export interface PropsDataPosts {
     _id: string;

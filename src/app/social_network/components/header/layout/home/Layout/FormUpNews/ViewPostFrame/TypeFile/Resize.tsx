@@ -27,9 +27,9 @@ const Resize: React.FC<{
                 }
             }}
         >
-            {f?.type.includes('image') ? (
+            {f?.type === 'image' ? (
                 <Img
-                    src={f?.link}
+                    src={`${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${f?.link}`}
                     id="baby"
                     alt={f?.link}
                     css={`

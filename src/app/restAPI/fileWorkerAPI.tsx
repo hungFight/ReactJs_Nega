@@ -4,17 +4,7 @@ import { AxiosError } from 'axios';
 import httpFile from '~/utils/httpFile';
 
 class fileWorkerAPI {
-    addFile = async (formData: FormData): Promise<{ id: string; type: string; tail: string; title?: string }[]> => {
-        try {
-            const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.post(`/addFile`, formData);
-            return res.data[0];
-        } catch (error) {
-            const err = error as AxiosError;
-            return errorHandling(err);
-        }
-    };
-    addFiles = async (formData: FormData): Promise<{ id: string; type: string; tail: string }[]> => {
+    addFiles = async (formData: FormData): Promise<{ id: string; type: string; tail: string; title?: string }[]> => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await httpFile.post(`/addFiles`, formData);

@@ -148,6 +148,7 @@ export default function LogicPreView(
                 act: string;
                 whoSeePost: string;
                 imotions: string;
+                bg_default?: string;
                 id_file:
                     | null
                     | {
@@ -183,15 +184,15 @@ export default function LogicPreView(
                             formData.append('file', fil.file);
                         }
                     }
-                    formData.append('bg_default', bg);
-                    const returnDataAdded = await fileWorkerAPI.addFile(formData);
+                    formDataFake.bg_default = bg;
+                    const returnDataAdded = await fileWorkerAPI.addFiles(formData);
                     formDataFake.id_file = returnDataAdded;
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
-                    // res = await HomeAPI.setPost(formData);
-                    // const dataR = ServerBusy(res, dispatch);
-                    // setLoading(false);
-                    // console.log(res, 'res');
-                    // id_c = res.id_c;
+                    res = await HomeAPI.setPost(formDataFake);
+                    const dataR = ServerBusy(res, dispatch);
+                    setLoading(false);
+                    console.log(res, 'res');
+                    id_c = res.id_c;
 
                     break;
                 case 1:
