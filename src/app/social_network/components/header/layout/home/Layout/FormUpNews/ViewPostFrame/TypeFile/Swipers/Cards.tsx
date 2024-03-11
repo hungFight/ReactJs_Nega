@@ -13,12 +13,10 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { ScreenI } from '~/assets/Icons/Icons';
 import LogicType from '../logicType';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
+import { PropsDataFileUpload } from '../../../FormUpNews';
 
 const Cards: React.FC<{
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     colorText: string;
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -64,9 +62,9 @@ const Cards: React.FC<{
                             }}
                         >
                             {f.type.includes('image') ? (
-                                <Img src={f.link} alt={f.link} radius="5px" />
+                                <Img src={f?.link || f.pre} alt={f?.title || f.link} radius="5px" />
                             ) : f.type.includes('video') ? (
-                                <Player src={f.link} step={step} height="100%" />
+                                <Player src={f?.link || f.pre} step={step} height="100%" />
                             ) : (
                                 ''
                             )}

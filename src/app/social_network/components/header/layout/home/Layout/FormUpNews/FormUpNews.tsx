@@ -32,11 +32,12 @@ interface PropsFormUpNews {
     editF?: boolean;
 }
 export interface PropsDataFileUpload {
-    id: number;
-    link: string;
+    id_sort: number;
+    link?: string;
+    pre: string;
     type: string;
     title?: string | undefined;
-    file: Blob;
+    file?: Blob;
 }
 export interface PropsValueQuill {
     url: string;

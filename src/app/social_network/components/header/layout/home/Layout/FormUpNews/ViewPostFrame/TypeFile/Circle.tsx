@@ -7,8 +7,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper';
+import { PropsDataFileUpload } from '../../FormUpNews';
 const Circle: React.FC<{
-    file: { link: string; type: string }[];
+    file: PropsDataFileUpload[];
     colorText: string;
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -81,9 +82,9 @@ const Circle: React.FC<{
                                 }}
                             >
                                 {f?.type.includes('image') ? (
-                                    <Img src={f?.link} id="baby" alt={f?.link} />
+                                    <Img src={f?.link || f.pre} id="baby" alt={f?.title || f?.link} />
                                 ) : f?.type.includes('video') ? (
-                                    <Player src={f?.link} step={step} />
+                                    <Player src={f?.link || f.pre} step={step} />
                                 ) : (
                                     ''
                                 )}
@@ -122,9 +123,9 @@ const Circle: React.FC<{
                         `}
                     >
                         {f.type.includes('image') ? (
-                            <Img src={f.link} alt={f.link} />
+                            <Img src={f?.link || f.pre} alt={f?.title || f.link} />
                         ) : f.type.includes('video') ? (
-                            <Player src={f.link} />
+                            <Player src={f?.link || f.pre} />
                         ) : (
                             ''
                         )}

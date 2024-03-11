@@ -4,7 +4,7 @@ import { DivPost } from './styleHome';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
-import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
+import HomeAPI from '~/restAPI/socialNetwork/postAPI';
 import FormUpNews, { PropsFormHome } from './Layout/FormUpNews/FormUpNews';
 import Posts from './Layout/DataPosts/Posts';
 import HttpRequestUser from '~/restAPI/userAPI';
@@ -12,7 +12,7 @@ import { Button, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDef
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { socket } from 'src/mainPage/nextWeb';
 import { setTrueErrorServer } from '~/redux/hideShow';
-import homeAPI from '~/restAPI/socialNetwork/homeAPI';
+import homeAPI from '~/restAPI/socialNetwork/postAPI';
 import fileGridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import Cookies from '~/utils/Cookies';
@@ -351,6 +351,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                     <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
                         {dataPosts.map((p) => (
                             <Posts
+                                setDataPosts={setDataPosts}
                                 setFormThat={setFormThat}
                                 form={form}
                                 setOptions={setOptions}

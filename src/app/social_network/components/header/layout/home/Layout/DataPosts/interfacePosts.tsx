@@ -4,31 +4,10 @@ import { PropsUser } from 'src/App';
 
 interface feel {
     amount: number;
-    emo: {
-        [like: string]: {
-            act: number;
-            id_user: string[];
-        };
-        love: {
-            act: number;
-            id_user: string[];
-        };
-        smile: {
-            act: number;
-            id_user: string[];
-        };
-        sad: {
-            act: number;
-            id_user: string[];
-        };
-        angry: {
-            act: number;
-            id_user: string[];
-        };
-    };
     onlyEmo: {
         id: number;
         icon: string;
+        id_user: string[];
     }[];
     act: number;
 }
@@ -81,7 +60,7 @@ export interface PropsDataPosts {
                         },
                     ];
                 };
-                file: { link: string; type: string };
+                file: { id_sort: number; link: string; type: string };
                 love: { id_user: string[] };
                 title: string;
                 _id: string;
@@ -121,6 +100,7 @@ export interface PropsPosts {
     user: PropsUser;
     colorBg: number;
     colorText: string;
+    setDataPosts: React.Dispatch<React.SetStateAction<PropsDataPosts[]>>;
     dataPosts: PropsDataPosts;
     setOptions: React.Dispatch<React.SetStateAction<string>>;
     options: string;

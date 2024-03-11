@@ -15,12 +15,10 @@ import { DivSwiper } from './styleSwipers';
 import { Textarea } from '../../../styleFormUpNews';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import LogicType from '../logicType';
+import { PropsDataFileUpload } from '../../../FormUpNews';
 
 const Coverflow: React.FC<{
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     colorText: string;
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -286,10 +284,10 @@ const Coverflow: React.FC<{
                                             </Div>
                                         )}
 
-                                        <Img src={f.link} id="baby" alt={f.link} radius="5px" />
+                                        <Img src={f?.link || f.pre} id="baby" alt={f?.title || f.link} radius="5px" />
                                     </Div>
                                 ) : f.type.includes('video') ? (
-                                    <Player src={f.link} />
+                                    <Player src={f?.link || f.pre} />
                                 ) : (
                                     ''
                                 )}

@@ -6,13 +6,11 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import LogicType from './logicType';
 import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
+import { PropsDataFileUpload } from '../../FormUpNews';
 
 const Grid: React.FC<{
     column: number;
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
     colorText: string;
@@ -79,7 +77,7 @@ const Grid: React.FC<{
                 {file.map((f, index) => {
                     return (
                         <Div
-                            key={f.link}
+                            key={index}
                             width="100%"
                             css={`
                                 height: 100%;

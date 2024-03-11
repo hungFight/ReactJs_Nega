@@ -2,7 +2,7 @@ import { P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { FriendI, HeartI, LikeI } from '~/assets/Icons/Icons';
 import { useEffect, useRef, useState } from 'react';
 import Coverflow from './ViewPostFrame/TypeFile/Swipers/Coverflow';
-import HomeAPI from '~/restAPI/socialNetwork/homeAPI';
+import postAPI from '~/restAPI/socialNetwork/postAPI';
 import Cards from './ViewPostFrame/TypeFile/Swipers/Cards';
 import Centered from './ViewPostFrame/TypeFile/Swipers/Centered';
 import { PropsPreViewFormHome } from './PreView';
@@ -127,8 +127,8 @@ export default function LogicPreView(
     }, [selectChild]);
 
     for (let i = 0; i < file.length; i++) {
-        if (file[i].type === 'image') images.push(file[i].link);
-        if (file[i].type === 'video') videos.push(file[i].link);
+        if (file[i].type === 'image') images.push(file[i].pre);
+        if (file[i].type === 'video') videos.push(file[i].pre);
         if (file[i].type === '!images' && checkImg === false) checkImg = true;
     }
     const handlePost = async () => {
@@ -177,23 +177,24 @@ export default function LogicPreView(
             switch (selectType) {
                 case 0: // default
                     for (let fil of file) {
-                        if (fil.title) {
-                            formData.append('file', fil.file, fil.title);
-                            formData.append('title', 'ok');
-                        } else {
-                            formData.append('file', fil.file);
-                        }
+                        if (fil.file)
+                            if (fil.title) {
+                                formData.append('file', fil.file, fil.title);
+                                formData.append('title', 'ok');
+                            } else {
+                                formData.append('file', fil.file);
+                            }
+                        formData.append('id_sort', JSON.stringify(fil.id_sort));
                     }
                     formDataFake.bg_default = bg;
                     const returnDataAdded = await fileWorkerAPI.addFiles(formData);
                     formDataFake.id_file = returnDataAdded;
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
-                    res = await HomeAPI.setPost(formDataFake);
+                    res = await postAPI.setPost(formDataFake);
                     const dataR = ServerBusy(res, dispatch);
                     setLoading(false);
-                    console.log(res, 'res');
                     id_c = res.id_c;
-
+                    handleClear();
                     break;
                 case 1:
                     formData.append('categoryOfSwiper', JSON.stringify(selectChild));
@@ -219,20 +220,20 @@ export default function LogicPreView(
                                 JSON.stringify({ id: c.id, columns: c.columns, data: [] }),
                             );
                             for (const f of c.data) {
-                                formData.append('files', f.file, JSON.stringify(c.id));
+                                if (f.file) formData.append('file', f.file, JSON.stringify(c.id));
                             }
                         });
-                        res = await HomeAPI.setPost(formData);
+                        res = await postAPI.setPost(formData);
                         const dataR = ServerBusy(res, dispatch);
 
                         setLoading(false);
                         //     console.log(res, 'res');
                     } else {
                         for (let fil of file) {
-                            formData.append('files', fil.file);
+                            if (fil.file) formData.append('files', fil.file);
                         }
                         console.log('text', valueText, 'file', file, 'fontFamily', font, 'swiper', selectChild);
-                        res = await HomeAPI.setPost(formData);
+                        res = await postAPI.setPost(formData);
                         const dataR = ServerBusy(res, dispatch);
 
                         setLoading(false);
@@ -243,17 +244,17 @@ export default function LogicPreView(
                     console.log('text', valueText, 'file', file, 'fontFamily', font, 'color-bg', bg, 'column', column);
                     formData.append('BgColor', bg);
                     formData.append('columnOfGrid', JSON.stringify(column));
-                    res = await HomeAPI.setPost(formData);
+                    res = await postAPI.setPost(formData);
                     const dataRq = ServerBusy(res, dispatch);
 
                     setLoading(false);
                     break;
                 case 3:
                     for (let fil of file) {
-                        formData.append('files', fil.file);
+                        if (fil.file) formData.append('files', fil.file);
                     }
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
-                    res = await HomeAPI.setPost(formData);
+                    res = await postAPI.setPost(formData);
                     const dataRs = ServerBusy(res, dispatch);
 
                     console.log(res, 'res');
@@ -264,7 +265,7 @@ export default function LogicPreView(
             }
             console.log(id_c, 'id_c');
             if (id_c.length > 0) {
-                // const exp = await HomeAPI.exp(id_c, newExpire);
+                // const exp = await postAPI.exp(id_c, newExpire);
             }
         }
     };

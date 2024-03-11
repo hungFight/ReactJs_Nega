@@ -11,6 +11,7 @@ import Cookies from '~/utils/Cookies';
 import { PropsPosts } from './interfacePosts';
 import FormUpNews from '../FormUpNews/FormUpNews';
 import DefaultType from '../FormUpNews/ViewPostFrame/TypeFile/DefaultType';
+import postAPI from '~/restAPI/socialNetwork/postAPI';
 
 const Posts: React.FC<PropsPosts> = ({
     user,
@@ -21,15 +22,28 @@ const Posts: React.FC<PropsPosts> = ({
     setOptions,
     setFormThat,
     form,
+    setDataPosts,
 }) => {
     const { lg } = Languages();
     const { userId } = Cookies();
     const [showComment, setShowComment] = useState<boolean>(false);
     const [actImotion, setActImotion] = useState<boolean>(false);
-    const [imotion, setImotion] = useState<{ id: number; icon: React.ReactElement | string }>({
-        id: dataPosts.feel.act,
-        icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
-    });
+    const [imotion, setImotion] = useState<{ id: number; icon: React.ReactElement | string; id_user?: string[] }>(
+        () =>
+            dataPosts.feel.onlyEmo.filter((o) => o.id_user.includes(user.id))[0] || {
+                id: dataPosts.feel.act,
+                icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
+            },
+    );
+    useEffect(() => {
+        setImotion(
+            () =>
+                dataPosts.feel.onlyEmo.filter((o) => o.id_user.includes(user.id))[0] || {
+                    id: dataPosts.feel.act,
+                    icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
+                },
+        );
+    }, [dataPosts]);
     const [step, setStep] = useState<number>(0);
     const textA = useRef<any>();
     // const avatar = CommonUtils.convertBase64(dataPosts.user[0].avatar);
@@ -82,15 +96,6 @@ const Posts: React.FC<PropsPosts> = ({
     //     ),
     //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     // ];
-    const [Imotions, setImotions] = useState<{ id: number; icon: string }[]>([
-        { id: 1, icon: '👍' },
-        { id: 2, icon: '❤️' },
-        { id: 3, icon: '😂' },
-        { id: 4, icon: '😍' },
-        { id: 5, icon: '😘' },
-        { id: 6, icon: '😱' },
-        { id: 7, icon: '😡' },
-    ]);
     return (
         <Div
             width="100%"
@@ -302,20 +307,20 @@ const Posts: React.FC<PropsPosts> = ({
                 </Div> */}
                 <DefaultType
                     colorText={colorText}
-                    file={dataPosts.content.options.default.map((f) => f.file)}
+                    file={dataPosts.content.options.default.map((f) => ({ ...f.file, pre: '' }))}
                     step={step}
                     setStep={setStep}
                     bg={''}
                     link={true}
                 />
                 <Div
+                    wrap="wrap"
                     width="100%"
                     css={`
                         text-align: center;
                         justify-content: space-evenly;
                         font-size: 2.4rem;
                         border-radius: 5px;
-                        margin-bottom: 5px;
                         color: ${colorText};
                     `}
                     onClick={(e: any) => e.stopPropagation()}
@@ -344,19 +349,13 @@ const Posts: React.FC<PropsPosts> = ({
                             `}
                         >
                             <Div className="emoji" css="margin-left: 2px; align-items: flex-end;">
-                                {Object.keys(dataPosts.feel.emo).map((key, index) => (
-                                    <>
-                                        {dataPosts.feel.emo[key] ? (
-                                            <DivEmoji key={key}>{Imotions[index + 1].icon}</DivEmoji>
-                                        ) : (
-                                            ''
-                                        )}
-                                    </>
-                                ))}
+                                {dataPosts.feel.onlyEmo.map((key, index) =>
+                                    key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : '',
+                                )}
                             </Div>
                         </Div>
                     </Div>
-                    <Div>
+                    <Div width="100%" css="border-top: 1px solid #64625f; padding: 1px 0;">
                         {dataPosts.feel.onlyEmo.length > 0 && (
                             <DivAction
                                 id="parent"
@@ -365,21 +364,59 @@ const Posts: React.FC<PropsPosts> = ({
                                         &:hover {
                                             #emoBarPost {
                                                 display: flex;
-                                                top: -50px;
+                                                top: -53px;
                                             }
                                         }
                                     }
                                 `}
                                 onTouchStart={handleShowI}
                                 onTouchEnd={handleClearI}
-                                onClick={() => {
-                                    if (!actImotion) {
-                                        if (typeof imotion.icon === 'string') {
+                                onClick={async () => {
+                                    let check = false;
+                                    dataPosts.feel.onlyEmo.forEach((o) => {
+                                        if (o.id_user.includes(user.id)) check = true;
+                                    });
+                                    if (check) {
+                                        const res = await postAPI.setEmotion({
+                                            _id: dataPosts._id,
+                                            index: imotion.id,
+                                            id_user: user.id,
+                                            state: 'remove',
+                                        });
+                                        if (res) {
+                                            setDataPosts((pre) =>
+                                                pre.map((p) => {
+                                                    if (p._id === dataPosts._id)
+                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                                            o.id_user = o.id_user.filter((u) => u !== user.id);
+                                                            return o;
+                                                        });
+                                                    return p;
+                                                }),
+                                            );
                                             setImotion({
                                                 id: dataPosts.feel.act,
                                                 icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
                                             });
-                                        } else {
+                                        }
+                                    } else {
+                                        const res = await postAPI.setEmotion({
+                                            _id: dataPosts._id,
+                                            index: imotion.id,
+                                            id_user: user.id,
+                                            state: 'add',
+                                        });
+                                        if (res) {
+                                            setDataPosts((pre) =>
+                                                pre.map((p) => {
+                                                    if (p._id === dataPosts._id)
+                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                                            if (o.id === imotion.id) o.id_user.push(user.id);
+                                                            return o;
+                                                        });
+                                                    return p;
+                                                }),
+                                            );
                                             dataPosts.feel.onlyEmo.map((i, index, arr) => {
                                                 if (i.id === imotion.id) {
                                                     setImotion(i);
@@ -399,7 +436,7 @@ const Posts: React.FC<PropsPosts> = ({
                                         position: absolute;
                                         top: 0;
                                         left: 0;
-                                        background-color: #292a2d;
+                                        background-color: #6f5fc4;
                                         padding: 5px 20px 8px;
                                         border-radius: 50px;
                                         z-index: 7;
@@ -417,8 +454,15 @@ const Posts: React.FC<PropsPosts> = ({
                                     {dataPosts.feel.onlyEmo.map((i, index, arr) => (
                                         <DivEmoji
                                             key={i.id}
-                                            onClick={(e) => {
+                                            onClick={async (e) => {
                                                 e.stopPropagation();
+                                                const res = await postAPI.setEmotion({
+                                                    _id: dataPosts._id,
+                                                    index: i.id,
+                                                    id_user: user.id,
+                                                    state: 'update',
+                                                    oldIndex: imotion.id,
+                                                });
                                                 setImotion({ id: i.id, icon: i.icon });
                                                 setActImotion(false);
                                             }}

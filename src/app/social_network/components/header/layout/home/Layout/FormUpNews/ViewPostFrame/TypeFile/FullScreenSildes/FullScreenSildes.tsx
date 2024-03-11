@@ -6,11 +6,9 @@ import 'swiper/css/pagination';
 import { Pagination } from 'swiper';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
+import { PropsDataFileUpload } from '../../../FormUpNews';
 const FullScreenSildes: React.FC<{
-    files: {
-        link: string;
-        type: string;
-    }[];
+    files: PropsDataFileUpload[];
     step: number;
     cc: number;
 }> = ({ files, step, cc }) => {
@@ -53,9 +51,9 @@ const FullScreenSildes: React.FC<{
                 {files.map((f) => (
                     <SwiperSlide key={f.link}>
                         {f?.type.includes('image') ? (
-                            <Img src={f?.link} id="baby" alt={f?.link} />
+                            <Img src={f?.link || f.pre} id="baby" alt={f?.link} />
                         ) : f?.type.includes('video') ? (
-                            <Player src={f?.link} step={step} />
+                            <Player src={f?.link || f.pre} step={step} />
                         ) : (
                             ''
                         )}

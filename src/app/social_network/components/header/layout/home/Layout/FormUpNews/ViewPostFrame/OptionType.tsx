@@ -5,14 +5,12 @@ import OnlyImages from './TypeFile/Grid';
 import Coverflow from './TypeFile/Swipers/Coverflow';
 import DefaultType from './TypeFile/DefaultType';
 import { ReactElement, useState } from 'react';
+import { PropsDataFileUpload } from '../FormUpNews';
 
 const OptionType: React.FC<{
     colorText: string;
     colorBg: number;
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     column: number;
     setColumn: React.Dispatch<React.SetStateAction<number>>;
     setSelectType: React.Dispatch<React.SetStateAction<number>>;

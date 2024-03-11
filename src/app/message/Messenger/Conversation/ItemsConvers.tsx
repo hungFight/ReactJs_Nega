@@ -519,7 +519,7 @@ const ItemsRoom: React.FC<{
                                                   width: max-content;
                                                   word-wrap: break-word;
                                                   max-width: 100%;
-                                                  background-color: ${rc?.delete === 'all' ? '#1d1c1c;' : '#1a383b'};
+                                                  background-color: ${rc?.delete === 'all' ? '#1d1c1c;' : '#2b4b4bfa'};
                                                   border: 1px solid #4e4d4b;
                                                   font-size: ${rc?.delete === 'all' ? '1.4rem' : '1.6rem'};
                                                   svg {

@@ -13,14 +13,12 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { ScreenI } from '~/assets/Icons/Icons';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import LogicType from '../logicType';
+import { PropsDataFileUpload } from '../../../FormUpNews';
 
 // import required modules
 
 const Dynamic: React.FC<{
-    file: {
-        link: string;
-        type: string;
-    }[];
+    file: PropsDataFileUpload[];
     colorText: string;
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -43,7 +41,7 @@ const Dynamic: React.FC<{
         file.forEach((f, index) => {
             if (f.type === 'video') {
                 var video = document.createElement('video');
-                video.src = f.link; // Thay đường dẫn bằng đường dẫn video thực tế
+                video.src = f?.link || f.pre; // Thay đường dẫn bằng đường dẫn video thực tế
                 video.addEventListener('loadedmetadata', function () {
                     var videoHeight = video.videoHeight;
                     var videoWidth = video.videoWidth;
@@ -69,7 +67,7 @@ const Dynamic: React.FC<{
             } else if (f.type === 'image') {
                 if (!heightI) {
                     var img = new Image();
-                    img.src = f.link; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
+                    img.src = f?.link || f.pre; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
                     img.addEventListener('load', function () {
                         var imageHeight = img.naturalHeight;
                         var imageWidth = img.naturalWidth;
@@ -132,10 +130,10 @@ const Dynamic: React.FC<{
                                             height: 100%;
                                         `}
                                     >
-                                        <Img src={f.link} id="baby" alt={f.link} radius="5px" />
+                                        <Img src={f.link || f.pre} id="baby" alt={f?.title || f.link} radius="5px" />
                                     </Div>
                                 ) : f.type.includes('video') ? (
-                                    <Player height={step === 0 ? h : ''} src={f.link} step={step} />
+                                    <Player height={step === 0 ? h : ''} src={f?.link || f.pre} step={step} />
                                 ) : (
                                     ''
                                 )}

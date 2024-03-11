@@ -145,9 +145,9 @@ const Centered: React.FC<{
                                         css="width: 100px !important; height: 100px;"
                                     >
                                         {f.type.includes('image') ? (
-                                            <Img src={f.link} alt={f.link} radius="5px" />
+                                            <Img src={f?.link || f.pre} alt={f?.title || f.link} radius="5px" />
                                         ) : f.type.includes('video') ? (
-                                            <Player src={f.link} step={step} height="100%" />
+                                            <Player src={f?.link || f.pre} step={step} height="100%" />
                                         ) : (
                                             ''
                                         )}

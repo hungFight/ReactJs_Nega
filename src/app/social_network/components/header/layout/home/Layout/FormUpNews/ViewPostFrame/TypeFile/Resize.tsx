@@ -5,12 +5,10 @@ import { BackI, DotI, HeartMI, ShareI } from '~/assets/Icons/Icons';
 import Player from '~/reUsingComponents/Videos/Player';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { PropsDataFileUpload } from '../../FormUpNews';
 
 const Resize: React.FC<{
-    f: {
-        link: string;
-        type: string;
-    };
+    f: PropsDataFileUpload;
     step: number;
     showComment: number[];
     index: number;
@@ -29,7 +27,7 @@ const Resize: React.FC<{
         >
             {f?.type === 'image' ? (
                 <Img
-                    src={`${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${f?.link}`}
+                    src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${f?.link}`}
                     id="baby"
                     alt={f?.link}
                     css={`
@@ -37,7 +35,7 @@ const Resize: React.FC<{
                     `}
                 />
             ) : f?.type.includes('video') ? (
-                <Player src={f?.link} step={step} />
+                <Player src={f?.link || f.pre} step={step} />
             ) : (
                 ''
             )}

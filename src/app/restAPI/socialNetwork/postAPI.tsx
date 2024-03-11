@@ -3,11 +3,11 @@ import refreshToken from '~/refreshToken/refreshToken';
 import { CookieSetOptions } from 'universal-cookie';
 import errorHandling from '../errorHandling/errorHandling';
 import { PropsDataPosts } from '~/social_network/components/Header/layout/Home/Layout/DataPosts/interfacePosts';
-class HomeAPI {
+class PostAPI {
     getPosts = async (limit: number, offset: number, status: string): Promise<PropsDataPosts[]> => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.get('/SN/home/getPosts', {
+            const res = await axiosJWTss.get('/SN/home/post/getPosts', {
                 params: { limit, offset, status },
             });
             return res.data;
@@ -21,7 +21,26 @@ class HomeAPI {
             console.log(formData);
 
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.post('/SN/home/setPost', { ...formData });
+            const res = await axiosJWTss.post('/SN/home/post/setPost', { ...formData });
+            return res.data;
+        } catch (error: any) {
+            if (axios.isCancel(error)) {
+                console.log('Request canceled:', error.message);
+            } else {
+                console.error('Error:', error);
+            }
+        }
+    };
+    setEmotion = async (data: {
+        _id: string;
+        index: number | null;
+        id_user: string;
+        state: string;
+        oldIndex?: number;
+    }) => {
+        try {
+            const axiosJWTss = refreshToken.axiosJWTs();
+            const res = await axiosJWTss.post('/SN/home/post/setEmotion', { ...data });
             return res.data;
         } catch (error: any) {
             if (axios.isCancel(error)) {
@@ -33,4 +52,4 @@ class HomeAPI {
     };
 }
 
-export default new HomeAPI();
+export default new PostAPI();

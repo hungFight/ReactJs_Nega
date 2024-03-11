@@ -30,9 +30,10 @@ const EditFiles: React.FC<{
             for (let i = 0; i < upLoad.length; i++) {
                 filUp.push({
                     type: upLoad[i].type,
+                    pre: '',
                     file: upLoad[i],
                     title: '',
-                    id: file[file.length - 1].id + i + 1,
+                    id_sort: file[file.length - 1].id_sort + i + 1,
                     link: URL.createObjectURL(upLoad[i]),
                 });
             }
@@ -136,12 +137,12 @@ const EditFiles: React.FC<{
                                         index, // data is sorted
                                     ) => (
                                         <Div
-                                            key={f.id}
+                                            key={f.id_sort}
                                             width="90px"
                                             wrap="wrap"
                                             css="justify-content: center; cursor: pointer; padding: 2px; box-shadow: 0 0 2px #757575; border-radius: 5px; margin: 4px;"
                                             onClick={() => {
-                                                setSortData((pre) => pre.filter((r) => r.id !== f.id));
+                                                setSortData((pre) => pre.filter((r) => r.id_sort !== f.id_sort));
                                                 setChosen((pre) => pre.filter((r) => r !== f.id_pre));
                                             }}
                                         >
@@ -171,7 +172,7 @@ const EditFiles: React.FC<{
                                                         css="object-fit: contain;"
                                                     />
                                                 ) : f?.type.includes('video') ? (
-                                                    <Player src={f?.link} step={step} />
+                                                    <Player src={f?.link || f.pre} step={step} />
                                                 ) : (
                                                     ''
                                                 )}
@@ -187,7 +188,7 @@ const EditFiles: React.FC<{
                                         onClick={() => {
                                             setUploadPre(
                                                 sortData.map((r, index) => {
-                                                    r.id = index;
+                                                    r.id_sort = index;
                                                     return r;
                                                 }),
                                             );
@@ -205,34 +206,34 @@ const EditFiles: React.FC<{
                             {/* sort file */}
                             {file.map((f, index) => (
                                 <Div
-                                    key={f.id}
+                                    key={f.id_sort}
                                     width="90px"
                                     wrap="wrap"
                                     css={`
                                         justify-content: center;
                                         cursor: pointer;
                                         padding: 2px;
-                                        box-shadow: 0 0 2px ${chosen.includes(f.id) ? '#5bffba' : '#757575'};
+                                        box-shadow: 0 0 2px ${chosen.includes(f.id_sort) ? '#5bffba' : '#757575'};
                                         border-radius: 5px;
                                         margin: 4px;
                                     `}
                                     onClick={() => {
-                                        if (chosen.includes(f.id)) {
-                                            setChosen((pre) => pre.filter((r) => r !== f.id));
+                                        if (chosen.includes(f.id_sort)) {
+                                            setChosen((pre) => pre.filter((r) => r !== f.id_sort));
                                         } else {
-                                            setChosen((pre) => [...pre, f.id]);
+                                            setChosen((pre) => [...pre, f.id_sort]);
                                         }
-                                        if (!sortData.some((s) => s.id_pre === f.id)) {
+                                        if (!sortData.some((s) => s.id_pre === f.id_sort)) {
                                             setSortData((pre) => [
                                                 ...pre,
                                                 {
                                                     ...f,
-                                                    id: pre.length ? pre[pre.length - 1].id + 1 : 0 + 1,
-                                                    id_pre: f.id,
+                                                    id: pre.length ? pre[pre.length - 1].id_sort + 1 : 0 + 1,
+                                                    id_pre: f.id_sort,
                                                 },
                                             ]);
                                         } else {
-                                            setSortData((pre) => pre.filter((r) => r.id_pre !== f.id));
+                                            setSortData((pre) => pre.filter((r) => r.id_pre !== f.id_sort));
                                         }
                                     }}
                                 >
@@ -245,10 +246,10 @@ const EditFiles: React.FC<{
                                             margin: 2px 0;
                                             justify-content: center;
                                             align-items: center;
-                                            ${chosen.includes(f.id) ? 'color: #2cb72c;' : ''}
+                                            ${chosen.includes(f.id_sort) ? 'color: #2cb72c;' : ''}
                                         `}
                                     >
-                                        {chosen.includes(f.id) && <CheckI />}
+                                        {chosen.includes(f.id_sort) && <CheckI />}
                                     </Div>
 
                                     <Div
@@ -270,9 +271,14 @@ const EditFiles: React.FC<{
                                             `}
                                         />
                                         {f?.type.includes('image') ? (
-                                            <Img src={f?.link} id="baby" alt={f?.link} css="object-fit: contain;" />
+                                            <Img
+                                                src={f?.link || f.pre}
+                                                id="baby"
+                                                alt={f?.title || f?.link}
+                                                css="object-fit: contain;"
+                                            />
                                         ) : f?.type.includes('video') ? (
-                                            <Player src={f?.link} step={step} />
+                                            <Player src={f?.link || f.pre} step={step} />
                                         ) : (
                                             ''
                                         )}

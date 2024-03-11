@@ -19,9 +19,10 @@ import { InputT } from './Swipers/styleSwipers';
 import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
 import Resize from './Resize';
 import { Link } from 'react-router-dom';
+import { PropsDataFileUpload } from '../../FormUpNews';
 
 const DefaultType: React.FC<{
-    file: { link: string; type: string }[];
+    file: PropsDataFileUpload[];
     colorText: string;
     step: number;
     bg: string;
@@ -44,23 +45,23 @@ const DefaultType: React.FC<{
     //edit
     const [showColors, setShowColors] = useState(false);
     const [heightV, setHeightV] = useState<string>('');
-    useEffect(() => {
-        setHeightV('');
-        file.map((f) => {
-            if (f?.type.includes('image')) {
-                var img = new Image();
-                img.src = f.link; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
-                img.addEventListener('load', function () {
-                    var imageHeight = img.naturalHeight;
-                    var imageWidth = img.naturalWidth;
-                    console.log('Chiều cao: ' + imageHeight);
-                    console.log('Chiều rộng: ' + imageWidth);
-                    console.log('[]: ', imageWidth / imageHeight, 16 / 9);
-                });
-            } else {
-            }
-        });
-    }, [file]);
+    // useEffect(() => {
+    //     setHeightV('');
+    //     // file.map((f) => {
+    //     //     if (f?.type.includes('image')) {
+    //     //         var img = new Image();
+    //     //         img.src = f.link; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
+    //     //         img.addEventListener('load', function () {
+    //     //             var imageHeight = img.naturalHeight;
+    //     //             var imageWidth = img.naturalWidth;
+    //     //             console.log('Chiều cao: ' + imageHeight);
+    //     //             console.log('Chiều rộng: ' + imageWidth);
+    //     //             console.log('[]: ', imageWidth / imageHeight, 16 / 9);
+    //     //         });
+    //     //     } else {
+    //     //     }
+    //     // });
+    // }, [file]);
     const colors = [
         { id: 0, color: 'transparent', icon: <BanI /> },
         { id: 1, color: '#1b1919' },
@@ -165,29 +166,29 @@ const DefaultType: React.FC<{
                 {step === 2 && ToolDefault(2)}
             </>
             {file.map((f, index, arr) => {
-                if (f?.type === 'video' && !heightV) {
-                    var video = document.createElement('video');
-                    video.src = file[0].link; // Thay đường dẫn bằng đường dẫn video thực tế
+                // if (f?.type === 'video' && !heightV) {
+                //     var video = document.createElement('video');
+                //     video.src = file[0].link; // Thay đường dẫn bằng đường dẫn video thực tế
 
-                    video.addEventListener('loadedmetadata', function () {
-                        var videoHeight = video.videoHeight;
-                        var videoWidth = video.videoWidth;
-                        if (videoHeight - videoWidth > 400) {
-                            setHeightV('550px');
-                        } else {
-                            setHeightV('auto');
-                        }
-                        console.log('Chiều cao: ' + videoHeight);
-                        console.log('Chiều rộng: ' + videoWidth);
-                    });
-                }
+                //     video.addEventListener('loadedmetadata', function () {
+                //         var videoHeight = video.videoHeight;
+                //         var videoWidth = video.videoWidth;
+                //         if (videoHeight - videoWidth > 400) {
+                //             setHeightV('550px');
+                //         } else {
+                //             setHeightV('auto');
+                //         }
+                //         console.log('Chiều cao: ' + videoHeight);
+                //         console.log('Chiều rộng: ' + videoWidth);
+                //     });
+                // }
 
                 // check every 6 picture
                 if (step === 0 ? index < moreFile : true) {
                     return (
                         <Div
                             display="block"
-                            key={f?.link}
+                            key={f?.link || f.pre}
                             css={`
                                 ${arr.length === 3 && arr.length === index + 1 ? 'grid-column: span 2' : ''}
                                 ${arr.length === 5 && arr.length === index + 1 ? 'grid-column: span 2' : ''}

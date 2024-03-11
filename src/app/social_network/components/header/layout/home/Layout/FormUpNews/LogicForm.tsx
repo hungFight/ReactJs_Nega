@@ -84,9 +84,9 @@ export default function LogicForm(
                         vid.ondurationchange = function () {
                             if (vid.duration <= 15) {
                                 resolve({
-                                    id: i + 1,
-                                    link: url,
-                                    type: file[i].type,
+                                    id_sort: i + 1,
+                                    pre: url,
+                                    type: file[i].type.split('/')[0],
                                     file: file[i],
                                     title: '',
                                 });
@@ -105,9 +105,9 @@ export default function LogicForm(
                     try {
                         if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= 8) {
                             uploadPreRef.current.push({
-                                id: i + 1,
-                                link: URL.createObjectURL(file[i]),
-                                type: file[i].type,
+                                id_sort: i + 1,
+                                pre: URL.createObjectURL(file[i]),
+                                type: file[i].type.split('/')[0],
                                 file: file[i],
                                 title: '',
                             });
@@ -116,9 +116,9 @@ export default function LogicForm(
                             const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
                             if (sizeImage <= 8) {
                                 uploadPreRef.current.push({
-                                    id: i + 1,
-                                    link: URL.createObjectURL(compressedFile),
-                                    type: file[i].type,
+                                    id_sort: i + 1,
+                                    pre: URL.createObjectURL(compressedFile),
+                                    type: file[i].type.split('/')[0],
                                     file: compressedFile,
                                     title: '',
                                 });
