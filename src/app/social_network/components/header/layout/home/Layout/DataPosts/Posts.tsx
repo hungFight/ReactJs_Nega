@@ -96,6 +96,9 @@ const Posts: React.FC<PropsPosts> = ({
     //     ),
     //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     // ];
+    const emo = dataPosts.feel.onlyEmo.filter((o) => o.id_user.includes(user.id))[0];
+    console.log(emo, 'emo');
+
     return (
         <Div
             width="100%"
@@ -331,13 +334,14 @@ const Posts: React.FC<PropsPosts> = ({
                             width: 100%;
                             color: ${colorText};
                             font-size: 1.8rem;
+                            height: 32px;
                         `}
                     >
                         <Div
                             css={`
                                 width: fit-content;
                                 border-radius: 11px;
-                                margin: 8px;
+                                margin: 5px 8px;
                                 @media (min-width: 768px) {
                                     &:hover .emoji div {
                                         margin: 0 7px;
@@ -348,7 +352,7 @@ const Posts: React.FC<PropsPosts> = ({
                                 }
                             `}
                         >
-                            <Div className="emoji" css="margin-left: 2px; align-items: flex-end;">
+                            <Div className="emoji" css="margin-left: 2px; align-items: flex-end; ">
                                 {dataPosts.feel.onlyEmo.map((key, index) =>
                                     key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : '',
                                 )}
@@ -371,62 +375,70 @@ const Posts: React.FC<PropsPosts> = ({
                                 `}
                                 onTouchStart={handleShowI}
                                 onTouchEnd={handleClearI}
+                                onMouseLeave={() => {
+                                    const divConstant = document.getElementById('emoBarPost');
+                                    if (divConstant) divConstant.removeAttribute('style');
+                                }}
                                 onClick={async () => {
+                                    const divConstant = document.getElementById('emoBarPost');
                                     let check = false;
+                                    let oldData = dataPosts.feel;
+                                    if (divConstant) divConstant.setAttribute('style', 'display: none');
                                     dataPosts.feel.onlyEmo.forEach((o) => {
                                         if (o.id_user.includes(user.id)) check = true;
                                     });
                                     if (check) {
+                                        setDataPosts((pre) =>
+                                            pre.map((p) => {
+                                                if (p._id === dataPosts._id)
+                                                    p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                                        o.id_user = o.id_user.filter((u) => u !== user.id);
+                                                        return o;
+                                                    });
+                                                return p;
+                                            }),
+                                        );
                                         const res = await postAPI.setEmotion({
                                             _id: dataPosts._id,
-                                            index: imotion.id,
+                                            index: dataPosts.feel.act,
                                             id_user: user.id,
                                             state: 'remove',
                                         });
-                                        if (res) {
+                                        if (!res)
                                             setDataPosts((pre) =>
                                                 pre.map((p) => {
-                                                    if (p._id === dataPosts._id)
-                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                                                            o.id_user = o.id_user.filter((u) => u !== user.id);
-                                                            return o;
-                                                        });
+                                                    if (p._id === dataPosts._id) p.feel = oldData;
                                                     return p;
                                                 }),
                                             );
-                                            setImotion({
-                                                id: dataPosts.feel.act,
-                                                icon: dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />,
-                                            });
-                                        }
                                     } else {
+                                        setDataPosts((pre) =>
+                                            pre.map((p) => {
+                                                if (p._id === dataPosts._id)
+                                                    p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                                        if (o.id === dataPosts.feel.act) o.id_user.push(user.id);
+                                                        return o;
+                                                    });
+                                                return p;
+                                            }),
+                                        );
                                         const res = await postAPI.setEmotion({
                                             _id: dataPosts._id,
-                                            index: imotion.id,
+                                            index: dataPosts.feel.act,
                                             id_user: user.id,
                                             state: 'add',
                                         });
-                                        if (res) {
+                                        if (!res)
                                             setDataPosts((pre) =>
                                                 pre.map((p) => {
-                                                    if (p._id === dataPosts._id)
-                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                                                            if (o.id === imotion.id) o.id_user.push(user.id);
-                                                            return o;
-                                                        });
+                                                    if (p._id === dataPosts._id) p.feel = oldData;
                                                     return p;
                                                 }),
                                             );
-                                            dataPosts.feel.onlyEmo.map((i, index, arr) => {
-                                                if (i.id === imotion.id) {
-                                                    setImotion(i);
-                                                }
-                                            });
-                                        }
                                     }
                                 }}
                             >
-                                {imotion.icon}
+                                {emo?.icon ? emo?.icon : dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />}
                                 <Div
                                     id="emoBarPost"
                                     width="fit-content"
@@ -456,14 +468,64 @@ const Posts: React.FC<PropsPosts> = ({
                                             key={i.id}
                                             onClick={async (e) => {
                                                 e.stopPropagation();
-                                                const res = await postAPI.setEmotion({
-                                                    _id: dataPosts._id,
-                                                    index: i.id,
-                                                    id_user: user.id,
-                                                    state: 'update',
-                                                    oldIndex: imotion.id,
+                                                let check = false;
+                                                dataPosts.feel.onlyEmo.forEach((o) => {
+                                                    if (o.id_user.includes(user.id)) check = true;
                                                 });
-                                                setImotion({ id: i.id, icon: i.icon });
+                                                let oldData = dataPosts.feel;
+                                                if (check) {
+                                                    setDataPosts((pre) =>
+                                                        pre.map((p) => {
+                                                            if (p._id === dataPosts._id)
+                                                                p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                                                    o.id_user = o.id_user.filter((u) => u !== user.id);
+                                                                    if (o.id === i.id) o.id_user.push(user.id);
+                                                                    return o;
+                                                                });
+                                                            return p;
+                                                        }),
+                                                    );
+                                                    const res = await postAPI.setEmotion({
+                                                        _id: dataPosts._id,
+                                                        index: i.id,
+                                                        id_user: user.id,
+                                                        state: 'update',
+                                                        oldIndex: emo?.id,
+                                                    });
+                                                    if (!res)
+                                                        setDataPosts((pre) =>
+                                                            pre.map((p) => {
+                                                                if (p._id === dataPosts._id) p.feel = oldData;
+                                                                return p;
+                                                            }),
+                                                        );
+                                                } else {
+                                                    setDataPosts((pre) =>
+                                                        pre.map((p) => {
+                                                            if (p._id === dataPosts._id)
+                                                                p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                                                    if (o.id === dataPosts.feel.act)
+                                                                        o.id_user.push(user.id);
+                                                                    return o;
+                                                                });
+                                                            return p;
+                                                        }),
+                                                    );
+                                                    const res = await postAPI.setEmotion({
+                                                        _id: dataPosts._id,
+                                                        index: dataPosts.feel.act,
+                                                        id_user: user.id,
+                                                        state: 'add',
+                                                    });
+                                                    if (!res)
+                                                        setDataPosts((pre) =>
+                                                            pre.map((p) => {
+                                                                if (p._id === dataPosts._id) p.feel = oldData;
+                                                                return p;
+                                                            }),
+                                                        );
+                                                }
+
                                                 setActImotion(false);
                                             }}
                                         >
