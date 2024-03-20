@@ -19,7 +19,7 @@ const Comment: React.FC<{
     const handleComment = () => {
         setAnonymous(!anonymous);
     };
-    console.log(activate, anony);
+    console.log(activate, anony, 'anonymous');
 
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>
@@ -37,7 +37,7 @@ const Comment: React.FC<{
                 wrap="wrap"
                 css={`
                     height: 70%;
-                    background-color: #2d2f31;
+                    background-color: #18191b6b;
                     position: relative;
                 `}
             >
@@ -48,7 +48,7 @@ const Comment: React.FC<{
                         align-items: center;
                         justify-content: center;
                         position: relative;
-                        border: 1px solid #4a4a4a;
+                        border-bottom: 1px solid #494949;
                     `}
                 >
                     <DivPos size="20px" top="3px" left="6px" onClick={() => setShowComment(false)}>
@@ -163,7 +163,7 @@ const Comment: React.FC<{
                         <SendOPTI />
                     </Div>
                 </Div>
-                <Div width="100%">Results</Div>
+                {/* <Div width="100%">Results</Div> */}
             </Div>
         </DivComment>
     );

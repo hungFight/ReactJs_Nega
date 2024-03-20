@@ -187,8 +187,10 @@ export default function LogicPreView(
                         formData.append('id_sort', JSON.stringify(fil.id_sort));
                     }
                     formDataFake.bg_default = bg;
-                    const returnDataAdded = await fileWorkerAPI.addFiles(formData);
-                    formDataFake.id_file = returnDataAdded;
+                    if (file.length) {
+                        const returnDataAdded = await fileWorkerAPI.addFiles(formData);
+                        formDataFake.id_file = returnDataAdded;
+                    }
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
                     res = await postAPI.setPost(formDataFake);
                     const dataR = ServerBusy(res, dispatch);

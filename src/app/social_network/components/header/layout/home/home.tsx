@@ -60,14 +60,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
         async function fetch() {
             const res = await homeAPI.getPosts(limit, offset.current, 'friend');
             const data: typeof res = ServerBusy(res, dispatch);
-            const newData = data.map((n, index) => {
-                if (n.user[0].id === "It's me") {
-                    n.user[0] = dataUser;
-                }
-                return n;
-            });
-            console.log(newData, 'data post');
-            setDataPosts(newData);
+            setDataPosts(data);
         }
         fetch();
     }, []);

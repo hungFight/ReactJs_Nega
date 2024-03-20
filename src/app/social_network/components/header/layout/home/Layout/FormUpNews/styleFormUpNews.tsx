@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Form = styled.form`
     position: relative;
@@ -155,7 +155,18 @@ export const DivWrapButton = styled.div`
 interface PropsEmo {
     index?: number;
     css?: string;
+    nameFrame?: string;
 }
+const generateKeyframes = (index: any) =>
+    keyframes`
+    0% {
+        top: -10px;
+    }
+    100% {
+        top: 0;
+    }
+`;
+
 export const DivEmoji = styled.div<PropsEmo>`
     width: 100%;
     display: flex;
@@ -167,13 +178,8 @@ export const DivEmoji = styled.div<PropsEmo>`
     user-select: none;
     z-index: ${(props) => props.index};
     ${(props) => props.css};
-    @media (min-width: 350px) {
-        font-size: 13px;
-    }
-    @media (min-width: 768px) {
-        font-size: 15px;
-        /* margin-left: -10px; */
-    }
+    animation: ${(props) => generateKeyframes(props.nameFrame)} 0.5s;
+    font-size: 1.5rem;
 `;
 export const DivAction = styled.div`
     width: 100%;
@@ -224,6 +230,7 @@ export const DivComment = styled.div`
     display: flex;
     flex-wrap: wrap;
     align-items: end;
+    box-shadow: 0 0 24px black;
     @media (max-width: 550px) {
         position: fixed;
         bottom: 0;

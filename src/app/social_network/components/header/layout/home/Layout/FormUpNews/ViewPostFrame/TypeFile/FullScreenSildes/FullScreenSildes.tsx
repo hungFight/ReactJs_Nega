@@ -51,7 +51,11 @@ const FullScreenSildes: React.FC<{
                 {files.map((f) => (
                     <SwiperSlide key={f.link}>
                         {f?.type.includes('image') ? (
-                            <Img src={f?.link || f.pre} id="baby" alt={f?.link} />
+                            <Img
+                                src={f.pre || `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${f?.link}`}
+                                id="baby"
+                                alt={f?.link}
+                            />
                         ) : f?.type.includes('video') ? (
                             <Player src={f?.link || f.pre} step={step} />
                         ) : (

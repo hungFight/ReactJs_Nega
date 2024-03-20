@@ -3,7 +3,6 @@ import { PropsFormHome } from '../FormUpNews/FormUpNews';
 import { PropsUser } from 'src/App';
 
 interface feel {
-    amount: number;
     onlyEmo: {
         id: number;
         icon: string;
@@ -88,6 +87,7 @@ export interface PropsDataPosts {
             onlyImage: string[];
         };
     };
+    whoCanSeePost: { id: number; name: string };
     anonymous: boolean;
     private: {
         id: number;

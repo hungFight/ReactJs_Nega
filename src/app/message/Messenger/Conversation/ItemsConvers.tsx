@@ -992,6 +992,7 @@ const ItemsRoom: React.FC<{
                                   {(rc.text.t || rc?.delete === 'all') && (
                                       <Div width="100%" css="justify-content: start; z-index: 11; position: relative;">
                                           <Div
+                                              display="block"
                                               css={`
                                                   width: fit-content;
                                                   padding: 4px 12px;
