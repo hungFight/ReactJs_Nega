@@ -28,7 +28,7 @@ import {
     IoImage,
     IoLinkOutline,
 } from 'react-icons/io5';
-import { LiaCommentDots, LiaExchangeAltSolid } from 'react-icons/lia';
+import { LiaBalanceScaleRightSolid, LiaCommentDots, LiaComments, LiaExchangeAltSolid } from 'react-icons/lia';
 import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
 import { BiBullseye, BiDotsHorizontalRounded, BiLike, BiReset, BiSolidSquareRounded, BiUser } from 'react-icons/bi';
 import { FcSignature } from 'react-icons/fc';
@@ -278,3 +278,5 @@ export const YoutubeI = () => <PiVideoThin />;
 export const StorageI = () => <TiCloudStorageOutline />;
 export const InventionI = () => <MdOutlineTipsAndUpdates />;
 export const PostCommentI = () => <LiaCommentDots />;
+export const PostCommentInI = () => <LiaComments />;
+export const EscalatorI = () => <LiaBalanceScaleRightSolid />;

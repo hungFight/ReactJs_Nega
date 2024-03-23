@@ -106,14 +106,42 @@ interface PropsDiv {
     wrap?: string;
     css?: string;
     width?: string;
+    height?: string;
     display?: string;
-    justify?: string;
-    align?: string;
 }
+interface PropsDivFlex {
+    wrap?: string;
+    css?: string;
+    width?: string;
+    align?: string;
+    justify?: string;
+    display?: string;
+}
+type PropsDivNone = PropsDiv &
+    PropsDivFlex & {
+        size?: string;
+        border?: string;
+    };
 export const Div = styled.div<PropsDiv>`
     width: ${(props) => props.width};
+    height: ${(props) => props.height};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap || 'none'};
+    ${(props) => props.css}
+`;
+export const DivNone = styled.div<PropsDivNone>`
+    width: ${(props) => props.width};
+    height: ${(props) => props.height};
+    display: ${(props) => props.display};
+    flex-wrap: ${(props) => props.wrap};
+    justify-content: ${(props) => props.justify};
+    align-items: ${(props) => props.align};
+    size: ${(props) => props.size};
+    border: ${(props) => props.border};
+    ${(props) => props.css};
+`;
+export const DivFill = styled.div<PropsDiv>`
+    width: 100%;
     ${(props) => props.css}
 `;
 export const Strong = styled.strong`
@@ -125,7 +153,7 @@ export const Ol = styled.ol`
 export const Li = styled.li`
     ${(props: { css?: string }) => props.css}
 `;
-export const DivFlex = styled.div<PropsDiv>`
+export const DivFlex = styled.div<PropsDivFlex>`
     width: ${(props) => props.width || '100%'};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap || 'none'};
