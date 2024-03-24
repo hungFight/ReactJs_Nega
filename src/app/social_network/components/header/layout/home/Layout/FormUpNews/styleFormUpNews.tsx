@@ -233,8 +233,8 @@ export const DivComment = styled.div`
     box-shadow: 0 0 24px black;
     @media (max-width: 550px) {
         position: fixed;
-        bottom: 0;
+        top: 0;
         left: 0;
-        z-index: 7;
+        z-index: 999;
     }
 `;

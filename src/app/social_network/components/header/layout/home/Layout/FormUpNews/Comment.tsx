@@ -1,18 +1,31 @@
-import { Div, DivFill, DivFlex, DivNone, Img, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import {
+    Div,
+    DivFill,
+    DivFlex,
+    DivFlexPosition,
+    DivNone,
+    Img,
+    Input,
+    P,
+} from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivComment, Label } from './styleFormUpNews';
 import {
     BanI,
     CameraI,
+    DotI,
     EscalatorI,
+    MinusI,
     PostCommentInI,
     ResetI,
     SendI,
     SendOPTI,
     UndoIRegister,
 } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useState } from 'react';
+import { BsDot } from 'react-icons/bs';
+import { FcReadingEbook } from 'react-icons/fc';
 
 const Comment: React.FC<{
     anony: {
@@ -37,22 +50,14 @@ const Comment: React.FC<{
     ];
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>
-            <Div
-                width="100%"
+            <DivFill
                 css={`
-                    height: 30%;
-                    background-color: #202023;
-                    opacity: 0.5;
-                `}
-                onClick={() => setShowComment(false)}
-            ></Div>
-            <Div
-                width="100%"
-                wrap="wrap"
-                css={`
-                    height: 70%;
-                    background-color: #18191b6b;
+                    height: 100%;
+                    background-color: #24262a;
                     position: relative;
+                    @media (min-width: 550px) {
+                        background-color: #18191b6b;
+                    }
                 `}
             >
                 <Div
@@ -68,15 +73,18 @@ const Comment: React.FC<{
                     <DivPos size="20px" top="3px" left="6px" onClick={() => setShowComment(false)}>
                         <UndoIRegister />
                     </DivPos>
-                    <P z="1.4rem">Comment</P>
+                    <P z="1.4rem">Comment</P>{' '}
+                    <Div css="margin-right: 5px;">
+                        <FcReadingEbook />
+                    </Div>{' '}
                     <DivPos size="20px" top="3px" right="6px">
                         <ResetI />
                     </DivPos>
                 </Div>
 
-                <DivFill css=" padding: 10px 35px">
+                <DivFill css=" padding: 10px 14px">
                     <DivFill css="heigh: 100%; border-top: 1px solid #545454; border-left: 1px solid #545454;border-right: 1px solid #545454; border-top-right-radius: 5px;border-top-left-radius: 5px">
-                        <DivFlex justify="start" css="padding: 4px">
+                        <DivFlex justify="start" css="padding: 9px">
                             {iconDatas.map((i) => (
                                 <P
                                     z="1.3rem"
@@ -99,7 +107,7 @@ const Comment: React.FC<{
                                     align-items: center;
                                     justify-content: space-around;
                                     padding: 5px;
-                                    margin: 5px 0;
+                                    margin: 11px 0;
                                     input {
                                         padding: 8px 14px;
                                     }
@@ -198,12 +206,135 @@ const Comment: React.FC<{
                                 </Div>
                             </Div>
                         </DivFill>
-                    </DivFill>
-                    <DivFill>
-                        <DivNone width="100px" height="1px" border="1px solid"></DivNone>
+                        <DivFill css="@media(min-width: 550px){margin-top: 15px;}">
+                            <DivFlex justify="start" css="margin-bottom: 40px">
+                                <DivNone
+                                    width="40px"
+                                    css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"
+                                ></DivNone>
+                                <DivFlexPosition wrap="wrap" position="relative">
+                                    <DivFlex>
+                                        <Avatar
+                                            src=""
+                                            alt=""
+                                            gender={1}
+                                            css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
+                                            radius="50%"
+                                        />
+                                        <DivFlex wrap="wrap" justify="start">
+                                            <Hname>Nguyen Thi Han</Hname>
+                                            <Div>
+                                                <Div css="margin-right: 5px;">
+                                                    <FcReadingEbook />
+                                                </Div>{' '}
+                                                <P z="1.2rem">These are what I want to be</P>
+                                            </Div>
+                                        </DivFlex>
+                                    </DivFlex>
+                                    <DivFlexPosition justify="start" bottom="-25px" position="absolute">
+                                        <BsDot /> <P z="1.1rem">10 phút</P>{' '}
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <P
+                                            z="1.1rem"
+                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                        >
+                                            Cảm xúc
+                                        </P>
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <P
+                                            z="1.1rem"
+                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                        >
+                                            trả lời
+                                        </P>{' '}
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <P
+                                            z="1.1rem"
+                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                        >
+                                            Nhắc đến
+                                        </P>{' '}
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <Div css="cursor: var(--pointer); font-size: 25px;">
+                                            <DotI />
+                                        </Div>
+                                    </DivFlexPosition>
+                                </DivFlexPosition>
+                            </DivFlex>{' '}
+                            <DivFlex justify="start" css="margin-bottom: 40px">
+                                <DivNone
+                                    width="40px"
+                                    css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"
+                                ></DivNone>
+                                <DivFlexPosition wrap="wrap" position="relative">
+                                    <DivFlex>
+                                        <Avatar
+                                            src=""
+                                            alt=""
+                                            gender={1}
+                                            css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
+                                            radius="50%"
+                                        />
+                                        <DivFlex wrap="wrap" justify="start">
+                                            <Hname>Nguyen Hung</Hname>
+                                            <Div>
+                                                <Div css="margin-right: 5px;">
+                                                    <FcReadingEbook />
+                                                </Div>{' '}
+                                                <P z="1.2rem">Wow Awesome</P>
+                                            </Div>
+                                        </DivFlex>
+                                    </DivFlex>
+                                    <DivFlexPosition justify="start" bottom="-25px" position="absolute">
+                                        <BsDot /> <P z="1.1rem">10 phút</P>
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <P
+                                            z="1.1rem"
+                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                        >
+                                            Cảm xúc
+                                        </P>
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <P
+                                            z="1.1rem"
+                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                        >
+                                            trả lời
+                                        </P>{' '}
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <P
+                                            z="1.1rem"
+                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                        >
+                                            Nhắc đến
+                                        </P>{' '}
+                                        <P z="1.1rem" css="margin: 0 5px">
+                                            -
+                                        </P>
+                                        <Div css="cursor: var(--pointer); font-size: 25px;">
+                                            <DotI />
+                                        </Div>
+                                    </DivFlexPosition>
+                                </DivFlexPosition>
+                            </DivFlex>
+                        </DivFill>
                     </DivFill>
                 </DivFill>
-            </Div>
+            </DivFill>
         </DivComment>
     );
 };

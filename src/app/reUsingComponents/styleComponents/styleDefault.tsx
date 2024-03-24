@@ -161,3 +161,29 @@ export const DivFlex = styled.div<PropsDivFlex>`
     align-items: ${(props) => props.align || 'center'};
     ${(props) => props.css}
 `;
+interface PropsDivFlexPosition {
+    wrap?: string;
+    css?: string;
+    width?: string;
+    align?: string;
+    justify?: string;
+    display?: string;
+    position?: string;
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
+}
+export const DivFlexPosition = styled.div<PropsDivFlexPosition>`
+    width: ${(props) => props.width || '100%'};
+    display: ${(props) => props.display || 'flex'};
+    flex-wrap: ${(props) => props.wrap || 'none'};
+    justify-content: ${(props) => props.justify || 'center'};
+    align-items: ${(props) => props.align || 'center'};
+    position: ${(props) => props.position || ''};
+    left: ${(props) => props.left || ''};
+    right: ${(props) => props.right || ''};
+    top: ${(props) => props.top || ''};
+    bottom: ${(props) => props.bottom || ''};
+    ${(props) => props.css}
+`;

@@ -197,13 +197,15 @@ const Posts: React.FC<PropsPosts> = ({
                             {dataPosts.user[0].fullName}
                         </H3>
                         <Div css="font-size: 1.1rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around; white-space: nowrap;">
-                            <LockI />
-                            <Span css="padding-top: 3px; margin: 0 5px">{fromNow}</Span>
-                            <Span>
+                            <Div css="color: #a3c8e6; font-size: 13px;">
+                                <LockI />
+                            </Div>
+                            <Span css="padding-top: 3px; margin: 0 5px;">{fromNow}</Span>
+                            <Span css="font-size: 14px">
                                 {
                                     [
                                         { id: 1, icon: <PrivacyI /> },
-                                        { id: 2, icon: <FriendI /> },
+                                        { id: 2, icon: <FriendI />, color: '#58a3de' },
                                         { id: 3, icon: <EarthI /> },
                                     ].filter((t) => t.id === dataPosts.whoCanSeePost.id)[0].icon
                                 }
