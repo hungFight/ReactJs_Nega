@@ -46,7 +46,7 @@ const Comment: React.FC<{
         { id: 1, icon: 'Mới nhất' },
         { id: 2, icon: 'Cũ nhất' },
         { id: 3, icon: 'Nhiều lượt thích nhất' },
-        { id: 3, icon: 'Bạn bè' },
+        { id: 4, icon: 'Bạn bè' },
     ];
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>

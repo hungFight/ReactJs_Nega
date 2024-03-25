@@ -155,7 +155,7 @@ export default function LogicView(
             //delete
             console.log('delete', id, data, user);
             if (user.avatar || user.background) {
-                const fileUploaded = await fileWorkerAPI.deleteFile(avBg);
+                const fileUploaded = await fileWorkerAPI.deleteFileImg([avBg]);
                 if (fileUploaded) {
                     setLoading(true);
                     const res = await userAPI.changesOne(

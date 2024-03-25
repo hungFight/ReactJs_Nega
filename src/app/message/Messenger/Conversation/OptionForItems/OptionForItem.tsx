@@ -156,7 +156,7 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        const id_file_deleted = await fileWorkerAPI.deleteFile(id_file);
+                        const id_file_deleted = await fileWorkerAPI.deleteFileImg(id_file);
                         if (id_file_deleted) {
                             const res = await chatAPI.delChatAll(
                                 conversation._id,
@@ -261,7 +261,7 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        const id_file_deleted = await fileWorkerAPI.deleteFile(id_file);
+                        const id_file_deleted = await fileWorkerAPI.deleteFileImg(id_file);
                         if (id_file_deleted) {
                             const res = await chatAPI.delChatAll(
                                 conversation._id,

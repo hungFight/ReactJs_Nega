@@ -52,7 +52,7 @@ const FullScreenSildes: React.FC<{
                     <SwiperSlide key={f.link}>
                         {f?.type.includes('image') ? (
                             <Img
-                                src={f.pre || `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${f?.link}`}
+                                src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`}
                                 id="baby"
                                 alt={f?.link}
                             />

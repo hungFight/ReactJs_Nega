@@ -140,13 +140,17 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
             e.target.style.backgroundSize = ((val - min) * 100) / (max - min) + '% 100%';
         }
     };
-    const [speed, setSpeed] = useState<{ id: number; val: number }>({ id: 3, val: 1 });
+    const [speed, setSpeed] = useState<{ id: number; val: number; text?: string }>({ id: 3, val: 1, text: 'Normal' });
     const [forward, setForward] = useState<{ id: number; val: number }>({ id: 2, val: 10 });
     const options: {
         id: number;
         name: string;
         title: ReactElement | string;
-        bg: number;
+        value?: {
+            id: number;
+            val: number;
+            text?: string;
+        };
         icon: ReactElement;
         type?: string;
         onClick: (v: { id: number; val: number }) => void;
@@ -156,9 +160,9 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
             id: 1,
             title: <SpeedI />,
             name: 'Speed',
-            bg: speed.id,
+            value: speed,
             icon: <SpeedI />,
-            onClick: (v: { id: number; val: number }) => {
+            onClick: (v: { id: number; val: number; text?: string }) => {
                 video.current.playbackRate = v.val;
                 setSpeed(v);
             },
@@ -175,7 +179,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
         {
             id: 2,
             name: 'Forward',
-            bg: forward.id,
+            value: forward,
             onClick: (v: { id: number; val: number }) => setForward(v),
             title: (
                 <DivFlex width="auto" css="margin-right: 5px;">
@@ -198,7 +202,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                 { id: 6, val: 30 },
             ],
         },
-        { id: 3, onClick: () => {}, bg: 1, name: 'Group', title: 'Group', icon: <GroupPeopleI />, data: [] },
+        { id: 3, onClick: () => {}, name: 'Group', title: 'Group', icon: <GroupPeopleI />, data: [] },
     ];
     console.log(speed, forward);
     const [picture, setPicture] = useState<string>('');
@@ -255,14 +259,19 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                 user-select: none;
                 &:hover {
                     .controls {
-                        bottom: 0;
+                        bottom: 10px;
                     }
                 }
-                ${fullScreen && 'position: fixed; top: 0; left: 0; z-index: 999; height: 100%;'}
+                ${fullScreen ? 'position: fixed; top: 0; left: 0; z-index: 999; height: 100%;' : ''}
             `}
             onClick={() => setOpt(false)}
         >
-            <Video src={src} ref={video} onClick={handlePlay} style={{ borderRadius: radius }} />
+            <Video
+                src={`${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1 || ''}/${src}`}
+                ref={video}
+                onClick={handlePlay}
+                style={{ borderRadius: radius }}
+            />
             <DivControls className="controls" onClick={(e) => e.stopPropagation()}>
                 <Div
                     width="100%"
@@ -293,8 +302,9 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         width="auto"
                         css={`
                             position: absolute;
-                            top: -22px;
-                            right: 0px;
+                            top: -26px;
+                            right: -2px;
+                            font-size: 20px;
                             cursor: var(--pointer);
                         `}
                         onClick={() => setOpt(!opt)}
@@ -302,42 +312,50 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         <SettingI />
                         {opt && (
                             <Div
-                                width="100px"
+                                width="200px"
                                 display="block"
-                                css="position: absolute; top: -89px; right: 0px; background-color: #00000075; padding: 5px 9px; border-radius: 5px;"
+                                css="position: absolute; top: -105px; right: 0px; background-color: #2727278a;color: white; padding: 5px 0; border-radius: 1px;"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {options.map((o) => (
                                     <DivFlex
                                         key={o.id}
-                                        justify="left"
-                                        css="padding: 3px; &:hover{background-color: #3d3e3ef0;} &:active{.deep{display: block}} border-radius: 5px; &:hover{.deep{display: block}}"
+                                        justify="space-between"
+                                        css="padding: 5px 8px; &:hover{background-color: #3d3d3d9e;} &:active{.deep{display: block}} &:hover{.deep{display: block}}"
                                     >
-                                        <Div css="margin-right: 5px">{o.icon}</Div>
-                                        <P z="1.3rem">{o.name}</P>
+                                        <DivFlex width="auto">
+                                            <Div css="margin-right: 5px">{o.icon}</Div>
+                                            <P z="1.3rem">{o.name}</P>
+                                        </DivFlex>
+                                        <P z="1.3rem">
+                                            {o.value
+                                                ? `${o.value.val} ${
+                                                      o.id === 2 ? 's' : o.value?.text ? o.value?.text : ''
+                                                  }`
+                                                : null}
+                                        </P>
                                         <Div
                                             width="9px"
                                             display="none"
                                             className="deep"
-                                            css="height: 83px; position: absolute; left:0; top: 0;.deep{display: block}"
+                                            css="height: 100px; position: absolute; left:-6px; top: 0;.deep{display: block}"
                                         ></Div>
                                         <Div
                                             width="100%"
                                             display="none"
                                             className="deep"
-                                            css="position: absolute; bottom: 0; right: 100%; background-color: #000000de; border-radius: 5px; padding: 5px 9px; &:hover{display: block}"
+                                            css="position: absolute; bottom: 0; right: 102%; background-color: #2727278a; border-radius: 5px; padding: 5px 9px; &:hover{display: block}"
                                         >
                                             <DivFlex>{o.title}</DivFlex>
                                             {o.data?.map((x) => (
                                                 <Div
                                                     key={x.id}
                                                     css={`
-                                                        padding: 3px;
+                                                        padding: 5px;
                                                         &:hover {
                                                             background-color: #585858ab;
                                                         }
-                                                        ${o.bg === x.id ? 'background-color: #585858ab;' : ''}
-                                                        border-radius: 5px;
+                                                        ${o.value?.id === x.id ? 'background-color: #585858ab;' : ''}
                                                     `}
                                                     onClick={() => o.onClick(x)}
                                                 >
@@ -385,7 +403,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         `}
                     >
                         <Div
-                            css="width: 30px; height: 100%; align-items: center; justify-content: center;  font-size: 16px;  align-items: center; cursor: var(--pointer);"
+                            css="width: 30px; height: 100%; align-items: center; justify-content: center;  font-size: 18px;  align-items: center; cursor: var(--pointer);"
                             onClick={handlePlay}
                         >
                             {play ? <PauseI /> : <PlayI />}
@@ -403,7 +421,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                                         display: flex;
                                     }
                                 }
-                                font-size: 21px;
+                                font-size: 25px;
                             `}
                         >
                             {volume ? <VolumeOnI /> : <VolumeOffI />}
@@ -412,13 +430,11 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                                 width="115px"
                                 className="Volume"
                                 css={`
-                                    top: -68px;
                                     justify-content: center;
-                                    left: -15px;
+                                    left: 57px;
                                     margin-left: 5px;
                                     align-items: center;
                                     position: absolute;
-                                    transform: rotateZ(270deg);
                                     height: 32px;
                                 `}
                                 onClick={(e) => e.stopPropagation()}
@@ -443,7 +459,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         <DivFlex width="auto" css="margin-right: 5px;">
                             <DivFlex
                                 width="auto"
-                                css="font-size: 20px; cursor: var(--pointer)"
+                                css="font-size: 21px; cursor: var(--pointer)"
                                 onClick={() => {
                                     video.current.currentTime =
                                         video.current.currentTime - forward.val <= 0
@@ -455,7 +471,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                             </DivFlex>
                             <DivFlex
                                 width="auto"
-                                css="font-size: 20px; cursor: var(--pointer)"
+                                css="font-size: 21px; cursor: var(--pointer)"
                                 onClick={() => {
                                     video.current.currentTime =
                                         video.current.currentTime + forward.val >= video.current.duration
@@ -483,15 +499,36 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                                     <FullScreenI />
                                 </Div> */}
                         </Div>
-                        <DivFlex
-                            width="22px"
-                            css={`
-                                cursor: var(--pointer);
-                            `}
-                            onClick={() => setFullScreen(!fullScreen)}
-                        >
-                            {fullScreen ? <ScreenI /> : <FullScreenI />}
-                        </DivFlex>
+                        {!fullScreen ? (
+                            <DivFlex
+                                width="22px"
+                                css={`
+                                    font-size: 20px;
+                                    cursor: var(--pointer);
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFullScreen(true);
+                                }}
+                            >
+                                {' '}
+                                <FullScreenI />
+                            </DivFlex>
+                        ) : (
+                            <DivFlex
+                                width="22px"
+                                css={`
+                                    font-size: 20px;
+                                    cursor: var(--pointer);
+                                `}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFullScreen(false);
+                                }}
+                            >
+                                <ScreenI />
+                            </DivFlex>
+                        )}
                     </Div>
                 </DivFlex>
             </DivControls>

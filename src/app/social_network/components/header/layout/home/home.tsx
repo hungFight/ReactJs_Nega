@@ -256,7 +256,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                             border-radius: 5px;
                             padding-top: 5px;
                             position: fixed;
-                            z-index: 1;
+                            z-index: 2;
                             top: -50px;
                             width: max-content;
                             right: 50%;

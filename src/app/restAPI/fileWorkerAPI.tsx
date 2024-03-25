@@ -14,20 +14,30 @@ class fileWorkerAPI {
             return errorHandling(err);
         }
     };
-    deleteFile = async (ids: string[]) => {
+    deleteFileImg = async (ids: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.post<boolean>(`/deleteFile`, { ids });
+            const res = await httpFile.post<boolean>(`/deleteFileImg`, { ids });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
             return errorHandling(err);
         }
     };
-    getFile = async (id: string) => {
+    getFileImg = async (id: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.get(`/getFile/${id}`);
+            const res = await httpFile.get(`/getFileImg/${id}`);
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    getFileVideo = async (id: string) => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await httpFile.get(`/getFileVideo/${id}`);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

@@ -642,7 +642,7 @@ const Conversation: React.FC<{
                 transition: all 0.5s linear;
                 background-blend-mode: soft-light;
                 ${conversation?.background
-                    ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${conversation?.background._id}); background-repeat: no-repeat;background-size: cover;`
+                    ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${conversation?.background._id}); background-repeat: no-repeat;background-size: cover;`
                     : ''}
 
                 @media (min-width: 500px) {

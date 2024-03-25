@@ -75,8 +75,8 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         }
     };
     useEffect(() => {
-        if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${src}`)
-            setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${src}`);
+        if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`)
+            setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`);
         if (!src && avatarFallback) setAvatarFallback('');
     }, [src]);
     const events = {

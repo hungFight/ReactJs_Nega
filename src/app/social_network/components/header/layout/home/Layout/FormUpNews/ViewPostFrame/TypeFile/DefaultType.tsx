@@ -188,6 +188,7 @@ const DefaultType: React.FC<{
                     return (
                         <Div
                             display="block"
+                            width="100%"
                             key={f?.link || f.pre}
                             css={`
                                 ${arr.length === 3 && arr.length === index + 1 ? 'grid-column: span 2' : ''}
@@ -212,7 +213,7 @@ const DefaultType: React.FC<{
                                     ${showTitle && step === 1 && 'padding-bottom: 24px'};
                                     color: ${colorText};
                                     height: ${heightV};
-                                    /* ${step > 1
+                                    ${arr.length === 1 && f.type === 'video' ? 'height: 600px;' : ''}/* ${step > 1
                                         ? `position: fixed; height: 100%; top: 0; left:0; z-index: 103; background-color: #0e0e0d; img,div.video-react-controls-enabled{object-fit: contain; margin: auto;}`
                                         : ''} */
                                 `}
@@ -220,6 +221,7 @@ const DefaultType: React.FC<{
                                 <Resize
                                     link={link}
                                     f={f}
+                                    arr={arr}
                                     index={index}
                                     setShowComment={setShowComment}
                                     showComment={showComment}

@@ -14,12 +14,18 @@ const Resize: React.FC<{
     index: number;
     setShowComment: (value: React.SetStateAction<number[]>) => void;
     link?: boolean;
-}> = ({ f, step, setShowComment, showComment, index, link }) => {
+    arr: PropsDataFileUpload[];
+}> = ({ f, step, setShowComment, showComment, index, link, arr }) => {
     // not done
     return (
         <Div
             width="100%"
-            css="height: 100%; position: relative; justify-content: center; cursor: var(--pointer)"
+            css={`
+                height: 100%;
+                position: relative;
+                justify-content: center;
+                cursor: var(--pointer);
+            `}
             onClick={() => {
                 if (link) {
                 }
@@ -27,7 +33,7 @@ const Resize: React.FC<{
         >
             {f?.type === 'image' ? (
                 <Img
-                    src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_V1}/getFile/${f?.link}`}
+                    src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`}
                     id="baby"
                     alt={f?.link}
                     css={`

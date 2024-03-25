@@ -375,7 +375,7 @@ const Posts: React.FC<PropsPosts> = ({
                                 onClick={(e) => e.stopPropagation()}
                                 css="margin-left: 2px; align-items: flex-end; "
                             >
-                                {sortEmo.map((key, index) =>
+                                {/* {sortEmo.map((key, index) =>
                                     key.id_user.length ? (
                                         <DivEmoji key={key.id}>
                                             {key.icon}
@@ -386,7 +386,7 @@ const Posts: React.FC<PropsPosts> = ({
                                     ) : (
                                         ''
                                     ),
-                                )}
+                                )} */}
                                 <P z="1.5rem" css="@media(min-width: 768px){font-size: 1.4rem}">
                                     {amount > 0 ? amount : null}
                                 </P>
