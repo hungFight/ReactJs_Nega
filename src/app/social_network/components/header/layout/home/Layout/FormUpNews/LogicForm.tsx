@@ -157,7 +157,12 @@ export default function LogicForm(
         setInputValue('');
     };
     const handleEmojiSelect = (e: any) => {
-        setInputValue(inputValue + e.native);
+        if (quillRef.current) {
+            const range = quillRef.current.getEditor().getSelection();
+            if (range) {
+                quillRef.current.getEditor().insertText(range.index, e.native);
+            }
+        }
     };
     const handleDisEmoji = useCallback(() => {
         setdisplayEmoji(!displayEmoji);
