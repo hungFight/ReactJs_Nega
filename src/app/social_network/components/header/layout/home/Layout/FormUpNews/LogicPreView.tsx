@@ -76,7 +76,7 @@ export default function LogicPreView(
     // show option of post
     const [options, setOptions] = useState<boolean>(false);
     const [showAc, setShowAc] = useState<boolean>(false);
-    const [showComment, setShowComment] = useState<boolean>(false);
+    const [showComment, setShowComment] = useState<string>('');
     const [actImotion, setActImotion] = useState<boolean>(false);
     const [showI, setShowI] = useState<{ id: number; icon: string } | undefined>();
     const [acEmo, setAcEmo] = useState<{ id: number; icon: React.ReactElement }>({ id: 1, icon: <LikeI /> }); // display a button as like to press

@@ -32,7 +32,7 @@ const Comment: React.FC<{
         id: number;
         name: string;
     }[];
-    setShowComment: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowComment: React.Dispatch<React.SetStateAction<string>>;
     colorText: string;
 }> = ({ anony, setShowComment, colorText }) => {
     const anonymousIndex = 4;
@@ -70,7 +70,7 @@ const Comment: React.FC<{
                         border-bottom: 1px solid #494949;
                     `}
                 >
-                    <DivPos size="20px" top="3px" left="6px" onClick={() => setShowComment(false)}>
+                    <DivPos size="20px" top="3px" left="6px" onClick={() => setShowComment('')}>
                         <UndoIRegister />
                     </DivPos>
                     <P z="1.4rem">Comment</P>{' '}

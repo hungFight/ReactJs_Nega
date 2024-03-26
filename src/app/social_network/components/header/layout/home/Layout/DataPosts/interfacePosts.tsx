@@ -98,6 +98,8 @@ export interface PropsDataPosts {
 
 export interface PropsPosts {
     user: PropsUser;
+    setShowComment: React.Dispatch<React.SetStateAction<string>>;
+    showComment: string;
     colorBg: number;
     colorText: string;
     setDataPosts: React.Dispatch<React.SetStateAction<PropsDataPosts[]>>;

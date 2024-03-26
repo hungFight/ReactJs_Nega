@@ -42,6 +42,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const dispatch = useDispatch();
     const { userBar, form } = home;
     const [formThat, setFormThat] = useState<ReactElement | null>(null);
+    const [showComment, setShowComment] = useState<string>('');
 
     const [category, setCategory] = useState<{ id: string; icon: ReactElement }>({ id: 'post', icon: <PostsI /> });
     const [options, setOptions] = useState<string>('');
@@ -89,6 +90,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     return (
         <Div
             width="100%"
+            id="postScrolledUpAway"
             css={`
                 overflow-y: overlay;
                 height: 100%;
@@ -344,6 +346,8 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 colorBg={colorBg}
                                 colorText={colorText}
                                 dataPosts={p}
+                                setShowComment={setShowComment}
+                                showComment={showComment}
                             />
                         ))}
                     </Div>

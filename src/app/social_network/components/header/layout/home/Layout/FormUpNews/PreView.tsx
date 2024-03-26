@@ -799,7 +799,7 @@ const PreviewPost: React.FC<{
                             </DivAction>
                         )}
                         {!valuePrivacy.some((t) => t.id === 2) && (
-                            <DivAction onClick={() => setShowComment(true)}>
+                            <DivAction onClick={() => setShowComment('ok')}>
                                 <P css="font-size: 1.3rem;">...Comments</P>
                             </DivAction>
                         )}
