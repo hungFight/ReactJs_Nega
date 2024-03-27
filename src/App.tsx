@@ -356,7 +356,7 @@ function App() {
 
     `;
     // console.log('id_cookie', userId, userData, id_chats, chats);
-
+    if (session) return <ErrorBoundaries message={session} />;
     if (token && userId) {
         return (
             <Suspense

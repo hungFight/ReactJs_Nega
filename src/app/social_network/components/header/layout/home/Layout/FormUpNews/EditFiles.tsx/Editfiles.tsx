@@ -29,12 +29,12 @@ const EditFiles: React.FC<{
             const filUp: PropsDataFileUpload[] = [];
             for (let i = 0; i < upLoad.length; i++) {
                 filUp.push({
-                    type: upLoad[i].type,
-                    pre: '',
+                    type: upLoad[i].type.split('/')[0],
+                    pre: URL.createObjectURL(upLoad[i]),
                     file: upLoad[i],
                     title: '',
                     id_sort: file[file.length - 1].id_sort + i + 1,
-                    link: URL.createObjectURL(upLoad[i]),
+                    link: '',
                 });
             }
             setUploadPre((pre) => [...pre, ...filUp]);

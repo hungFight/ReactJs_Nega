@@ -41,7 +41,7 @@ const Resize: React.FC<{
                     `}
                 />
             ) : f?.type.includes('video') ? (
-                <Player src={f?.link || f.pre} step={step} />
+                <Player src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${f?.link}`} step={step} />
             ) : (
                 ''
             )}

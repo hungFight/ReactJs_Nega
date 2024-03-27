@@ -45,19 +45,28 @@ const FullScreenSildes: React.FC<{
                 .swiper-pagination-bullet-active {
                     background-color: #219599 !important;
                 }
+                .swiper-pagination-bullets {
+                    left: 50% !important;
+                    right: 50% !important;
+                    translate: -50% !important;
+                    width: max-content !important;
+                }
             `}
         >
             <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiperFull">
                 {files.map((f) => (
                     <SwiperSlide key={f.link}>
-                        {f?.type.includes('image') ? (
+                        {f?.type === 'image' ? (
                             <Img
                                 src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`}
                                 id="baby"
                                 alt={f?.link}
                             />
-                        ) : f?.type.includes('video') ? (
-                            <Player src={f?.link || f.pre} step={step} />
+                        ) : f?.type === 'video' ? (
+                            <Player
+                                src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${f?.link}`}
+                                step={step}
+                            />
                         ) : (
                             ''
                         )}

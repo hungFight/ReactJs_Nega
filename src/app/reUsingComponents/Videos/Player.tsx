@@ -267,7 +267,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
             onClick={() => setOpt(false)}
         >
             <Video
-                src={`${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1 || ''}/${src}`}
+                src={src}
                 ref={video}
                 onClick={handlePlay}
                 style={{ borderRadius: radius }}
