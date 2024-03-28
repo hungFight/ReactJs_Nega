@@ -217,7 +217,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
         const second = Math.ceil((value * showTime) / 100);
         const canvas = document.createElement('canvas');
         const vid = document.createElement('video');
-        vid.src = src;
+        vid.src = `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${src}`;
         vid.currentTime = second;
         vid.addEventListener('seeked', () => {
             if (!(Image.current?.getAttribute('alt') === 'remove')) {
@@ -266,12 +266,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
             `}
             onClick={() => setOpt(false)}
         >
-            <Video
-                src={src}
-                ref={video}
-                onClick={handlePlay}
-                style={{ borderRadius: radius }}
-            />
+            <Video src={src} ref={video} onClick={handlePlay} style={{ borderRadius: radius }} />
             <DivControls className="controls" onClick={(e) => e.stopPropagation()}>
                 <Div
                     width="100%"

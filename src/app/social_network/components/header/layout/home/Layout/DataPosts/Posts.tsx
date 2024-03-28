@@ -1,5 +1,5 @@
 import { DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Div, H3, Img, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews';
 import { DotI, EarthI, FriendI, HeartI, LikeI, LockI, PostCommentI, PrivacyI, ShareI } from '~/assets/Icons/Icons';
@@ -70,13 +70,7 @@ const Posts: React.FC<PropsPosts> = ({
                         console.log(entries, 'entries');
                         entries.forEach((entry) => {
                             if (!entry.isIntersecting) {
-                                if (showComment === dataPosts._id) setShowComment('');
-                                console.log(
-                                    'Element scrolled up away from screen',
-                                    dataPosts._id,
-                                    'showComment',
-                                    showComment,
-                                );
+                                if (showComment === dataPosts._id && showComment) setShowComment('');
                             }
                         });
                     },
@@ -684,4 +678,4 @@ const Posts: React.FC<PropsPosts> = ({
         </div>
     );
 };
-export default Posts;
+export default memo(Posts);

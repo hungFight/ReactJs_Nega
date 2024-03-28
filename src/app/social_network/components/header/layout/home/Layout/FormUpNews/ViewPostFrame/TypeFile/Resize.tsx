@@ -16,6 +16,8 @@ const Resize: React.FC<{
     link?: boolean;
     arr: PropsDataFileUpload[];
 }> = ({ f, step, setShowComment, showComment, index, link, arr }) => {
+    console.log('imggg');
+
     // not done
     return (
         <Div
