@@ -7,20 +7,17 @@ const errorHandling = (error: AxiosError) => {
     if (error.response) {
         const data: any = error.response.data;
         const res = error.response;
-        console.log(data, 'data Error', res);
-
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         if ((data.status === 0 || data.errorAny === 0) && error.response.status !== 500) {
             // data.status === 0 define haven't logged in
-            console.log(data, 'data Error');
-
             return 'NeGA_off';
+        } else if (data.status === 8888) {
+            return 'NeGA_off_u';
         } else if (res.status === 500 && data?.messageObject.status === 9999) {
             return data?.messageObject.message;
         } else if (res.status === 404) {
             return data.message;
-        } else if (res.status === 401) {
         }
         console.log(res.data);
         console.log(res.status);

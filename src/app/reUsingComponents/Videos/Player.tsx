@@ -207,39 +207,39 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
     console.log(speed, forward);
     const [picture, setPicture] = useState<string>('');
     const Image = useRef<HTMLImageElement | null>(null);
-    const handleHover = (e: any) => {
-        if (Image.current) Image.current.alt = '';
+    // const handleHover = (e: any) => {
+    //     if (Image.current) Image.current.alt = '';
 
-        const progressBar = e.target;
-        const mouseX = e.clientX - progressBar.getBoundingClientRect().left;
-        const progressBarWidth = progressBar.clientWidth;
-        const value = (mouseX / progressBarWidth) * 100; // Calculate the value as a percentage
-        const second = Math.ceil((value * showTime) / 100);
-        const canvas = document.createElement('canvas');
-        const vid = document.createElement('video');
-        vid.src = `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${src}`;
-        vid.currentTime = second;
-        vid.addEventListener('seeked', () => {
-            if (!(Image.current?.getAttribute('alt') === 'remove')) {
-                // Draw the frame on the canvas
-                canvas.width = vid.videoWidth;
-                canvas.height = vid.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx?.drawImage(vid, 0, 0, canvas.width, canvas.height);
-                const imageSrc = canvas.toDataURL('image/jpeg');
-                if (imageSrc)
-                    if (Image.current) {
-                        Image.current.src = imageSrc;
-                        Image.current.style.display = 'block';
-                    }
+    //     const progressBar = e.target;
+    //     const mouseX = e.clientX - progressBar.getBoundingClientRect().left;
+    //     const progressBarWidth = progressBar.clientWidth;
+    //     const value = (mouseX / progressBarWidth) * 100; // Calculate the value as a percentage
+    //     const second = Math.ceil((value * showTime) / 100);
+    //     const canvas = document.createElement('canvas');
+    //     const vid = document.createElement('video');
+    //     vid.src = src;
+    //     vid.currentTime = second;
+    //     vid.addEventListener('seeked', () => {
+    //         if (!(Image.current?.getAttribute('alt') === 'remove')) {
+    //             // Draw the frame on the canvas
+    //             canvas.width = vid.videoWidth;
+    //             canvas.height = vid.videoHeight;
+    //             const ctx = canvas.getContext('2d');
+    //             ctx?.drawImage(vid, 0, 0, canvas.width, canvas.height);
+    //             const imageSrc = canvas.toDataURL('image/jpeg');
+    //             if (imageSrc)
+    //                 if (Image.current) {
+    //                     Image.current.src = imageSrc;
+    //                     Image.current.style.display = 'block';
+    //                 }
 
-                console.log(second, 'value', mouseX, progressBarWidth, ctx);
-            }
-            // Now, ctx contains the frame at the specified time
-        });
+    //             console.log(second, 'value', mouseX, progressBarWidth, ctx);
+    //         }
+    //         // Now, ctx contains the frame at the specified time
+    //     });
 
-        //  setHoverValue(value);
-    };
+    //     //  setHoverValue(value);
+    // };
     const handleMouseLeave = () => {
         if (Image.current) {
             Image.current.src = '';
@@ -380,7 +380,7 @@ const Player: React.FC<{ src: string; step?: number; height?: string; radius?: s
                         onMouseUp={handleMouseUp}
                         onTouchStart={handleMouseDown}
                         onTouchEnd={handleMouseUp}
-                        onMouseMove={handleHover}
+                        // onMouseMove={handleHover}
                         onMouseLeave={handleMouseLeave}
                         css="background-size: 0;padding: 2px 0;"
                     />

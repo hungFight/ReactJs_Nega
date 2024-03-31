@@ -37,7 +37,6 @@ const ErrorBoundaries: React.FC<{
                         dispatch(setFalseErrorServer());
                         if (login) {
                             Cookies.remove('tks');
-                            Cookies.remove('k_user');
                             removeCookies('k_user');
                         }
                     }}

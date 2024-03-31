@@ -7,6 +7,7 @@ import {
     Img,
     Input,
     P,
+    Textarea,
 } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivComment, Label } from './styleFormUpNews';
 import {
@@ -23,9 +24,12 @@ import {
 } from '~/assets/Icons/Icons';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { BsDot } from 'react-icons/bs';
 import { FcReadingEbook } from 'react-icons/fc';
+import QuillText from '~/reUsingComponents/Libraries/QuillText';
+import { PropsValueQuill } from './FormUpNews';
+import ReactQuill from 'react-quill';
 
 const Comment: React.FC<{
     anony: {
@@ -36,6 +40,14 @@ const Comment: React.FC<{
     colorText: string;
 }> = ({ anony, setShowComment, colorText }) => {
     const anonymousIndex = 4;
+    const textarea = useRef<HTMLTextAreaElement | null>(null);
+    const quillRef = useRef<ReactQuill>(null);
+    const consider = useRef<number>(0);
+    const valueQuill = useRef<PropsValueQuill>({ url: '', text: '' });
+    const valueSelected = useRef<boolean>(false);
+    const tagDivURL = useRef<HTMLDivElement | null>(null);
+    const [insertURL, setInsertURL] = useState<boolean>(false);
+    const [value, setValue] = useState<string>('');
     const [anonymous, setAnonymous] = useState<boolean>(false);
     const [activate, setActivate] = useState<number>(1);
     const handleComment = () => {
@@ -48,6 +60,35 @@ const Comment: React.FC<{
         { id: 3, icon: 'Nhiều lượt thích nhất' },
         { id: 4, icon: 'Bạn bè' },
     ];
+    const handleOnKeyup = (e: any) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // handleSend(conversation?._id, conversation?.user.id);
+        } else {
+            e.target.setAttribute('style', 'height: auto');
+            if (e.key === 'Backspace') {
+                e.target.setAttribute(
+                    'style',
+                    `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`,
+                );
+            } else {
+                e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
+            }
+        }
+    };
+    const handleOnKeyDown = (e: any) => {
+        console.log(e.key);
+        if (e.key === 'Enter') e.preventDefault();
+        if (e.key === 'Alt') {
+            e.preventDefault();
+            e.target.value += '\n';
+        }
+    };
+    const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        console.log(e.target.value, 'enter');
+        setValue(e.target.value);
+    };
+    const onChange = (value: string) => {};
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>
             <DivFill
@@ -193,13 +234,49 @@ const Comment: React.FC<{
                                         <CameraI />
                                     </Label>
                                 </Div>
-                                <Input
-                                    placeholder="Comment"
+                                {/* <Textarea
+                                    ref={textarea}
                                     width="70%"
+                                    height="32px"
+                                    placeholder="comment"
+                                    value={value}
+                                    bg="#333333"
+                                    color="white"
+                                    radius="10px"
+                                    size="1.4rem"
+                                    padding="8px 14px"
                                     border="0"
-                                    radius="50px"
-                                    color={colorText}
-                                    background="#454545;"
+                                    css={`
+                                        overflow-y: overlay;
+                                    `}
+                                    onKeyDown={(e) => handleOnKeyDown(e)}
+                                    onKeyUp={(e) => handleOnKeyup(e)}
+                                    onChange={handleWriteText}
+                                /> */}
+                                <QuillText
+                                    consider={consider}
+                                    css={`
+                                        width: 70%;
+                                        background-color: #373737;
+                                        border-radius: 10px;
+                                        padding: 5px 10px;
+                                        .ql-editor {
+                                            outline: none;
+                                        }
+                                        .ql-container.ql-snow {
+                                            border: 0;
+                                        }
+                                        * {
+                                            font-size: 1.4rem;
+                                        }
+                                    `}
+                                    insertURL={insertURL}
+                                    setInsertURL={setInsertURL}
+                                    onChange={onChange}
+                                    quillRef={quillRef}
+                                    tagDivURL={tagDivURL}
+                                    valueQuill={valueQuill}
+                                    valueText=""
                                 />
                                 <Div css="font-size: 20px">
                                     <SendOPTI />

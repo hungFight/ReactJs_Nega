@@ -187,3 +187,46 @@ export const DivFlexPosition = styled.div<PropsDivFlexPosition>`
     bottom: ${(props) => props.bottom || ''};
     ${(props) => props.css}
 `;
+interface PorpsTextarea {
+    bg?: string;
+    font?: string;
+    BoBg?: string;
+    wrap?: string;
+    css?: string;
+    width?: string;
+    align?: string;
+    justify?: string;
+    display?: string;
+    height?: string;
+    size?: string;
+    border?: string;
+    padding?: string;
+    radius?: string;
+}
+
+export const Textarea = styled.textarea<PorpsTextarea>`
+    width: ${(props) => props.width};
+    height: ${(props) => props.height};
+    display: ${(props) => props.display};
+    flex-wrap: ${(props) => props.wrap};
+    justify-content: ${(props) => props.justify};
+    align-items: ${(props) => props.align};
+    font-size: ${(props) => props.size};
+    border: ${(props) => props.border};
+    ${(props) => props.css};
+    padding: ${(props) => props.padding};
+    resize: none;
+    color: ${(props) => props.color};
+    border: ${(props) => props.border};
+    border-radius: ${(props) => props.radius};
+    outline: none;
+    background-color: ${(props) => props.bg};
+    font-family: '${(props) => props.font}', sans-serif;
+    ${(props) => props.css}
+    &::placeholder {
+        color: ${(props) => props.color};
+    }
+    @media (min-width: 768px) {
+        font-size: 1.4rem;
+    }
+`;
