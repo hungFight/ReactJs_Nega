@@ -18,6 +18,7 @@ const QuillText: React.FC<{
         <ReactQuillF
             ref={quillRef}
             onChange={onChange}
+            placeholder="comment"
             value={valueText}
             onChangeSelection={(range) => {
                 if (quillRef.current) {

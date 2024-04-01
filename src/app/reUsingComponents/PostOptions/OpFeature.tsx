@@ -6,12 +6,12 @@ import LogicText from './logicOpFeature';
 
 const OpFeatureSetting: React.FC<{
     setOptions: React.Dispatch<React.SetStateAction<boolean>>;
-    valuePrivacy: { id: number; name: string }[];
+    valuePrivacy: { id: string; name: string }[];
     typeExpire: { cate: number; value: number } | undefined;
     setValuePrivacy: React.Dispatch<
         React.SetStateAction<
             {
-                id: number;
+                id: string;
                 name: string;
             }[]
         >
@@ -52,13 +52,13 @@ const OpFeatureSetting: React.FC<{
         >
     >;
     valueSeePost: {
-        id: number;
+        id: string;
         name: string;
         icon: React.ReactElement;
     };
     setValueSeePost: React.Dispatch<
         React.SetStateAction<{
-            id: number;
+            id: string;
             name: string;
             icon: React.ReactElement;
         }>
@@ -158,6 +158,7 @@ const OpFeatureSetting: React.FC<{
                                 <Span css="margin-left: 10px; color: #53d4bf;">(</Span>
                                 {valuePrivacy.map((v, index) => (
                                     <P
+                                        key={v.id}
                                         z="1.2rem"
                                         css={`
                                             margin-left: 3px;

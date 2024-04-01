@@ -17,7 +17,7 @@ export interface PropsDataPosts {
     id_user: string;
     hashTag: { _id: string; value: string }[];
     feel: feel;
-    commentsOne: {
+    comments: {
         id_user: string;
         content: {
             text: string;
@@ -34,7 +34,7 @@ export interface PropsDataPosts {
                 anonymous: { type: Boolean; defaultValue: false };
             },
         ];
-    };
+    }[];
     amountComments: number;
     content: {
         text: string;
@@ -87,10 +87,10 @@ export interface PropsDataPosts {
             onlyImage: string[];
         };
     };
-    whoCanSeePost: { id: number; name: string };
+    whoCanSeePost: { id: string; name: string };
     anonymous: boolean;
     private: {
-        id: number;
+        id: string;
         name: string;
     }[];
     createdAt: string;

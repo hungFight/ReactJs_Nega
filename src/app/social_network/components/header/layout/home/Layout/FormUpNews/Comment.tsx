@@ -24,34 +24,44 @@ import {
 } from '~/assets/Icons/Icons';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BsDot } from 'react-icons/bs';
 import { FcReadingEbook } from 'react-icons/fc';
 import QuillText from '~/reUsingComponents/Libraries/QuillText';
 import { PropsValueQuill } from './FormUpNews';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
+import { PropsUser } from 'src/App';
+import postAPI from '~/restAPI/socialNetwork/postAPI';
+import { PropsDataPosts } from '../DataPosts/interfacePosts';
 
 const Comment: React.FC<{
     anony: {
-        id: number;
+        id: string;
         name: string;
     }[];
     setShowComment: React.Dispatch<React.SetStateAction<string>>;
     colorText: string;
-}> = ({ anony, setShowComment, colorText }) => {
-    const anonymousIndex = 4;
+    you: PropsUser;
+    dataPost?: PropsDataPosts;
+}> = ({ anony, setShowComment, colorText, you, dataPost }) => {
+    const anonymousIndex = 'anonymousComment';
     const textarea = useRef<HTMLTextAreaElement | null>(null);
-    const quillRef = useRef<ReactQuill>(null);
+    const quillRef = useRef<ReactQuill | null>(null);
     const consider = useRef<number>(0);
     const valueQuill = useRef<PropsValueQuill>({ url: '', text: '' });
-    const valueSelected = useRef<boolean>(false);
     const tagDivURL = useRef<HTMLDivElement | null>(null);
     const [insertURL, setInsertURL] = useState<boolean>(false);
-    const [value, setValue] = useState<string>('');
+    const [inputValue, setInputValue] = useState<string>('');
     const [anonymous, setAnonymous] = useState<boolean>(false);
-    const [activate, setActivate] = useState<number>(1);
-    const handleComment = () => {
+    const activate = you.gender === 0 ? 'anonymousMale' : you.gender === 1 ? 'anonymousFemale' : '';
+    const [onAc, setOnAC] = useState<boolean>(false);
+    const handleAnonymousComment = () => {
         setAnonymous(!anonymous);
+    };
+    const handleComment = async () => {
+        if (dataPost?._id) {
+            const res = await postAPI.sendComment(dataPost._id, inputValue, onAc);
+        }
     };
     console.log(activate, anony, 'anonymous');
     const iconDatas = [
@@ -60,22 +70,7 @@ const Comment: React.FC<{
         { id: 3, icon: 'Nhiều lượt thích nhất' },
         { id: 4, icon: 'Bạn bè' },
     ];
-    const handleOnKeyup = (e: any) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            // handleSend(conversation?._id, conversation?.user.id);
-        } else {
-            e.target.setAttribute('style', 'height: auto');
-            if (e.key === 'Backspace') {
-                e.target.setAttribute(
-                    'style',
-                    `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`,
-                );
-            } else {
-                e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
-            }
-        }
-    };
+
     const handleOnKeyDown = (e: any) => {
         console.log(e.key);
         if (e.key === 'Enter') e.preventDefault();
@@ -84,11 +79,60 @@ const Comment: React.FC<{
             e.target.value += '\n';
         }
     };
-    const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        console.log(e.target.value, 'enter');
-        setValue(e.target.value);
+
+    const onChange = (value: string) => {
+        console.log('value', value);
+        if (value.length <= 10000) {
+            // Define a regex pattern to match URLs
+            const hashTagRegex = /#([^]+?)\s*#@/g; // #...#@
+            let dp = false; //dis is displayed
+            // Use the match method to find all matches in the text
+            if (quillRef.current && quillRef.current.editor) {
+                const delta = quillRef.current.editor.clipboard.convert(value); // Convert HTML to Delta object
+
+                // Apply formatting using regex
+                if (delta.ops) {
+                    delta.ops.map((op, index, arr) => {
+                        if (typeof op.insert === 'string') {
+                            op.insert = op.insert.replace(hashTagRegex, (match: any, group: any) => {
+                                dp = true;
+                                return `<a href="/sn/hashTags/${group}" style='color: #66a6de;'>#${group}</a>`;
+                            });
+                        }
+                    });
+                    if (dp) {
+                        var tempCont = document.createElement('div');
+                        if (delta.ops)
+                            delta.ops.map((op) => {
+                                if (op.attributes)
+                                    if (op.attributes.link) {
+                                        op.insert = `<a href="${op.attributes.link}" style='color: ${op.attributes.color}'>${op.insert}</a>`;
+                                    }
+                                return op;
+                            });
+                        new Quill(tempCont).setContents(delta);
+                        if (tempCont) {
+                            setInputValue(
+                                tempCont
+                                    .getElementsByClassName('ql-editor')[0]
+                                    .innerHTML.replace(/&lt;/g, '<')
+                                    .replace(/&gt;/g, '>'),
+                            );
+                        }
+                    } else {
+                        setInputValue(value);
+                    }
+                }
+                if (delta.ops?.length) {
+                    const tag = document.getElementById('placeholder_comment_post');
+                    if (tag) tag.style.display = 'none';
+                } else {
+                    const tag = document.getElementById('placeholder_comment_post');
+                    if (tag) tag.style.display = 'flex';
+                }
+            }
+        }
     };
-    const onChange = (value: string) => {};
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>
             <DivFill
@@ -164,58 +208,42 @@ const Comment: React.FC<{
                                 `}
                             >
                                 <Avatar
-                                    src={
-                                        activate < 5
-                                            ? 'https://gaixinhbikini.com/wp-content/uploads/2023/02/anh-gai-dep-2k-005.jpg'
-                                            : ''
-                                    }
+                                    src={!onAc ? you.avatar : ''}
                                     alt="son-tung"
+                                    staticI={onAc}
                                     gender={activate}
                                     radius="50%"
                                     css={`
                                         width: 30px;
                                         height: 30px;
                                     `}
-                                    onClick={handleComment}
+                                    onClick={handleAnonymousComment}
                                 >
                                     {anonymous && anony.some((a) => a.id === anonymousIndex) ? ( // anonymous comment
                                         <Div
                                             css={`
                                                 position: absolute;
-                                                top: 0px;
+                                                top: 40px;
                                                 width: fit-content;
                                                 padding: 4px 10px;
                                                 background-color: #1c5689;
                                                 border-radius: 5px;
-                                                left: 0;
+                                                left: 14px;
                                                 cursor: var(--pointer);
                                             `}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                if (activate === 0) {
-                                                    setActivate(11);
-                                                } else if (activate === 1) {
-                                                    setActivate(12);
-                                                } else if (activate === 11) {
-                                                    setActivate(0);
-                                                } else if (activate === 12) {
-                                                    setActivate(1);
-                                                }
+                                                setOnAC(!onAc);
                                             }}
                                         >
                                             <Avatar
                                                 css="width: 30px; height: 30px; min-width: 30px; margin-right: 3px;"
-                                                src={
-                                                    activate > anonymousIndex
-                                                        ? 'https://gaixinhbikini.com/wp-content/uploads/2023/02/anh-gai-dep-2k-005.jpg'
-                                                        : ''
-                                                }
+                                                src={onAc ? you.avatar : ''}
+                                                staticI={!onAc}
                                                 radius="50%"
-                                                gender={
-                                                    activate === 0 ? 11 : activate === 1 ? 12 : activate === 11 ? 0 : 1
-                                                }
+                                                gender={activate}
                                             />
-                                            <P z="1.5rem">{activate > anonymousIndex ? 'hung' : 'Anonymous'}</P>
+                                            <P z="1.5rem">{onAc ? you.fullName : 'Anonymous'}</P>
                                         </Div>
                                     ) : (
                                         <></>
@@ -253,32 +281,37 @@ const Comment: React.FC<{
                                     onKeyUp={(e) => handleOnKeyup(e)}
                                     onChange={handleWriteText}
                                 /> */}
-                                <QuillText
-                                    consider={consider}
-                                    css={`
-                                        width: 70%;
-                                        background-color: #373737;
-                                        border-radius: 10px;
-                                        padding: 5px 10px;
-                                        .ql-editor {
-                                            outline: none;
-                                        }
-                                        .ql-container.ql-snow {
-                                            border: 0;
-                                        }
-                                        * {
-                                            font-size: 1.4rem;
-                                        }
-                                    `}
-                                    insertURL={insertURL}
-                                    setInsertURL={setInsertURL}
-                                    onChange={onChange}
-                                    quillRef={quillRef}
-                                    tagDivURL={tagDivURL}
-                                    valueQuill={valueQuill}
-                                    valueText=""
-                                />
-                                <Div css="font-size: 20px">
+                                <Div width="70%" css="position: relative;">
+                                    <QuillText
+                                        consider={consider}
+                                        css={`
+                                            width: 100%;
+                                            background-color: #373737;
+                                            border-radius: 10px;
+                                            padding: 5px 10px;
+                                            .ql-editor {
+                                                outline: none;
+                                            }
+                                            .ql-container.ql-snow {
+                                                border: 0;
+                                            }
+                                            * {
+                                                font-size: 1.3rem;
+                                            }
+                                        `}
+                                        insertURL={insertURL}
+                                        setInsertURL={setInsertURL}
+                                        onChange={onChange}
+                                        quillRef={quillRef}
+                                        tagDivURL={tagDivURL}
+                                        valueQuill={valueQuill}
+                                        valueText={inputValue}
+                                    />
+                                    <DivPos id="placeholder_comment_post" top="5px" left="11px" size="1.3rem">
+                                        comment
+                                    </DivPos>
+                                </Div>
+                                <Div css="font-size: 20px" onClick={handleComment}>
                                     <SendOPTI />
                                 </Div>
                             </Div>

@@ -31,6 +31,16 @@ class PostAPI {
             }
         }
     };
+    sendComment = async (postId: string, text: string, anonymousC: boolean) => {
+        try {
+            const axiosJWTss = refreshToken.axiosJWTs();
+            const res = await axiosJWTss.post('/SN/home/post/sendComment', { postId, text, anonymousC });
+            return res.data;
+        } catch (error: any) {
+            const err: any = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
     setEmotion = async (data: {
         _id: string;
         index: number | null;
@@ -43,11 +53,8 @@ class PostAPI {
             const res = await axiosJWTss.post('/SN/home/post/setEmotion', { ...data });
             return res.data;
         } catch (error: any) {
-            if (axios.isCancel(error)) {
-                console.log('Request canceled:', error.message);
-            } else {
-                console.error('Error:', error);
-            }
+            const err: any = error as AxiosError;
+            return errorHandling(err);
         }
     };
 }

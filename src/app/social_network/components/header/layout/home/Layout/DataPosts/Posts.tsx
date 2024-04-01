@@ -230,9 +230,9 @@ const Posts: React.FC<PropsPosts> = ({
                                 <Span css="font-size: 14px">
                                     {
                                         [
-                                            { id: 1, icon: <PrivacyI /> },
-                                            { id: 2, icon: <FriendI />, color: '#58a3de' },
-                                            { id: 3, icon: <EarthI /> },
+                                            { id: 'privacy', icon: <PrivacyI /> },
+                                            { id: 'friend', icon: <FriendI />, color: '#58a3de' },
+                                            { id: 'share', icon: <EarthI /> },
                                         ].filter((t) => t.id === dataPosts.whoCanSeePost.id)[0].icon
                                     }
                                 </Span>
@@ -642,14 +642,14 @@ const Posts: React.FC<PropsPosts> = ({
                                 </DivAction>
                             )}
                             {/* compare with id of option in  post's OpText */}
-                            {!dataPosts.private.some((p) => p.id === 2) && (
+                            {!dataPosts.private.some((p) => p.id === 'comment') && (
                                 <DivAction onClick={() => setShowComment(dataPosts._id)}>
                                     <Div css="font-size: 1.3rem;">
                                         <PostCommentI />
                                     </Div>
                                 </DivAction>
                             )}
-                            {!dataPosts.private.some((p) => p.id === 3) && (
+                            {!dataPosts.private.some((p) => p.id === 'share') && (
                                 <DivAction>
                                     <ShareI />
                                 </DivAction>
@@ -657,7 +657,13 @@ const Posts: React.FC<PropsPosts> = ({
                         </Div>
                     </Div>
                     {showCM && (
-                        <Comment colorText={colorText} anony={dataPosts.private} setShowComment={setShowComment} />
+                        <Comment
+                            colorText={colorText}
+                            anony={dataPosts.private}
+                            setShowComment={setShowComment}
+                            dataPost={dataPosts}
+                            you={user}
+                        />
                     )}
                 </Div>
             </Div>

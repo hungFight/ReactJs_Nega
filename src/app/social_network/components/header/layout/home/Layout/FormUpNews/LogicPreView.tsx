@@ -83,9 +83,9 @@ export default function LogicPreView(
     const textA = useRef<any>();
 
     // options of setting
-    const [valuePrivacy, setValuePrivacy] = useState<{ id: number; name: string }[]>([]);
-    const [valueSeePost, setValueSeePost] = useState<{ id: number; name: string; icon: React.ReactElement }>({
-        id: 2,
+    const [valuePrivacy, setValuePrivacy] = useState<{ id: string; name: string }[]>([]);
+    const [valueSeePost, setValueSeePost] = useState<{ id: string; name: string; icon: React.ReactElement }>({
+        id: 'friend',
         name: 'Friend',
         icon: <FriendI />,
     });

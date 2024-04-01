@@ -3,7 +3,7 @@ import { EarthI, FriendI, PrivateI } from '~/assets/Icons/Icons';
 
 const LogicText = (
     valuePrivacy: {
-        id: number;
+        id: string;
         name: string;
     }[],
     setTypeExpire: React.Dispatch<
@@ -19,7 +19,7 @@ const LogicText = (
     setValuePrivacy: React.Dispatch<
         React.SetStateAction<
             {
-                id: number;
+                id: string;
                 name: string;
             }[]
         >
@@ -53,12 +53,12 @@ const LogicText = (
         >
     >,
     valueSeePost: {
-        id: number;
+        id: string;
         name: string;
     },
     setValueSeePost: React.Dispatch<
         React.SetStateAction<{
-            id: number;
+            id: string;
             name: string;
             icon: React.ReactElement;
         }>
@@ -72,7 +72,7 @@ const LogicText = (
                 backgroundImage: 'linear-gradient(47deg, #000000,#25415b,#1b6b3c, transparent)',
                 children: [
                     {
-                        id: 1,
+                        id: 'emotion',
                         name: `Imotion ${Imotions.map((i) => i.icon).join(' ')}`,
                         icon: [
                             { id: 1, icon: '👍' },
@@ -84,9 +84,9 @@ const LogicText = (
                             { id: 7, icon: '😡' },
                         ],
                     },
-                    { id: 2, name: 'Comment', icon: '' },
-                    { id: 3, name: 'Share', icon: '' },
-                    { id: 4, name: 'Anonymous comment', icon: '' },
+                    { id: 'comment', name: 'Comment', icon: '' },
+                    { id: 'share', name: 'Share', icon: '' },
+                    { id: 'anonymousComment', name: 'Anonymous comment', icon: '' },
                 ],
             },
         },
@@ -96,9 +96,9 @@ const LogicText = (
                 name: 'Who can see your posts',
                 backgroundImage: 'linear-gradient(47deg, #000000,#853333,#328585, #161515)',
                 children: [
-                    { id: 1, name: 'Only me', icon: <PrivateI /> },
-                    { id: 2, name: 'Friends', icon: <FriendI /> },
-                    { id: 3, name: 'Anyone', icon: <EarthI /> },
+                    { id: 'privacy', name: 'Only me', icon: <PrivateI /> },
+                    { id: 'friend', name: 'Friends', icon: <FriendI /> },
+                    { id: 'anyone', name: 'Anyone', icon: <EarthI /> },
                 ],
             },
         },
@@ -110,7 +110,7 @@ const LogicText = (
         setOpSelect([]);
         setTypeExpire(undefined);
         setValuePrivacy([]);
-        setValueSeePost({ id: 2, name: 'Friend', icon: <FriendI /> });
+        setValueSeePost({ id: 'friend', name: 'Friend', icon: <FriendI /> });
         setImotionsDel([]);
         setImotions([
             { id: 1, icon: '👍' },

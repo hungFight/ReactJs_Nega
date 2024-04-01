@@ -798,19 +798,24 @@ const PreviewPost: React.FC<{
                                 </Div>
                             </DivAction>
                         )}
-                        {!valuePrivacy.some((t) => t.id === 2) && (
+                        {!valuePrivacy.some((t) => t.id === 'comment') && (
                             <DivAction onClick={() => setShowComment('ok')}>
                                 <P css="font-size: 1.3rem;">...Comments</P>
                             </DivAction>
                         )}
-                        {!valuePrivacy.some((t) => t.id === 3) && (
+                        {!valuePrivacy.some((t) => t.id === 'share') && (
                             <DivAction>
                                 <ShareI />
                             </DivAction>
                         )}
                     </Div>
                     {showComment && (
-                        <Comment colorText={colorText} anony={valuePrivacy} setShowComment={setShowComment} />
+                        <Comment
+                            colorText={colorText}
+                            anony={valuePrivacy}
+                            setShowComment={setShowComment}
+                            you={user}
+                        />
                     )}
                     <DivWrapButton>
                         {loading ? (

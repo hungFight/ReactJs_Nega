@@ -18,9 +18,10 @@ interface _Avatar {
     src?: any;
     alt?: string | undefined;
     fallback?: any;
+    staticI?: boolean;
     width?: string;
     radius?: string;
-    gender: number | undefined;
+    gender: number | string | undefined;
     onClick?: (args: any) => void;
     css?: string;
     profile?: string;
@@ -38,6 +39,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         alt,
         width,
         radius,
+        staticI,
         gender,
         onClick,
         onTouchMove,
@@ -53,20 +55,9 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     //     setAvatarFallback(!src ? Fallback : src);
     // }, [Fallback, src]);
     console.log(gender, alt, 'avatarFallback', className);
-
-    const srcSub =
-        gender === 0
-            ? Images.defaultAvatarMale
-            : gender === 1
-            ? Images.defaultAvatarFemale
-            : gender === 11
-            ? Images.anonymousMale
-            : gender === 12
-            ? Images.anonymousFemale
-            : Images.defaultAvataLgbt;
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = (e: any) => {
-        e.target.src = srcSub;
+        e.target.src = subImage(src, gender);
         setRepetitions((pev) => pev + 1);
         if (repetitions >= 2) {
             setAvatar(true);
@@ -75,9 +66,13 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         }
     };
     useEffect(() => {
-        if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`)
-            setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`);
-        if (!src && avatarFallback) setAvatarFallback('');
+        if (staticI) {
+            setAvatarFallback(subImage('', gender));
+        } else {
+            if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`)
+                setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`);
+            if (!src && avatarFallback) setAvatarFallback('');
+        }
     }, [src]);
     const events = {
         onClick,
