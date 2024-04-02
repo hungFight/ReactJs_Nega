@@ -2,7 +2,10 @@ import axios, { AxiosError, CancelTokenSource } from 'axios';
 import refreshToken from '~/refreshToken/refreshToken';
 import { CookieSetOptions } from 'universal-cookie';
 import errorHandling from '../errorHandling/errorHandling';
-import { PropsDataPosts } from '~/social_network/components/Header/layout/Home/Layout/DataPosts/interfacePosts';
+import {
+    PropsComments,
+    PropsDataPosts,
+} from '~/social_network/components/Header/layout/Home/Layout/DataPosts/interfacePosts';
 class PostAPI {
     getPosts = async (limit: number, offset: number, status: string): Promise<PropsDataPosts[]> => {
         try {
@@ -53,6 +56,16 @@ class PostAPI {
             const res = await axiosJWTss.post('/SN/home/post/setEmotion', { ...data });
             return res.data;
         } catch (error: any) {
+            const err: any = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    getComments = async (postId: string, offset: number, limit: number): Promise<PropsComments[]> => {
+        try {
+            const axiosJWTss = refreshToken.axiosJWTs();
+            const res = await axiosJWTss.post('/SN/home/post/getComments', { postId, offset, limit });
+            return res.data;
+        } catch (error) {
             const err: any = error as AxiosError;
             return errorHandling(err);
         }

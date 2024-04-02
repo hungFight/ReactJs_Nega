@@ -1,39 +1,23 @@
-import {
-    Div,
-    DivFill,
-    DivFlex,
-    DivFlexPosition,
-    DivNone,
-    Img,
-    Input,
-    P,
-    Textarea,
-} from '~/reUsingComponents/styleComponents/styleDefault';
+import ReactQuill, { Quill } from 'react-quill';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
+
+import { Div, DivFill, DivFlex, DivFlexPosition, DivNone, Img, Input, P, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivComment, Label } from './styleFormUpNews';
-import {
-    BanI,
-    CameraI,
-    DotI,
-    EscalatorI,
-    MinusI,
-    PostCommentInI,
-    ResetI,
-    SendI,
-    SendOPTI,
-    UndoIRegister,
-} from '~/assets/Icons/Icons';
+import { BanI, CameraI, DotI, EscalatorI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { useEffect, useRef, useState } from 'react';
 import { BsDot } from 'react-icons/bs';
 import { FcReadingEbook } from 'react-icons/fc';
 import QuillText from '~/reUsingComponents/Libraries/QuillText';
 import { PropsValueQuill } from './FormUpNews';
-import ReactQuill, { Quill } from 'react-quill';
 import { PropsUser } from 'src/App';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
 import { PropsDataPosts } from '../DataPosts/interfacePosts';
-
+import '~/reUsingComponents/Libraries/formatMoment';
+import Languages from '~/reUsingComponents/languages';
+import moments from '~/utils/moment';
+import { queryClient } from 'src';
 const Comment: React.FC<{
     anony: {
         id: string;
@@ -45,7 +29,8 @@ const Comment: React.FC<{
     dataPost?: PropsDataPosts;
 }> = ({ anony, setShowComment, colorText, you, dataPost }) => {
     const anonymousIndex = 'anonymousComment';
-    const textarea = useRef<HTMLTextAreaElement | null>(null);
+    const offset = useRef<number>(0);
+    const limit = 15;
     const quillRef = useRef<ReactQuill | null>(null);
     const consider = useRef<number>(0);
     const valueQuill = useRef<PropsValueQuill>({ url: '', text: '' });
@@ -58,9 +43,32 @@ const Comment: React.FC<{
     const handleAnonymousComment = () => {
         setAnonymous(!anonymous);
     };
+    const { lg } = Languages();
+    const { data } = useQuery({
+        queryKey: ['Comment', dataPost?._id],
+        staleTime: 5 * 60 * 1000, // 5m
+        cacheTime: 6 * 60 * 1000, // 6m
+        enabled: dataPost?._id ? true : false,
+        queryFn: async () => {
+            try {
+                if (dataPost?._id) {
+                    const res = await postAPI.getComments(dataPost?._id, offset.current, limit);
+                    return res;
+                }
+            } catch (error) {
+                return [];
+            }
+        },
+    });
     const handleComment = async () => {
         if (dataPost?._id) {
-            const res = await postAPI.sendComment(dataPost._id, inputValue, onAc);
+            const newValue = await postAPI.sendComment(dataPost._id, inputValue, onAc);
+            if (newValue) {
+                queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
+                    // Update the data by adding newValue to the existing data
+                    return [newValue, ...prevData];
+                });
+            }
         }
     };
     console.log(activate, anony, 'anonymous');
@@ -112,12 +120,7 @@ const Comment: React.FC<{
                             });
                         new Quill(tempCont).setContents(delta);
                         if (tempCont) {
-                            setInputValue(
-                                tempCont
-                                    .getElementsByClassName('ql-editor')[0]
-                                    .innerHTML.replace(/&lt;/g, '<')
-                                    .replace(/&gt;/g, '>'),
-                            );
+                            setInputValue(tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
                         }
                     } else {
                         setInputValue(value);
@@ -317,130 +320,59 @@ const Comment: React.FC<{
                             </Div>
                         </DivFill>
                         <DivFill css="@media(min-width: 550px){margin-top: 15px;}">
-                            <DivFlex justify="start" css="margin-bottom: 40px">
-                                <DivNone
-                                    width="40px"
-                                    css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"
-                                ></DivNone>
-                                <DivFlexPosition wrap="wrap" position="relative">
-                                    <DivFlex>
-                                        <Avatar
-                                            src=""
-                                            alt=""
-                                            gender={1}
-                                            css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
-                                            radius="50%"
-                                        />
-                                        <DivFlex wrap="wrap" justify="start">
-                                            <Hname>Nguyen Thi Han</Hname>
-                                            <Div>
-                                                <Div css="margin-right: 5px;">
-                                                    <FcReadingEbook />
-                                                </Div>{' '}
-                                                <P z="1.2rem">These are what I want to be</P>
-                                            </Div>
+                            {data?.map((c) => (
+                                <DivFlex key={c._id} justify="start" css="margin-bottom: 40px">
+                                    <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"></DivNone>
+                                    <DivFlexPosition wrap="wrap" position="relative">
+                                        <DivFlex>
+                                            <Avatar
+                                                src={c.user.avatar}
+                                                alt={c.user.fullName}
+                                                gender={c.user.gender}
+                                                css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
+                                                radius="50%"
+                                            />
+                                            <DivFlex wrap="wrap" justify="start">
+                                                <Hname>{c.user.fullName}</Hname>
+                                                <Div>
+                                                    <Div css="margin-right: 5px;">
+                                                        <FcReadingEbook />
+                                                    </Div>{' '}
+                                                    <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
+                                                </Div>
+                                            </DivFlex>
                                         </DivFlex>
-                                    </DivFlex>
-                                    <DivFlexPosition justify="start" bottom="-25px" position="absolute">
-                                        <BsDot /> <P z="1.1rem">10 phút</P>{' '}
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <P
-                                            z="1.1rem"
-                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                        >
-                                            Cảm xúc
-                                        </P>
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <P
-                                            z="1.1rem"
-                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                        >
-                                            trả lời
-                                        </P>{' '}
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <P
-                                            z="1.1rem"
-                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                        >
-                                            Nhắc đến
-                                        </P>{' '}
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <Div css="cursor: var(--pointer); font-size: 25px;">
-                                            <DotI />
-                                        </Div>
-                                    </DivFlexPosition>
-                                </DivFlexPosition>
-                            </DivFlex>{' '}
-                            <DivFlex justify="start" css="margin-bottom: 40px">
-                                <DivNone
-                                    width="40px"
-                                    css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"
-                                ></DivNone>
-                                <DivFlexPosition wrap="wrap" position="relative">
-                                    <DivFlex>
-                                        <Avatar
-                                            src=""
-                                            alt=""
-                                            gender={1}
-                                            css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
-                                            radius="50%"
-                                        />
-                                        <DivFlex wrap="wrap" justify="start">
-                                            <Hname>Nguyen Hung</Hname>
-                                            <Div>
-                                                <Div css="margin-right: 5px;">
-                                                    <FcReadingEbook />
-                                                </Div>{' '}
-                                                <P z="1.2rem">Wow Awesome</P>
+                                        <DivFlexPosition justify="start" bottom="-25px" position="absolute">
+                                            <BsDot />{' '}
+                                            <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
+                                            <P z="1.1rem" css="margin: 0 5px">
+                                                -
+                                            </P>
+                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                Cảm xúc
+                                            </P>
+                                            <P z="1.1rem" css="margin: 0 5px">
+                                                -
+                                            </P>
+                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                trả lời
+                                            </P>{' '}
+                                            <P z="1.1rem" css="margin: 0 5px">
+                                                -
+                                            </P>
+                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                Nhắc đến
+                                            </P>{' '}
+                                            <P z="1.1rem" css="margin: 0 5px">
+                                                -
+                                            </P>
+                                            <Div css="cursor: var(--pointer); font-size: 25px;">
+                                                <DotI />
                                             </Div>
-                                        </DivFlex>
-                                    </DivFlex>
-                                    <DivFlexPosition justify="start" bottom="-25px" position="absolute">
-                                        <BsDot /> <P z="1.1rem">10 phút</P>
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <P
-                                            z="1.1rem"
-                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                        >
-                                            Cảm xúc
-                                        </P>
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <P
-                                            z="1.1rem"
-                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                        >
-                                            trả lời
-                                        </P>{' '}
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <P
-                                            z="1.1rem"
-                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                        >
-                                            Nhắc đến
-                                        </P>{' '}
-                                        <P z="1.1rem" css="margin: 0 5px">
-                                            -
-                                        </P>
-                                        <Div css="cursor: var(--pointer); font-size: 25px;">
-                                            <DotI />
-                                        </Div>
+                                        </DivFlexPosition>
                                     </DivFlexPosition>
-                                </DivFlexPosition>
-                            </DivFlex>
+                                </DivFlex>
+                            ))}
                         </DivFill>
                     </DivFill>
                 </DivFill>

@@ -10,6 +10,32 @@ interface feel {
     }[];
     act: number;
 }
+export interface PropsComments {
+    _id: string;
+    id_user: string;
+    user: {
+        id: string;
+        fullName: string;
+        avatar: string;
+        gender: number;
+    };
+    content: {
+        text: string;
+        imageOrVideos: {
+            file: string[];
+            feel: feel;
+        };
+    };
+    feel: feel;
+    reply: [
+        {
+            id_user: { type: string; maxLength: 50; required: true };
+            content: { text: { type: string; text: string }; imageOrVideos: [String] };
+            anonymous: { type: Boolean; defaultValue: false };
+        },
+    ];
+    createdAt: string;
+}
 export interface PropsDataPosts {
     _id: string;
     user: { id: string; avatar: Buffer | undefined; fullName: string; gender: number }[];
@@ -17,24 +43,7 @@ export interface PropsDataPosts {
     id_user: string;
     hashTag: { _id: string; value: string }[];
     feel: feel;
-    comments: {
-        id_user: string;
-        content: {
-            text: string;
-            imageOrVideos: {
-                file: string[];
-                feel: feel;
-            };
-        };
-        feel: feel;
-        reply: [
-            {
-                id_user: { type: string; maxLength: 50; required: true };
-                content: { text: { type: string; text: string }; imageOrVideos: [String] };
-                anonymous: { type: Boolean; defaultValue: false };
-            },
-        ];
-    }[];
+    comments: PropsComments[];
     amountComments: number;
     content: {
         text: string;
@@ -106,8 +115,6 @@ export interface PropsPosts {
     dataPosts: PropsDataPosts;
     setOptions: React.Dispatch<React.SetStateAction<string>>;
     options: string;
-    setFormThat: React.Dispatch<
-        React.SetStateAction<ReactElement<any, string | React.JSXElementConstructor<any>> | null>
-    >;
+    setFormThat: React.Dispatch<React.SetStateAction<ReactElement<any, string | React.JSXElementConstructor<any>> | null>>;
     form: PropsFormHome;
 }
