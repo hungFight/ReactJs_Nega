@@ -18,6 +18,7 @@ import '~/reUsingComponents/Libraries/formatMoment';
 import Languages from '~/reUsingComponents/languages';
 import moments from '~/utils/moment';
 import { queryClient } from 'src';
+import { socket } from 'src/mainPage/nextWeb';
 const Comment: React.FC<{
     anony: {
         id: string;
@@ -60,6 +61,17 @@ const Comment: React.FC<{
             }
         },
     });
+    useEffect(() => {
+        socket.on(`comment_post_${dataPost?._id}`, (data) => {
+            console.log(data, 'comment_post_');
+            if (data) {
+                queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
+                    // Update the data by adding newValue to the existing data
+                    return [data, ...prevData];
+                });
+            }
+        });
+    }, []);
     const handleComment = async () => {
         if (dataPost?._id) {
             const newValue = await postAPI.sendComment(dataPost._id, inputValue, onAc);
@@ -69,6 +81,7 @@ const Comment: React.FC<{
                     return [newValue, ...prevData];
                 });
             }
+            setInputValue('');
         }
     };
     console.log(activate, anony, 'anonymous');
@@ -206,7 +219,9 @@ const Comment: React.FC<{
                                         position: absolute;
                                         bottom: 2px;
                                         left: 0;
-                                        background-color: transparent;
+                                        margin: 0;
+                                        z-index: 2;
+                                        background-color: #4e4e4e;
                                     }
                                 `}
                             >
@@ -319,7 +334,20 @@ const Comment: React.FC<{
                                 </Div>
                             </Div>
                         </DivFill>
-                        <DivFill css="@media(min-width: 550px){margin-top: 15px;}">
+                        <DivFill
+                            css={`
+                                margin-top: 15px;
+                                overflow: overlay;
+                                max-height: 528px;
+                                &::-webkit-scrollbar-thumb {
+                                    border-radius: 3px;
+                                    cursor: grabbing;
+                                }
+                                &::-webkit-scrollbar {
+                                    width: 9px;
+                                }
+                            `}
+                        >
                             {data?.map((c) => (
                                 <DivFlex key={c._id} justify="start" css="margin-bottom: 40px">
                                     <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"></DivNone>
