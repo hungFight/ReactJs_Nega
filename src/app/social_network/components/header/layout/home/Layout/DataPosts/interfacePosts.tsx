@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { PropsFormHome } from '../FormUpNews/FormUpNews';
 import { PropsUser } from 'src/App';
 
-interface feel {
+export interface feel {
     onlyEmo: {
         id: number;
         icon: string;
@@ -107,8 +107,7 @@ export interface PropsPosts {
     showComment: string;
     colorBg: number;
     colorText: string;
-    setDataPosts: React.Dispatch<React.SetStateAction<PropsDataPosts[]>>;
-    dataPosts: PropsDataPosts;
+    dataP: PropsDataPosts;
     setOptions: React.Dispatch<React.SetStateAction<string>>;
     options: string;
     setFormThat: React.Dispatch<React.SetStateAction<ReactElement<any, string | React.JSXElementConstructor<any>> | null>>;

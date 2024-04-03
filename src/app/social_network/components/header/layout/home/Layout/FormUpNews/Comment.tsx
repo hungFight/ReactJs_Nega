@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
 import { Div, DivFill, DivFlex, DivFlexPosition, DivNone, Img, Input, P, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivComment, Label } from './styleFormUpNews';
+import { DivComment, DivEmoji, Label } from './styleFormUpNews';
 import { BanI, CameraI, DotI, EscalatorI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -376,9 +376,53 @@ const Comment: React.FC<{
                                             <P z="1.1rem" css="margin: 0 5px">
                                                 -
                                             </P>
-                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                            <Div
+                                                css="font-size: 1.1rem;cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600; @media (min-width: 768px) {
+                                            &:hover {#emoBarPost {display: flex;top: -40px;}}}"
+                                            >
                                                 Cảm xúc
-                                            </P>
+                                                <Div
+                                                    id="emoBarPost"
+                                                    width="fit-content"
+                                                    className="showI"
+                                                    display="none"
+                                                    css={`
+                                                        position: absolute;
+                                                        top: 0;
+                                                        left: 0;
+                                                        padding: 5px 20px 8px;
+                                                        border-radius: 50px;
+                                                        z-index: 7;
+                                                        div {
+                                                            min-width: 40px;
+                                                            height: 40px;
+                                                            padding-top: 2px;
+                                                            font-size: 28px;
+                                                            margin: 0;
+                                                            border-radius: 50%;
+                                                            cursor: var(--pointer);
+                                                        }
+                                                        transition: all 1s linear;
+                                                    `}
+                                                >
+                                                    {dataPost &&
+                                                        dataPost.feel.onlyEmo
+                                                            .sort((a, b) => a.id - b.id)
+                                                            .map((i, index, arr) => (
+                                                                <DivEmoji
+                                                                    key={i.id}
+                                                                    // onClick={(e) => handleReEmo(e, i)}
+                                                                    css={`
+                                                                        position: relative;
+                                                                        background-color: #6f5fc4ba;
+                                                                    `}
+                                                                    nameFrame={`top_bottom_move_${index}`}
+                                                                >
+                                                                    {i.icon}
+                                                                </DivEmoji>
+                                                            ))}
+                                                </Div>
+                                            </Div>
                                             <P z="1.1rem" css="margin: 0 5px">
                                                 -
                                             </P>

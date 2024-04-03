@@ -2,10 +2,7 @@ import axios, { AxiosError, CancelTokenSource } from 'axios';
 import refreshToken from '~/refreshToken/refreshToken';
 import { CookieSetOptions } from 'universal-cookie';
 import errorHandling from '../errorHandling/errorHandling';
-import {
-    PropsComments,
-    PropsDataPosts,
-} from '~/social_network/components/Header/layout/Home/Layout/DataPosts/interfacePosts';
+import { PropsComments, PropsDataPosts, feel } from '~/social_network/components/Header/layout/Home/Layout/DataPosts/interfacePosts';
 class PostAPI {
     getPosts = async (limit: number, offset: number, status: string): Promise<PropsDataPosts[]> => {
         try {
@@ -44,13 +41,7 @@ class PostAPI {
             return errorHandling(err);
         }
     };
-    setEmotion = async (data: {
-        _id: string;
-        index: number | null;
-        id_user: string;
-        state: string;
-        oldIndex?: number;
-    }) => {
+    setEmotion = async (data: { _id: string; index: number | null; id_user: string; state: string; oldIndex?: number }): Promise<feel> => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/home/post/setEmotion', { ...data });

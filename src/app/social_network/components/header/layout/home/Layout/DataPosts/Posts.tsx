@@ -8,34 +8,24 @@ import moment from 'moment';
 import Languages from '~/reUsingComponents/languages';
 import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import Cookies from '~/utils/Cookies';
-import { PropsPosts } from './interfacePosts';
+import { PropsDataPosts, PropsPosts } from './interfacePosts';
 import FormUpNews from '../FormUpNews/FormUpNews';
 import DefaultType from '../FormUpNews/ViewPostFrame/TypeFile/DefaultType';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
 import { keyframes } from 'styled-components';
 import Comment from '../FormUpNews/Comment';
+import { queryClient } from 'src';
 
-const Posts: React.FC<PropsPosts> = ({
-    user,
-    colorBg,
-    colorText,
-    dataPosts,
-    options,
-    setOptions,
-    setFormThat,
-    form,
-    setDataPosts,
-    setShowComment,
-    showComment,
-}) => {
-    if (dataPosts.user[0].id === "It's me") dataPosts.user[0] = user;
-
+const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options, setOptions, setFormThat, form, setShowComment, showComment }) => {
+    const [dataPost, setDataPost] = useState<PropsDataPosts>(dataP);
+    if (dataPost.user[0].id === "It's me") dataPost.user[0] = user;
+    const [d, setD] = useState<string>('');
     const { lg } = Languages();
     const { userId } = Cookies();
     const [actImotion, setActImotion] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
     const textA = useRef<any>();
-    // const avatar = CommonUtils.convertBase64(dataPosts.user[0].avatar);
+    // const avatar = CommonUtils.convertBase64(dataPost.user[0].avatar);
     let timeS: any;
     const handleShowI = (e: any) => {
         document.addEventListener('touchstart', handleMouseDown);
@@ -55,22 +45,19 @@ const Posts: React.FC<PropsPosts> = ({
     const handleClearI = () => {
         clearTimeout(timeS);
     };
-    console.log(dataPosts, 'dataPosts', showComment);
-
-    const createdAt = moment(dataPosts.createdAt).format('LLLL');
-    const fromNow = moment(moment(dataPosts.createdAt).format('HH:mm:ss DD-MM-YYYY'), 'HH:mm:ss DD-MM-YYYY')
-        .locale(lg)
-        .fromNow();
+    console.log(dataPost, 'dataPost', showComment, d);
+    const createdAt = moment(dataPost.createdAt).format('LLLL');
+    const fromNow = moment(moment(dataPost.createdAt).format('HH:mm:ss DD-MM-YYYY'), 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
     useEffect(() => {
         if (showComment) {
-            const divElement = document.getElementById(`${dataPosts._id}_postScrolledUpAway`); // Replace 'Div' with the appropriate selector for your <Div> element
+            const divElement = document.getElementById(`${dataPost._id}_postScrolledUpAway`); // Replace 'Div' with the appropriate selector for your <Div> element
             if (divElement) {
                 const observer = new IntersectionObserver(
                     (entries) => {
                         console.log(entries, 'entries');
                         entries.forEach((entry) => {
                             if (!entry.isIntersecting) {
-                                if (showComment === dataPosts._id && showComment) setShowComment('');
+                                if (showComment === dataPost._id && showComment) setShowComment('');
                             }
                         });
                     },
@@ -119,17 +106,202 @@ const Posts: React.FC<PropsPosts> = ({
     //     ),
     //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     // ];
-    const emo = dataPosts.feel.onlyEmo.filter((o) => o.id_user.includes(user.id))[0];
+    const emo = dataPost.feel.onlyEmo.filter((o) => o.id_user.includes(user.id))[0];
     console.log(emo, 'emo');
     let amount = 0;
-    dataPosts.feel.onlyEmo.map((r) => {
+    dataPost.feel.onlyEmo.map((r) => {
         amount += r.id_user.length;
     }, {});
-    const fa = dataPosts.feel.onlyEmo;
+    const fa = dataPost.feel.onlyEmo;
     const sortEmo = fa.sort((a, b) => b.id_user.length - a.id_user.length);
-    const showCM = showComment === dataPosts._id;
+    const showCM = showComment === dataPost._id;
+    const handleEmo = async (e: any) => {
+        e.stopPropagation();
+        const divConstant = document.getElementById('emoBarPost');
+        console.log('above');
+        let check = false;
+        let oldData = dataPost.feel;
+        if (divConstant) divConstant.setAttribute('style', 'display: none');
+        dataPost.feel.onlyEmo.forEach((o) => {
+            if (o.id_user.includes(user.id)) check = true;
+        });
+        setD('1');
+        if (check) {
+            queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                return preData?.map((p) => {
+                    if (p._id === dataPost._id) {
+                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                            o.id_user = o.id_user.filter((u) => u !== user.id);
+                            return o;
+                        });
+                        dataPost.feel.onlyEmo = p.feel.onlyEmo;
+                    }
+                    return p;
+                });
+            });
+
+            const res = await postAPI.setEmotion({
+                _id: dataPost._id,
+                index: emo.id,
+                id_user: user.id,
+                state: 'remove',
+            });
+            if (res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = res;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = res;
+                        return p;
+                    });
+                });
+
+            if (!res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = oldData;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = oldData;
+                        return p;
+                    });
+                });
+        } else {
+            queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                return preData?.map((p) => {
+                    if (p._id === dataPost._id) {
+                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                            if (o.id === dataPost.feel.act) o.id_user.push(user.id);
+                            return o;
+                        });
+                        dataPost.feel.onlyEmo = p.feel.onlyEmo;
+                    }
+                    return p;
+                });
+            });
+            const res = await postAPI.setEmotion({
+                _id: dataPost._id,
+                index: dataPost.feel.act,
+                id_user: user.id,
+                state: 'add',
+            });
+            if (res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = res;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = res;
+                        return p;
+                    });
+                });
+            if (!res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = oldData;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = oldData;
+                        return p;
+                    });
+                });
+        }
+        setD('2');
+    };
+    const handleReEmo = async (
+        e: any,
+        i: {
+            id: number;
+            icon: string;
+            id_user: string[];
+        },
+    ) => {
+        e.stopPropagation();
+        setD('3');
+        let check = false;
+        dataPost.feel.onlyEmo.forEach((o) => {
+            if (o.id_user.includes(user.id)) check = true;
+        });
+        const divConstant = document.getElementById('emoBarPost');
+        if (divConstant) divConstant.setAttribute('style', 'display: none');
+        let oldData = dataPost.feel;
+        if (check) {
+            queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                return preData?.map((p) => {
+                    if (p._id === dataPost._id) {
+                        const newOnly = p.feel.onlyEmo.map((o) => {
+                            o.id_user = o.id_user.filter((u) => u !== user.id);
+                            if (o.id === i.id) o.id_user.push(user.id);
+                            return o;
+                        });
+                        p.feel.onlyEmo = newOnly;
+                        dataPost.feel.onlyEmo = newOnly;
+                    }
+
+                    return p;
+                });
+            });
+
+            const res = await postAPI.setEmotion({
+                _id: dataPost._id,
+                index: i.id,
+                id_user: user.id,
+                state: 'update',
+                oldIndex: emo?.id,
+            });
+            if (res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = res;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = res;
+                        return p;
+                    });
+                });
+
+            if (!res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = oldData;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = oldData;
+                        return p;
+                    });
+                });
+        } else {
+            queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                return preData?.map((p) => {
+                    if (p._id === dataPost._id) {
+                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                            if (o.id === i.id) o.id_user.push(user.id);
+                            return o;
+                        });
+                        dataPost.feel.onlyEmo = p.feel.onlyEmo;
+                    }
+                    return p;
+                });
+            });
+
+            const res = await postAPI.setEmotion({
+                _id: dataPost._id,
+                index: i.id,
+                id_user: user.id,
+                state: 'add',
+            });
+            if (res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = res;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = res;
+                        return p;
+                    });
+                });
+
+            if (!res)
+                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                    dataPost.feel = oldData;
+                    return preData?.map((p) => {
+                        if (p._id === dataPost._id) p.feel = oldData;
+                        return p;
+                    });
+                });
+        }
+        setD('4');
+        setActImotion(false);
+    };
     return (
-        <div id={`${dataPosts._id}_postScrolledUpAway`}>
+        <div id={`${dataPost._id}_postScrolledUpAway`}>
             <Div
                 width="100%"
                 css={`
@@ -141,7 +313,7 @@ const Posts: React.FC<PropsPosts> = ({
                     ${showCM ? 'z-index: 99999;' : ''}
                 `}
             >
-                {options === dataPosts._id && user.id === dataPosts.id_user && (
+                {options === dataPost._id && user.id === dataPost.id_user && (
                     <OpUpdate
                         createdAt={createdAt}
                         setOptions={setOptions}
@@ -153,7 +325,7 @@ const Posts: React.FC<PropsPosts> = ({
                                     colorText={colorText}
                                     user={user}
                                     editF={true}
-                                    originalInputValue={dataPosts.content.text}
+                                    originalInputValue={dataPost.content.text}
                                     setOpenPostCreation={() => setFormThat(null)}
                                 />,
                             )
@@ -193,12 +365,7 @@ const Posts: React.FC<PropsPosts> = ({
                                 margin: 5px;
                             `}
                         >
-                            <Avatar
-                                radius="50%"
-                                src={dataPosts.user[0].avatar}
-                                alt={dataPosts.user[0].fullName}
-                                gender={dataPosts.user[0].gender}
-                            />
+                            <Avatar radius="50%" src={dataPost.user[0].avatar} alt={dataPost.user[0].fullName} gender={dataPost.user[0].gender} />
                         </Div>
                         <Div
                             width="60%"
@@ -220,7 +387,7 @@ const Posts: React.FC<PropsPosts> = ({
                                     overflow: hidden;
                                 `}
                             >
-                                {dataPosts.user[0].fullName}
+                                {dataPost.user[0].fullName}
                             </H3>
                             <Div css="font-size: 1.1rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around; white-space: nowrap;">
                                 <Div css="color: #a3c8e6; font-size: 13px;">
@@ -233,7 +400,7 @@ const Posts: React.FC<PropsPosts> = ({
                                             { id: 'privacy', icon: <PrivacyI /> },
                                             { id: 'friend', icon: <FriendI />, color: '#58a3de' },
                                             { id: 'share', icon: <EarthI /> },
-                                        ].filter((t) => t.id === dataPosts.whoCanSeePost.id)[0].icon
+                                        ].filter((t) => t.id === dataPost.whoCanSeePost.id)[0].icon
                                     }
                                 </Span>
                             </Div>
@@ -245,12 +412,12 @@ const Posts: React.FC<PropsPosts> = ({
                             color={colorText}
                             onClick={() => {
                                 if (!options) {
-                                    setOptions(dataPosts._id);
+                                    setOptions(dataPost._id);
                                 } else {
-                                    if (options === dataPosts._id) {
+                                    if (options === dataPost._id) {
                                         setOptions('');
                                     } else {
-                                        setOptions(dataPosts._id);
+                                        setOptions(dataPost._id);
                                     }
                                 }
                             }}
@@ -260,9 +427,9 @@ const Posts: React.FC<PropsPosts> = ({
                     </Div>
 
                     <Div width="100%" css="padding: 5px 6px 10px 6px;" onClick={(e) => e.stopPropagation()}>
-                        {dataPosts.content.text && (
+                        {dataPost.content.text && (
                             <ReactQuillF
-                                value={dataPosts.content.text}
+                                value={dataPost.content.text}
                                 modules={{
                                     toolbar: false, // Tắt thanh công cụ
                                 }}
@@ -281,7 +448,7 @@ const Posts: React.FC<PropsPosts> = ({
                                     padding: 5px;
                                     color: ${colorText};
                                     background-color: #292a2d;
-                                    font-family: ${dataPosts.content.fontFamily}, sans-serif;
+                                    font-family: ${dataPost.content.fontFamily}, sans-serif;
                                     white-space: pre-wrap;
                                     word-break: break-word;
                                     * {
@@ -296,9 +463,9 @@ const Posts: React.FC<PropsPosts> = ({
                             />
                         )}
                     </Div>
-                    {dataPosts.hashTag?.length > 0 && (
+                    {dataPost.hashTag?.length > 0 && (
                         <Div width="100%" wrap="wrap" css="padding: 6px">
-                            {dataPosts.hashTag.map((tag) => (
+                            {dataPost.hashTag.map((tag) => (
                                 <Smooth // link tag
                                     key={tag._id}
                                     to={`/sn/hashTags/${tag.value}`}
@@ -351,7 +518,7 @@ const Posts: React.FC<PropsPosts> = ({
                     </Div> */}
                     <DefaultType
                         colorText={colorText}
-                        file={dataPosts.content.options.default.map((f) => ({ ...f.file, pre: '' }))}
+                        file={dataPost.content.options.default.map((f) => ({ ...f.file, pre: '' }))}
                         step={step}
                         setStep={setStep}
                         bg={''}
@@ -396,11 +563,7 @@ const Posts: React.FC<PropsPosts> = ({
                                     }
                                 `}
                             >
-                                <Div
-                                    className="emoji"
-                                    onClick={(e) => e.stopPropagation()}
-                                    css="margin-left: 2px; align-items: flex-end; "
-                                >
+                                <Div className="emoji" onClick={(e) => e.stopPropagation()} css="margin-left: 2px; align-items: flex-end; ">
                                     {sortEmo.map((key, index) =>
                                         key.id_user.length ? (
                                             <DivEmoji key={key.id}>
@@ -420,7 +583,7 @@ const Posts: React.FC<PropsPosts> = ({
                             </Div>
                         </Div>
                         <Div width="100%" css="border-top: 1px solid #64625f; padding: 1px 0;">
-                            {dataPosts.feel.onlyEmo.length > 0 && (
+                            {dataPost.feel.onlyEmo.length > 0 && (
                                 <DivAction
                                     id="parent"
                                     css={`
@@ -440,83 +603,9 @@ const Posts: React.FC<PropsPosts> = ({
                                         const divConstant = document.getElementById('emoBarPost');
                                         if (divConstant) divConstant.removeAttribute('style');
                                     }}
-                                    onClick={async (e) => {
-                                        e.stopPropagation();
-                                        const divConstant = document.getElementById('emoBarPost');
-                                        console.log('above');
-                                        let check = false;
-                                        let oldData = dataPosts.feel;
-                                        if (divConstant) divConstant.setAttribute('style', 'display: none');
-                                        dataPosts.feel.onlyEmo.forEach((o) => {
-                                            if (o.id_user.includes(user.id)) check = true;
-                                        });
-                                        if (check) {
-                                            setDataPosts((pre) =>
-                                                pre.map((p) => {
-                                                    if (p._id === dataPosts._id)
-                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                                                            o.id_user = o.id_user.filter((u) => u !== user.id);
-
-                                                            return o;
-                                                        });
-                                                    return p;
-                                                }),
-                                            );
-                                            const res = await postAPI.setEmotion({
-                                                _id: dataPosts._id,
-                                                index: emo.id,
-                                                id_user: user.id,
-                                                state: 'remove',
-                                            });
-                                            if (res)
-                                                setDataPosts((pre) =>
-                                                    pre.map((p) => {
-                                                        if (p._id === dataPosts._id) p.feel = res;
-                                                        return p;
-                                                    }),
-                                                );
-                                            if (!res)
-                                                setDataPosts((pre) =>
-                                                    pre.map((p) => {
-                                                        if (p._id === dataPosts._id) p.feel = oldData;
-                                                        return p;
-                                                    }),
-                                                );
-                                        } else {
-                                            setDataPosts((pre) =>
-                                                pre.map((p) => {
-                                                    if (p._id === dataPosts._id)
-                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                                                            if (o.id === dataPosts.feel.act) o.id_user.push(user.id);
-                                                            return o;
-                                                        });
-                                                    return p;
-                                                }),
-                                            );
-                                            const res = await postAPI.setEmotion({
-                                                _id: dataPosts._id,
-                                                index: dataPosts.feel.act,
-                                                id_user: user.id,
-                                                state: 'add',
-                                            });
-                                            if (res)
-                                                setDataPosts((pre) =>
-                                                    pre.map((p) => {
-                                                        if (p._id === dataPosts._id) p.feel = res;
-                                                        return p;
-                                                    }),
-                                                );
-                                            if (!res)
-                                                setDataPosts((pre) =>
-                                                    pre.map((p) => {
-                                                        if (p._id === dataPosts._id) p.feel = oldData;
-                                                        return p;
-                                                    }),
-                                                );
-                                        }
-                                    }}
+                                    onClick={handleEmo}
                                 >
-                                    {emo?.icon ? emo?.icon : dataPosts.feel.act === 1 ? <LikeI /> : <HeartI />}
+                                    {emo?.icon ? emo?.icon : dataPost.feel.act === 1 ? <LikeI /> : <HeartI />}
                                     <Div
                                         id="emoBarPost"
                                         width="fit-content"
@@ -542,93 +631,12 @@ const Posts: React.FC<PropsPosts> = ({
                                             transition: all 1s linear;
                                         `}
                                     >
-                                        {dataPosts.feel.onlyEmo
+                                        {dataPost.feel.onlyEmo
                                             .sort((a, b) => a.id - b.id)
                                             .map((i, index, arr) => (
                                                 <DivEmoji
                                                     key={i.id}
-                                                    onClick={async (e) => {
-                                                        e.stopPropagation();
-                                                        let check = false;
-                                                        dataPosts.feel.onlyEmo.forEach((o) => {
-                                                            if (o.id_user.includes(user.id)) check = true;
-                                                        });
-                                                        const divConstant = document.getElementById('emoBarPost');
-                                                        if (divConstant)
-                                                            divConstant.setAttribute('style', 'display: none');
-                                                        let oldData = dataPosts.feel;
-                                                        if (check) {
-                                                            setDataPosts((pre) =>
-                                                                pre.map((p) => {
-                                                                    if (p._id === dataPosts._id)
-                                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                                                                            o.id_user = o.id_user.filter(
-                                                                                (u) => u !== user.id,
-                                                                            );
-                                                                            if (o.id === i.id) o.id_user.push(user.id);
-                                                                            return o;
-                                                                        });
-
-                                                                    return p;
-                                                                }),
-                                                            );
-                                                            const res = await postAPI.setEmotion({
-                                                                _id: dataPosts._id,
-                                                                index: i.id,
-                                                                id_user: user.id,
-                                                                state: 'update',
-                                                                oldIndex: emo?.id,
-                                                            });
-                                                            if (res)
-                                                                setDataPosts((pre) =>
-                                                                    pre.map((p) => {
-                                                                        if (p._id === dataPosts._id) p.feel = res;
-                                                                        return p;
-                                                                    }),
-                                                                );
-                                                            if (!res)
-                                                                setDataPosts((pre) =>
-                                                                    pre.map((p) => {
-                                                                        if (p._id === dataPosts._id) p.feel = oldData;
-                                                                        return p;
-                                                                    }),
-                                                                );
-                                                        } else {
-                                                            setDataPosts((pre) =>
-                                                                pre.map((p) => {
-                                                                    if (p._id === dataPosts._id)
-                                                                        p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                                                                            if (o.id === i.id) o.id_user.push(user.id);
-                                                                            return o;
-                                                                        });
-
-                                                                    return p;
-                                                                }),
-                                                            );
-                                                            const res = await postAPI.setEmotion({
-                                                                _id: dataPosts._id,
-                                                                index: i.id,
-                                                                id_user: user.id,
-                                                                state: 'add',
-                                                            });
-                                                            if (res)
-                                                                setDataPosts((pre) =>
-                                                                    pre.map((p) => {
-                                                                        if (p._id === dataPosts._id) p.feel = res;
-                                                                        return p;
-                                                                    }),
-                                                                );
-                                                            if (!res)
-                                                                setDataPosts((pre) =>
-                                                                    pre.map((p) => {
-                                                                        if (p._id === dataPosts._id) p.feel = oldData;
-                                                                        return p;
-                                                                    }),
-                                                                );
-                                                        }
-
-                                                        setActImotion(false);
-                                                    }}
+                                                    onClick={(e) => handleReEmo(e, i)}
                                                     css={`
                                                         position: relative;
                                                         background-color: #6f5fc4ba;
@@ -642,14 +650,14 @@ const Posts: React.FC<PropsPosts> = ({
                                 </DivAction>
                             )}
                             {/* compare with id of option in  post's OpText */}
-                            {!dataPosts.private.some((p) => p.id === 'comment') && (
-                                <DivAction onClick={() => setShowComment(dataPosts._id)}>
+                            {!dataPost.private.some((p) => p.id === 'comment') && (
+                                <DivAction onClick={() => setShowComment(dataPost._id)}>
                                     <Div css="font-size: 1.3rem;">
                                         <PostCommentI />
                                     </Div>
                                 </DivAction>
                             )}
-                            {!dataPosts.private.some((p) => p.id === 'share') && (
+                            {!dataPost.private.some((p) => p.id === 'share') && (
                                 <DivAction>
                                     <ShareI />
                                 </DivAction>
@@ -657,13 +665,7 @@ const Posts: React.FC<PropsPosts> = ({
                         </Div>
                     </Div>
                     {showCM && (
-                        <Comment
-                            colorText={colorText}
-                            anony={dataPosts.private}
-                            setShowComment={setShowComment}
-                            dataPost={dataPosts}
-                            you={user}
-                        />
+                        <Comment colorText={colorText} anony={dataPost.private} setShowComment={setShowComment} dataPost={dataPost} you={user} />
                     )}
                 </Div>
             </Div>

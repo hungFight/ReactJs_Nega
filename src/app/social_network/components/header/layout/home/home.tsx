@@ -21,6 +21,7 @@ import { setSession } from '~/redux/reload';
 import ServerBusy from '~/utils/ServerBusy';
 import { PostsI, ShortStoryI, YoutubeI } from '~/assets/Icons/Icons';
 import { PropsUser } from 'src/App';
+import { useQuery } from '@tanstack/react-query';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 
@@ -49,22 +50,26 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
     const [openPostCreation, setOpenPostCreation] = useState<boolean>(false);
     const [topScrolling, setTopScrolling] = useState<boolean>(false);
 
-    const [dataPosts, setDataPosts] = useState<PropsDataPosts[]>([]);
     const offset = useRef<number>(0);
     const limit = 5;
     const handleOpenForm = () => {
         console.log('ok very good');
     };
     console.log(document, 'previousDocument', colorBg);
-
-    useEffect(() => {
-        async function fetch() {
-            const res = await homeAPI.getPosts(limit, offset.current, 'friend');
-            const data: typeof res = ServerBusy(res, dispatch);
-            setDataPosts(data);
-        }
-        fetch();
-    }, []);
+    const { data } = useQuery({
+        queryKey: ['collections_post', dataUser.fullName],
+        staleTime: 10 * 60 * 1000,
+        cacheTime: 1 * 60 * 60 * 1000,
+        queryFn: async () => {
+            try {
+                const res = await homeAPI.getPosts(limit, offset.current, 'friend');
+                const data: typeof res = ServerBusy(res, dispatch);
+                return data;
+            } catch (error) {
+                return [];
+            }
+        },
+    });
     const minWidth1 = '400px';
     const bgAther = colorBg === 1 ? '#17181af5' : colorBg;
     const handleScroll = (e: any) => {
@@ -115,9 +120,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 width: 0px;
                             }
                         }
-                        ${topScrolling && openPostCreation
-                            ? 'position: fixed; z-index: 1; background-color: #18191b;'
-                            : ''}
+                        ${topScrolling && openPostCreation ? 'position: fixed; z-index: 1; background-color: #18191b;' : ''}
                     `}
                 >
                     <Div
@@ -265,9 +268,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                             left: 50%;
                             translate: -50%;
                             ${!openPostCreation ? 'padding-bottom: 41px;' : ''}
-                            ${topScrolling && !openPostCreation
-                                ? ' @media (min-width: 768px) {top: 50px;}top: 34px;'
-                                : ''}
+                            ${topScrolling && !openPostCreation ? ' @media (min-width: 768px) {top: 50px;}top: 34px;' : ''}
                         `}
                         wrap="wrap"
                     >
@@ -334,9 +335,8 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                 </Div>
                 {post && (
                     <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
-                        {dataPosts.map((p) => (
+                        {data?.map((p) => (
                             <Posts
-                                setDataPosts={setDataPosts}
                                 setFormThat={setFormThat}
                                 form={form}
                                 setOptions={setOptions}
@@ -345,7 +345,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                                 user={dataUser}
                                 colorBg={colorBg}
                                 colorText={colorText}
-                                dataPosts={p}
+                                dataP={p}
                                 setShowComment={setShowComment}
                                 showComment={showComment}
                             />
