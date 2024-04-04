@@ -2,9 +2,9 @@ import ReactQuill, { Quill } from 'react-quill';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
-import { Div, DivFill, DivFlex, DivFlexPosition, DivNone, Img, Input, P, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFill, DivFlex, DivFlexPosition, DivNone, Img, Input, P, Span, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivComment, DivEmoji, Label } from './styleFormUpNews';
-import { BanI, CameraI, DotI, EscalatorI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
+import { BanI, CameraI, DotI, EscalatorI, IconI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { BsDot } from 'react-icons/bs';
@@ -13,7 +13,7 @@ import QuillText from '~/reUsingComponents/Libraries/QuillText';
 import { PropsValueQuill } from './FormUpNews';
 import { PropsUser } from 'src/App';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
-import { PropsDataPosts } from '../DataPosts/interfacePosts';
+import { PropsComments, PropsDataPosts } from '../DataPosts/interfacePosts';
 import '~/reUsingComponents/Libraries/formatMoment';
 import Languages from '~/reUsingComponents/languages';
 import moments from '~/utils/moment';
@@ -40,6 +40,7 @@ const Comment: React.FC<{
     const [inputValue, setInputValue] = useState<string>('');
     const [anonymous, setAnonymous] = useState<boolean>(false);
     const activate = you.gender === 0 ? 'anonymousMale' : you.gender === 1 ? 'anonymousFemale' : '';
+    const [d, setD] = useState<string>('');
     const [onAc, setOnAC] = useState<boolean>(false);
     const handleAnonymousComment = () => {
         setAnonymous(!anonymous);
@@ -63,18 +64,26 @@ const Comment: React.FC<{
     });
     useEffect(() => {
         socket.on(`comment_post_${dataPost?._id}`, (data) => {
-            console.log(data, 'comment_post_');
             if (data) {
-                queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
-                    // Update the data by adding newValue to the existing data
-                    return [data, ...prevData];
-                });
+                if (dataPost?.id_user !== data.id_user) {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
+                        // Update the data by adding newValue to the existing data
+                        return [data, ...prevData];
+                    });
+                }
             }
         });
     }, []);
     const handleComment = async () => {
         if (dataPost?._id) {
-            const newValue = await postAPI.sendComment(dataPost._id, inputValue, onAc);
+            const emos = {
+                act: dataPost.feel.act,
+                onlyEmo: dataPost.feel.onlyEmo.map((r) => {
+                    r.id_user = [];
+                    return r;
+                }),
+            };
+            const newValue = await postAPI.sendComment(dataPost._id, inputValue, onAc, emos);
             if (newValue) {
                 queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
                     // Update the data by adding newValue to the existing data
@@ -84,7 +93,6 @@ const Comment: React.FC<{
             setInputValue('');
         }
     };
-    console.log(activate, anony, 'anonymous');
     const iconDatas = [
         { id: 1, icon: 'Mới nhất' },
         { id: 2, icon: 'Cũ nhất' },
@@ -147,6 +155,212 @@ const Comment: React.FC<{
                     if (tag) tag.style.display = 'flex';
                 }
             }
+        }
+    };
+    // dataPost.feel.onlyEmo.map((r) => {
+    //     amount += r.id_user.length;
+    // }, {});
+    // const fa = dataPost.feel.onlyEmo;
+    // const sortEmo = fa.sort((a, b) => b.id_user.length - a.id_user.length);
+    const handleEmo = async (
+        e: any,
+        c: PropsComments,
+        emo: {
+            id: number;
+            icon: string;
+            id_user: string[];
+        },
+    ) => {
+        e.stopPropagation();
+        const divConstant = document.getElementById('emoBarPost');
+        console.log('above');
+        let check = false;
+        let oldData = c.feel;
+        if (divConstant) divConstant.setAttribute('style', 'display: none');
+        c.feel.onlyEmo.forEach((o) => {
+            if (o.id_user.includes(you.id)) check = true;
+        });
+        setD('1');
+        if (dataPost) {
+            if (check) {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    return preData?.map((p) => {
+                        if (p._id === c._id) {
+                            p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                o.id_user = o.id_user.filter((u) => u !== you.id);
+                                return o;
+                            });
+                            c.feel.onlyEmo = p.feel.onlyEmo;
+                        }
+                        return p;
+                    });
+                });
+                const res = await postAPI.setEmotion({
+                    _id: dataPost._id,
+                    index: emo.id,
+                    id_user: you.id,
+                    state: 'remove',
+                    id_comment: c._id,
+                });
+                if (res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = res;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = res;
+                            return p;
+                        });
+                    });
+
+                if (!res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = oldData;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = oldData;
+                            return p;
+                        });
+                    });
+            } else {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    return preData?.map((p) => {
+                        if (p._id === c._id) {
+                            p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                if (o.id === c.feel.act) o.id_user.push(you.id);
+                                return o;
+                            });
+                            c.feel.onlyEmo = p.feel.onlyEmo;
+                        }
+                        return p;
+                    });
+                });
+                const res = await postAPI.setEmotion({
+                    _id: dataPost._id,
+                    index: c.feel.act,
+                    id_user: you.id,
+                    state: 'add',
+                    id_comment: c._id,
+                });
+                if (res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = res;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = res;
+                            return p;
+                        });
+                    });
+                if (!res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = oldData;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = oldData;
+                            return p;
+                        });
+                    });
+            }
+        }
+        setD('2');
+    };
+    const handleReEmo = async (
+        e: any,
+        i: {
+            id: number;
+            icon: string;
+            id_user: string[];
+        },
+        c: PropsComments,
+        emo: {
+            id: number;
+            icon: string;
+            id_user: string[];
+        },
+    ) => {
+        e.stopPropagation();
+        const divConstant = document.getElementById('emoBarPost');
+        let check = false;
+        let oldData = c.feel;
+        if (divConstant) divConstant.setAttribute('style', 'display: none');
+        c.feel.onlyEmo.forEach((o) => {
+            if (o.id_user.includes(you.id)) check = true;
+        });
+        if (dataPost) {
+            setD('1');
+            if (check) {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    return preData?.map((p) => {
+                        if (p._id === c._id) {
+                            p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                o.id_user = o.id_user.filter((u) => u !== you.id);
+                                if (o.id === i.id) o.id_user.push(you.id);
+
+                                return o;
+                            });
+                            c.feel.onlyEmo = p.feel.onlyEmo;
+                        }
+                        return p;
+                    });
+                });
+                const res = await postAPI.setEmotion({
+                    _id: dataPost._id,
+                    index: i.id,
+                    id_user: you.id,
+                    state: 'update',
+                    id_comment: c._id,
+                    oldIndex: emo?.id,
+                });
+                if (res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = res;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = res;
+                            return p;
+                        });
+                    });
+
+                if (!res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = oldData;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = oldData;
+                            return p;
+                        });
+                    });
+            } else {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    return preData?.map((p) => {
+                        if (p._id === c._id) {
+                            p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
+                                if (o.id === i.id) o.id_user.push(you.id);
+                                return o;
+                            });
+                            c.feel.onlyEmo = p.feel.onlyEmo;
+                        }
+                        return p;
+                    });
+                });
+                const res = await postAPI.setEmotion({
+                    _id: dataPost._id,
+                    index: i.id,
+                    id_user: you.id,
+                    state: 'add',
+                    id_comment: c._id,
+                });
+                if (res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = res;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = res;
+                            return p;
+                        });
+                    });
+                if (!res)
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                        c.feel = oldData;
+                        return preData?.map((p) => {
+                            if (p._id === c._id) p.feel = oldData;
+                            return p;
+                        });
+                    });
+            }
+            setD('2');
         }
     };
     return (
@@ -254,13 +468,7 @@ const Comment: React.FC<{
                                                 setOnAC(!onAc);
                                             }}
                                         >
-                                            <Avatar
-                                                css="width: 30px; height: 30px; min-width: 30px; margin-right: 3px;"
-                                                src={onAc ? you.avatar : ''}
-                                                staticI={!onAc}
-                                                radius="50%"
-                                                gender={activate}
-                                            />
+                                            <Avatar css="width: 30px; height: 30px; min-width: 30px; margin-right: 3px;" src={onAc ? you.avatar : ''} staticI={!onAc} radius="50%" gender={activate} />
                                             <P z="1.5rem">{onAc ? you.fullName : 'Anonymous'}</P>
                                         </Div>
                                     ) : (
@@ -280,25 +488,6 @@ const Comment: React.FC<{
                                         <CameraI />
                                     </Label>
                                 </Div>
-                                {/* <Textarea
-                                    ref={textarea}
-                                    width="70%"
-                                    height="32px"
-                                    placeholder="comment"
-                                    value={value}
-                                    bg="#333333"
-                                    color="white"
-                                    radius="10px"
-                                    size="1.4rem"
-                                    padding="8px 14px"
-                                    border="0"
-                                    css={`
-                                        overflow-y: overlay;
-                                    `}
-                                    onKeyDown={(e) => handleOnKeyDown(e)}
-                                    onKeyUp={(e) => handleOnKeyup(e)}
-                                    onChange={handleWriteText}
-                                /> */}
                                 <Div width="70%" css="position: relative;">
                                     <QuillText
                                         consider={consider}
@@ -348,39 +537,34 @@ const Comment: React.FC<{
                                 }
                             `}
                         >
-                            {data?.map((c) => (
-                                <DivFlex key={c._id} justify="start" css="margin-bottom: 40px">
-                                    <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"></DivNone>
-                                    <DivFlexPosition wrap="wrap" position="relative">
-                                        <DivFlex>
-                                            <Avatar
-                                                src={c.user.avatar}
-                                                alt={c.user.fullName}
-                                                gender={c.user.gender}
-                                                css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
-                                                radius="50%"
-                                            />
-                                            <DivFlex wrap="wrap" justify="start">
-                                                <Hname>{c.user.fullName}</Hname>
-                                                <Div>
-                                                    <Div css="margin-right: 5px;">
-                                                        <FcReadingEbook />
-                                                    </Div>{' '}
-                                                    <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
-                                                </Div>
-                                            </DivFlex>
-                                        </DivFlex>
-                                        <DivFlexPosition justify="start" bottom="-25px" position="absolute">
-                                            <BsDot />{' '}
-                                            <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
-                                            <P z="1.1rem" css="margin: 0 5px">
-                                                -
-                                            </P>
+                            {data?.map((c) => {
+                                const emo = c.feel.onlyEmo.filter((o) => o.id_user.includes(you.id))[0];
+                                return (
+                                    <DivFlex key={c._id} justify="start" css="margin-bottom: 40px; position: relative;">
+                                        <DivPos top="22px" right="55px" index={1} css="text-wrap: nowrap; ">
                                             <Div
-                                                css="font-size: 1.1rem;cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600; @media (min-width: 768px) {
-                                            &:hover {#emoBarPost {display: flex;top: -40px;}}}"
+                                                css="&:hover{text-decoration: underline;}font-weight: 600; @media (min-width: 768px) {
+                                                    &:hover {#emoBarPost {display: flex;top: -40px;}}}"
+                                                onClick={(e) => handleEmo(e, c, emo)}
                                             >
-                                                Cảm xúc
+                                                {!emo && <IconI />}
+                                                {/* {c.feel.onlyEmo.some((o) => o.id_user.length)
+                                                    ? c.feel.onlyEmo.map((key, index) =>
+                                                          key.id_user.length ? (
+                                                              <DivEmoji
+                                                                  key={key.id}
+                                                                  css={`
+                                                                      margin: 0;
+                                                                  `}
+                                                              >
+                                                                  {key.icon}
+                                                              </DivEmoji>
+                                                          ) : (
+                                                              ''
+                                                          ),
+                                                      )
+                                                    : 'Cảm xúc'} */}
+
                                                 <Div
                                                     id="emoBarPost"
                                                     width="fit-content"
@@ -405,46 +589,70 @@ const Comment: React.FC<{
                                                         transition: all 1s linear;
                                                     `}
                                                 >
-                                                    {dataPost &&
-                                                        dataPost.feel.onlyEmo
-                                                            .sort((a, b) => a.id - b.id)
-                                                            .map((i, index, arr) => (
-                                                                <DivEmoji
-                                                                    key={i.id}
-                                                                    // onClick={(e) => handleReEmo(e, i)}
-                                                                    css={`
-                                                                        position: relative;
-                                                                        background-color: #6f5fc4ba;
-                                                                    `}
-                                                                    nameFrame={`top_bottom_move_${index}`}
-                                                                >
-                                                                    {i.icon}
-                                                                </DivEmoji>
-                                                            ))}
+                                                    {c.feel.onlyEmo
+                                                        .sort((a, b) => a.id - b.id)
+                                                        .map((i, index, arr) => (
+                                                            <DivEmoji
+                                                                key={i.id}
+                                                                onClick={(e) => handleReEmo(e, i, c, emo)}
+                                                                css={`
+                                                                    position: relative;
+                                                                    background-color: #6f5fc4ba;
+                                                                `}
+                                                                nameFrame={`top_bottom_move_${index}`}
+                                                            >
+                                                                {i.icon}
+                                                            </DivEmoji>
+                                                        ))}
                                                 </Div>
                                             </Div>
-                                            <P z="1.1rem" css="margin: 0 5px">
-                                                -
-                                            </P>
-                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                trả lời
-                                            </P>{' '}
-                                            <P z="1.1rem" css="margin: 0 5px">
-                                                -
-                                            </P>
-                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                Nhắc đến
-                                            </P>{' '}
-                                            <P z="1.1rem" css="margin: 0 5px">
-                                                -
-                                            </P>
-                                            <Div css="cursor: var(--pointer); font-size: 25px;">
-                                                <DotI />
-                                            </Div>
+                                        </DivPos>
+
+                                        <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"></DivNone>
+                                        <DivFlexPosition wrap="wrap" position="relative">
+                                            <DivFlex>
+                                                <Avatar
+                                                    src={c.user.avatar}
+                                                    alt={c.user.fullName}
+                                                    gender={c.user.gender}
+                                                    css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
+                                                    radius="50%"
+                                                />
+                                                <DivFlex wrap="wrap" justify="start">
+                                                    <Hname>{c.user.fullName}</Hname>
+                                                    <Div>
+                                                        <Div css="margin-right: 5px;">
+                                                            <FcReadingEbook />
+                                                        </Div>{' '}
+                                                        <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
+                                                    </Div>
+                                                </DivFlex>
+                                            </DivFlex>
+                                            <DivFlexPosition justify="start" bottom="-25px" position="absolute">
+                                                <BsDot /> <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
+                                                <P z="1.1rem" css="margin: 0 5px">
+                                                    -
+                                                </P>
+                                                <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                    trả lời
+                                                </P>{' '}
+                                                <P z="1.1rem" css="margin: 0 5px">
+                                                    -
+                                                </P>
+                                                <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                    Nhắc đến
+                                                </P>{' '}
+                                                <P z="1.1rem" css="margin: 0 5px">
+                                                    -
+                                                </P>
+                                                <Div css="cursor: var(--pointer); font-size: 25px;">
+                                                    <DotI />
+                                                </Div>
+                                            </DivFlexPosition>
                                         </DivFlexPosition>
-                                    </DivFlexPosition>
-                                </DivFlex>
-                            ))}
+                                    </DivFlex>
+                                );
+                            })}
                         </DivFill>
                     </DivFill>
                 </DivFill>
