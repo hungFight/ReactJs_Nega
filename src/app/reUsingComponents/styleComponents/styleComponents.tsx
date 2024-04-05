@@ -232,6 +232,7 @@ interface PropsClose {
     css?: string;
     position?: string;
     index?: number;
+    translateT?: string;
 }
 export const DivPos = styled.div<PropsClose>`
     display: flex;
@@ -246,6 +247,7 @@ export const DivPos = styled.div<PropsClose>`
     color: ${(props) => props.color};
     position: ${(props) => props.position || 'absolute'};
     z-index: ${(props) => props.index};
+    translate: ${(props) => props.translateT};
     font-size: ${(props) => props.size};
     border-radius: 50%;
     ${(props) => props.css}

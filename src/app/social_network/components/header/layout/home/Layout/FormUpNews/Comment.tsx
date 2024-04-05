@@ -46,7 +46,8 @@ const Comment: React.FC<{
         setAnonymous(!anonymous);
     };
     const { lg } = Languages();
-    const { data } = useQuery({
+    const noData = useRef<boolean>(false);
+    const { data, isLoading, refetch } = useQuery({
         queryKey: ['Comment', dataPost?._id],
         staleTime: 5 * 60 * 1000, // 5m
         cacheTime: 6 * 60 * 1000, // 6m
@@ -54,11 +55,24 @@ const Comment: React.FC<{
         queryFn: async () => {
             try {
                 if (dataPost?._id) {
+                    if (data && data.offset && offset.current === 0) {
+                        offset.current = data.offset;
+                    }
                     const res = await postAPI.getComments(dataPost?._id, offset.current, limit);
-                    return res;
+                    if (res.length) {
+                        offset.current += limit;
+                    } else {
+                        noData.current = true;
+                    }
+                    if (data) {
+                        const d: any = data;
+                        const newD: PropsComments[] | undefined = [...d.comments, ...res];
+                        return { offset: offset.current, comments: newD };
+                    }
+                    return { offset: offset.current, comments: res };
                 }
             } catch (error) {
-                return [];
+                return { offset: 0, comments: [] };
             }
         },
     });
@@ -363,6 +377,18 @@ const Comment: React.FC<{
             setD('2');
         }
     };
+    const coms = useRef<HTMLDivElement | null>(null);
+    const handleScrollMore = (e: any) => {
+        if (coms.current) {
+            const { scrollTop, clientHeight, scrollHeight } = coms.current;
+            const scrollBottom = scrollTop + clientHeight;
+            console.log(scrollTop + clientHeight, 'scrollBottom', scrollHeight, 'scrollHeight');
+            if (scrollTop + clientHeight >= scrollHeight - 20 && !isLoading && !noData.current) {
+                // wait for another request
+                refetch();
+            }
+        }
+    };
     return (
         <DivComment onClick={(e) => e.stopPropagation()}>
             <DivFill
@@ -524,9 +550,11 @@ const Comment: React.FC<{
                             </Div>
                         </DivFill>
                         <DivFill
+                            ref={coms}
                             css={`
-                                margin-top: 15px;
+                                margin-top: 5px;
                                 overflow: overlay;
+                                padding-top: 32px;
                                 max-height: 528px;
                                 &::-webkit-scrollbar-thumb {
                                     border-radius: 3px;
@@ -536,35 +564,28 @@ const Comment: React.FC<{
                                     width: 9px;
                                 }
                             `}
+                            onScroll={handleScrollMore}
                         >
-                            {data?.map((c) => {
+                            {data?.comments.map((c) => {
                                 const emo = c.feel.onlyEmo.filter((o) => o.id_user.includes(you.id))[0];
+                                let amount = 0;
+                                c.feel.onlyEmo.map((r) => {
+                                    amount += r.id_user.length;
+                                }, {});
+                                const hasEmo = c.feel.onlyEmo.some((o) => o.id_user.length);
                                 return (
                                     <DivFlex key={c._id} justify="start" css="margin-bottom: 40px; position: relative;">
-                                        <DivPos top="22px" right="55px" index={1} css="text-wrap: nowrap; ">
+                                        <DivPos top="14px" right="55px" index={1} css="text-wrap: nowrap; ">
                                             <Div
-                                                css="&:hover{text-decoration: underline;}font-weight: 600; @media (min-width: 768px) {
-                                                    &:hover {#emoBarPost {display: flex;top: -40px;}}}"
+                                                css="font-weight: 600; width: 20px; height: 20px; justify-content: center;align-items: center;} @media (min-width: 768px) {
+                                                    &:hover {#emoBarPost {display: flex;top: -81px;}}}position: relative;"
                                                 onClick={(e) => handleEmo(e, c, emo)}
                                             >
-                                                {!emo && <IconI />}
-                                                {/* {c.feel.onlyEmo.some((o) => o.id_user.length)
-                                                    ? c.feel.onlyEmo.map((key, index) =>
-                                                          key.id_user.length ? (
-                                                              <DivEmoji
-                                                                  key={key.id}
-                                                                  css={`
-                                                                      margin: 0;
-                                                                  `}
-                                                              >
-                                                                  {key.icon}
-                                                              </DivEmoji>
-                                                          ) : (
-                                                              ''
-                                                          ),
-                                                      )
-                                                    : 'Cảm xúc'} */}
+                                                {!emo ? <IconI /> : emo.icon}
 
+                                                <DivPos top="19px" right="50%" left="50%" translateT="-50%">
+                                                    <P z="1.3rem"> {amount} </P>
+                                                </DivPos>
                                                 <Div
                                                     id="emoBarPost"
                                                     width="fit-content"
@@ -573,8 +594,8 @@ const Comment: React.FC<{
                                                     css={`
                                                         position: absolute;
                                                         top: 0;
-                                                        left: 0;
-                                                        padding: 5px 20px 8px;
+                                                        right: -25px;
+                                                        padding: 37px 33px;
                                                         border-radius: 50px;
                                                         z-index: 7;
                                                         div {
@@ -630,6 +651,28 @@ const Comment: React.FC<{
                                             </DivFlex>
                                             <DivFlexPosition justify="start" bottom="-25px" position="absolute">
                                                 <BsDot /> <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
+                                                <P
+                                                    z="1.1rem"
+                                                    css={`
+                                                        margin: 0 5px;
+                                                        ${hasEmo ? ' margin-right: 11px;' : ''}
+                                                    `}
+                                                >
+                                                    -
+                                                </P>
+                                                <Div
+                                                    css={`
+                                                        ${hasEmo ? 'margin-left: 6px' : ''}
+                                                    `}
+                                                >
+                                                    {hasEmo ? (
+                                                        c.feel.onlyEmo.map((key, index, arr) => (key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : ''))
+                                                    ) : (
+                                                        <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                            Cảm xúc
+                                                        </P>
+                                                    )}
+                                                </Div>
                                                 <P z="1.1rem" css="margin: 0 5px">
                                                     -
                                                 </P>
