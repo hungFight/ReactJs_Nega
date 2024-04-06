@@ -79,10 +79,12 @@ const Comment: React.FC<{
     useEffect(() => {
         socket.on(`comment_post_${dataPost?._id}`, (data) => {
             if (data) {
-                if (dataPost?.id_user !== data.id_user) {
+                console.log(data);
+
+                if (you.id !== data.id_user) {
                     queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
                         // Update the data by adding newValue to the existing data
-                        return [data, ...prevData];
+                        return { ...(prevData ?? {}), comments: [data, ...prevData.comments] };
                     });
                 }
             }
@@ -101,7 +103,7 @@ const Comment: React.FC<{
             if (newValue) {
                 queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
                     // Update the data by adding newValue to the existing data
-                    return [newValue, ...prevData];
+                    return { ...(prevData ?? {}), comments: [newValue, ...prevData.comments] };
                 });
             }
             setInputValue('');
@@ -197,8 +199,8 @@ const Comment: React.FC<{
         setD('1');
         if (dataPost) {
             if (check) {
-                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
-                    return preData?.map((p) => {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
+                    preData?.comments.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 o.id_user = o.id_user.filter((u) => u !== you.id);
@@ -208,6 +210,7 @@ const Comment: React.FC<{
                         }
                         return p;
                     });
+                    return preData;
                 });
                 const res = await postAPI.setEmotion({
                     _id: dataPost._id,
@@ -217,25 +220,27 @@ const Comment: React.FC<{
                     id_comment: c._id,
                 });
                 if (res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
+                        return preData;
                     });
 
                 if (!res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
+                        return preData;
                     });
             } else {
-                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
-                    return preData?.map((p) => {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
+                    preData?.comments.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 if (o.id === c.feel.act) o.id_user.push(you.id);
@@ -245,6 +250,7 @@ const Comment: React.FC<{
                         }
                         return p;
                     });
+                    return preData;
                 });
                 const res = await postAPI.setEmotion({
                     _id: dataPost._id,
@@ -254,20 +260,22 @@ const Comment: React.FC<{
                     id_comment: c._id,
                 });
                 if (res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
+                        return preData;
                     });
                 if (!res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
+                        return preData;
                     });
             }
         }
@@ -298,8 +306,8 @@ const Comment: React.FC<{
         if (dataPost) {
             setD('1');
             if (check) {
-                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
-                    return preData?.map((p) => {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
+                    preData?.comments.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 o.id_user = o.id_user.filter((u) => u !== you.id);
@@ -311,6 +319,7 @@ const Comment: React.FC<{
                         }
                         return p;
                     });
+                    return preData;
                 });
                 const res = await postAPI.setEmotion({
                     _id: dataPost._id,
@@ -321,25 +330,27 @@ const Comment: React.FC<{
                     oldIndex: emo?.id,
                 });
                 if (res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
+                        return preData;
                     });
 
                 if (!res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
+                        return preData;
                     });
             } else {
-                queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
-                    return preData?.map((p) => {
+                queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
+                    preData?.comments.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 if (o.id === i.id) o.id_user.push(you.id);
@@ -349,6 +360,7 @@ const Comment: React.FC<{
                         }
                         return p;
                     });
+                    return preData;
                 });
                 const res = await postAPI.setEmotion({
                     _id: dataPost._id,
@@ -358,20 +370,22 @@ const Comment: React.FC<{
                     id_comment: c._id,
                 });
                 if (res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
+                        return preData;
                     });
                 if (!res)
-                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        return preData?.map((p) => {
+                        preData?.comments.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
+                        return preData;
                     });
             }
             setD('2');
@@ -404,21 +418,21 @@ const Comment: React.FC<{
                 <Div
                     width="100%"
                     css={`
-                        height: 30px;
+                        height: 40px;
                         align-items: center;
                         justify-content: center;
                         position: relative;
                         border-bottom: 1px solid #494949;
                     `}
                 >
-                    <DivPos size="20px" top="3px" left="6px" onClick={() => setShowComment('')}>
+                    <DivPos size="22px" top="10px" left="8px" onClick={() => setShowComment('')}>
                         <UndoIRegister />
                     </DivPos>
                     <P z="1.4rem">Comment</P>{' '}
                     <Div css="margin-right: 5px;">
                         <FcReadingEbook />
                     </Div>{' '}
-                    <DivPos size="20px" top="3px" right="6px">
+                    <DivPos size="22px" top="10px" right="8px">
                         <ResetI />
                     </DivPos>
                 </Div>

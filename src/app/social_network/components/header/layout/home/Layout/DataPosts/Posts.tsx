@@ -28,9 +28,13 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
     // const avatar = CommonUtils.convertBase64(dataPost.user[0].avatar);
     let timeS: any;
     const handleShowI = (e: any) => {
+        const divConstant = document.getElementById('emoBarPost');
+        if (divConstant) divConstant.removeAttribute('style');
         document.addEventListener('touchstart', handleMouseDown);
+        console.log('touchstart');
+
         function handleMouseDown(event: any) {
-            if (event.target === e.target || event.target === e.target.closest) {
+            if (event.target.getAttribute('id') === 'parent_emo') {
                 // Clicked inside the div
                 console.log('Clicked inside the box', e.target);
             } else {
@@ -139,7 +143,6 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     return p;
                 });
             });
-
             const res = await postAPI.setEmotion({
                 _id: dataPost._id,
                 index: emo.id,
@@ -297,7 +300,6 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     });
                 });
         }
-        setD('4');
         setActImotion(false);
     };
     return (
@@ -486,12 +488,10 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             justify-content: center;
                             position: relative;
                             color: ${colorText};
-                            ${step === 1
-                                ? 'height: 100%; overflow-y: overlay; position: fixed; top: 0; left: 0; right: 0; align-items: center;  background-color: #1f2021; z-index: 8888; @media(max-width: 769px){&::-webkit-scrollbar {width: 0px;}}'
-                                : ''};
+                            max-height: 600px;
                         `}
                     >
-                        {/* {postTypes[selectType]} */}
+                        <DefaultType colorText={colorText} file={dataPost.content.options.default.map((f) => ({ ...f.file, pre: '' }))} step={step} setStep={setStep} bg={''} link={true} />
                     </Div>
                     {/* <Div
                         css={`
@@ -516,14 +516,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             `}
                         ></Div>
                     </Div> */}
-                    <DefaultType
-                        colorText={colorText}
-                        file={dataPost.content.options.default.map((f) => ({ ...f.file, pre: '' }))}
-                        step={step}
-                        setStep={setStep}
-                        bg={''}
-                        link={true}
-                    />
+
                     <Div
                         wrap="wrap"
                         width="100%"
@@ -568,9 +561,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                         key.id_user.length ? (
                                             <DivEmoji key={key.id}>
                                                 {key.icon}
-                                                <Span css="font-size: 1.5rem;display:none;@media(min-width: 768px){font-size: 1.4rem}">
-                                                    {key.id_user.length}
-                                                </Span>
+                                                <Span css="font-size: 1.5rem;display:none;@media(min-width: 768px){font-size: 1.4rem}">{key.id_user.length}</Span>
                                             </DivEmoji>
                                         ) : (
                                             ''
@@ -585,7 +576,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                         <Div width="100%" css="border-top: 1px solid #64625f; padding: 1px 0;">
                             {dataPost.feel.onlyEmo.length > 0 && (
                                 <DivAction
-                                    id="parent"
+                                    id="parent_emo"
                                     css={`
                                         @media (min-width: 768px) {
                                             &:hover {
@@ -598,9 +589,10 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                     `}
                                     onTouchStart={handleShowI}
                                     onTouchEnd={handleClearI}
-                                    onTouchMoveCapture={() => setActImotion(false)}
+                                    // onTouchMoveCapture={() => setActImotion(false)}
                                     onMouseLeave={() => {
                                         const divConstant = document.getElementById('emoBarPost');
+                                        // setActImotion(false);
                                         if (divConstant) divConstant.removeAttribute('style');
                                     }}
                                     onClick={handleEmo}
@@ -664,9 +656,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             )}
                         </Div>
                     </Div>
-                    {showCM && (
-                        <Comment colorText={colorText} anony={dataPost.private} setShowComment={setShowComment} dataPost={dataPost} you={user} />
-                    )}
+                    {showCM && <Comment colorText={colorText} anony={dataPost.private} setShowComment={setShowComment} dataPost={dataPost} you={user} />}
                 </Div>
             </Div>
             {showCM && (
