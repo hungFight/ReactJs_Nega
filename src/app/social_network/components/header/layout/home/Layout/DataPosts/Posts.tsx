@@ -300,6 +300,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     });
                 });
         }
+        setD('4');
         setActImotion(false);
     };
     return (
