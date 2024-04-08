@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Div, DivFill, DivFlex, DivFlexPosition, DivNone, Img, Input, P, Span, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivComment, DivEmoji, Label } from './styleFormUpNews';
-import { BanI, CameraI, DotI, EscalatorI, IconI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
+import { ArrowRightI, BanI, CameraI, DotI, EscalatorI, IconI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { BsDot } from 'react-icons/bs';
@@ -40,6 +40,7 @@ const Comment: React.FC<{
     const [inputValue, setInputValue] = useState<string>('');
     const [anonymous, setAnonymous] = useState<boolean>(false);
     const activate = you.gender === 0 ? 'anonymousMale' : you.gender === 1 ? 'anonymousFemale' : '';
+    const [reply, setReply] = useState<{ id: string; name: string; id_user: string; title: string; text: string; file?: string }[]>([]);
     const [d, setD] = useState<string>('');
     const [onAc, setOnAC] = useState<boolean>(false);
     const handleAnonymousComment = () => {
@@ -91,7 +92,7 @@ const Comment: React.FC<{
         });
     }, []);
     const handleComment = async () => {
-        if (dataPost?._id) {
+        if (dataPost?._id && inputValue) {
             const emos = {
                 act: dataPost.feel.act,
                 onlyEmo: dataPost.feel.onlyEmo.map((r) => {
@@ -125,7 +126,7 @@ const Comment: React.FC<{
         }
     };
 
-    const onChange = (value: string) => {
+    const onChange = (value: string, placeholder: string, isReply?: boolean, id_comment?: string) => {
         console.log('value', value);
         if (value.length <= 10000) {
             // Define a regex pattern to match URLs
@@ -157,18 +158,55 @@ const Comment: React.FC<{
                             });
                         new Quill(tempCont).setContents(delta);
                         if (tempCont) {
-                            setInputValue(tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
+                            if (isReply && id_comment) {
+                                setReply((pre) => {
+                                    pre.map((r) => {
+                                        if (r.id === id_comment) {
+                                            r.text = tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                                        }
+                                        return r;
+                                    });
+                                    return pre;
+                                });
+                            } else {
+                                setInputValue(tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
+                            }
                         }
                     } else {
-                        setInputValue(value);
+                        if (isReply && id_comment) {
+                            setReply((pre) => {
+                                pre.map((r) => {
+                                    if (r.id === id_comment) {
+                                        r.text = value;
+                                    }
+                                    return r;
+                                });
+                                return pre;
+                            });
+                        } else {
+                            setInputValue(value);
+                        }
                     }
                 }
                 if (delta.ops?.length) {
-                    const tag = document.getElementById('placeholder_comment_post');
+                    const tag = document.getElementById(placeholder);
                     if (tag) tag.style.display = 'none';
                 } else {
-                    const tag = document.getElementById('placeholder_comment_post');
+                    const tag = document.getElementById(placeholder);
                     if (tag) tag.style.display = 'flex';
+                    if (isReply && id_comment) {
+                        setReply((pre) => {
+                            pre.map((r) => {
+                                if (r.id === id_comment) {
+                                    r.text = '';
+                                }
+                                return r;
+                            });
+                            return pre;
+                        });
+                    } else {
+                        setInputValue('');
+                    }
                 }
             }
         }
@@ -458,8 +496,7 @@ const Comment: React.FC<{
                             <Div
                                 width="100%"
                                 css={`
-                                    height: 40px;
-                                    align-items: center;
+                                    align-items: flex-start;
                                     justify-content: space-around;
                                     padding: 5px;
                                     margin: 11px 0;
@@ -515,7 +552,7 @@ const Comment: React.FC<{
                                         <></>
                                     )}
                                 </Avatar>
-                                <Div css="font-size: 20px">
+                                <Div css="font-size: 20px; margin-top: 5px;">
                                     <input
                                         id="uploadC"
                                         type="file"
@@ -548,17 +585,17 @@ const Comment: React.FC<{
                                         `}
                                         insertURL={insertURL}
                                         setInsertURL={setInsertURL}
-                                        onChange={onChange}
+                                        onChange={(e) => onChange(e, 'placeholder_comment_post')}
                                         quillRef={quillRef}
                                         tagDivURL={tagDivURL}
                                         valueQuill={valueQuill}
                                         valueText={inputValue}
                                     />
-                                    <DivPos id="placeholder_comment_post" top="5px" left="11px" size="1.3rem">
+                                    <DivPos id="placeholder_comment_post" css="cursor: auto !important; pointer-events: none;" top="5px" left="11px" size="1.3rem">
                                         comment
                                     </DivPos>
                                 </Div>
-                                <Div css="font-size: 20px" onClick={handleComment}>
+                                <Div css="font-size: 20px; cursor: var(--pointer); margin-top: 5px;" onClick={handleComment}>
                                     <SendOPTI />
                                 </Div>
                             </Div>
@@ -588,11 +625,11 @@ const Comment: React.FC<{
                                 }, {});
                                 const hasEmo = c.feel.onlyEmo.some((o) => o.id_user.length);
                                 return (
-                                    <DivFlex key={c._id} justify="start" css="margin-bottom: 40px; position: relative;">
-                                        <DivPos top="14px" right="55px" index={1} css="text-wrap: nowrap; ">
+                                    <DivFlex key={c._id} justify="start" align="start" css="margin-bottom: 40px; position: relative;">
+                                        <DivPos top="-3px" right="55px" index={1} css="text-wrap: nowrap; ">
                                             <Div
                                                 css="font-weight: 600; width: 20px; height: 20px; justify-content: center;align-items: center;} @media (min-width: 768px) {
-                                                    &:hover {#emoBarPost {display: flex;top: -81px;}}}position: relative;"
+                                                    &:hover {#emoBarPost {display: flex;top: -33px;}}}position: relative;"
                                                 onClick={(e) => handleEmo(e, c, emo)}
                                             >
                                                 {!emo ? <IconI /> : emo.icon}
@@ -609,7 +646,7 @@ const Comment: React.FC<{
                                                         position: absolute;
                                                         top: 0;
                                                         right: -25px;
-                                                        padding: 37px 33px;
+                                                        padding: 0 37px 33px;
                                                         border-radius: 50px;
                                                         z-index: 7;
                                                         div {
@@ -643,69 +680,214 @@ const Comment: React.FC<{
                                             </Div>
                                         </DivPos>
 
-                                        <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 100px}"></DivNone>
-                                        <DivFlexPosition wrap="wrap" position="relative">
-                                            <DivFlex>
-                                                <Avatar
-                                                    src={c.user.avatar}
-                                                    alt={c.user.fullName}
-                                                    gender={c.user.gender}
-                                                    css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
-                                                    radius="50%"
-                                                />
-                                                <DivFlex wrap="wrap" justify="start">
-                                                    <Hname>{c.user.fullName}</Hname>
-                                                    <Div>
-                                                        <Div css="margin-right: 5px;">
-                                                            <FcReadingEbook />
-                                                        </Div>{' '}
-                                                        <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
+                                        <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 70px}"></DivNone>
+                                        <DivFlexPosition wrap="wrap" position="relative" width="79%">
+                                            <DivFlex wrap="wrap" justify="start" css="margin-top: -18px;" width="100%">
+                                                <DivFlex>
+                                                    <Avatar
+                                                        src={c.user.avatar}
+                                                        alt={c.user.fullName}
+                                                        gender={c.user.gender}
+                                                        css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
+                                                        radius="50%"
+                                                    />
+                                                    <DivFlex wrap="wrap" justify="start">
+                                                        <Hname>{c.user.fullName}</Hname>
+                                                        <Div>
+                                                            <Div css="margin-right: 5px;">
+                                                                <FcReadingEbook />
+                                                            </Div>{' '}
+                                                            <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
+                                                        </Div>
+                                                    </DivFlex>
+                                                </DivFlex>
+                                                <DivFlex justify="start">
+                                                    <BsDot />
+                                                    <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
+                                                    <P
+                                                        z="1.1rem"
+                                                        css={`
+                                                            margin: 0 5px;
+                                                        `}
+                                                    >
+                                                        -
+                                                    </P>
+                                                    <Div
+                                                        css={`
+                                                            div:first-child {
+                                                                margin: 0 !important;
+                                                            }
+                                                        `}
+                                                    >
+                                                        {hasEmo ? (
+                                                            c.feel.onlyEmo.map((key, index, arr) => (key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : ''))
+                                                        ) : (
+                                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                                Cảm xúc
+                                                            </P>
+                                                        )}
+                                                    </Div>
+                                                    <P z="1.1rem" css="margin: 0 5px">
+                                                        -
+                                                    </P>
+                                                    <P
+                                                        z="1.1rem"
+                                                        css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                                        onClick={(e: any) => {
+                                                            if (reply.some((r) => r.id === c._id)) {
+                                                                e.target.removeAttribute('style');
+                                                                setReply((pre) => pre.filter((f) => f.id !== c._id));
+                                                            } else {
+                                                                e.target.setAttribute('style', 'text-decoration: underline;');
+                                                                setReply((pre) => [...pre, { id: c._id, name: c.user.fullName, text: '', id_user: c.id_user, title: 'Trả lời' }]);
+                                                            }
+                                                        }}
+                                                    >
+                                                        trả lời
+                                                    </P>{' '}
+                                                    <P z="1.1rem" css="margin: 0 5px">
+                                                        -
+                                                    </P>
+                                                    <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                        Nhắc đến
+                                                    </P>{' '}
+                                                    <P z="1.1rem" css="margin: 0 5px">
+                                                        -
+                                                    </P>
+                                                    <Div css="cursor: var(--pointer); font-size: 25px;">
+                                                        <DotI />
                                                     </Div>
                                                 </DivFlex>
+                                                {reply.map((r) => {
+                                                    if (r.id === c._id)
+                                                        return (
+                                                            <Div width="100%">
+                                                                <Div width="1px" height="40px" css="background-color: #4f4f4f; margin-left: 7px"></Div>
+                                                                <Div
+                                                                    width="100%"
+                                                                    css={`
+                                                                        border-bottom: 1px solid #4f4f4f;
+                                                                        align-items: flex-start;
+                                                                        justify-content: space-around;
+                                                                        padding: 5px;
+                                                                        margin: 11px 0;
+                                                                        input {
+                                                                            padding: 8px 14px;
+                                                                        }
+                                                                        @media (max-width: 550px) {
+                                                                            input {
+                                                                                padding: 8px;
+                                                                            }
+                                                                            position: absolute;
+                                                                            bottom: 2px;
+                                                                            left: 0;
+                                                                            margin: 0;
+                                                                            z-index: 2;
+                                                                            background-color: #4e4e4e;
+                                                                        }
+                                                                    `}
+                                                                >
+                                                                    <Avatar
+                                                                        src={!onAc ? you.avatar : ''}
+                                                                        alt="son-tung"
+                                                                        staticI={onAc}
+                                                                        gender={activate}
+                                                                        radius="50%"
+                                                                        css={`
+                                                                            width: 30px;
+                                                                            height: 30px;
+                                                                        `}
+                                                                        onClick={handleAnonymousComment}
+                                                                    >
+                                                                        {anonymous && anony.some((a) => a.id === anonymousIndex) ? ( // anonymous comment
+                                                                            <Div
+                                                                                css={`
+                                                                                    position: absolute;
+                                                                                    top: 40px;
+                                                                                    width: fit-content;
+                                                                                    padding: 4px 10px;
+                                                                                    background-color: #1c5689;
+                                                                                    border-radius: 5px;
+                                                                                    left: 14px;
+                                                                                    cursor: var(--pointer);
+                                                                                `}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setOnAC(!onAc);
+                                                                                }}
+                                                                            >
+                                                                                <Avatar
+                                                                                    css="width: 30px; height: 30px; min-width: 30px; margin-right: 3px;"
+                                                                                    src={onAc ? you.avatar : ''}
+                                                                                    staticI={!onAc}
+                                                                                    radius="50%"
+                                                                                    gender={activate}
+                                                                                />
+                                                                                <P z="1.5rem">{onAc ? you.fullName : 'Anonymous'}</P>
+                                                                            </Div>
+                                                                        ) : (
+                                                                            <></>
+                                                                        )}
+                                                                    </Avatar>
+                                                                    <Div css="font-size: 20px;margin-top: 5px;">
+                                                                        <input
+                                                                            id="uploadC"
+                                                                            type="file"
+                                                                            name="file[]"
+                                                                            // onChange={handleImageUpload}
+                                                                            multiple
+                                                                            hidden
+                                                                        />
+                                                                        <Label htmlFor="uploadC">
+                                                                            <CameraI />
+                                                                        </Label>
+                                                                    </Div>
+                                                                    <Div width="70%" css="position: relative;">
+                                                                        <QuillText
+                                                                            consider={consider}
+                                                                            css={`
+                                                                                width: 100%;
+                                                                                background-color: #373737;
+                                                                                border-radius: 10px;
+                                                                                padding: 5px 10px;
+                                                                                .ql-editor {
+                                                                                    outline: none;
+                                                                                }
+                                                                                .ql-container.ql-snow {
+                                                                                    border: 0;
+                                                                                }
+                                                                                * {
+                                                                                    font-size: 1.3rem;
+                                                                                }
+                                                                            `}
+                                                                            insertURL={insertURL}
+                                                                            setInsertURL={setInsertURL}
+                                                                            onChange={(e) => onChange(e, 'placeholder_comment_post_reply', true, r.id)}
+                                                                            quillRef={quillRef}
+                                                                            tagDivURL={tagDivURL}
+                                                                            valueQuill={valueQuill}
+                                                                            valueText={r.text}
+                                                                        />
+                                                                        <DivPos
+                                                                            id="placeholder_comment_post_reply"
+                                                                            css="cursor: auto !important; pointer-events: none;opacity: 0.9;"
+                                                                            top="7px"
+                                                                            left="11px"
+                                                                            size="1.2rem"
+                                                                        >
+                                                                            {r.title}
+                                                                            <ArrowRightI /> {r.name}
+                                                                        </DivPos>
+                                                                    </Div>
+                                                                    <Div css="font-size: 20px; cursor: var(--pointer);margin-top: 5px;" onClick={handleComment}>
+                                                                        <SendOPTI />
+                                                                    </Div>
+                                                                </Div>
+                                                            </Div>
+                                                        );
+                                                    return null;
+                                                })}
                                             </DivFlex>
-                                            <DivFlexPosition justify="start" bottom="-25px" position="absolute">
-                                                <BsDot /> <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
-                                                <P
-                                                    z="1.1rem"
-                                                    css={`
-                                                        margin: 0 5px;
-                                                        ${hasEmo ? ' margin-right: 11px;' : ''}
-                                                    `}
-                                                >
-                                                    -
-                                                </P>
-                                                <Div
-                                                    css={`
-                                                        ${hasEmo ? 'margin-left: 6px' : ''}
-                                                    `}
-                                                >
-                                                    {hasEmo ? (
-                                                        c.feel.onlyEmo.map((key, index, arr) => (key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : ''))
-                                                    ) : (
-                                                        <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                            Cảm xúc
-                                                        </P>
-                                                    )}
-                                                </Div>
-                                                <P z="1.1rem" css="margin: 0 5px">
-                                                    -
-                                                </P>
-                                                <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                    trả lời
-                                                </P>{' '}
-                                                <P z="1.1rem" css="margin: 0 5px">
-                                                    -
-                                                </P>
-                                                <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                    Nhắc đến
-                                                </P>{' '}
-                                                <P z="1.1rem" css="margin: 0 5px">
-                                                    -
-                                                </P>
-                                                <Div css="cursor: var(--pointer); font-size: 25px;">
-                                                    <DotI />
-                                                </Div>
-                                            </DivFlexPosition>
                                         </DivFlexPosition>
                                     </DivFlex>
                                 );

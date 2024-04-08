@@ -16,20 +16,9 @@ import {
     BsSortNumericDown,
 } from 'react-icons/bs';
 import { TiCloudStorage, TiCloudStorageOutline } from 'react-icons/ti';
-import {
-    IoImagesOutline,
-    IoLogoYoutube,
-    IoCloseOutline,
-    IoLanguageOutline,
-    IoArrowUndoCircleOutline,
-    IoRemoveOutline,
-    IoCopy,
-    IoPricetag,
-    IoImage,
-    IoLinkOutline,
-} from 'react-icons/io5';
+import { IoImagesOutline, IoLogoYoutube, IoCloseOutline, IoLanguageOutline, IoArrowUndoCircleOutline, IoRemoveOutline, IoCopy, IoPricetag, IoImage, IoLinkOutline } from 'react-icons/io5';
 import { LiaBalanceScaleRightSolid, LiaCommentDots, LiaComments, LiaExchangeAltSolid } from 'react-icons/lia';
-import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack } from 'react-icons/io';
+import { IoMdNotifications, IoIosSend, IoMdShareAlt, IoIosArrowRoundBack, IoIosArrowRoundForward } from 'react-icons/io';
 import { BiBullseye, BiDotsHorizontalRounded, BiLike, BiReset, BiSolidSquareRounded, BiUser } from 'react-icons/bi';
 import { FcSignature } from 'react-icons/fc';
 import { SiExpertsexchange } from 'react-icons/si';
@@ -87,62 +76,15 @@ import {
     MdOutlineTipsAndUpdates,
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
-import {
-    FaPeopleArrows,
-    FaAddressCard,
-    FaUserFriends,
-    FaBirthdayCake,
-    FaRegSmileBeam,
-    FaSchool,
-    FaPencilAlt,
-    FaBold,
-} from 'react-icons/fa';
-import {
-    RiAccountPinCircleFill,
-    RiChatPrivateFill,
-    RiDeleteBin6Line,
-    RiDragMoveFill,
-    RiExchangeCnyFill,
-    RiExchangeLine,
-    RiLayout6Fill,
-    RiMailSendLine,
-    RiTyphoonLine,
-} from 'react-icons/ri';
-import {
-    TbArrowNarrowDown,
-    TbArrowNarrowLeft,
-    TbGenderFemale,
-    TbGenderMale,
-    TbGridDots,
-    TbTextResize,
-} from 'react-icons/tb';
+import { FaPeopleArrows, FaAddressCard, FaUserFriends, FaBirthdayCake, FaRegSmileBeam, FaSchool, FaPencilAlt, FaBold } from 'react-icons/fa';
+import { RiAccountPinCircleFill, RiChatPrivateFill, RiDeleteBin6Line, RiDragMoveFill, RiExchangeCnyFill, RiExchangeLine, RiLayout6Fill, RiMailSendLine, RiTyphoonLine } from 'react-icons/ri';
+import { TbArrowNarrowDown, TbArrowNarrowLeft, TbGenderFemale, TbGenderMale, TbGridDots, TbTextResize } from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
 import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
-import {
-    CiCircleRemove,
-    CiHeart,
-    CiLink,
-    CiPaperplane,
-    CiSearch,
-    CiText,
-    CiTextAlignCenter,
-    CiTextAlignJustify,
-    CiTextAlignLeft,
-    CiTextAlignRight,
-    CiUndo,
-    CiWifiOff,
-    CiWifiOn,
-} from 'react-icons/ci';
+import { CiCircleRemove, CiHeart, CiLink, CiPaperplane, CiSearch, CiText, CiTextAlignCenter, CiTextAlignJustify, CiTextAlignLeft, CiTextAlignRight, CiUndo, CiWifiOff, CiWifiOn } from 'react-icons/ci';
 import { SlLike } from 'react-icons/sl';
 import { BiSolidColor } from 'react-icons/bi';
-import {
-    PiEraserThin,
-    PiFlowerLotusFill,
-    PiPlayFill,
-    PiSelectionBackgroundFill,
-    PiSlideshowThin,
-    PiVideoThin,
-} from 'react-icons/pi';
+import { PiEraserThin, PiFlowerLotusFill, PiPlayFill, PiSelectionBackgroundFill, PiSlideshowThin, PiVideoThin } from 'react-icons/pi';
 import { HiMiniHashtag, HiMiniPause } from 'react-icons/hi2';
 
 export const ImageI = () => <IoImage />;
@@ -280,3 +222,4 @@ export const InventionI = () => <MdOutlineTipsAndUpdates />;
 export const PostCommentI = () => <LiaCommentDots />;
 export const PostCommentInI = () => <LiaComments />;
 export const EscalatorI = () => <LiaBalanceScaleRightSolid />;
+export const ArrowRightI = () => <IoIosArrowRoundForward />;

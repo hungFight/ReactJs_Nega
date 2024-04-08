@@ -226,6 +226,7 @@ interface PropsClose {
     top?: string;
     left?: string;
     width?: string;
+    height?: string;
     bg?: string;
     right?: string;
     bottom?: string;
@@ -239,7 +240,7 @@ export const DivPos = styled.div<PropsClose>`
     align-items: center;
     justify-content: center;
     width: ${(props) => props.width};
-    height: ${(props) => props.width};
+    height: ${(props) => props.height || props.width};
     top: ${(props) => props.top};
     left: ${(props) => props.left};
     right: ${(props) => props.right};
