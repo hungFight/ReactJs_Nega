@@ -1,14 +1,14 @@
-import clsx from 'clsx';
-import { createRef, Fragment, Key, memo, ReactElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, createRef, Fragment, Key, memo, ReactElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { useQuery } from '@tanstack/react-query';
+
 import { DivPost } from './styleHome';
-import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCookies } from 'react-cookie';
 import HomeAPI from '~/restAPI/socialNetwork/postAPI';
 import FormUpNews, { PropsFormHome } from './Layout/FormUpNews/FormUpNews';
 import Posts from './Layout/DataPosts/Posts';
 import HttpRequestUser from '~/restAPI/userAPI';
-import { Button, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Button, Div, DivFlex, DivNone, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { socket } from 'src/mainPage/nextWeb';
 import { setTrueErrorServer } from '~/redux/hideShow';
@@ -21,7 +21,6 @@ import { setSession } from '~/redux/reload';
 import ServerBusy from '~/utils/ServerBusy';
 import { PostsI, ShortStoryI, YoutubeI } from '~/assets/Icons/Icons';
 import { PropsUser } from 'src/App';
-import { useQuery } from '@tanstack/react-query';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 
@@ -56,7 +55,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
         console.log('ok very good');
     };
     console.log(document, 'previousDocument', colorBg);
-    const { data } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['collections_post', dataUser.fullName],
         staleTime: 10 * 60 * 1000,
         cacheTime: 1 * 60 * 60 * 1000,
@@ -100,6 +99,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                 overflow-y: overlay;
                 height: 100%;
                 padding-top: 50px;
+                padding-bottom: 200px;
                 justify-content: center;
                 background-color: ${bgAther};
             `}
@@ -321,35 +321,78 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         </Div>
                     </Div>
                     <Div></Div>
-                    {openPostCreation ? (
-                        <FormUpNews
-                            form={form}
-                            colorBg={colorBg}
-                            colorText={colorText}
-                            user={dataUser}
-                            setOpenPostCreation={() => setOpenPostCreation(false)}
-                        />
-                    ) : (
-                        formThat
-                    )}
+                    {openPostCreation ? <FormUpNews form={form} colorBg={colorBg} colorText={colorText} user={dataUser} setOpenPostCreation={() => setOpenPostCreation(false)} /> : formThat}
                 </Div>
                 {post && (
-                    <Div display="block" width="100%" css="margin: 20px 0;@media(min-width: 768px){width:100%}">
-                        {data?.map((p) => (
-                            <Posts
-                                setFormThat={setFormThat}
-                                form={form}
-                                setOptions={setOptions}
-                                options={options}
-                                key={p._id}
-                                user={dataUser}
-                                colorBg={colorBg}
-                                colorText={colorText}
-                                dataP={p}
-                                setShowComment={setShowComment}
-                                showComment={showComment}
-                            />
-                        ))}
+                    <Div
+                        display="block"
+                        width="100%"
+                        css={`
+                            margin: 20px 0;
+                            @media (min-width: 768px) {
+                                width: 100%;
+                            }
+                            @media (prefers-reduced-motion) {
+                                .react-loading-skeleton {
+                                    --pseudo-element-display: block !important;
+                                }
+                            }
+                        `}
+                    >
+                        {isLoading ? (
+                            <SkeletonTheme baseColor="#414141" highlightColor="#7c7c7c" width={200} height={200}>
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                    <Div
+                                        key={index}
+                                        display="block"
+                                        width="100%"
+                                        css={`
+                                            margin: 20px 0;
+                                            background-color: #292a2d;
+                                            position: relative;
+                                            border: 1px solid #353535;
+                                            @media (min-width: 580px) {
+                                                border-radius: 5px;
+                                            }
+                                        `}
+                                    >
+                                        <DivFlex width="100%" justify="start" css="padding: 5px; margin-bottom: 10px;">
+                                            <DivNone css="margin-right: 5px">
+                                                <Skeleton circle={true} height={40} width={40} count={1} duration={1} />
+                                            </DivNone>
+                                            <DivNone>
+                                                <Skeleton height="20px" width="200px" count={1} duration={1} />
+                                                <Skeleton height="20px" width="150px" count={1} duration={1} />
+                                            </DivNone>
+                                        </DivFlex>
+                                        <DivNone css="padding: 0 30px 0 10px">
+                                            {' '}
+                                            <Skeleton height="30px" width="100%" count={1} duration={1} />
+                                        </DivNone>
+                                        <DivNone css="margin: 10px 0">
+                                            <Skeleton height="350px" width="100%" count={1} duration={1} />
+                                        </DivNone>
+                                        <Skeleton height="30px" width="100%" count={1} duration={1} />
+                                    </Div>
+                                ))}
+                            </SkeletonTheme>
+                        ) : (
+                            data?.map((p) => (
+                                <Posts
+                                    setFormThat={setFormThat}
+                                    form={form}
+                                    setOptions={setOptions}
+                                    options={options}
+                                    key={p._id}
+                                    user={dataUser}
+                                    colorBg={colorBg}
+                                    colorText={colorText}
+                                    dataP={p}
+                                    setShowComment={setShowComment}
+                                    showComment={showComment}
+                                />
+                            ))
+                        )}
                     </Div>
                 )}
             </DivPost>

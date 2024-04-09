@@ -61,8 +61,8 @@ const PinChat: React.FC<{
     const check = one.current && pins.length && !itemPin ? true : false;
     const { data, isLoading } = useQuery({
         queryKey: ['Pins chat', conversationId],
-        staleTime: 5 * 60 * 1000,
-        cacheTime: 6 * 60 * 1000,
+        staleTime: 5 * 60 * 1000, // 5m
+        cacheTime: 6 * 60 * 1000,// 6m
         enabled: check && one.current ? true : false,
         queryFn: async () => {
             try {

@@ -111,6 +111,7 @@ interface PropsDiv {
 }
 interface PropsDivFlex {
     wrap?: string;
+    height?: string;
     css?: string;
     width?: string;
     align?: string;
@@ -121,6 +122,7 @@ type PropsDivNone = PropsDiv &
     PropsDivFlex & {
         size?: string;
         border?: string;
+        margin?: string;
     };
 export const Div = styled.div<PropsDiv>`
     width: ${(props) => props.width};
@@ -136,6 +138,7 @@ export const DivNone = styled.div<PropsDivNone>`
     flex-wrap: ${(props) => props.wrap};
     justify-content: ${(props) => props.justify};
     align-items: ${(props) => props.align};
+    margin: ${(props) => props.margin};
     size: ${(props) => props.size};
     border: ${(props) => props.border};
     ${(props) => props.css};
@@ -155,6 +158,7 @@ export const Li = styled.li`
 `;
 export const DivFlex = styled.div<PropsDivFlex>`
     width: ${(props) => props.width || '100%'};
+    height: ${(props) => props.height || '100%'};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap || 'none'};
     justify-content: ${(props) => props.justify || 'center'};

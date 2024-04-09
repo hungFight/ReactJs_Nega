@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import 'react-loading-skeleton/dist/skeleton.css';
 import Globalestyle from './app/globalestyle';
 import jwt_decode from 'jwt-decode';
 import 'moment/locale/vi';
