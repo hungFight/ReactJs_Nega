@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import PreviewPost from './PreView';
+import { v4 as primaryKey } from 'uuid';
 import { ImageI, VideoI } from '~/assets/Icons/Icons';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import { useDispatch } from 'react-redux';
@@ -12,14 +12,7 @@ import { Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault'
 import ReactQuill, { Quill } from 'react-quill';
 import { PropsUser } from 'src/App';
 
-export default function LogicForm(
-    form: PropsFormHome,
-    colorText: string,
-    colorBg: number,
-    setOpenPostCreation: () => void,
-    user?: PropsUser,
-    originalInputValue?: string,
-) {
+export default function LogicForm(form: PropsFormHome, colorText: string, colorBg: number, setOpenPostCreation: () => void, user?: PropsUser, originalInputValue?: string) {
     const dispatch = useDispatch();
     const { userId, token } = Cookies();
     const divRef = useRef<any>(null);
@@ -40,7 +33,6 @@ export default function LogicForm(
             data: PropsDataFileUpload[];
         }[]
     >([]);
-    const CenteredRef = useRef<{ id: number; columns: number; data: { file: Blob; title: string }[] }[]>([]);
     // preView
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -69,11 +61,7 @@ export default function LogicForm(
             uploadPreRef.current = [];
             for (let i = 0; i < file.length; i++) {
                 console.log(file[i], 'file[i]');
-                if (
-                    file[i].type.includes('video/mp4') ||
-                    file[i].type.includes('video/mov') ||
-                    file[i].type.includes('video/x-matroska')
-                ) {
+                if (file[i].type.includes('video/mp4') || file[i].type.includes('video/mov') || file[i].type.includes('video/x-matroska')) {
                     const url = URL.createObjectURL(file[i]);
                     const vid = document.createElement('video');
                     // create url to use as the src of the video
@@ -84,11 +72,13 @@ export default function LogicForm(
                         vid.ondurationchange = function () {
                             if (vid.duration <= 15) {
                                 resolve({
+                                    _id: primaryKey(),
                                     id_sort: i + 1,
                                     pre: url,
                                     type: file[i].type.split('/')[0],
                                     file: file[i],
                                     title: '',
+                                    name: file[i].name,
                                 });
                             } else {
                                 dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
@@ -96,30 +86,29 @@ export default function LogicForm(
                         };
                     });
                     uploadPreRef.current.push(antit);
-                } else if (
-                    file[i].type.includes('image/jpg') ||
-                    file[i].type.includes('image/jpeg') ||
-                    file[i].type.includes('image/png') ||
-                    file[i].type.includes('image/webp')
-                ) {
+                } else if (file[i].type.includes('image/jpg') || file[i].type.includes('image/jpeg') || file[i].type.includes('image/png') || file[i].type.includes('image/webp')) {
                     try {
                         if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= 8) {
                             uploadPreRef.current.push({
+                                _id: primaryKey(),
                                 id_sort: i + 1,
                                 pre: URL.createObjectURL(file[i]),
                                 type: file[i].type.split('/')[0],
                                 file: file[i],
                                 title: '',
+                                name: file[i].name,
                             });
                         } else {
                             const compressedFile: any = await CommonUtils.compress(file[i]);
                             const sizeImage = Number((compressedFile.size / 1024 / 1024).toFixed(1));
                             if (sizeImage <= 8) {
                                 uploadPreRef.current.push({
+                                    _id: primaryKey(),
                                     id_sort: i + 1,
                                     pre: URL.createObjectURL(compressedFile),
                                     type: file[i].type.split('/')[0],
                                     file: compressedFile,
+                                    name: file[i].name,
                                     title: '',
                                 });
                             } else {
@@ -139,10 +128,7 @@ export default function LogicForm(
 
                 setuploadPre(uploadPreRef.current);
             } else {
-                setDataCentered([
-                    ...dataCentered,
-                    { id: dataCentered.length + 1, columns: 4, data: uploadPreRef.current },
-                ]);
+                setDataCentered([...dataCentered, { id: dataCentered.length + 1, columns: 4, data: uploadPreRef.current }]);
             }
 
             console.log('no');
@@ -214,12 +200,7 @@ export default function LogicForm(
                             });
                         new Quill(tempCont).setContents(delta);
                         if (tempCont) {
-                            setInputValue(
-                                tempCont
-                                    .getElementsByClassName('ql-editor')[0]
-                                    .innerHTML.replace(/&lt;/g, '<')
-                                    .replace(/&gt;/g, '>'),
-                            );
+                            setInputValue(tempCont.getElementsByClassName('ql-editor')[0].innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
                         }
                     } else {
                         setInputValue(value);

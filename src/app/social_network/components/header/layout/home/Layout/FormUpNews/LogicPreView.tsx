@@ -177,14 +177,9 @@ export default function LogicPreView(
             switch (selectType) {
                 case 0: // default
                     for (let fil of file) {
-                        if (fil.file)
-                            if (fil.title) {
-                                formData.append('file', fil.file, fil.title);
-                                formData.append('title', 'ok');
-                            } else {
-                                formData.append('file', fil.file);
-                            }
-                        formData.append('id_sort', JSON.stringify(fil.id_sort));
+                        if (fil.file) formData.append('file', fil.file, fil.name + '@_id_get_$' + fil._id);
+                        formData.append('title', JSON.stringify({ title: fil.title, id: fil._id }));
+                        formData.append('id_sort', JSON.stringify({ id_sort: fil.id_sort, id: fil._id }));
                     }
                     formDataFake.bg_default = bg;
                     if (file.length) {
@@ -202,25 +197,9 @@ export default function LogicPreView(
                     formData.append('categoryOfSwiper', JSON.stringify(selectChild));
                     if (selectChild.id === 5) {
                         formData.append('columnOfCentered', JSON.stringify(columnCen));
-                        console.log(
-                            'text',
-                            valueText,
-                            'file',
-                            file,
-                            'fontFamily',
-                            font,
-                            'swiper',
-                            selectChild,
-                            'ColumnCentered',
-                            columnCen,
-                            'More raw',
-                            dataCentered,
-                        );
+                        console.log('text', valueText, 'file', file, 'fontFamily', font, 'swiper', selectChild, 'ColumnCentered', columnCen, 'More raw', dataCentered);
                         dataCentered.forEach((c) => {
-                            formData.append(
-                                `dataCentered${c.id}`,
-                                JSON.stringify({ id: c.id, columns: c.columns, data: [] }),
-                            );
+                            formData.append(`dataCentered${c.id}`, JSON.stringify({ id: c.id, columns: c.columns, data: [] }));
                             for (const f of c.data) {
                                 if (f.file) formData.append('file', f.file, JSON.stringify(c.id));
                             }

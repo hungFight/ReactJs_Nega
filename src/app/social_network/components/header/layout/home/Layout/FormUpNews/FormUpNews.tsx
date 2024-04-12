@@ -32,27 +32,21 @@ interface PropsFormUpNews {
     editF?: boolean;
 }
 export interface PropsDataFileUpload {
+    _id?: string;
     id_sort: number;
     link?: string;
     pre: string;
     type: string;
     title?: string | undefined;
     file?: Blob;
+    name?: string;
 }
 export interface PropsValueQuill {
     url: string;
     text: string;
     quill?: any;
 }
-const FormUpNews: React.FC<PropsFormUpNews> = ({
-    form,
-    colorText,
-    colorBg,
-    user,
-    setOpenPostCreation,
-    originalInputValue,
-    editF,
-}) => {
+const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user, setOpenPostCreation, originalInputValue, editF }) => {
     const [displayTags, setDisplayTags] = useState<boolean>(false);
     const {
         displayEmoji,
@@ -142,24 +136,10 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({
                                         }
                                     `}
                                 >
-                                    <DivPos
-                                        width="30px"
-                                        top="5px"
-                                        right="-29px"
-                                        size="22px"
-                                        color={colorText}
-                                        onClick={() => setdisplayEmoji(false)}
-                                    >
+                                    <DivPos width="30px" top="5px" right="-29px" size="22px" color={colorText} onClick={() => setdisplayEmoji(false)}>
                                         <CloseI />
                                     </DivPos>
-                                    <Picker
-                                        locale={form.emoji}
-                                        set="facebook"
-                                        emojiVersion={14}
-                                        data={dataEmoji}
-                                        theme={colorBg === 1 ? 'dark' : 'light'}
-                                        onEmojiSelect={handleEmojiSelect}
-                                    />
+                                    <Picker locale={form.emoji} set="facebook" emojiVersion={14} data={dataEmoji} theme={colorBg === 1 ? 'dark' : 'light'} onEmojiSelect={handleEmojiSelect} />
                                 </Div>
                             )}
                             <Div
@@ -179,12 +159,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({
                                     }
                                 `}
                             >
-                                <DivItems
-                                    borderB={displayEmoji ? '1px solid white' : ''}
-                                    color={colorText}
-                                    position="relative"
-                                    onClick={handleDisEmoji}
-                                >
+                                <DivItems borderB={displayEmoji ? '1px solid white' : ''} color={colorText} position="relative" onClick={handleDisEmoji}>
                                     🙂
                                 </DivItems>
                                 <DivItems
@@ -198,14 +173,7 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({
                                 </DivItems>
 
                                 <DivItems>
-                                    <input
-                                        id="upload"
-                                        type="file"
-                                        name="file[]"
-                                        onChange={(e) => handleImageUpload(e)}
-                                        multiple
-                                        hidden
-                                    />
+                                    <input id="upload" type="file" name="file[]" onChange={(e) => handleImageUpload(e)} multiple hidden />
                                     <Label htmlFor="upload" color={colorText}>
                                         <CameraI />
                                     </Label>
@@ -264,12 +232,8 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({
                                     font={fontFamily.name + ' ' + fontFamily.type}
                                 />
                             )}
-                            {onTags && (
-                                <Hashtag setHashTags={setHashTags} hashTagsInitially={hashTags} setOnTags={setOnTags} />
-                            )}
-                            {onTagU && (
-                                <Tags colorText={colorText} setOnTagU={setOnTagU} setTags={setTags} tags={tags} />
-                            )}
+                            {onTags && <Hashtag setHashTags={setHashTags} hashTagsInitially={hashTags} setOnTags={setOnTags} />}
+                            {onTagU && <Tags colorText={colorText} setOnTagU={setOnTagU} setTags={setTags} tags={tags} />}
                             {/* <DivSignature>
                                 <SignatureI />
                                 </DivSignature> */}

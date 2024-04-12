@@ -34,9 +34,7 @@ const AllFIlesEdited: React.FC<{
                         e.currentTarget.style.backgroundColor = '#19191aa6';
                     }
                     coordS.current = (e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current;
-                    e.currentTarget.style.left = `${
-                        (e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current
-                    }px`;
+                    e.currentTarget.style.left = `${(e.clientX || e?.changedTouches[0]?.clientX) - coordinate.current}px`;
                 }
             }
         }
@@ -97,11 +95,12 @@ const AllFIlesEdited: React.FC<{
                         color={colorText}
                         css="border: 0; height: 98%; font-size: 1.3rem;"
                         onChange={(e) => {
-                            const newD = file.map((p) => {
-                                if (p.id_sort === f.id_sort) p.title = e.target.value;
-                                return p;
-                            });
-                            setUploadPre(newD);
+                            setUploadPre((pre) =>
+                                pre.map((p) => {
+                                    if (p.id_sort === f.id_sort) p.title = e.target.value;
+                                    return p;
+                                }),
+                            );
                         }}
                     />
                 </Div>
@@ -135,12 +134,7 @@ const AllFIlesEdited: React.FC<{
                             `}
                         />
                         {f?.type.includes('image') ? (
-                            <Img
-                                src={f?.link || f.pre}
-                                id="baby"
-                                alt={f?.title || f?.link}
-                                css="object-fit: contain;"
-                            />
+                            <Img src={f?.link || f.pre} id="baby" alt={f?.title || f?.link} css="object-fit: contain;" />
                         ) : f?.type.includes('video') ? (
                             <Player src={f?.link || f.pre} step={step} />
                         ) : (
@@ -151,11 +145,7 @@ const AllFIlesEdited: React.FC<{
             </Div>
         );
     return (
-        <Div
-            width="100%"
-            display="block"
-            css="position: fixed; top: 0; left: 0; height: 100%; z-index: 2; background-color: #1a1a1a;"
-        >
+        <Div width="100%" display="block" css="position: fixed; top: 0; left: 0; height: 100%; z-index: 2; background-color: #1a1a1a;">
             <Div onClick={() => setDecoration(false)}>exit</Div>
             <Div css="height: 65%;">
                 {f?.type.includes('image') ? (

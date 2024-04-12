@@ -1,5 +1,7 @@
-import { DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import { memo, useEffect, useRef, useState } from 'react';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+
+import { DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Img, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews';
 import { DotI, EarthI, FriendI, HeartI, LikeI, LockI, PostCommentI, PrivacyI, ShareI } from '~/assets/Icons/Icons';
@@ -13,7 +15,7 @@ import FormUpNews from '../FormUpNews/FormUpNews';
 import DefaultType from '../FormUpNews/ViewPostFrame/TypeFile/DefaultType';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
 import { keyframes } from 'styled-components';
-import Comment from '../FormUpNews/Comment';
+import Comment from './Comment';
 import { queryClient } from 'src';
 
 const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options, setOptions, setFormThat, form, setShowComment, showComment }) => {

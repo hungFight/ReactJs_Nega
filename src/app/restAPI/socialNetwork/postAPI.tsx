@@ -31,10 +31,10 @@ class PostAPI {
             }
         }
     };
-    sendComment = async (
-        postId: string,
-        text: string,
-        anonymousC: boolean,
+    sendComment = async (data: {
+        postId: string;
+        text: string;
+        anonymousC: boolean;
         emos: {
             act: number;
             onlyEmo: {
@@ -42,25 +42,20 @@ class PostAPI {
                 icon: string;
                 id_user: string[];
             }[];
-        },
-    ) => {
+        };
+        commentId?: string;
+        repliedId?: string;
+    }) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.post('/SN/home/post/sendComment', { postId, text, anonymousC, emos });
+            const res = await axiosJWTss.post('/SN/home/post/sendComment', { ...data });
             return res.data;
         } catch (error: any) {
             const err: any = error as AxiosError;
             return errorHandling(err);
         }
     };
-    setEmotion = async (data: {
-        _id: string;
-        index: number | null;
-        id_user: string;
-        state: string;
-        oldIndex?: number;
-        id_comment?: string;
-    }): Promise<feel> => {
+    setEmotion = async (data: { _id: string; index: number | null; id_user: string; state: string; oldIndex?: number; id_comment?: string }): Promise<feel> => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/home/post/setEmotion', { ...data });

@@ -1,25 +1,12 @@
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { A, Button, Div, H3, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
-import {
-    DotI,
-    FullScreenI,
-    IconI,
-    ImageI,
-    LoadingCircleI,
-    LockI,
-    MinusI,
-    PrivateI,
-    ShareI,
-    SliderI,
-    TagPostI,
-    VideoI,
-} from '~/assets/Icons/Icons';
+import { DotI, FullScreenI, IconI, ImageI, LoadingCircleI, LockI, MinusI, PrivateI, ShareI, SliderI, TagPostI, VideoI } from '~/assets/Icons/Icons';
 import { DivAction, DivEmoji, DivItems, DivWrapButton, Label } from './styleFormUpNews';
 import { useEffect, useState } from 'react';
 import OptionType from './ViewPostFrame/OptionType';
 import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import OpFeatureSetting from '~/reUsingComponents/PostOptions/OpFeature';
-import Comment from './Comment';
+import Comment from '../DataPosts/Comment';
 import LogicPreView from './LogicPreView';
 import { PropsDataFileUpload, PropsValueQuill } from './FormUpNews';
 import EditFiles from './EditFiles.tsx/Editfiles';
@@ -175,23 +162,7 @@ const PreviewPost: React.FC<{
         actImotion,
         setActImotion,
         dispatch,
-    } = LogicPreView(
-        user,
-        colorText,
-        colorBg,
-        file,
-        valueText,
-        fontFamily,
-        dataText,
-        token,
-        userId,
-        handleImageUpload,
-        dataCentered,
-        setDataCentered,
-        handleClear,
-        hashTags,
-        tags,
-    );
+    } = LogicPreView(user, colorText, colorBg, file, valueText, fontFamily, dataText, token, userId, handleImageUpload, dataCentered, setDataCentered, handleClear, hashTags, tags);
     const swiperType = 1;
     const GridColumns = 1;
     const Circle = 1;
@@ -305,16 +276,7 @@ const PreviewPost: React.FC<{
                         </Div>
                     </Div>
                 )}
-                {editFile && (
-                    <EditFiles
-                        colorText={colorText}
-                        dispatch={dispatch}
-                        file={file}
-                        setEditFile={setEditFile}
-                        setUploadPre={setUploadPre}
-                        step={step}
-                    />
-                )}
+                {editFile && <EditFiles colorText={colorText} dispatch={dispatch} file={file} setEditFile={setEditFile} setUploadPre={setUploadPre} step={step} />}
                 <Div
                     wrap="wrap"
                     css={`
@@ -352,25 +314,12 @@ const PreviewPost: React.FC<{
                                                 right: 74px;
                                                 padding: 3px 4px;
                                                 border-radius: 5px;
-                                                background-image: linear-gradient(
-                                                    36deg,
-                                                    black,
-                                                    #a33a3ac2,
-                                                    #195c86bd,
-                                                    #ac10b0
-                                                );
+                                                background-image: linear-gradient(36deg, black, #a33a3ac2, #195c86bd, #ac10b0);
                                             `}
                                             color={colorText}
                                         >
                                             <DivItems>
-                                                <input
-                                                    id="uploadCen"
-                                                    type="file"
-                                                    name="file[]"
-                                                    onChange={(e) => handleImageUpload(e, true)}
-                                                    multiple
-                                                    hidden
-                                                />
+                                                <input id="uploadCen" type="file" name="file[]" onChange={(e) => handleImageUpload(e, true)} multiple hidden />
                                                 <Label htmlFor="uploadCen" color={colorText}>
                                                     Thêm Hàng
                                                 </Label>
@@ -404,14 +353,7 @@ const PreviewPost: React.FC<{
                     )}
                     {/* view full screen */}
                     {step === 0 && file.length > 0 && (
-                        <DivPos
-                            size="18px"
-                            top="11px"
-                            right="46.5px"
-                            css="z-index: 1;"
-                            color={colorText}
-                            onClick={() => setStep(1)}
-                        >
+                        <DivPos size="18px" top="11px" right="46.5px" css="z-index: 1;" color={colorText} onClick={() => setStep(1)}>
                             <FullScreenI />
                         </DivPos>
                     )}
@@ -457,13 +399,7 @@ const PreviewPost: React.FC<{
                                 </Div>
                             )}
                         </Div>
-                        <DivPos
-                            size="25px"
-                            top="4px"
-                            right="15px"
-                            color={colorText}
-                            onClick={() => setOptions(!options)}
-                        >
+                        <DivPos size="25px" top="4px" right="15px" color={colorText} onClick={() => setOptions(!options)}>
                             <DotI />
                         </DivPos>
                     </Div>
@@ -506,17 +442,13 @@ const PreviewPost: React.FC<{
                                     if (quill) {
                                         const selectionRange = quill.getSelection();
                                         if (selectionRange) {
-                                            const selectedText = quill.getText(
-                                                selectionRange.index,
-                                                selectionRange.length,
-                                            );
+                                            const selectedText = quill.getText(selectionRange.index, selectionRange.length);
                                             const urlRegex = /https:\/\/(?!<a>)[^\s]+/g;
                                             if (selectedText) {
                                                 consider.current = 0;
                                                 console.log(consider.current, 'consider.current 1');
                                                 valueQuill.current.text = selectedText;
-                                                if (selectedText.match(urlRegex)?.length)
-                                                    valueQuill.current.url = selectedText;
+                                                if (selectedText.match(urlRegex)?.length) valueQuill.current.url = selectedText;
                                                 valueQuill.current.quill = quill;
                                             } else {
                                                 valueQuill.current.url = '';
@@ -583,17 +515,8 @@ const PreviewPost: React.FC<{
                             <Div width="100%" wrap="wrap">
                                 {tags.map((t, index, arr) => (
                                     <Div css="margin-bottom: 5px;" key={t.id}>
-                                        <Avatar
-                                            src={t.avatar}
-                                            alt={t.fullName}
-                                            gender={t.gender}
-                                            css="width: 20px; height: 20px; margin-right: 5px;"
-                                            radius="50%"
-                                        />
-                                        <Smooth
-                                            to={`/social/profile?id=${t.id}`}
-                                            css="display: flex; align-items: center; font-size: 1.3rem; &:hover{color:#5f9cd1}"
-                                        >
+                                        <Avatar src={t.avatar} alt={t.fullName} gender={t.gender} css="width: 20px; height: 20px; margin-right: 5px;" radius="50%" />
+                                        <Smooth to={`/social/profile?id=${t.id}`} css="display: flex; align-items: center; font-size: 1.3rem; &:hover{color:#5f9cd1}">
                                             {t.fullName}
                                         </Smooth>
                                         {!(index + 1 === arr.length) && (
@@ -714,10 +637,7 @@ const PreviewPost: React.FC<{
                             >
                                 {showI?.icon || acEmo.icon}
                                 {/* emotion is chosen */}
-                                <Div
-                                    css="font-size: 15px; position: absolute; right: 5px;"
-                                    onClick={() => setShowAc(true)}
-                                >
+                                <Div css="font-size: 15px; position: absolute; right: 5px;" onClick={() => setShowAc(true)}>
                                     <IconI />
                                 </Div>
                                 {/* change icon for display on emotion button */}
@@ -809,14 +729,7 @@ const PreviewPost: React.FC<{
                             </DivAction>
                         )}
                     </Div>
-                    {showComment && (
-                        <Comment
-                            colorText={colorText}
-                            anony={valuePrivacy}
-                            setShowComment={setShowComment}
-                            you={user}
-                        />
-                    )}
+                    {showComment && <Comment colorText={colorText} anony={valuePrivacy} setShowComment={setShowComment} you={user} />}
                     <DivWrapButton>
                         {loading ? (
                             <Div width="50%" css="position: relative;">
@@ -858,14 +771,7 @@ const PreviewPost: React.FC<{
                                 >
                                     {dataText.buttonFirst}
                                 </Button>
-                                <Button
-                                    type="button"
-                                    size="1.5rem"
-                                    padding="5px 14px"
-                                    color="#fff"
-                                    bg="#2e54c6"
-                                    onClick={handlePost}
-                                >
+                                <Button type="button" size="1.5rem" padding="5px 14px" color="#fff" bg="#2e54c6" onClick={handlePost}>
                                     {dataText.buttonTwo}
                                 </Button>
                             </>
