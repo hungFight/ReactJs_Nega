@@ -17,7 +17,7 @@ const errorHandling = (error: AxiosError) => {
             return 'NeGA_off';
         } else if (data.status === 8888) {
             return 'NeGA_off_u';
-        } else if (res.status === 500 && data?.messageObject.status === 9999) {
+        } else if (res.status === 500 && data?.messageObject?.status === 9999) {
             return data?.messageObject.message;
         } else {
             return null;

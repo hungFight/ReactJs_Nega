@@ -162,7 +162,7 @@ const PreviewPost: React.FC<{
         actImotion,
         setActImotion,
         dispatch,
-    } = LogicPreView(user, colorText, colorBg, file, valueText, fontFamily, dataText, token, userId, handleImageUpload, dataCentered, setDataCentered, handleClear, hashTags, tags);
+    } = LogicPreView(user, colorText, colorBg, file, valueText, fontFamily, dataText, token, userId, handleImageUpload, dataCentered, setDataCentered, handleClear, hashTags, tags, setUploadPre);
     const swiperType = 1;
     const GridColumns = 1;
     const Circle = 1;

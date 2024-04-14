@@ -40,6 +40,8 @@ export interface PropsDataFileUpload {
     title?: string | undefined;
     file?: Blob;
     name?: string;
+    width?: string;
+    height?: string;
 }
 export interface PropsValueQuill {
     url: string;

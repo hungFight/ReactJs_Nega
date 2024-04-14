@@ -4,10 +4,10 @@ import { AxiosError } from 'axios';
 import httpFile from '~/utils/httpFile';
 
 class fileWorkerAPI {
-    addFiles = async (formData: FormData): Promise<{ id: string; type: string; tail: string; title?: string; id_sort?: string }[]> => {
+    addFiles = async (formData: FormData): Promise<{ id: string; width?: string; height?: string; type: string; tail: string; title?: string; id_sort?: string; id_client: string }[]> => {
         try {
-            const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.post(`/addFiles`, formData);
+            const Axios = refreshToken.axiosJWTsFIle();
+            const res = await Axios.post(`/addFiles`, formData);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -16,8 +16,18 @@ class fileWorkerAPI {
     };
     deleteFileImg = async (ids: string[]) => {
         try {
-            const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.post<boolean>(`/deleteFileImg`, { ids });
+            const Axios = refreshToken.axiosJWTsFIle();
+            const res = await Axios.post<boolean>(`/deleteFileImg`, { ids });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    deleteFileVideo = async (ids: string[]) => {
+        try {
+            const Axios = refreshToken.axiosJWTsFIle();
+            const res = await Axios.post<boolean>(`/deleteFileVideo`, { ids });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -26,8 +36,8 @@ class fileWorkerAPI {
     };
     getFileImg = async (id: string) => {
         try {
-            const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.get(`/getFileImg/${id}`);
+            const Axios = refreshToken.axiosJWTsFIle();
+            const res = await Axios.get(`/getFileImg/${id}`);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -36,8 +46,8 @@ class fileWorkerAPI {
     };
     getFileVideo = async (id: string) => {
         try {
-            const Axios = refreshToken.axiosJWTs();
-            const res = await httpFile.get(`/getFileVideo/${id}`);
+            const Axios = refreshToken.axiosJWTsFIle();
+            const res = await Axios.get(`/getFileVideo/${id}`);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

@@ -16,19 +16,18 @@ class PostAPI {
             return errorHandling(err);
         }
     };
-    setPost = async (formData: any) => {
+    setPost = async (formData: any): Promise<PropsDataPosts> => {
         try {
-            console.log(formData);
-
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/home/post/setPost', { ...formData });
             return res.data;
         } catch (error: any) {
-            if (axios.isCancel(error)) {
-                console.log('Request canceled:', error.message);
-            } else {
-                console.error('Error:', error);
-            }
+            // if (axios.isCancel(error)) {
+            //     console.log('Request canceled:', error.message);
+            // } else {
+            const err: any = error as AxiosError;
+            return errorHandling(err);
+            // }
         }
     };
     sendComment = async (data: {

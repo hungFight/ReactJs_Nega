@@ -1,17 +1,6 @@
 import { Button, Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { useState, useEffect } from 'react';
-import {
-    BackI,
-    BanI,
-    ChangeI,
-    ColorsI,
-    DotI,
-    FullScreenI,
-    HeartMI,
-    ScreenI,
-    ShareI,
-    TitleI,
-} from '~/assets/Icons/Icons';
+import { BackI, BanI, ChangeI, ColorsI, DotI, FullScreenI, HeartMI, ScreenI, ShareI, TitleI } from '~/assets/Icons/Icons';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import LogicType from './logicType';
 import Player from '~/reUsingComponents/Videos/Player';
@@ -29,39 +18,29 @@ const DefaultType: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
     setBg?: React.Dispatch<React.SetStateAction<string>>;
     link?: boolean;
-}> = ({ file, colorText, step, setStep, setBg, bg, link }) => {
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    setUploadPre?: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
+}> = ({ file, colorText, step, setStep, setBg, bg, link, setUploadPre }) => {
+    const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     //edit
     const [showColors, setShowColors] = useState(false);
     const [heightV, setHeightV] = useState<string>('');
-    // useEffect(() => {
-    //     setHeightV('');
-    //     // file.map((f) => {
-    //     //     if (f?.type.includes('image')) {
-    //     //         var img = new Image();
-    //     //         img.src = f.link; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
-    //     //         img.addEventListener('load', function () {
-    //     //             var imageHeight = img.naturalHeight;
-    //     //             var imageWidth = img.naturalWidth;
-    //     //             console.log('Chiều cao: ' + imageHeight);
-    //     //             console.log('Chiều rộng: ' + imageWidth);
-    //     //             console.log('[]: ', imageWidth / imageHeight, 16 / 9);
-    //     //         });
-    //     //     } else {
-    //     //     }
-    //     // });
-    // }, [file]);
+    useEffect(() => {
+        setHeightV('');
+        // file.map((f) => {
+        //     if (f?.type.includes('image')) {
+        //         var img = new Image();
+        //         img.src = f.pre; // Thay đường dẫn bằng đường dẫn hình ảnh thực tế
+        //         img.addEventListener('load', function (e) {
+        //             var imageHeight = img.naturalHeight;
+        //             var imageWidth = img.naturalWidth;
+        //             console.log('mmmA Chiều cao: ' + imageHeight);
+        //             console.log('mmmA Chiều rộng: ' + imageWidth);
+        //             console.log('[]: ', imageWidth / imageHeight, 16 / 9);
+        //         });
+        //     } else {
+        //     }
+        // });
+    }, [file]);
     const colors = [
         { id: 0, color: 'transparent', icon: <BanI /> },
         { id: 1, color: '#1b1919' },
@@ -82,16 +61,8 @@ const DefaultType: React.FC<{
                 gap: 2px;
                 overflow: overlay;
                 background-color: ${bg};
-                ${file.length > 1
-                    ? step === 1
-                        ? ' grid-auto-rows: unset;  display: grid;'
-                        : ' grid-auto-rows: 200px;  display: grid;'
-                    : ''}
-                grid-template-columns: ${file.length === 1
-                    ? '1fr'
-                    : file.length === 4 || file.length === 2 || file.length === 3
-                    ? '1fr 1fr'
-                    : '1fr 1fr 1fr'};
+                ${file.length > 1 ? (step === 1 ? ' grid-auto-rows: unset;  display: grid;' : ' grid-auto-rows: 200px;  display: grid;') : ''}
+                grid-template-columns: ${file.length === 1 ? '1fr' : file.length === 4 || file.length === 2 || file.length === 3 ? '1fr 1fr' : '1fr 1fr 1fr'};
 
                 ${step === 1 &&
                 `
@@ -218,15 +189,7 @@ const DefaultType: React.FC<{
                                         : ''} */
                                 `}
                             >
-                                <Resize
-                                    link={link}
-                                    f={f}
-                                    arr={arr}
-                                    index={index}
-                                    setShowComment={setShowComment}
-                                    showComment={showComment}
-                                    step={step}
-                                />
+                                <Resize link={link} f={f} arr={arr} index={index} setUploadPre={setUploadPre} setShowComment={setShowComment} showComment={showComment} step={step} />
                                 {step === 0 && index + 1 >= moreFile && arr.length > moreFile && (
                                     <Div
                                         id="more"

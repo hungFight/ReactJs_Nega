@@ -16,10 +16,26 @@ const Resize: React.FC<{
     setShowComment: (value: React.SetStateAction<number[]>) => void;
     link?: boolean;
     arr: PropsDataFileUpload[];
-}> = ({ f, step, setShowComment, showComment, index, link, arr }) => {
+    setUploadPre?: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
+}> = ({ f, step, setShowComment, showComment, index, link, arr, setUploadPre }) => {
     console.log('imggg');
     const [loading, setLoading] = useState<boolean>(true);
-
+    const handleLoadMetaData = (e: React.SyntheticEvent<HTMLImageElement, Event>, _id?: string) => {
+        const imgElement: any = e.target; // Access the target image element
+        if (setUploadPre) {
+            setUploadPre((pre) => {
+                pre.map((r) => {
+                    if (r._id === _id) {
+                        r.width = imgElement.width + 'px';
+                        r.height = imgElement.height + 'px';
+                    }
+                    return r;
+                });
+                return pre;
+            });
+        }
+        setLoading(false);
+    };
     // not done
     return (
         <Div
@@ -41,8 +57,10 @@ const Resize: React.FC<{
                         src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`}
                         id="baby"
                         alt={f?.link}
-                        onLoad={() => setLoading(false)}
+                        onLoad={(e) => handleLoadMetaData(e, f?._id)}
                         css={`
+                            width: ${f?.width};
+                            height: ${f?.height};
                             ${step === 1 ? 'object-fit: contain; @media(min-width: 400px){object-fit: cover;}' : ''}
                         `}
                     />

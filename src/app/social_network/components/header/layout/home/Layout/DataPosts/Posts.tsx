@@ -20,7 +20,7 @@ import { queryClient } from 'src';
 
 const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options, setOptions, setFormThat, form, setShowComment, showComment }) => {
     const [dataPost, setDataPost] = useState<PropsDataPosts>(dataP);
-    if (dataPost.user[0].id === "It's me") dataPost.user[0] = user;
+    if (!dataPost.user.length || dataPost.user[0]?.id === "It's me") dataPost.user[0] = user;
     const [d, setD] = useState<string>('');
     const { lg } = Languages();
     const { userId } = Cookies();
@@ -112,7 +112,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
     //     ),
     //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     // ];
-    const emo = dataPost.feel.onlyEmo.filter((o) => o.id_user.includes(user.id))[0];
+    const emo = dataPost.feel.onlyEmo.find((o) => o.id_user.includes(user.id));
     console.log(emo, 'emo');
     let amount = 0;
     dataPost.feel.onlyEmo.map((r) => {
@@ -145,29 +145,31 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     return p;
                 });
             });
-            const res = await postAPI.setEmotion({
-                _id: dataPost._id,
-                index: emo.id,
-                id_user: user.id,
-                state: 'remove',
-            });
-            if (res)
-                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = res;
-                    return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = res;
-                        return p;
-                    });
+            if (emo) {
+                const res = await postAPI.setEmotion({
+                    _id: dataPost._id,
+                    index: emo.id,
+                    id_user: user.id,
+                    state: 'remove',
                 });
+                if (res)
+                    queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                        dataPost.feel = res;
+                        return preData?.map((p) => {
+                            if (p._id === dataPost._id) p.feel = res;
+                            return p;
+                        });
+                    });
 
-            if (!res)
-                queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = oldData;
-                    return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = oldData;
-                        return p;
+                if (!res)
+                    queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                        dataPost.feel = oldData;
+                        return preData?.map((p) => {
+                            if (p._id === dataPost._id) p.feel = oldData;
+                            return p;
+                        });
                     });
-                });
+            }
         } else {
             queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
                 return preData?.map((p) => {
@@ -405,7 +407,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                             { id: 'privacy', icon: <PrivacyI /> },
                                             { id: 'friend', icon: <FriendI />, color: '#58a3de' },
                                             { id: 'share', icon: <EarthI /> },
-                                        ].filter((t) => t.id === dataPost.whoCanSeePost.id)[0].icon
+                                        ].find((t) => t.id === dataPost.whoCanSeePost.id)?.icon
                                     }
                                 </Span>
                             </Div>
@@ -494,7 +496,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             max-height: 600px;
                         `}
                     >
-                        <DefaultType colorText={colorText} file={dataPost.content.options.default.map((f) => ({ ...f.file, pre: '' }))} step={step} setStep={setStep} bg={''} link={true} />
+                        <DefaultType colorText={colorText} file={dataPost.content.default.map((f) => ({ ...f.file, pre: '' }))} step={step} setStep={setStep} bg={''} link={true} />
                     </Div>
                     {/* <Div
                         css={`

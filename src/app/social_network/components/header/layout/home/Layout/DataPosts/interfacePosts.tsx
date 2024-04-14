@@ -10,7 +10,7 @@ export interface feel {
     }[];
     act: number;
 }
-export interface PropsComments {
+export interface PropsCommentsIN {
     _id: string;
     id_user: string;
     user: {
@@ -32,6 +32,12 @@ export interface PropsComments {
     anonymous: boolean;
     createdAt: string;
 }
+export interface PropsComments {
+    _id: string;
+    postId: string;
+    count: number;
+    data: PropsCommentsIN[];
+}
 export interface PropsDataPosts {
     _id: string;
     user: { id: string; avatar: Buffer | undefined; fullName: string; gender: number }[];
@@ -44,53 +50,7 @@ export interface PropsDataPosts {
     content: {
         text: string;
         fontFamily: string;
-        options: {
-            default: {
-                comments: {
-                    id_user: string;
-                    content: {
-                        text: string;
-                        file: string[];
-                    };
-                    feel: feel;
-                    reply: [
-                        {
-                            id_user: string;
-                            content: {
-                                text: string;
-                                file: string[];
-                            };
-                            feel: feel;
-                        },
-                    ];
-                };
-                file: { id_sort: number; link: string; type: string };
-                love: { id_user: string[] };
-                title: string;
-                _id: string;
-            }[];
-            swiper: {
-                id: number;
-                name: string;
-                data: {
-                    file: string[];
-                    data?: {
-                        file: string[];
-                        centered: {
-                            id: number;
-                            column: number;
-                            data: string[];
-                        };
-                    };
-                };
-            };
-            grid: {
-                file: string[];
-                BgColor: string;
-                column: number;
-            };
-            onlyImage: string[];
-        };
+        default: { file: { id_sort: number; link: string; type: string; width: string; height: string }; love: { id_user: string[] }; title: string; _id: string }[];
     };
     whoCanSeePost: { id: string; name: string };
     anonymous: boolean;

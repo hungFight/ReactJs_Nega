@@ -13,7 +13,7 @@ import QuillText from '~/reUsingComponents/Libraries/QuillText';
 import { PropsValueQuill } from '../FormUpNews/FormUpNews';
 import { PropsUser } from 'src/App';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
-import { PropsComments, PropsDataPosts } from './interfacePosts';
+import { PropsComments, PropsCommentsIN, PropsDataPosts } from './interfacePosts';
 import '~/reUsingComponents/Libraries/formatMoment';
 import Languages from '~/reUsingComponents/languages';
 import moments from '~/utils/moment';
@@ -241,12 +241,13 @@ const Comment: React.FC<{
     // const sortEmo = fa.sort((a, b) => b.id_user.length - a.id_user.length);
     const handleEmo = async (
         e: any,
-        c: PropsComments,
+        c: PropsCommentsIN,
         emo: {
             id: number;
             icon: string;
             id_user: string[];
         },
+        index: number,
     ) => {
         e.stopPropagation();
         const divConstant = document.getElementById('emoBarPost');
@@ -261,7 +262,7 @@ const Comment: React.FC<{
         if (dataPost) {
             if (check) {
                 queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
-                    preData?.comments.map((p) => {
+                    preData?.comments[index].data.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 o.id_user = o.id_user.filter((u) => u !== you.id);
@@ -283,7 +284,7 @@ const Comment: React.FC<{
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
@@ -293,7 +294,7 @@ const Comment: React.FC<{
                 if (!res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
@@ -301,7 +302,7 @@ const Comment: React.FC<{
                     });
             } else {
                 queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
-                    preData?.comments.map((p) => {
+                    preData?.comments[index].data.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 if (o.id === c.feel.act) o.id_user.push(you.id);
@@ -323,7 +324,7 @@ const Comment: React.FC<{
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
@@ -332,7 +333,7 @@ const Comment: React.FC<{
                 if (!res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
@@ -349,12 +350,13 @@ const Comment: React.FC<{
             icon: string;
             id_user: string[];
         },
-        c: PropsComments,
+        c: PropsCommentsIN,
         emo: {
             id: number;
             icon: string;
             id_user: string[];
         },
+        index: number,
     ) => {
         e.stopPropagation();
         const divConstant = document.getElementById('emoBarPost');
@@ -368,7 +370,7 @@ const Comment: React.FC<{
             setD('1');
             if (check) {
                 queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
-                    preData?.comments.map((p) => {
+                    preData?.comments[index].data.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 o.id_user = o.id_user.filter((u) => u !== you.id);
@@ -393,7 +395,7 @@ const Comment: React.FC<{
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
@@ -403,7 +405,7 @@ const Comment: React.FC<{
                 if (!res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
@@ -411,7 +413,7 @@ const Comment: React.FC<{
                     });
             } else {
                 queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
-                    preData?.comments.map((p) => {
+                    preData?.comments[index].data.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                                 if (o.id === i.id) o.id_user.push(you.id);
@@ -433,7 +435,7 @@ const Comment: React.FC<{
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = res;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = res;
                             return p;
                         });
@@ -442,7 +444,7 @@ const Comment: React.FC<{
                 if (!res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
                         c.feel = oldData;
-                        preData?.comments.map((p) => {
+                        preData?.comments[index].data.map((p) => {
                             if (p._id === c._id) p.feel = oldData;
                             return p;
                         });
@@ -662,172 +664,175 @@ const Comment: React.FC<{
                                     </DivFlex>
                                 </SkeletonTheme>
                             ) : (
-                                data?.comments.map((c) => {
-                                    const emo = c.feel.onlyEmo.filter((o) => o.id_user.includes(you.id))[0];
-                                    let amount = 0;
-                                    c.feel.onlyEmo.map((r) => {
-                                        amount += r.id_user.length;
-                                    }, {});
-                                    const hasEmo = c.feel.onlyEmo.some((o) => o.id_user.length);
-                                    return (
-                                        <DivFlex key={c._id} justify="start" align="start" css="margin-bottom: 40px; position: relative;">
-                                            <DivPos top="-3px" right="55px" index={1} css="text-wrap: nowrap; ">
-                                                <Div
-                                                    css="font-weight: 600; width: 20px; height: 20px; justify-content: center;align-items: center;} @media (min-width: 768px) {
-                                                    &:hover {#emoBarPost {display: flex;top: -33px;}}}position: relative;"
-                                                    onClick={(e) => handleEmo(e, c, emo)}
-                                                >
-                                                    {!emo ? <IconI /> : emo.icon}
-
-                                                    <DivPos top="19px" right="50%" left="50%" translateT="-50%">
-                                                        <P z="1.3rem"> {amount} </P>
-                                                    </DivPos>
+                                data?.comments.map((comment, index) =>
+                                    comment.data.map((c) => {
+                                        const emo = c.feel.onlyEmo.filter((o) => o.id_user.includes(you.id))[0];
+                                        let amount = 0;
+                                        c.feel.onlyEmo.map((r) => {
+                                            amount += r.id_user.length;
+                                        }, {});
+                                        const hasEmo = c.feel.onlyEmo.some((o) => o.id_user.length);
+                                        return (
+                                            <DivFlex key={c._id} justify="start" align="start" css="margin-bottom: 40px; position: relative;">
+                                                <DivPos top="-3px" right="55px" index={1} css="text-wrap: nowrap; ">
                                                     <Div
-                                                        id="emoBarPost"
-                                                        width="fit-content"
-                                                        className="showI"
-                                                        display="none"
-                                                        css={`
-                                                            position: absolute;
-                                                            top: 0;
-                                                            right: -25px;
-                                                            padding: 0 37px 33px;
-                                                            border-radius: 50px;
-                                                            z-index: 7;
-                                                            div {
-                                                                min-width: 40px;
-                                                                height: 40px;
-                                                                padding-top: 2px;
-                                                                font-size: 28px;
-                                                                margin: 0;
-                                                                border-radius: 50%;
-                                                                cursor: var(--pointer);
-                                                            }
-                                                            transition: all 1s linear;
-                                                        `}
+                                                        css="font-weight: 600; width: 20px; height: 20px; justify-content: center;align-items: center;} @media (min-width: 768px) {
+                                                    &:hover {#emoBarPost {display: flex;top: -33px;}}}position: relative;"
+                                                        onClick={(e) => handleEmo(e, c, emo, index)}
                                                     >
-                                                        {c.feel.onlyEmo
-                                                            .sort((a, b) => a.id - b.id)
-                                                            .map((i, index, arr) => (
-                                                                <DivEmoji
-                                                                    key={i.id}
-                                                                    onClick={(e) => handleReEmo(e, i, c, emo)}
-                                                                    css={`
-                                                                        position: relative;
-                                                                        background-color: #6f5fc4ba;
-                                                                    `}
-                                                                    nameFrame={`top_bottom_move_${index}`}
-                                                                >
-                                                                    {i.icon}
-                                                                </DivEmoji>
-                                                            ))}
-                                                    </Div>
-                                                </Div>
-                                            </DivPos>
+                                                        {!emo ? <IconI /> : emo.icon}
 
-                                            <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 70px}"></DivNone>
-                                            <DivFlexPosition wrap="wrap" position="relative" width="79%">
-                                                <DivFlex wrap="wrap" justify="start" css="margin-top: -18px;" width="100%">
-                                                    <DivFlex>
-                                                        <Avatar
-                                                            src={c.user.avatar}
-                                                            alt={c.user.fullName}
-                                                            gender={c.user.gender}
-                                                            css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
-                                                            radius="50%"
-                                                        />
-                                                        <DivFlex wrap="wrap" justify="start">
-                                                            <Hname>{c.user.fullName}</Hname>
-                                                            <Div>
-                                                                <Div css="margin-right: 5px;">
-                                                                    <FcReadingEbook />
-                                                                </Div>{' '}
-                                                                <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
+                                                        <DivPos top="19px" right="50%" left="50%" translateT="-50%">
+                                                            <P z="1.3rem"> {amount} </P>
+                                                        </DivPos>
+                                                        <Div
+                                                            id="emoBarPost"
+                                                            width="fit-content"
+                                                            className="showI"
+                                                            display="none"
+                                                            css={`
+                                                                position: absolute;
+                                                                top: 0;
+                                                                right: -25px;
+                                                                padding: 0 37px 33px;
+                                                                border-radius: 50px;
+                                                                z-index: 7;
+                                                                div {
+                                                                    min-width: 40px;
+                                                                    height: 40px;
+                                                                    padding-top: 2px;
+                                                                    font-size: 28px;
+                                                                    margin: 0;
+                                                                    border-radius: 50%;
+                                                                    cursor: var(--pointer);
+                                                                }
+                                                                transition: all 1s linear;
+                                                            `}
+                                                        >
+                                                            {c.feel.onlyEmo
+                                                                .sort((a, b) => a.id - b.id)
+                                                                .map((i, index, arr) => (
+                                                                    <DivEmoji
+                                                                        key={i.id}
+                                                                        onClick={(e) => handleReEmo(e, i, c, emo, index)}
+                                                                        css={`
+                                                                            position: relative;
+                                                                            background-color: #6f5fc4ba;
+                                                                        `}
+                                                                        nameFrame={`top_bottom_move_${index}`}
+                                                                    >
+                                                                        {i.icon}
+                                                                    </DivEmoji>
+                                                                ))}
+                                                        </Div>
+                                                    </Div>
+                                                </DivPos>
+
+                                                <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 70px}"></DivNone>
+                                                <DivFlexPosition wrap="wrap" position="relative" width="79%">
+                                                    <DivFlex wrap="wrap" justify="start" css="margin-top: -18px;" width="100%">
+                                                        <DivFlex>
+                                                            <Avatar
+                                                                src={c.user.avatar}
+                                                                alt={c.user.fullName}
+                                                                gender={c.user.gender}
+                                                                css="min-width: 30px; width: 30px; height: 30px; margin: 0 5px;"
+                                                                radius="50%"
+                                                            />
+                                                            <DivFlex wrap="wrap" justify="start">
+                                                                <Hname>{c.user.fullName}</Hname>
+                                                                <Div>
+                                                                    <Div css="margin-right: 5px;">
+                                                                        <FcReadingEbook />
+                                                                    </Div>{' '}
+                                                                    <Div css="*{font-size: 1.3rem;}" dangerouslySetInnerHTML={{ __html: c.content.text }}></Div>
+                                                                </Div>
+                                                            </DivFlex>
+                                                        </DivFlex>
+                                                        <DivFlex justify="start">
+                                                            <BsDot />
+                                                            <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
+                                                            <P
+                                                                z="1.1rem"
+                                                                css={`
+                                                                    margin: 0 5px;
+                                                                `}
+                                                            >
+                                                                -
+                                                            </P>
+                                                            <DivEmoji
+                                                                css={`
+                                                                    div:first-child {
+                                                                        margin: 0 !important;
+                                                                    }
+                                                                `}
+                                                            >
+                                                                {hasEmo ? (
+                                                                    c.feel.onlyEmo.map((key, index, arr) => (key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : ''))
+                                                                ) : (
+                                                                    <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                                        Cảm xúc
+                                                                    </P>
+                                                                )}
+                                                            </DivEmoji>
+                                                            <P z="1.1rem" css="margin: 0 5px">
+                                                                -
+                                                            </P>
+                                                            <P
+                                                                z="1.1rem"
+                                                                css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
+                                                                onClick={(e: any) => {
+                                                                    if (reply.some((r) => r.id === c._id)) {
+                                                                        e.target.removeAttribute('style');
+                                                                        setReply((pre) => pre.filter((f) => f.id !== c._id));
+                                                                    } else {
+                                                                        e.target.setAttribute('style', 'text-decoration: underline;');
+                                                                        setReply((pre) => [...pre, { id: c._id, name: c.user.fullName, text: '', id_user: c.id_user, title: 'Trả lời' }]);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                trả lời
+                                                            </P>{' '}
+                                                            <P z="1.1rem" css="margin: 0 5px">
+                                                                -
+                                                            </P>
+                                                            <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
+                                                                Nhắc đến
+                                                            </P>{' '}
+                                                            <P z="1.1rem" css="margin: 0 5px">
+                                                                -
+                                                            </P>
+                                                            <Div css="cursor: var(--pointer); font-size: 25px;">
+                                                                <DotI />
                                                             </Div>
                                                         </DivFlex>
+                                                        {/* {c.reply.} */}
+                                                        {reply.map((r) => {
+                                                            if (r.id === c._id)
+                                                                return (
+                                                                    <ReplyComment
+                                                                        key={r.id}
+                                                                        r={r}
+                                                                        activate={activate}
+                                                                        anony={anony}
+                                                                        anonymous={anonymous}
+                                                                        anonymousIndex={anonymousIndex}
+                                                                        handleAnonymousComment={handleAnonymousComment}
+                                                                        handleComment={handleComment}
+                                                                        onAc={onAc}
+                                                                        onChange={onChange}
+                                                                        setOnAC={setOnAC}
+                                                                        you={you}
+                                                                    />
+                                                                );
+                                                            return null;
+                                                        })}
                                                     </DivFlex>
-                                                    <DivFlex justify="start">
-                                                        <BsDot />
-                                                        <P z="1.1rem">{moments().FromNow(c.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg)}</P>{' '}
-                                                        <P
-                                                            z="1.1rem"
-                                                            css={`
-                                                                margin: 0 5px;
-                                                            `}
-                                                        >
-                                                            -
-                                                        </P>
-                                                        <Div
-                                                            css={`
-                                                                div:first-child {
-                                                                    margin: 0 !important;
-                                                                }
-                                                            `}
-                                                        >
-                                                            {hasEmo ? (
-                                                                c.feel.onlyEmo.map((key, index, arr) => (key.id_user.length ? <DivEmoji key={key.id}>{key.icon}</DivEmoji> : ''))
-                                                            ) : (
-                                                                <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                                    Cảm xúc
-                                                                </P>
-                                                            )}
-                                                        </Div>
-                                                        <P z="1.1rem" css="margin: 0 5px">
-                                                            -
-                                                        </P>
-                                                        <P
-                                                            z="1.1rem"
-                                                            css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;"
-                                                            onClick={(e: any) => {
-                                                                if (reply.some((r) => r.id === c._id)) {
-                                                                    e.target.removeAttribute('style');
-                                                                    setReply((pre) => pre.filter((f) => f.id !== c._id));
-                                                                } else {
-                                                                    e.target.setAttribute('style', 'text-decoration: underline;');
-                                                                    setReply((pre) => [...pre, { id: c._id, name: c.user.fullName, text: '', id_user: c.id_user, title: 'Trả lời' }]);
-                                                                }
-                                                            }}
-                                                        >
-                                                            trả lời
-                                                        </P>{' '}
-                                                        <P z="1.1rem" css="margin: 0 5px">
-                                                            -
-                                                        </P>
-                                                        <P z="1.1rem" css="cursor: var(--pointer); &:hover{text-decoration: underline;}font-weight: 600;">
-                                                            Nhắc đến
-                                                        </P>{' '}
-                                                        <P z="1.1rem" css="margin: 0 5px">
-                                                            -
-                                                        </P>
-                                                        <Div css="cursor: var(--pointer); font-size: 25px;">
-                                                            <DotI />
-                                                        </Div>
-                                                    </DivFlex>
-                                                    {reply.map((r) => {
-                                                        if (r.id === c._id)
-                                                            return (
-                                                                <ReplyComment
-                                                                    key={r.id}
-                                                                    r={r}
-                                                                    activate={activate}
-                                                                    anony={anony}
-                                                                    anonymous={anonymous}
-                                                                    anonymousIndex={anonymousIndex}
-                                                                    handleAnonymousComment={handleAnonymousComment}
-                                                                    handleComment={handleComment}
-                                                                    onAc={onAc}
-                                                                    onChange={onChange}
-                                                                    setOnAC={setOnAC}
-                                                                    you={you}
-                                                                />
-                                                            );
-                                                        return null;
-                                                    })}
-                                                </DivFlex>
-                                            </DivFlexPosition>
-                                        </DivFlex>
-                                    );
-                                })
+                                                </DivFlexPosition>
+                                            </DivFlex>
+                                        );
+                                    }),
+                                )
                             )}
                         </DivFill>
                     </DivFill>

@@ -15,6 +15,8 @@ import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';
 import Circle from './ViewPostFrame/TypeFile/Circle';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
+import { queryClient } from 'src';
+import { PropsDataPosts } from '../DataPosts/interfacePosts';
 export default function LogicPreView(
     user: PropsUser,
     colorText: string,
@@ -56,6 +58,7 @@ export default function LogicPreView(
         gender: number;
         fullName: string;
     }[],
+    setUploadPre: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>,
 ) {
     const dispatch = useDispatch();
     // type of post
@@ -177,18 +180,40 @@ export default function LogicPreView(
             switch (selectType) {
                 case 0: // default
                     for (let fil of file) {
-                        if (fil.file) formData.append('file', fil.file, fil.name + '@_id_get_$' + fil._id);
+                        if (fil.file) formData.append('file', fil.file, fil.name + '@_id_***_get_$' + fil._id);
                         formData.append('title', JSON.stringify({ title: fil.title, id: fil._id }));
                         formData.append('id_sort', JSON.stringify({ id_sort: fil.id_sort, id: fil._id }));
                     }
                     formDataFake.bg_default = bg;
                     if (file.length) {
                         const returnDataAdded = await fileWorkerAPI.addFiles(formData);
+                        returnDataAdded.map((r) => {
+                            const title = file.find((f) => f._id === r.id_client)?.title;
+                            if (title) r.title = title;
+                            const width = file.find((f) => f._id === r.id_client)?.width;
+                            if (width) r.width = width;
+                            const height = file.find((f) => f._id === r.id_client)?.height;
+                            if (height) r.height = height;
+                        });
                         formDataFake.id_file = returnDataAdded;
                     }
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
                     res = await postAPI.setPost(formDataFake);
-                    const dataR = ServerBusy(res, dispatch);
+                    const dataR: PropsDataPosts | null = ServerBusy(res, dispatch);
+                    console.log(dataR, 'dataRR');
+
+                    if (dataR) {
+                        queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
+                            return [dataR, ...(preData ?? [])];
+                        });
+                    } else {
+                        if (formDataFake.id_file?.length) {
+                            const Id_img = formDataFake.id_file?.filter((f) => f.type === 'image').map((f) => f.id);
+                            const Id_vid = formDataFake.id_file?.filter((f) => f.type === 'video').map((f) => f.id);
+                            if (Id_img.length) await fileWorkerAPI.deleteFileImg(Id_img);
+                            if (Id_vid.length) await fileWorkerAPI.deleteFileVideo(Id_vid);
+                        }
+                    }
                     setLoading(false);
                     id_c = res.id_c;
                     handleClear();
@@ -244,15 +269,15 @@ export default function LogicPreView(
                 default:
                     break;
             }
-            console.log(id_c, 'id_c');
-            if (id_c.length > 0) {
-                // const exp = await postAPI.exp(id_c, newExpire);
-            }
+            // console.log(id_c, 'id_c');
+            // if (id_c.length > 0) {
+            //     const exp = await postAPI.exp(id_c, newExpire);
+            // }
         }
     };
     const postTypes = [
         // working in side OptionType
-        <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} bg={bg} setBg={setBg} />,
+        <DefaultType colorText={colorText} file={file} step={step} setStep={setStep} bg={bg} setBg={setBg} setUploadPre={setUploadPre} />,
         file.length > 3 ? (
             [
                 <Dynamic colorText={colorText} file={file} step={step} setStep={setStep} />,
