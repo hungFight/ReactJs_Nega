@@ -36,16 +36,17 @@ export interface PropsComments {
     _id: string;
     postId: string;
     count: number;
+    full: boolean;
     data: PropsCommentsIN[];
 }
 export interface PropsDataPosts {
     _id: string;
     user: { id: string; avatar: Buffer | undefined; fullName: string; gender: number }[];
     category: number;
+    background: string;
     id_user: string;
     hashTag: { _id: string; value: string }[];
     feel: feel;
-    comments: PropsComments[];
     amountComments: number;
     content: {
         text: string;

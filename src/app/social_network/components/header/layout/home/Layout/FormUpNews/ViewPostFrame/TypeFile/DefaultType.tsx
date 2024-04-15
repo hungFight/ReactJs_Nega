@@ -19,7 +19,8 @@ const DefaultType: React.FC<{
     setBg?: React.Dispatch<React.SetStateAction<string>>;
     link?: boolean;
     setUploadPre?: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
-}> = ({ file, colorText, step, setStep, setBg, bg, link, setUploadPre }) => {
+    _id?: string;
+}> = ({ file, colorText, step, setStep, setBg, bg, link, setUploadPre, _id }) => {
     const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     //edit
     const [showColors, setShowColors] = useState(false);
@@ -80,7 +81,7 @@ const DefaultType: React.FC<{
                 }`}
             `}
         >
-            {file.length > 1 && (
+            {!_id && file.length > 1 && (
                 <DivPos
                     css={`
                         top: ${step === 1 ? '55px' : '15px'};

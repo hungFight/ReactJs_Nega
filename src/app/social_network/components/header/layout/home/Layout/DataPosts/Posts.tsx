@@ -496,7 +496,15 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             max-height: 600px;
                         `}
                     >
-                        <DefaultType colorText={colorText} file={dataPost.content.default.map((f) => ({ ...f.file, pre: '' }))} step={step} setStep={setStep} bg={''} link={true} />
+                        <DefaultType
+                            _id={dataPost._id}
+                            colorText={colorText}
+                            file={dataPost.content.default.map((f) => ({ ...f.file, pre: '' }))}
+                            step={step}
+                            setStep={setStep}
+                            bg={dataPost.background}
+                            link={true}
+                        />
                     </Div>
                     {/* <Div
                         css={`

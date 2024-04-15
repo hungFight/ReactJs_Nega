@@ -85,11 +85,18 @@ const Comment: React.FC<{
         socket.on(`comment_post_${dataPost?._id}`, (data) => {
             if (data) {
                 console.log(data);
-
-                if (you.id !== data.id_user) {
-                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
+                if (you.id !== data?.id_user) {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: PropsComments[] | undefined) => {
                         // Update the data by adding newValue to the existing data
-                        return { ...(prevData ?? {}), comments: [data, ...prevData.comments] };
+                        prevData?.map((p) => {
+                            if (p._id === data._id) {
+                                p.count = data.count;
+                                p.full = data.full;
+                                p.data.unshift(data.data[0]);
+                            }
+                            return p;
+                        });
+                        return prevData;
                     });
                 }
             }
@@ -106,12 +113,20 @@ const Comment: React.FC<{
                     }),
                 };
                 const newValue = await postAPI.sendComment({ postId: dataPost._id, text: reply_com.text, anonymousC: onAc, emos, commentId: reply_com.id, repliedId: reply_com.id_user });
-                // if (newValue) {
-                //     queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
-                //         // Update the data by adding newValue to the existing data
-                //         return { ...(prevData ?? {}), comments: [newValue, ...prevData.comments] };
-                //     });
-                // }
+                if (newValue) {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: PropsComments[] | undefined) => {
+                        // Update the data by adding newValue to the existing data
+                        prevData?.map((p) => {
+                            if (p._id === newValue._id) {
+                                p.count = newValue.count;
+                                p.full = newValue.full;
+                                p.data.unshift(newValue.data[0]);
+                            }
+                            return p;
+                        });
+                        return prevData;
+                    });
+                }
             } else {
                 if (inputValue) {
                     const emos = {
@@ -248,6 +263,7 @@ const Comment: React.FC<{
             id_user: string[];
         },
         index: number,
+        groupCommentId: string,
     ) => {
         e.stopPropagation();
         const divConstant = document.getElementById('emoBarPost');
@@ -280,6 +296,7 @@ const Comment: React.FC<{
                     id_user: you.id,
                     state: 'remove',
                     id_comment: c._id,
+                    groupCommentId,
                 });
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
@@ -320,6 +337,7 @@ const Comment: React.FC<{
                     id_user: you.id,
                     state: 'add',
                     id_comment: c._id,
+                    groupCommentId,
                 });
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
@@ -357,6 +375,7 @@ const Comment: React.FC<{
             id_user: string[];
         },
         index: number,
+        groupCommentId: string,
     ) => {
         e.stopPropagation();
         const divConstant = document.getElementById('emoBarPost');
@@ -370,6 +389,8 @@ const Comment: React.FC<{
             setD('1');
             if (check) {
                 queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
+                    console.log(preData, 'preData', index);
+
                     preData?.comments[index].data.map((p) => {
                         if (p._id === c._id) {
                             p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
@@ -391,6 +412,7 @@ const Comment: React.FC<{
                     state: 'update',
                     id_comment: c._id,
                     oldIndex: emo?.id,
+                    groupCommentId,
                 });
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
@@ -431,6 +453,7 @@ const Comment: React.FC<{
                     id_user: you.id,
                     state: 'add',
                     id_comment: c._id,
+                    groupCommentId,
                 });
                 if (res)
                     queryClient.setQueryData(['Comment', dataPost?._id], (preData: { comments: PropsComments[] } | undefined) => {
@@ -664,7 +687,7 @@ const Comment: React.FC<{
                                     </DivFlex>
                                 </SkeletonTheme>
                             ) : (
-                                data?.comments.map((comment, index) =>
+                                data?.comments.map((comment, indexR) =>
                                     comment.data.map((c) => {
                                         const emo = c.feel.onlyEmo.filter((o) => o.id_user.includes(you.id))[0];
                                         let amount = 0;
@@ -678,7 +701,7 @@ const Comment: React.FC<{
                                                     <Div
                                                         css="font-weight: 600; width: 20px; height: 20px; justify-content: center;align-items: center;} @media (min-width: 768px) {
                                                     &:hover {#emoBarPost {display: flex;top: -33px;}}}position: relative;"
-                                                        onClick={(e) => handleEmo(e, c, emo, index)}
+                                                        onClick={(e) => handleEmo(e, c, emo, indexR, comment._id)}
                                                     >
                                                         {!emo ? <IconI /> : emo.icon}
 
@@ -714,7 +737,7 @@ const Comment: React.FC<{
                                                                 .map((i, index, arr) => (
                                                                     <DivEmoji
                                                                         key={i.id}
-                                                                        onClick={(e) => handleReEmo(e, i, c, emo, index)}
+                                                                        onClick={(e) => handleReEmo(e, i, c, emo, indexR, comment._id)}
                                                                         css={`
                                                                             position: relative;
                                                                             background-color: #6f5fc4ba;
@@ -760,7 +783,8 @@ const Comment: React.FC<{
                                                             >
                                                                 -
                                                             </P>
-                                                            <DivEmoji
+                                                            <DivNone
+                                                                display="flex"
                                                                 css={`
                                                                     div:first-child {
                                                                         margin: 0 !important;
@@ -774,7 +798,7 @@ const Comment: React.FC<{
                                                                         Cảm xúc
                                                                     </P>
                                                                 )}
-                                                            </DivEmoji>
+                                                            </DivNone>
                                                             <P z="1.1rem" css="margin: 0 5px">
                                                                 -
                                                             </P>
@@ -807,7 +831,7 @@ const Comment: React.FC<{
                                                             </Div>
                                                         </DivFlex>
                                                         {/* {c.reply.} */}
-                                                        {reply.map((r) => {
+                                                        {/* {reply.map((r) => {
                                                             if (r.id === c._id)
                                                                 return (
                                                                     <ReplyComment
@@ -826,7 +850,7 @@ const Comment: React.FC<{
                                                                     />
                                                                 );
                                                             return null;
-                                                        })}
+                                                        })} */}
                                                     </DivFlex>
                                                 </DivFlexPosition>
                                             </DivFlex>

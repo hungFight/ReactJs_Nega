@@ -59,13 +59,11 @@ const Resize: React.FC<{
                         alt={f?.link}
                         onLoad={(e) => handleLoadMetaData(e, f?._id)}
                         css={`
-                            width: ${f?.width};
-                            height: ${f?.height};
                             ${step === 1 ? 'object-fit: contain; @media(min-width: 400px){object-fit: cover;}' : ''}
                         `}
                     />
                     {loading && (
-                        <SkeletonTheme baseColor="#414141" highlightColor="#7c7c7c" width={200} height={200}>
+                        <SkeletonTheme baseColor="#414141" highlightColor="#7c7c7c" width={f?.width} height={f?.height}>
                             <Skeleton height="350px" width="100%" count={1} duration={1} />
                         </SkeletonTheme>
                     )}

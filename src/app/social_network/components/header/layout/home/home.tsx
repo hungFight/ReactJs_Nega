@@ -113,7 +113,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                         overflow: overlay;
                         max-height: 93%;
                         @media (min-width: 580px) {
-                            width: 580px;
+                            width: 600px;
                         }
                         @media (max-width: 768px) {
                             &::-webkit-scrollbar {
@@ -320,7 +320,6 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
                             </Div>
                         </Div>
                     </Div>
-                    <Div></Div>
                     {openPostCreation ? <FormUpNews form={form} colorBg={colorBg} colorText={colorText} user={dataUser} setOpenPostCreation={() => setOpenPostCreation(false)} /> : formThat}
                 </Div>
                 {post && (

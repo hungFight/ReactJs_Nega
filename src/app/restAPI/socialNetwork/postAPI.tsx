@@ -44,7 +44,7 @@ class PostAPI {
         };
         commentId?: string;
         repliedId?: string;
-    }) => {
+    }): Promise<PropsComments> => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/home/post/sendComment', { ...data });
@@ -54,7 +54,7 @@ class PostAPI {
             return errorHandling(err);
         }
     };
-    setEmotion = async (data: { _id: string; index: number | null; id_user: string; state: string; oldIndex?: number; id_comment?: string }): Promise<feel> => {
+    setEmotion = async (data: { _id: string; index: number | null; id_user: string; state: string; oldIndex?: number; id_comment?: string; groupCommentId?: string }): Promise<feel> => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/home/post/setEmotion', { ...data });
