@@ -1,23 +1,6 @@
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
-import {
-    DotI,
-    CameraI,
-    ProfileCircelI,
-    SendOPTI,
-    UndoI,
-    LoadingI,
-    MinusI,
-    ClockCirclesI,
-    BalloonI,
-    MoveI,
-    TyOnlineI,
-    PenI,
-    EraserI,
-    PinI,
-    BackgroundI,
-    GarbageI,
-} from '~/assets/Icons/Icons';
+import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, ClockCirclesI, BalloonI, MoveI, TyOnlineI, PenI, EraserI, PinI, BackgroundI, GarbageI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
@@ -50,6 +33,7 @@ import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import { useMutation } from '@tanstack/react-query';
 import { queryClient } from 'src';
+import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 export interface PropsDataMoreConversation {
     options: {
         id: number;
@@ -102,25 +86,7 @@ const Conversation: React.FC<{
         }[]
     >;
     balloon: string[];
-}> = ({
-    index,
-    colorText,
-    colorBg,
-    dataFirst,
-    id_chat,
-    currentPage,
-    chat,
-    id_chats,
-    css,
-    top,
-    left,
-    permanent,
-    setId_chats,
-    userOnline,
-    conversationText,
-    mm,
-    balloon,
-}) => {
+}> = ({ index, colorText, colorBg, dataFirst, id_chat, currentPage, chat, id_chats, css, top, left, permanent, setId_chats, userOnline, conversationText, mm, balloon }) => {
     const {
         handleImageUpload,
         uploadIn,
@@ -198,8 +164,7 @@ const Conversation: React.FC<{
     };
     const handleMouseUp = () => {
         if (conversation && moves.includes(conversation._id)) {
-            if (yRef.current && xRef.current)
-                dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
+            if (yRef.current && xRef.current) dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
             setMouse((pre) => pre.filter((m) => m !== conversation._id));
         }
     };
@@ -324,10 +289,7 @@ const Conversation: React.FC<{
                                 index1: number,
                             ) => {
                                 if (rr.text.t) {
-                                    modifiedData.room[index1].text.t = decrypt(
-                                        rr.text.t,
-                                        `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
-                                    );
+                                    modifiedData.room[index1].text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : modifiedData._id}`);
                                 }
                             },
                         ),
@@ -352,28 +314,33 @@ const Conversation: React.FC<{
             const fileC: any = upLoad[0];
             const formData = new FormData();
             if (fileC) {
-                if (conversation.background) formData.append('background', conversation.background._id);
-                formData.append('latestChatId', conversation.room[0]._id);
-                formData.append('userId', dataFirst.id);
-                formData.append('conversationId', conversation._id); // assign file and _id of the file upload
-                formData.append('files', fileC, fileC._id); // assign file and _id of the file upload
-                const res: { userId: string; latestChatID: string } = await chatAPI.setBackground(formData);
-                if (res)
-                    setConversation((pre) => {
-                        if (pre)
-                            return {
-                                ...pre,
-                                background: {
-                                    _id: fileC._id,
-                                    v: getFilesToPre[0].link,
-                                    type: getFilesToPre[0].type,
-                                    userId: res.userId,
-                                    latestChatId: res.latestChatID,
-                                },
-                            };
-                        return pre;
+                formData.append('file', fileC); // assign file and _id of the file upload
+                if (conversation.background) formData.append('old_id', conversation.background.id);
+                const re = await fileWorkerAPI.addFiles(formData);
+                if (re?.length) {
+                    const res: { userId: string; latestChatId: string } = await chatAPI.setBackground({
+                        latestChatId: conversation.room[0]._id,
+                        conversationId: conversation._id,
+                        id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
                     });
+                    if (res)
+                        setConversation((pre) => {
+                            if (pre)
+                                return {
+                                    ...pre,
+                                    background: {
+                                        id: fileC._id,
+                                        v: getFilesToPre[0].link,
+                                        type: getFilesToPre[0].type,
+                                        userId: res.userId,
+                                        latestChatId: res.latestChatId,
+                                    },
+                                };
+                            return pre;
+                        });
+                }
             }
+            e.target.value = '';
         }
     };
     const removeBall = useMutation(
@@ -438,18 +405,8 @@ const Conversation: React.FC<{
                             `}
                         >
                             <form method="post" encType="multipart/form-data">
-                                <input
-                                    id={conversation?._id + 'uploadCon_BG'}
-                                    type="file"
-                                    name="file"
-                                    onChange={handleImageUploadBg}
-                                    hidden
-                                />
-                                <Label
-                                    htmlFor={conversation?._id + 'uploadCon_BG'}
-                                    color={colorText}
-                                    css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}"
-                                >
+                                <input id={conversation?._id + 'uploadCon_BG'} type="file" name="file" onChange={handleImageUploadBg} hidden />
+                                <Label htmlFor={conversation?._id + 'uploadCon_BG'} color={colorText} css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}">
                                     <Div css="font-size: 25px; color: #eedec8; @media(min-width: 768px){font-size: 20px}">
                                         <BackgroundI />
                                     </Div>{' '}
@@ -461,15 +418,15 @@ const Conversation: React.FC<{
                                     css="width: 100%; align-items: center; display: flex; svg{margin-right: 3px;} "
                                     onClick={async () => {
                                         if (conversation && conversation.background) {
-                                            const res: boolean = await chatAPI.delBackground(
-                                                conversation._id,
-                                                conversation.background._id,
-                                            );
-                                            if (res)
-                                                setConversation((pre) => {
-                                                    if (pre) return { ...pre, background: undefined };
-                                                    return pre;
-                                                });
+                                            const fileDed = await fileWorkerAPI.deleteFileImg([conversation.background.id]);
+                                            if (fileDed) {
+                                                const res: boolean = await chatAPI.delBackground(conversation._id);
+                                                if (res)
+                                                    setConversation((pre) => {
+                                                        if (pre) return { ...pre, background: undefined };
+                                                        return pre;
+                                                    });
+                                            }
                                         }
                                     }}
                                 >
@@ -488,9 +445,7 @@ const Conversation: React.FC<{
             },
             {
                 id: 3,
-                name:
-                    (balloon.some((b) => b === conversation?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') +
-                    conversationText.optionRoom.balloon,
+                name: (balloon.some((b) => b === conversation?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') + conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
                 color: '#e489a2',
                 onClick: () => {
@@ -505,9 +460,7 @@ const Conversation: React.FC<{
             },
             {
                 id: 4,
-                name: `${conversationText.optionRoom.move} ${
-                    moves.some((m) => m === conversation?._id || m === conversation?.user.id) ? ' stop' : ''
-                }`,
+                name: `${conversationText.optionRoom.move} ${moves.some((m) => m === conversation?._id || m === conversation?.user.id) ? ' stop' : ''}`,
                 icon: <MoveI />,
                 device: 'mobile',
                 onClick: () => {
@@ -575,10 +528,7 @@ const Conversation: React.FC<{
         } else {
             e.target.setAttribute('style', 'height: auto');
             if (e.key === 'Backspace') {
-                e.target.setAttribute(
-                    'style',
-                    `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`,
-                );
+                e.target.setAttribute('style', `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`);
             } else {
                 e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
             }
@@ -598,13 +548,7 @@ const Conversation: React.FC<{
             <Textarea placeholder="Change text" />
         </Div>,
     );
-    console.log(
-        writingBy,
-        'writingBy',
-        writingBy && writingBy.id === conversation?.user.id,
-        writingBy?.id,
-        conversation?.user.id,
-    );
+    console.log(writingBy, 'writingBy', writingBy && writingBy.id === conversation?.user.id, writingBy?.id, conversation?.user.id);
     const Dot: number[] = [];
     const eraser = useRef<number>(0);
 
@@ -642,7 +586,7 @@ const Conversation: React.FC<{
                 transition: all 0.5s linear;
                 background-blend-mode: soft-light;
                 ${conversation?.background
-                    ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${conversation?.background._id}); background-repeat: no-repeat;background-size: cover;`
+                    ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${conversation?.background.id}); background-repeat: no-repeat;background-size: cover;`
                     : ''}
 
                 @media (min-width: 500px) {
@@ -701,14 +645,7 @@ const Conversation: React.FC<{
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center;  cursor: var(--pointer);font-size: 30px; @media(min-width: 500px){ width: 30px; font-size: 25px;}"
                         onClick={() => {
                             if (del.current) {
-                                dispatch(
-                                    offChats(
-                                        chat.filter(
-                                            (c) =>
-                                                c.id_other !== conversation?.user.id && c.id_room !== conversation?._id,
-                                        ),
-                                    ),
-                                );
+                                dispatch(offChats(chat.filter((c) => c.id_other !== conversation?.user.id && c.id_room !== conversation?._id)));
 
                                 // del.current.remove();
                             }
@@ -806,18 +743,14 @@ const Conversation: React.FC<{
                         // const timePin = moment(conversation.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
                         let timeS = '';
                         const mn = moment(arr[index].createdAt); //show time for every day
-                        if (
-                            mn.diff(date1.current, 'days') < 1 &&
-                            date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')
-                        ) {
+                        if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
                             timeS = '------ ' + mn.locale(lg).format('LL') + ' ------';
                             date1.current = mn;
                         } else {
                             timeS = '';
                         }
 
-                        if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD'))
-                            timeS = '';
+                        if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD')) timeS = '';
                         console.log(timeS, 'Times', mn);
                         if (rc?.length && rc?.length > 0) {
                             if (writingBy && writingBy.length > 0)
@@ -934,19 +867,12 @@ const Conversation: React.FC<{
                         );
                     })}
 
-                    <Div
-                        width="100%"
-                        wrap="wrap"
-                        css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;"
-                    >
+                    <Div width="100%" wrap="wrap" css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;">
                         <Div
                             css="align-items: center; justify-content: center; padding: 3px 8px; background-color: #333333; border-radius: 8px; border: 1px solid #52504d; cursor: var(--pointer)"
                             onClick={handleProfile}
                         >
-                            <ProfileCircelI />{' '}
-                            <Hname css="margin: 0 5px; width: fit-content;">
-                                {conversationText.optionRoom.personal}
-                            </Hname>
+                            <ProfileCircelI /> <Hname css="margin: 0 5px; width: fit-content;">{conversationText.optionRoom.personal}</Hname>
                         </Div>
                     </Div>
                 </Div>
@@ -971,14 +897,7 @@ const Conversation: React.FC<{
                 >
                     {emoji && (
                         <div id="emojiCon" onClick={(e) => e.stopPropagation()}>
-                            <Picker
-                                locale="en"
-                                set="facebook"
-                                emojiVersion={14}
-                                data={dataEmoji}
-                                theme={colorBg === 1 ? 'dark' : 'light'}
-                                onEmojiSelect={handleEmojiSelect}
-                            />
+                            <Picker locale="en" set="facebook" emojiVersion={14} data={dataEmoji} theme={colorBg === 1 ? 'dark' : 'light'} onEmojiSelect={handleEmojiSelect} />
                         </div>
                     )}
                     <Div width="100%" wrap="wrap" css="position: relative; height: auto;">
@@ -1005,19 +924,13 @@ const Conversation: React.FC<{
                                             min-width: 79px;
                                             border-radius: 5px;
                                             border: 1px solid #4e4e4e;
-                                            ${uploadIn.pre.length === 1
-                                                ? 'width: 150px;'
-                                                : 'width: 79px; flex-grow: 1;'}
+                                            ${uploadIn.pre.length === 1 ? 'width: 150px;' : 'width: 79px; flex-grow: 1;'}
                                         `}
                                         onTouchMove={handleTouchMove}
                                         onTouchStart={handleTouchStart}
                                         onTouchEnd={handleTouchEnd}
                                     >
-                                        {item.type.search('image/') >= 0 ? (
-                                            <Img src={item.link} radius="5px" />
-                                        ) : (
-                                            <Player key={item.link} src={item.link} />
-                                        )}
+                                        {item.type.search('image/') >= 0 ? <Img src={item.link} radius="5px" /> : <Player key={item.link} src={item.link} />}
                                     </Div>
                                 ))}
                             </Div>
@@ -1054,19 +967,8 @@ const Conversation: React.FC<{
                                 `}
                             >
                                 <form method="post" encType="multipart/form-data" id="formss">
-                                    <input
-                                        id={conversation?._id + 'uploadCon'}
-                                        type="file"
-                                        name="file[]"
-                                        onChange={handleImageUpload}
-                                        multiple
-                                        hidden
-                                    />
-                                    <Label
-                                        htmlFor={conversation?._id + 'uploadCon'}
-                                        css="font-size: 22px;"
-                                        color={colorText}
-                                    >
+                                    <input id={conversation?._id + 'uploadCon'} type="file" name="file[]" onChange={handleImageUpload} multiple hidden />
+                                    <Label htmlFor={conversation?._id + 'uploadCon'} css="font-size: 22px;" color={colorText}>
                                         <CameraI />
                                     </Label>
                                 </form>
@@ -1106,14 +1008,7 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {opMore && conversation && (
-                    <MoreOption
-                        dataMore={dataMore}
-                        colorText={colorText}
-                        setOpMore={setOpMore}
-                        background={conversation.background}
-                    />
-                )}
+                {opMore && conversation && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} background={conversation.background} />}
             </DivResultsConversation>
         </DivConversation>
     );

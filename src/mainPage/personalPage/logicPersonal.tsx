@@ -42,6 +42,7 @@ export default function LogicView(
     setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>,
     index: number,
     AllArray: PropsUserPer[],
+    colorText: string,
 ) {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
@@ -89,12 +90,7 @@ export default function LogicView(
         if (data?.length > 0) {
             const file: File = data[0];
             if (file) {
-                if (
-                    file.type.includes('image/jpg') ||
-                    file.type.includes('image/jpeg') ||
-                    file.type.includes('image/png') ||
-                    file.type.includes('image/webp')
-                ) {
+                if (file.type.includes('image/jpg') || file.type.includes('image/jpeg') || file.type.includes('image/png') || file.type.includes('image/webp')) {
                     const img = URL.createObjectURL(file);
                     const sizeImage = Number((file.size / 1024 / 1024).toFixed(1));
                     if (sizeImage <= 8) {
@@ -108,16 +104,12 @@ export default function LogicView(
                         console.log(fileUploaded, 'fileUploaded');
                         const idF = fileUploaded[0].id;
                         if (idF) {
-                            const res = await userAPI.changesOne(
-                                userFirst.id,
-                                id === 0 ? { background: 'background' } : { avatar: 'avatar' },
-                                {
-                                    id_file: idF,
-                                    type: file.type,
-                                    name: file.name,
-                                    old_id: avBg,
-                                },
-                            );
+                            const res = await userAPI.changesOne(userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, {
+                                id_file: idF,
+                                type: file.type,
+                                name: file.name,
+                                old_id: avBg,
+                            });
                             const data = ServerBusy(res, dispatch);
                             if (data) {
                                 if (id === 0) {
@@ -158,11 +150,7 @@ export default function LogicView(
                 const fileUploaded = await fileWorkerAPI.deleteFileImg([avBg]);
                 if (fileUploaded) {
                     setLoading(true);
-                    const res = await userAPI.changesOne(
-                        userFirst.id,
-                        id === 0 ? { background: 'background' } : { avatar: 'avatar' },
-                        { id_file: avBg },
-                    );
+                    const res = await userAPI.changesOne(userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, { id_file: avBg });
                     const data = ServerBusy(res, dispatch);
                     if (data) {
                         setLoading(false);
@@ -690,11 +678,7 @@ export default function LogicView(
                 width: 100%;
                 margin: auto;
             }
-            ${
-                room.background
-                    ? 'position: fixed; width: 100%; height:  100% !important; background-color:#000000fa; top: 0; left: 0; z-index: 999; margin: 0;img{object-fit: contain;}'
-                    : ''
-            }
+            ${room.background ? 'position: fixed; width: 100%; height:  100% !important; background-color:#000000fa; top: 0; left: 0; z-index: 999; margin: 0;img{object-fit: contain;}' : ''}
             `;
     const cssName = ` 
             width: inherit;
@@ -738,6 +722,7 @@ export default function LogicView(
             padding: 7px 5px;
             font-size: 1.3rem;
             margin: 0 5px;
+            color:${colorText};
             background-color: #383838;
             @media(min-width: 678px){
                 font-size: 1.5rem;
@@ -823,18 +808,7 @@ export default function LogicView(
     } = {
         en: [
             {
-                name:
-                    userRequest !== userFirst.id
-                        ? level === 1
-                            ? 'Confirm'
-                            : level === 2
-                            ? 'Friend'
-                            : 'Add Friend'
-                        : level === 1
-                        ? 'Abolish'
-                        : level === 2
-                        ? 'Friend'
-                        : 'Add Friend',
+                name: userRequest !== userFirst.id ? (level === 1 ? 'Confirm' : level === 2 ? 'Friend' : 'Add Friend') : level === 1 ? 'Abolish' : level === 2 ? 'Friend' : 'Add Friend',
                 onClick: (e) =>
                     userRequest !== userFirst.id
                         ? level === 1
@@ -864,18 +838,7 @@ export default function LogicView(
         ],
         vi: [
             {
-                name:
-                    userRequest !== userFirst.id
-                        ? level === 1
-                            ? 'Chấp nhận'
-                            : level === 2
-                            ? 'Bạn bè'
-                            : 'Kêt bạn'
-                        : level === 1
-                        ? 'Thu hồi'
-                        : level === 2
-                        ? 'Bạn bè'
-                        : 'Kêt bạn',
+                name: userRequest !== userFirst.id ? (level === 1 ? 'Chấp nhận' : level === 2 ? 'Bạn bè' : 'Kêt bạn') : level === 1 ? 'Thu hồi' : level === 2 ? 'Bạn bè' : 'Kêt bạn',
                 onClick: (e) =>
                     userRequest !== userFirst.id
                         ? level === 1

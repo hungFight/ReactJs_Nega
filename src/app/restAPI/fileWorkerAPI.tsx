@@ -6,6 +6,7 @@ import httpFile from '~/utils/httpFile';
 class fileWorkerAPI {
     addFiles = async (formData: FormData): Promise<{ id: string; width?: string; height?: string; type: string; tail: string; title?: string; id_sort?: string; id_client: string }[]> => {
         try {
+            // file, title?, id_sort?, old_id?(to delete old file)
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.post(`/addFiles`, formData);
             return res.data;
@@ -14,7 +15,7 @@ class fileWorkerAPI {
             return errorHandling(err);
         }
     };
-    deleteFileImg = async (ids: string[]) => {
+    deleteFileImg = async (ids: string[]): Promise<boolean> => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.post<boolean>(`/deleteFileImg`, { ids });

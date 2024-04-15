@@ -161,9 +161,7 @@ function App() {
     const mm = useRef<{ index: number; id: string }[]>([]);
     const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { session } = useSelector((state: PropsReloadRD) => state.reload);
-    const userOnline = useSelector(
-        (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
-    );
+    const userOnline = useSelector((state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline);
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
     const [userFirst, setUserFirst] = useState<PropsUser>({
         id: '',
@@ -383,25 +381,11 @@ function App() {
                         }
                     `}
                 >
-                    {session || errorServer?.message ? (
-                        <ErrorBoundaries message={session || (errorServer?.message ?? '')} />
-                    ) : (
-                        ''
-                    )}
+                    {session || errorServer?.message ? <ErrorBoundaries message={session || (errorServer?.message ?? '')} /> : ''}
                     {/* {userFirst ? ( */}
                     <>
-                        <Website
-                            openProfile={openProfile.newProfile}
-                            dataUser={userFirst}
-                            setDataUser={setUserFirst}
-                            setId_chats={setId_chats}
-                        />
-                        <Message
-                            dataUser={userFirst}
-                            userOnline={userOnline}
-                            setId_chats={setId_chats}
-                            id_chats={id_chats}
-                        />
+                        <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} setId_chats={setId_chats} />
+                        <Message dataUser={userFirst} userOnline={userOnline} setId_chats={setId_chats} id_chats={id_chats} />
                         {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
                         <Div
                             width="240px"
@@ -423,11 +407,7 @@ function App() {
                                 <Div css="position: relative; width: inherit;">
                                     {id_chats?.map((room, index) => {
                                         const permanent = { index: index + 1, id: room.id_room || room.id_other };
-                                        if (
-                                            chats.some(
-                                                (c) => c.id_room === room.id_room && c.id_other === room.id_other,
-                                            )
-                                        )
+                                        if (chats.some((c) => c.id_room === room.id_room && c.id_other === room.id_other))
                                             return (
                                                 <Conversation
                                                     conversationText={ConversationText[lg]}
@@ -454,14 +434,7 @@ function App() {
                                 </Div>
                             </Div>
                         )}
-                        <Balloon
-                            userFirst={userFirst}
-                            colorText={colorText}
-                            balloon={balloon}
-                            setId_chats={setId_chats}
-                            dispatch={dispatch}
-                            established={established}
-                        />
+                        <Balloon userFirst={userFirst} colorText={colorText} balloon={balloon} setId_chats={setId_chats} dispatch={dispatch} established={established} />
                         {loading && (
                             <Div
                                 width="100%"
@@ -482,14 +455,7 @@ function App() {
                             </Div>
                         )}
                         {userData?.length > 0 && (
-                            <DivContainer
-                                width="100%"
-                                height="99%"
-                                css={css}
-                                bg={`${colorBg === 1 ? '#272727' : 'white'}`}
-                                content={leng === 1 ? 'center' : 'start'}
-                                display="flex"
-                            >
+                            <DivContainer width="100%" height="99%" css={css} bg={`${colorBg === 1 ? '#272727' : 'white'}`} content={leng === 1 ? 'center' : 'start'} display="flex">
                                 {userData?.length > 1 && (
                                     <Div
                                         css={`
@@ -510,14 +476,7 @@ function App() {
                                         {userData.map((rs) => {
                                             return (
                                                 <A key={rs.id} href={`#profiles${rs.id}`}>
-                                                    <Avatar
-                                                        src={rs.avatar}
-                                                        alt={rs.fullName}
-                                                        gender={rs.gender}
-                                                        radius="50%"
-                                                        id={userId}
-                                                        css=" width: 40px; height: 40px; cursor: var(--pointer);"
-                                                    />
+                                                    <Avatar src={rs.avatar} alt={rs.fullName} gender={rs.gender} radius="50%" id={userId} css=" width: 40px; height: 40px; cursor: var(--pointer);" />
                                                 </A>
                                             );
                                         })}
@@ -541,14 +500,7 @@ function App() {
                                     />
                                 ))}
 
-                                <DivPos
-                                    position="absolute"
-                                    size="30px"
-                                    top="15px"
-                                    right="15px"
-                                    color={colorText}
-                                    onClick={handleClick}
-                                >
+                                <DivPos position="absolute" size="30px" top="15px" right="15px" color={colorText} onClick={handleClick}>
                                     <UndoI />
                                 </DivPos>
                             </DivContainer>
@@ -577,11 +529,7 @@ function App() {
                 />
             }
         >
-            <Authentication
-                setUserFirst={setUserFirst}
-                dataLogin={{ en: login.en, vi: login.vi }}
-                dataRegister={{ vi: register.vi, en: register.en }}
-            />
+            <Authentication setUserFirst={setUserFirst} dataLogin={{ en: login.en, vi: login.vi }} dataRegister={{ vi: register.vi, en: register.en }} />
         </Suspense>
     );
 }

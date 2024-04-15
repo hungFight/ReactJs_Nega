@@ -38,20 +38,7 @@ interface PropsPer {
     handleCheck: React.MutableRefObject<boolean>;
 }
 
-const PersonalPage: React.FC<PropsPer> = ({
-    AllArray,
-    setUsersData,
-    user,
-    leng = 1,
-    index,
-    colorText,
-    colorBg,
-    online,
-    userFirst,
-    setUserFirst,
-    setId_chats,
-    handleCheck,
-}) => {
+const PersonalPage: React.FC<PropsPer> = ({ AllArray, setUsersData, user, leng = 1, index, colorText, colorBg, online, userFirst, setUserFirst, setId_chats, handleCheck }) => {
     const [editTitle, setEditTitle] = useState<boolean>(false);
     const {
         edit,
@@ -93,7 +80,7 @@ const PersonalPage: React.FC<PropsPer> = ({
         loads,
         setMore,
         more,
-    } = LogicView(user, userFirst, setUserFirst, leng, online, setId_chats, setUsersData, index, AllArray);
+    } = LogicView(user, userFirst, setUserFirst, leng, online, setId_chats, setUsersData, index, AllArray, colorText);
     console.log(colorText, 'colorText');
 
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {
@@ -136,15 +123,7 @@ const PersonalPage: React.FC<PropsPer> = ({
             }}
         >
             {(room.background || room.avatar) && (
-                <DivPos
-                    position="fixed"
-                    size="30px"
-                    top="20px"
-                    right="12px"
-                    css="z-index: 1;"
-                    index={8888}
-                    onClick={() => setRoom({ avatar: false, background: false })}
-                >
+                <DivPos position="fixed" size="30px" top="20px" right="12px" css="z-index: 1;" index={8888} onClick={() => setRoom({ avatar: false, background: false })}>
                     <UndoI />
                 </DivPos>
             )}
@@ -179,13 +158,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                             setRoom({ ...room, avatar: !room.avatar });
                         }}
                     >
-                        <Avatar
-                            src={user.avatar}
-                            alt={user.fullName}
-                            gender={user?.gender}
-                            radius="50%"
-                            css="z-index: 1; cursor: var(--pointerM);"
-                        />
+                        <Avatar src={user.avatar} alt={user.fullName} gender={user?.gender} radius="50%" css="z-index: 1; cursor: var(--pointerM);" />
                         {loading && (
                             <DivLoading
                                 css={`
@@ -287,10 +260,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                                 >
                                     <HeartMI />
                                 </Div>
-                                <P
-                                    z="26px"
-                                    css="position: absolute;  color: #7c8787; right: 13px; z-index: 6; top: -17px;"
-                                >
+                                <P z="26px" css="position: absolute;  color: #7c8787; right: 13px; z-index: 6; top: -17px;">
                                     .
                                 </P>
                             </DivPos>
@@ -301,9 +271,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                             size="25px"
                             right="0"
                             css={`
-                                ${edit
-                                    ? 'width: 50px; background-color: #383838; border-radius: 5px !important; border: 1px solid #4b4848;'
-                                    : ''};
+                                ${edit ? 'width: 50px; background-color: #383838; border-radius: 5px !important; border: 1px solid #4b4848;' : ''};
                                 width: 50px;
                                 top: 27px;
                                 background-color: #383838;
@@ -330,13 +298,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                                     setEdit={setEdit}
                                 />
                             ) : (
-                                <SettingOtherProfile
-                                    editP={editDataTextOther[lg]}
-                                    setEdit={setEdit}
-                                    AllArray={AllArray}
-                                    userId={user.id}
-                                    colorText={colorText}
-                                />
+                                <SettingOtherProfile editP={editDataTextOther[lg]} setEdit={setEdit} AllArray={AllArray} userId={user.id} colorText={colorText} />
                             )}
                         </>
                     )}
@@ -370,11 +332,7 @@ const PersonalPage: React.FC<PropsPer> = ({
                         </Buttons>
                     </Div>
                 )}
-                <P
-                    color={colorText}
-                    css="width: 100%; padding: 10px; @media (min-width: 600px) {font-size: 1.3rem;}"
-                    z="1.2rem"
-                >
+                <P color={colorText} css="width: 100%; padding: 10px; @media (min-width: 600px) {font-size: 1.3rem;}" z="1.2rem">
                     {errText}
                 </P>
                 {user.id !== userFirst.id && (

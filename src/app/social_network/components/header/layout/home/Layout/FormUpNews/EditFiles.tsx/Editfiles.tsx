@@ -26,6 +26,8 @@ const EditFiles: React.FC<{
     const handleAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const { upLoad } = await handleFileUpload(e.target.files, 10, 8, 15, dispatch, 'chat', true);
+            console.log(upLoad, 'upLoad');
+
             const filUp: PropsDataFileUpload[] = [];
             for (let i = 0; i < upLoad.length; i++) {
                 filUp.push({
@@ -38,6 +40,7 @@ const EditFiles: React.FC<{
                 });
             }
             setUploadPre((pre) => [...pre, ...filUp]);
+            e.target.value = '';
         }
     };
     return (
@@ -56,10 +59,7 @@ const EditFiles: React.FC<{
         >
             <Div width="100%" display="block">
                 <Div width="100%" css="justify-content: center; position: relative; margin-top: 10px;">
-                    <Div
-                        css="position: absolute; cursor: var(--pointer); top: 1px; left: 20px;font-size: 22px; padding: 5px;"
-                        onClick={() => setEditFile(false)}
-                    >
+                    <Div css="position: absolute; cursor: var(--pointer); top: 1px; left: 20px;font-size: 22px; padding: 5px;" onClick={() => setEditFile(false)}>
                         <UndoIRegister />
                     </Div>
                     <Div
@@ -84,10 +84,7 @@ const EditFiles: React.FC<{
                     >
                         <SortFileI /> <P z="1.3rem">Sắp xếp</P>
                     </Div>
-                    <Div
-                        width="fit-content"
-                        css="position: relative; align-items: center; padding: 5px 10px; border-radius: 5px; background-color: #004262;"
-                    >
+                    <Div width="fit-content" css="position: relative; align-items: center; padding: 5px 10px; border-radius: 5px; background-color: #004262;">
                         <UpLoadForm
                             submit={handleAddFile}
                             id="addMoreFileAtEditorPreview"
@@ -95,10 +92,7 @@ const EditFiles: React.FC<{
                             children={
                                 <Div css="align-items: center;">
                                     <P z="1.3rem">Thêm</P>
-                                    <Div
-                                        width="50px"
-                                        css="font-size: 20px; justify-content: space-around; margin-left: 5px;"
-                                    >
+                                    <Div width="50px" css="font-size: 20px; justify-content: space-around; margin-left: 5px;">
                                         <ImageI />
                                         <VideoI />
                                     </Div>
@@ -109,23 +103,13 @@ const EditFiles: React.FC<{
                 </Div>
 
                 {process === 'sort' && ( // show file to sort
-                    <Div
-                        width="100%"
-                        display="block"
-                        css="position: absolute; z-index: 7; height: 100%; top: 0; left: 0; background-color: #131313db;"
-                    >
+                    <Div width="100%" display="block" css="position: absolute; z-index: 7; height: 100%; top: 0; left: 0; background-color: #131313db;">
                         <Div css="position: relative;">
-                            <Div
-                                css="position: absolute; cursor: var(--pointer); top: 9px; left: 20px;font-size: 22px; padding: 5px;"
-                                onClick={() => setProcess('')}
-                            >
+                            <Div css="position: absolute; cursor: var(--pointer); top: 9px; left: 20px;font-size: 22px; padding: 5px;" onClick={() => setProcess('')}>
                                 <UndoIRegister />
                             </Div>
                         </Div>
-                        <Div
-                            width="fit-content"
-                            css=" align-items: center;  margin: auto; margin-top: 11px; padding: 5px 10px; border-radius: 5px; background-color: #004262;"
-                        >
+                        <Div width="fit-content" css=" align-items: center;  margin: auto; margin-top: 11px; padding: 5px 10px; border-radius: 5px; background-color: #004262;">
                             <SortFileI /> <P z="1.3rem">Sắp xếp</P>
                         </Div>
                         {sortData.length > 0 ? (
@@ -146,15 +130,12 @@ const EditFiles: React.FC<{
                                                 setChosen((pre) => pre.filter((r) => r !== f.id_pre));
                                             }}
                                         >
-                                            <Div
-                                                width="100%"
-                                                css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;"
-                                            >
+                                            <Div width="100%" css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;">
                                                 {' '}
                                                 <Img
-                                                    src={f?.link}
+                                                    src={f?.pre}
                                                     id="baby"
-                                                    alt={f?.link}
+                                                    alt={f?.pre}
                                                     css={`
                                                         z-index: -1;
                                                         position: absolute;
@@ -165,14 +146,9 @@ const EditFiles: React.FC<{
                                                     `}
                                                 />
                                                 {f?.type.includes('image') ? (
-                                                    <Img
-                                                        src={f?.link}
-                                                        id="baby"
-                                                        alt={f?.link}
-                                                        css="object-fit: contain;"
-                                                    />
+                                                    <Img src={f?.pre} id="baby" alt={f?.pre} css="object-fit: contain;" />
                                                 ) : f?.type.includes('video') ? (
-                                                    <Player src={f?.link || f.pre} step={step} />
+                                                    <Player src={f?.link ?? f.pre} step={step} />
                                                 ) : (
                                                     ''
                                                 )}
@@ -252,10 +228,7 @@ const EditFiles: React.FC<{
                                         {chosen.includes(f.id_sort) && <CheckI />}
                                     </Div>
 
-                                    <Div
-                                        width="100%"
-                                        css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;"
-                                    >
+                                    <Div width="100%" css="height: 60px; position:relative; overflow: hidden; z-index: 5;  border-radius: 5px;">
                                         {' '}
                                         <Img
                                             src={f?.link}
@@ -271,12 +244,7 @@ const EditFiles: React.FC<{
                                             `}
                                         />
                                         {f?.type.includes('image') ? (
-                                            <Img
-                                                src={f?.link || f.pre}
-                                                id="baby"
-                                                alt={f?.title || f?.link}
-                                                css="object-fit: contain;"
-                                            />
+                                            <Img src={f?.link || f.pre} id="baby" alt={f?.title || f?.link} css="object-fit: contain;" />
                                         ) : f?.type.includes('video') ? (
                                             <Player src={f?.link || f.pre} step={step} />
                                         ) : (
@@ -290,23 +258,9 @@ const EditFiles: React.FC<{
                 )}
 
                 <Div css="height: 100%;">
-                    <Div
-                        width="100%"
-                        wrap="wrap"
-                        css="max-height: 87%; height: fit-content; padding: 5px 0 20px; justify-content: center; overflow-y: overlay;"
-                    >
+                    <Div width="100%" wrap="wrap" css="max-height: 87%; height: fit-content; padding: 5px 0 20px; justify-content: center; overflow-y: overlay;">
                         {file.map((f, index) => (
-                            <AllFIlesEdited
-                                key={index}
-                                file={file}
-                                coordS={coordS}
-                                colorText={colorText}
-                                index={index}
-                                f={f}
-                                chosen={chosen}
-                                step={step}
-                                setUploadPre={setUploadPre}
-                            />
+                            <AllFIlesEdited key={index} file={file} coordS={coordS} colorText={colorText} index={index} f={f} chosen={chosen} step={step} setUploadPre={setUploadPre} />
                         ))}
                     </Div>
                 </Div>

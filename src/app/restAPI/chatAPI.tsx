@@ -1,9 +1,4 @@
-import {
-    PropsChat,
-    PropsConversationCustoms,
-    PropsImageOrVideos,
-    PropsRoom,
-} from '~/Message/Messenger/Conversation/LogicConver';
+import { PropsChat, PropsConversationCustoms, PropsImageOrVideos, PropsRoom } from '~/Message/Messenger/Conversation/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
@@ -32,13 +27,7 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    getChat = async (
-        id_chat: PropsId_chats,
-        limit: number,
-        offset: number,
-        moreChat: boolean = false,
-        id_room?: string,
-    ) => {
+    getChat = async (id_chat: PropsId_chats, limit: number, offset: number, moreChat: boolean = false, id_room?: string) => {
         console.log(id_room, 'id_room', moreChat);
 
         try {
@@ -196,20 +185,20 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    setBackground = async (formData: FormData) => {
+    setBackground = async (data: { latestChatId: string; id_file: { id: string; type: string }; conversationId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/setBackground', formData);
+            const res = await Axios.post<PropsChat>('/messenger/setBackground', { ...data });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
             return errorHandling(err);
         }
     };
-    delBackground = async (conversationId: string, id_file: string) => {
+    delBackground = async (conversationId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/delBackground', { conversationId, id_file: [id_file] });
+            const res = await Axios.post('/messenger/delBackground', { conversationId });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

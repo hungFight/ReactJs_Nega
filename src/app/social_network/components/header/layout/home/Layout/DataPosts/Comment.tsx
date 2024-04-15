@@ -30,7 +30,8 @@ const Comment: React.FC<{
     colorText: string;
     you: PropsUser;
     dataPost?: PropsDataPosts;
-}> = ({ anony, setShowComment, colorText, you, dataPost }) => {
+    setDD?: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ anony, setShowComment, colorText, you, dataPost, setDD }) => {
     const anonymousIndex = 'anonymousComment';
     const offset = useRef<number>(0);
     const limit = 15;
@@ -41,7 +42,6 @@ const Comment: React.FC<{
     const tagDivURL = useRef<HTMLDivElement | null>(null);
     const [insertURL, setInsertURL] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>('');
-
     const [anonymous, setAnonymous] = useState<boolean>(false);
     const activate = you.gender === 0 ? 'anonymousMale' : you.gender === 1 ? 'anonymousFemale' : '';
     const [reply, setReply] = useState<{ id: string; name: string; id_user: string; title: string; text: string; file?: string }[]>([]);
@@ -49,6 +49,7 @@ const Comment: React.FC<{
     const [onAc, setOnAC] = useState<boolean>(false);
     const handleAnonymousComment = () => {
         setAnonymous(!anonymous);
+        if (setDD) setDD('525');
     };
     const { lg } = Languages();
     const noData = useRef<boolean>(false);
@@ -84,11 +85,11 @@ const Comment: React.FC<{
     useEffect(() => {
         socket.on(`comment_post_${dataPost?._id}`, (data) => {
             if (data) {
-                console.log(data);
-                if (you.id !== data?.id_user) {
-                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: PropsComments[] | undefined) => {
+                console.log(data, you.id, 'yeee');
+                if (you.id !== data?.data[0]?.id_user) {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: { comments: PropsComments[] } | undefined) => {
                         // Update the data by adding newValue to the existing data
-                        prevData?.map((p) => {
+                        prevData?.comments.map((p) => {
                             if (p._id === data._id) {
                                 p.count = data.count;
                                 p.full = data.full;
@@ -114,9 +115,9 @@ const Comment: React.FC<{
                 };
                 const newValue = await postAPI.sendComment({ postId: dataPost._id, text: reply_com.text, anonymousC: onAc, emos, commentId: reply_com.id, repliedId: reply_com.id_user });
                 if (newValue) {
-                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: PropsComments[] | undefined) => {
+                    queryClient.setQueryData(['Comment', dataPost?._id], (prevData: { comments: PropsComments[] } | undefined) => {
                         // Update the data by adding newValue to the existing data
-                        prevData?.map((p) => {
+                        prevData?.comments.map((p) => {
                             if (p._id === newValue._id) {
                                 p.count = newValue.count;
                                 p.full = newValue.full;
@@ -132,8 +133,7 @@ const Comment: React.FC<{
                     const emos = {
                         act: dataPost.feel.act,
                         onlyEmo: dataPost.feel.onlyEmo.map((r) => {
-                            r.id_user = [];
-                            return r;
+                            return { ...r, id_user: [] };
                         }),
                     };
                     const newValue = await postAPI.sendComment({ postId: dataPost._id, text: inputValue, anonymousC: onAc, emos });

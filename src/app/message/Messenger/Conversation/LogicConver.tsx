@@ -70,6 +70,13 @@ export interface PropsItemRoom {
 export interface PropsRoom {
     room: PropsItemRoom;
 }
+export interface PropsBackground_chat {
+    v: string;
+    type: string;
+    id: string;
+    userId: string;
+    latestChatId: string;
+}
 export interface PropsConversationCustoms {
     _id: string;
     id_us: string[];
@@ -87,7 +94,7 @@ export interface PropsConversationCustoms {
         gender: number;
     }[];
     status: string;
-    background?: { v: string; type: string; _id: string; userId: string; latestChatId: string };
+    background?: PropsBackground_chat;
     pins: PropsPinC[];
     deleted: {
         id: string;
@@ -131,12 +138,7 @@ export function regexCus(val: string): string {
         getMatches(urlRegex, val);
         hashs.map((u) => {
             const protoType = u.split(/#|#@/);
-            val = val.replace(
-                u,
-                `<a href='/sn/hashTags/${
-                    '#' + protoType[1]
-                }' class='regexCus' style="color: #68b1f1;text-decoration: underline;">${'#' + protoType[1]}</a>`,
-            );
+            val = val.replace(u, `<a href='/sn/hashTags/${'#' + protoType[1]}' class='regexCus' style="color: #68b1f1;text-decoration: underline;">${'#' + protoType[1]}</a>`);
         });
     }
     return val;
@@ -186,10 +188,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     //     console.log('date1 is after date2');
     // }
     const { data } = useQuery({
-        queryKey: [
-            `getActiveStatus: ${conversation?.user.id}`,
-            userOnline.includes(conversation?.user.id ?? 'default'),
-        ],
+        queryKey: [`getActiveStatus: ${conversation?.user.id}`, userOnline.includes(conversation?.user.id ?? 'default')],
         staleTime: 60 * 1000,
         queryFn: async () => {
             const res = await userAPI.getActiveStatus(conversation?.user.id);
@@ -217,11 +216,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                             if (newData.data.text)
                                 t.text.t = decrypt(
                                     newData.data.text,
-                                    `chat_${
-                                        conversation?.room.filter((r) => r._id === t._id)[0]?.secondary
-                                            ? conversation?.room.filter((r) => r._id === t._id)[0]?.secondary
-                                            : conversation?._id
-                                    }`,
+                                    `chat_${conversation?.room.filter((r) => r._id === t._id)[0]?.secondary ? conversation?.room.filter((r) => r._id === t._id)[0]?.secondary : conversation?._id}`,
                                 );
                         }
                         return t;
@@ -255,18 +250,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 const modifiedData: PropsConversationCustoms & PropsRooms = { ...dataC };
                 modifiedData.room?.map((rr: PropsItemRoom, index1: number) => {
                     if (rr.text.t) {
-                        modifiedData.room[index1].text.t = decrypt(
-                            rr.text.t,
-                            `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
-                        );
+                        modifiedData.room[index1].text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : modifiedData._id}`);
                         modifiedData.room[index1].text.t = regexCus(modifiedData.room[index1].text.t);
                     }
                     if (rr?.reply && modifiedData.room[index1].reply) {
                         if (rr.reply.text) {
-                            modifiedData.room[index1].reply.text = decrypt(
-                                rr.reply?.text,
-                                `chat_${rr.secondary ? rr.secondary : modifiedData._id}`,
-                            );
+                            modifiedData.room[index1].reply.text = decrypt(rr.reply?.text, `chat_${rr.secondary ? rr.secondary : modifiedData._id}`);
                         }
                     }
                     //     rr.imageOrVideos.map(
@@ -305,9 +294,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         }
         setLoading(false);
     };
-    const code = `${
-        conversation?._id ? conversation._id + '-' + conversation?.user.id : conversation?.user.id + '-' + id_you
-    }phrase_chatRoom`;
+    const code = `${conversation?._id ? conversation._id + '-' + conversation?.user.id : conversation?.user.id + '-' + id_you}phrase_chatRoom`;
     useEffect(() => {
         console.log('eeeee');
         if (code && conversation) {
@@ -317,87 +304,75 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     return pre;
                 });
             });
-            socket.on(
-                `conversation_changeBG_room_${conversation._id}`,
-                async (dataBG: { type: string; v: string; _id: string; userId: string; latestChatId: string }) => {
-                    if (dataBG && dataBG.userId !== id_you) {
-                        setConversation((pre) => {
-                            if (pre) return { ...pre, background: dataBG };
-                            return pre;
-                        });
-                    }
-                },
-            );
-
-            socket.on(
-                `Conversation_chat_deleteAll_${conversation._id}`,
-                (deleteData: { chatId: string; userId: string; updatedAt: string }) => {
-                    if (deleteData && deleteData.userId !== id_you) {
-                        setConversation((pre) => {
-                            if (pre)
-                                return {
-                                    ...pre,
-                                    room: pre.room.map((r) => {
-                                        if (r._id === deleteData.chatId) {
-                                            r.text.t = '';
-                                            r.imageOrVideos = [];
-                                            r.delete = 'all';
-                                            r.updatedAt = deleteData.updatedAt;
-                                        }
-                                        return r;
-                                    }),
-                                };
-                            return pre;
-                        });
-                    }
-                },
-            );
-            socket.on(
-                `Conversation_chat_update_${conversation._id}`,
-                async (updateData: { chatId: string; data: PropsItemRoom; userId: string }) => {
-                    console.log(updateData, 'updateData');
-                    upPin.mutate({
-                        _id: conversation._id,
-                        chatId: updateData.chatId,
-                        data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
+            socket.on(`conversation_changeBG_room_${conversation._id}`, async (dataBG: PropsBackground_chat) => {
+                if (dataBG && dataBG.userId !== id_you) {
+                    setConversation((pre) => {
+                        if (pre) return { ...pre, background: dataBG };
+                        return pre;
                     });
-                    if (updateData.userId !== id_you && conversation) {
-                        const newR: PropsItemRoom = await new Promise(async (resolve, reject) => {
-                            const d = updateData.data;
-                            if (d.text.t) {
-                                d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);
-                                d.text.t = regexCus(d.text.t);
-                            }
+                }
+            });
 
-                            resolve(d);
-                        });
-                        setConversation((pre) => {
-                            if (pre)
-                                return {
-                                    ...pre,
-                                    room: pre.room.map((r) => {
-                                        if (r._id === updateData.chatId) {
-                                            r = newR;
-                                        }
-                                        return r;
-                                    }),
-                                };
-                            return pre;
-                        });
-                    }
-                },
-            );
+            socket.on(`Conversation_chat_deleteAll_${conversation._id}`, (deleteData: { chatId: string; userId: string; updatedAt: string }) => {
+                if (deleteData && deleteData.userId !== id_you) {
+                    setConversation((pre) => {
+                        if (pre)
+                            return {
+                                ...pre,
+                                room: pre.room.map((r) => {
+                                    if (r._id === deleteData.chatId) {
+                                        r.text.t = '';
+                                        r.imageOrVideos = [];
+                                        r.delete = 'all';
+                                        r.updatedAt = deleteData.updatedAt;
+                                    }
+                                    return r;
+                                }),
+                            };
+                        return pre;
+                    });
+                }
+            });
+            socket.on(`Conversation_chat_update_${conversation._id}`, async (updateData: { chatId: string; data: PropsItemRoom; userId: string }) => {
+                console.log(updateData, 'updateData');
+                upPin.mutate({
+                    _id: conversation._id,
+                    chatId: updateData.chatId,
+                    data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
+                });
+                if (updateData.userId !== id_you && conversation) {
+                    const newR: PropsItemRoom = await new Promise(async (resolve, reject) => {
+                        const d = updateData.data;
+                        if (d.text.t) {
+                            d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);
+                            d.text.t = regexCus(d.text.t);
+                        }
+
+                        resolve(d);
+                    });
+                    setConversation((pre) => {
+                        if (pre)
+                            return {
+                                ...pre,
+                                room: pre.room.map((r) => {
+                                    if (r._id === updateData.chatId) {
+                                        r = newR;
+                                    }
+                                    return r;
+                                }),
+                            };
+                        return pre;
+                    });
+                }
+            });
 
             socket.on(`phrase_chatRoom_response_${conversation._id}_${id_you}`, (res) => {
                 console.log('in_roomChat_personal_receive_and_saw con');
                 setWch(res);
             });
-            socket.on(
-                `user_${conversation?.user.id}_in_roomChat_${conversation._id}_personal_receive`,
-                (res: { length: number; id: string }) => {
-                    setWritingBy(res);
-                },
-            );
+            socket.on(`user_${conversation?.user.id}_in_roomChat_${conversation._id}_personal_receive`, (res: { length: number; id: string }) => {
+                setWritingBy(res);
+            });
             socket.on(code, async (d: string) => {
                 const { id, data }: { id: string; data: PropsRoomChat } = JSON.parse(d);
                 const codeS = `user_${id}_in_roomChat_personal_receive_and_saw`;
@@ -411,10 +386,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 const newD: any = await new Promise(async (resolve, reject) => {
                     if (data.room?.reply) {
                         if (data.room.reply.text) {
-                            data.room.reply.text = decrypt(
-                                data.room.reply?.text,
-                                `chat_${data.room.secondary ? data.room.secondary : data._id}`,
-                            );
+                            data.room.reply.text = decrypt(data.room.reply?.text, `chat_${data.room.secondary ? data.room.secondary : data._id}`);
                         }
                     }
                     resolve(data.room);

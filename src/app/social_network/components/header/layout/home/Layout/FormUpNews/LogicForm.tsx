@@ -135,6 +135,7 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         } else {
             dispatch(setTrueErrorServer(`You can only select ${fileAmount} file at most!`));
         }
+        e.target.value = '';
         setLoading(false);
     };
 

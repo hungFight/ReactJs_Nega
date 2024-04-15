@@ -2,6 +2,7 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsDataMoreConversation } from './Conversation/Conversation';
+import { PropsBackground_chat } from './Conversation/LogicConver';
 
 const MoreOption: React.FC<{
     dataMore: PropsDataMoreConversation;
@@ -16,13 +17,7 @@ const MoreOption: React.FC<{
         }>
     >;
     setOpMore?: React.Dispatch<React.SetStateAction<boolean>>;
-    background?: {
-        v: string;
-        type: string;
-        _id: string;
-        userId: string;
-        latestChatId: string;
-    };
+    background?: PropsBackground_chat;
 }> = ({ dataMore, colorText, setMoreBar, setOpMore, background }) => {
     return (
         <DivPos
@@ -68,9 +63,7 @@ const MoreOption: React.FC<{
                     background-position: center;
                     transition: all 0.5s linear;
                     background-blend-mode: soft-light;
-                    ${background
-                        ? `background-image: url(${background.v}); background-repeat: no-repeat;background-size: cover;`
-                        : ''}
+                    ${background ? `background-image: url(${background.v}); background-repeat: no-repeat;background-size: cover;` : ''}
                     @keyframes chatMoveOP {
                         0% {
                             bottom: -436px;
@@ -84,17 +77,8 @@ const MoreOption: React.FC<{
                 onClick={(e) => e.stopPropagation()}
             >
                 <Div wrap="wrap" css="justify-content: center; padding: 5px; border-bottom: 1px solid #444848cc;">
-                    <Avatar
-                        src={dataMore.avatar}
-                        alt={dataMore.fullName}
-                        gender={dataMore.gender}
-                        css="width: 45px; height: 45px; margin-bottom: 5px;"
-                        radius="50%"
-                    />
-                    <P
-                        z="1.7rem"
-                        css="width: 100%; text-align: center; @media(min-width: 768px){font-weight: 600; font-size: 1.6rem}"
-                    >
+                    <Avatar src={dataMore.avatar} alt={dataMore.fullName} gender={dataMore.gender} css="width: 45px; height: 45px; margin-bottom: 5px;" radius="50%" />
+                    <P z="1.7rem" css="width: 100%; text-align: center; @media(min-width: 768px){font-weight: 600; font-size: 1.6rem}">
                         {dataMore.fullName}
                     </P>
                 </Div>
@@ -107,9 +91,7 @@ const MoreOption: React.FC<{
                             padding: 8px 7px;
                             cursor: var(--pointer);
                             ${item?.load ? 'cursor: no-drop' : ''};
-                            ${item?.device === 'mobile'
-                                ? 'display: none; @media(min-width: 768px){display: flex;}'
-                                : ''}
+                            ${item?.device === 'mobile' ? 'display: none; @media(min-width: 768px){display: flex;}' : ''}
                         `}
                         onClick={(e) => {
                             e.stopPropagation();

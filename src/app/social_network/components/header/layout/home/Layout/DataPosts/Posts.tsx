@@ -19,15 +19,13 @@ import Comment from './Comment';
 import { queryClient } from 'src';
 
 const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options, setOptions, setFormThat, form, setShowComment, showComment }) => {
-    const [dataPost, setDataPost] = useState<PropsDataPosts>(dataP);
-    if (!dataPost.user.length || dataPost.user[0]?.id === "It's me") dataPost.user[0] = user;
+    const dataPostRef = useRef<PropsDataPosts>(dataP);
+    if (!dataPostRef.current.user.length || dataPostRef.current.user[0]?.id === "It's me") dataPostRef.current.user[0] = user;
     const [d, setD] = useState<string>('');
     const { lg } = Languages();
-    const { userId } = Cookies();
     const [actImotion, setActImotion] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
-    const textA = useRef<any>();
-    // const avatar = CommonUtils.convertBase64(dataPost.user[0].avatar);
+    // const avatar = CommonUtils.convertBase64(dataPostRef.current.user[0].avatar);
     let timeS: any;
     const handleShowI = (e: any) => {
         const divConstant = document.getElementById('emoBarPost');
@@ -51,19 +49,19 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
     const handleClearI = () => {
         clearTimeout(timeS);
     };
-    console.log(dataPost, 'dataPost', showComment, d);
-    const createdAt = moment(dataPost.createdAt).format('LLLL');
-    const fromNow = moment(moment(dataPost.createdAt).format('HH:mm:ss DD-MM-YYYY'), 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
+    console.log(dataPostRef, 'dataPost', showComment, d);
+    const createdAt = moment(dataPostRef.current.createdAt).format('LLLL');
+    const fromNow = moment(moment(dataPostRef.current.createdAt).format('HH:mm:ss DD-MM-YYYY'), 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
     useEffect(() => {
         if (showComment) {
-            const divElement = document.getElementById(`${dataPost._id}_postScrolledUpAway`); // Replace 'Div' with the appropriate selector for your <Div> element
+            const divElement = document.getElementById(`${dataPostRef.current._id}_postScrolledUpAway`); // Replace 'Div' with the appropriate selector for your <Div> element
             if (divElement) {
                 const observer = new IntersectionObserver(
                     (entries) => {
                         console.log(entries, 'entries');
                         entries.forEach((entry) => {
                             if (!entry.isIntersecting) {
-                                if (showComment === dataPost._id && showComment) setShowComment('');
+                                if (showComment === dataPostRef.current._id && showComment) setShowComment('');
                             }
                         });
                     },
@@ -112,60 +110,59 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
     //     ),
     //     <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     // ];
-    const emo = dataPost.feel.onlyEmo.find((o) => o.id_user.includes(user.id));
-    console.log(emo, 'emo');
+    const emo = dataPostRef.current.feel.onlyEmo.find((o) => o.id_user.includes(user.id));
+    console.log(emo, 'emo', dataPostRef.current.feel.onlyEmo);
     let amount = 0;
-    dataPost.feel.onlyEmo.map((r) => {
+    dataPostRef.current.feel.onlyEmo.forEach((r) => {
         amount += r.id_user.length;
     }, {});
-    const fa = dataPost.feel.onlyEmo;
-    const sortEmo = fa.sort((a, b) => b.id_user.length - a.id_user.length);
-    const showCM = showComment === dataPost._id;
+    const sortEmo = dataPostRef.current.feel.onlyEmo.sort((a, b) => b.id_user.length - a.id_user.length);
+    const showCM = showComment === dataPostRef.current._id;
     const handleEmo = async (e: any) => {
         e.stopPropagation();
         const divConstant = document.getElementById('emoBarPost');
         console.log('above');
         let check = false;
-        let oldData = dataPost.feel;
+        let oldData = dataPostRef.current.feel;
         if (divConstant) divConstant.setAttribute('style', 'display: none');
-        dataPost.feel.onlyEmo.forEach((o) => {
+        dataPostRef.current.feel.onlyEmo.forEach((o) => {
             if (o.id_user.includes(user.id)) check = true;
         });
         setD('1');
         if (check) {
             queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
                 return preData?.map((p) => {
-                    if (p._id === dataPost._id) {
+                    if (p._id === dataPostRef.current._id) {
                         p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                             o.id_user = o.id_user.filter((u) => u !== user.id);
                             return o;
                         });
-                        dataPost.feel.onlyEmo = p.feel.onlyEmo;
+                        dataPostRef.current.feel.onlyEmo = p.feel.onlyEmo;
                     }
                     return p;
                 });
             });
             if (emo) {
                 const res = await postAPI.setEmotion({
-                    _id: dataPost._id,
+                    _id: dataPostRef.current._id,
                     index: emo.id,
                     id_user: user.id,
                     state: 'remove',
                 });
                 if (res)
                     queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                        dataPost.feel = res;
+                        dataPostRef.current.feel = res;
                         return preData?.map((p) => {
-                            if (p._id === dataPost._id) p.feel = res;
+                            if (p._id === dataPostRef.current._id) p.feel = res;
                             return p;
                         });
                     });
 
                 if (!res)
                     queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                        dataPost.feel = oldData;
+                        dataPostRef.current.feel = oldData;
                         return preData?.map((p) => {
-                            if (p._id === dataPost._id) p.feel = oldData;
+                            if (p._id === dataPostRef.current._id) p.feel = oldData;
                             return p;
                         });
                     });
@@ -173,35 +170,35 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
         } else {
             queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
                 return preData?.map((p) => {
-                    if (p._id === dataPost._id) {
+                    if (p._id === dataPostRef.current._id) {
                         p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
-                            if (o.id === dataPost.feel.act) o.id_user.push(user.id);
+                            if (o.id === dataPostRef.current.feel.act) o.id_user.push(user.id);
                             return o;
                         });
-                        dataPost.feel.onlyEmo = p.feel.onlyEmo;
+                        dataPostRef.current.feel.onlyEmo = p.feel.onlyEmo;
                     }
                     return p;
                 });
             });
             const res = await postAPI.setEmotion({
-                _id: dataPost._id,
-                index: dataPost.feel.act,
+                _id: dataPostRef.current._id,
+                index: dataPostRef.current.feel.act,
                 id_user: user.id,
                 state: 'add',
             });
             if (res)
                 queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = res;
+                    dataPostRef.current.feel = res;
                     return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = res;
+                        if (p._id === dataPostRef.current._id) p.feel = res;
                         return p;
                     });
                 });
             if (!res)
                 queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = oldData;
+                    dataPostRef.current.feel = oldData;
                     return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = oldData;
+                        if (p._id === dataPostRef.current._id) p.feel = oldData;
                         return p;
                     });
                 });
@@ -219,23 +216,23 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
         e.stopPropagation();
         setD('3');
         let check = false;
-        dataPost.feel.onlyEmo.forEach((o) => {
+        dataPostRef.current.feel.onlyEmo.forEach((o) => {
             if (o.id_user.includes(user.id)) check = true;
         });
         const divConstant = document.getElementById('emoBarPost');
         if (divConstant) divConstant.setAttribute('style', 'display: none');
-        let oldData = dataPost.feel;
+        let oldData = dataPostRef.current.feel;
         if (check) {
             queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
                 return preData?.map((p) => {
-                    if (p._id === dataPost._id) {
+                    if (p._id === dataPostRef.current._id) {
                         const newOnly = p.feel.onlyEmo.map((o) => {
                             o.id_user = o.id_user.filter((u) => u !== user.id);
                             if (o.id === i.id) o.id_user.push(user.id);
                             return o;
                         });
                         p.feel.onlyEmo = newOnly;
-                        dataPost.feel.onlyEmo = newOnly;
+                        dataPostRef.current.feel.onlyEmo = newOnly;
                     }
 
                     return p;
@@ -243,7 +240,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
             });
 
             const res = await postAPI.setEmotion({
-                _id: dataPost._id,
+                _id: dataPostRef.current._id,
                 index: i.id,
                 id_user: user.id,
                 state: 'update',
@@ -251,55 +248,55 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
             });
             if (res)
                 queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = res;
+                    dataPostRef.current.feel = res;
                     return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = res;
+                        if (p._id === dataPostRef.current._id) p.feel = res;
                         return p;
                     });
                 });
 
             if (!res)
                 queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = oldData;
+                    dataPostRef.current.feel = oldData;
                     return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = oldData;
+                        if (p._id === dataPostRef.current._id) p.feel = oldData;
                         return p;
                     });
                 });
         } else {
             queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
                 return preData?.map((p) => {
-                    if (p._id === dataPost._id) {
+                    if (p._id === dataPostRef.current._id) {
                         p.feel.onlyEmo = p.feel.onlyEmo.map((o) => {
                             if (o.id === i.id) o.id_user.push(user.id);
                             return o;
                         });
-                        dataPost.feel.onlyEmo = p.feel.onlyEmo;
+                        dataPostRef.current.feel.onlyEmo = p.feel.onlyEmo;
                     }
                     return p;
                 });
             });
 
             const res = await postAPI.setEmotion({
-                _id: dataPost._id,
+                _id: dataPostRef.current._id,
                 index: i.id,
                 id_user: user.id,
                 state: 'add',
             });
             if (res)
                 queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = res;
+                    dataPostRef.current.feel = res;
                     return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = res;
+                        if (p._id === dataPostRef.current._id) p.feel = res;
                         return p;
                     });
                 });
 
             if (!res)
                 queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                    dataPost.feel = oldData;
+                    dataPostRef.current.feel = oldData;
                     return preData?.map((p) => {
-                        if (p._id === dataPost._id) p.feel = oldData;
+                        if (p._id === dataPostRef.current._id) p.feel = oldData;
                         return p;
                     });
                 });
@@ -308,7 +305,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
         setActImotion(false);
     };
     return (
-        <div id={`${dataPost._id}_postScrolledUpAway`}>
+        <div id={`${dataPostRef.current._id}_postScrolledUpAway`}>
             <Div
                 width="100%"
                 css={`
@@ -320,7 +317,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     ${showCM ? 'z-index: 99999;' : ''}
                 `}
             >
-                {options === dataPost._id && user.id === dataPost.id_user && (
+                {options === dataPostRef.current._id && user.id === dataPostRef.current.id_user && (
                     <OpUpdate
                         createdAt={createdAt}
                         setOptions={setOptions}
@@ -332,7 +329,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                     colorText={colorText}
                                     user={user}
                                     editF={true}
-                                    originalInputValue={dataPost.content.text}
+                                    originalInputValue={dataPostRef.current.content.text}
                                     setOpenPostCreation={() => setFormThat(null)}
                                 />,
                             )
@@ -372,7 +369,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                 margin: 5px;
                             `}
                         >
-                            <Avatar radius="50%" src={dataPost.user[0].avatar} alt={dataPost.user[0].fullName} gender={dataPost.user[0].gender} />
+                            <Avatar radius="50%" src={dataPostRef.current.user[0].avatar} alt={dataPostRef.current.user[0].fullName} gender={dataPostRef.current.user[0].gender} />
                         </Div>
                         <Div
                             width="60%"
@@ -394,7 +391,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                     overflow: hidden;
                                 `}
                             >
-                                {dataPost.user[0].fullName}
+                                {dataPostRef.current.user[0].fullName}
                             </H3>
                             <Div css="font-size: 1.1rem; color: #9a9a9a; display: flex; align-items: center; justify-content: space-around; white-space: nowrap;">
                                 <Div css="color: #a3c8e6; font-size: 13px;">
@@ -407,7 +404,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                             { id: 'privacy', icon: <PrivacyI /> },
                                             { id: 'friend', icon: <FriendI />, color: '#58a3de' },
                                             { id: 'share', icon: <EarthI /> },
-                                        ].find((t) => t.id === dataPost.whoCanSeePost.id)?.icon
+                                        ].find((t) => t.id === dataPostRef.current.whoCanSeePost.id)?.icon
                                     }
                                 </Span>
                             </Div>
@@ -419,12 +416,12 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             color={colorText}
                             onClick={() => {
                                 if (!options) {
-                                    setOptions(dataPost._id);
+                                    setOptions(dataPostRef.current._id);
                                 } else {
-                                    if (options === dataPost._id) {
+                                    if (options === dataPostRef.current._id) {
                                         setOptions('');
                                     } else {
-                                        setOptions(dataPost._id);
+                                        setOptions(dataPostRef.current._id);
                                     }
                                 }
                             }}
@@ -434,9 +431,9 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     </Div>
 
                     <Div width="100%" css="padding: 5px 6px 10px 6px;" onClick={(e) => e.stopPropagation()}>
-                        {dataPost.content.text && (
+                        {dataPostRef.current.content.text && (
                             <ReactQuillF
-                                value={dataPost.content.text}
+                                value={dataPostRef.current.content.text}
                                 modules={{
                                     toolbar: false, // Tắt thanh công cụ
                                 }}
@@ -455,7 +452,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                     padding: 5px;
                                     color: ${colorText};
                                     background-color: #292a2d;
-                                    font-family: ${dataPost.content.fontFamily}, sans-serif;
+                                    font-family: ${dataPostRef.current.content.fontFamily}, sans-serif;
                                     white-space: pre-wrap;
                                     word-break: break-word;
                                     * {
@@ -470,9 +467,9 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             />
                         )}
                     </Div>
-                    {dataPost.hashTag?.length > 0 && (
+                    {dataPostRef.current.hashTag?.length > 0 && (
                         <Div width="100%" wrap="wrap" css="padding: 6px">
-                            {dataPost.hashTag.map((tag) => (
+                            {dataPostRef.current.hashTag.map((tag) => (
                                 <Smooth // link tag
                                     key={tag._id}
                                     to={`/sn/hashTags/${tag.value}`}
@@ -497,12 +494,12 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                         `}
                     >
                         <DefaultType
-                            _id={dataPost._id}
+                            _id={dataPostRef.current._id}
                             colorText={colorText}
-                            file={dataPost.content.default.map((f) => ({ ...f.file, pre: '' }))}
+                            file={dataPostRef.current.content.default.map((f) => ({ ...f.file, pre: '' }))}
                             step={step}
                             setStep={setStep}
-                            bg={dataPost.background}
+                            bg={dataPostRef.current.background}
                             link={true}
                         />
                     </Div>
@@ -587,7 +584,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             </Div>
                         </Div>
                         <Div width="100%" css="border-top: 1px solid #64625f; padding: 1px 0;">
-                            {dataPost.feel.onlyEmo.length > 0 && (
+                            {dataPostRef.current.feel.onlyEmo.length > 0 && (
                                 <DivAction
                                     id="parent_emo"
                                     css={`
@@ -610,7 +607,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                     }}
                                     onClick={handleEmo}
                                 >
-                                    {emo?.icon ? emo?.icon : dataPost.feel.act === 1 ? <LikeI /> : <HeartI />}
+                                    {emo?.icon ? emo?.icon : dataPostRef.current.feel.act === 1 ? <LikeI /> : <HeartI />}
                                     <Div
                                         id="emoBarPost"
                                         width="fit-content"
@@ -636,7 +633,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                             transition: all 1s linear;
                                         `}
                                     >
-                                        {dataPost.feel.onlyEmo
+                                        {dataPostRef.current.feel.onlyEmo
                                             .sort((a, b) => a.id - b.id)
                                             .map((i, index, arr) => (
                                                 <DivEmoji
@@ -655,21 +652,21 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                 </DivAction>
                             )}
                             {/* compare with id of option in  post's OpText */}
-                            {!dataPost.private.some((p) => p.id === 'comment') && (
-                                <DivAction onClick={() => setShowComment(dataPost._id)}>
+                            {!dataPostRef.current.private.some((p) => p.id === 'comment') && (
+                                <DivAction onClick={() => setShowComment(dataPostRef.current._id)}>
                                     <Div css="font-size: 1.3rem;">
                                         <PostCommentI />
                                     </Div>
                                 </DivAction>
                             )}
-                            {!dataPost.private.some((p) => p.id === 'share') && (
+                            {!dataPostRef.current.private.some((p) => p.id === 'share') && (
                                 <DivAction>
                                     <ShareI />
                                 </DivAction>
                             )}
                         </Div>
                     </Div>
-                    {showCM && <Comment colorText={colorText} anony={dataPost.private} setShowComment={setShowComment} dataPost={dataPost} you={user} />}
+                    {showCM && <Comment setDD={setD} colorText={colorText} anony={dataPostRef.current.private} setShowComment={setShowComment} dataPost={dataPostRef.current} you={user} />}
                 </Div>
             </Div>
             {showCM && (
