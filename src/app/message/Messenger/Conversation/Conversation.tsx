@@ -128,6 +128,7 @@ const Conversation: React.FC<{
         itemPin,
         setItemPin,
         itemPinData,
+        loadingChat,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
     if (conversation?._id) {
         if (!mm.current.some((m) => m.id === conversation?._id && index === m.index)) {
@@ -721,6 +722,7 @@ const Conversation: React.FC<{
                         flex-direction: column-reverse;
                         overflow-y: overlay;
                         scroll-behavior: smooth;
+                        overflow-x: hidden;
                         padding: 0 11px 5px;
                         bottom: 54px;
                         left: 0;
@@ -863,6 +865,7 @@ const Conversation: React.FC<{
                                 roomImage={roomImage}
                                 setRoomImage={setRoomImage}
                                 scrollCheck={scrollCheck}
+                                loadingChat={loadingChat}
                             />
                         );
                     })}

@@ -160,7 +160,7 @@ export default function LogicView(
                             setUsersData((pre) =>
                                 pre.map((us) => {
                                     if (us.id === userFirst.id) {
-                                        us.background = null;
+                                        us.background = 'delete';
                                     }
                                     return us;
                                 }),
@@ -170,7 +170,7 @@ export default function LogicView(
                             setUsersData((pre) =>
                                 pre.map((us) => {
                                     if (us.id === userFirst.id) {
-                                        us.avatar = null;
+                                        us.avatar = 'delete';
                                     }
                                     return us;
                                 }),

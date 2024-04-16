@@ -147,7 +147,7 @@ export type PropsChat = PropsConversationCustoms & PropsRooms;
 export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
-
+    const [loadingChat, setLoadingChat] = useState<string>('');
     const { userId } = Cookies();
     const { lg } = Languages();
     const textarea = useRef<HTMLTextAreaElement | null>(null);
@@ -540,12 +540,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const images = urlS.map((i) => {
                 return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
             });
+            setLoadingChat(id_);
             const chat: any = {
                 createdAt: DateTime(),
                 imageOrVideos: images,
                 seenBy: [],
                 text: { t: regexCus(value), icon: '' },
-                sending: true,
                 id: userId,
                 _id: id_,
             };
@@ -564,14 +564,10 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
             if (data) {
                 rr.current = '';
-                conversation.room = conversation.room.map((r) => {
-                    if (r.sending) r.sending = false;
-                    return r;
-                });
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);
                 setupload(undefined);
-                setConversation(conversation);
+                setLoadingChat('');
                 dispatch(setRoomChat(data));
             }
         }
@@ -624,5 +620,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         itemPin,
         setItemPin,
         itemPinData,
+        loadingChat,
     };
 }

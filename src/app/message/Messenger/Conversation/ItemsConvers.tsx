@@ -79,6 +79,7 @@ const ItemsRoom: React.FC<{
           }
         | undefined;
     scrollCheck: React.MutableRefObject<boolean>;
+    loadingChat: string;
 }> = ({
     rc,
     index,
@@ -105,6 +106,7 @@ const ItemsRoom: React.FC<{
     roomImage,
     setRoomImage,
     scrollCheck,
+    loadingChat,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -222,7 +224,7 @@ const ItemsRoom: React.FC<{
                           <Div
                               id={`chat_to_scroll_${rc._id}`}
                               wrap="wrap"
-                              width="100%"
+                              width="99%"
                               css={`
                                   padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
                                   margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
@@ -567,7 +569,7 @@ const ItemsRoom: React.FC<{
                                       </Div>
                                   )}
 
-                                  {rc?.sending ? (
+                                  {rc?._id === loadingChat ? (
                                       <P z="1.2rem" css="text-align: end; @media (min-width: 768px){font-size: 1rem;}">
                                           sending...
                                       </P>
@@ -665,6 +667,7 @@ const ItemsRoom: React.FC<{
                   )
                 : rc?.delete !== dataFirst.id && (
                       <Div
+                          width="99%"
                           id={`chat_to_scroll_${rc._id}`}
                           wrap="wrap"
                           key={rc.text.t + index}

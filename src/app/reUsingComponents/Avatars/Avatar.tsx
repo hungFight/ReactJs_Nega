@@ -31,23 +31,7 @@ interface _Avatar {
 }
 
 const Avatar = forwardRef((props: _Avatar, ref: any) => {
-    const {
-        className,
-        idH,
-        id,
-        src,
-        alt,
-        width,
-        radius,
-        staticI,
-        gender,
-        onClick,
-        onTouchMove,
-        css,
-        profile = '',
-        children,
-        currentId,
-    } = props;
+    const { className, idH, id, src, alt, width, radius, staticI, gender, onClick, onTouchMove, css, profile = '', children, currentId } = props;
     const dispatch = useDispatch();
     const [avatar, setAvatar] = useState<boolean>(false);
     const [avatarFallback, setAvatarFallback] = useState<string>(() => subImage(src, gender));
@@ -69,9 +53,8 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         if (staticI) {
             setAvatarFallback(subImage('', gender));
         } else {
-            if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`)
-                setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`);
-            if (!src && avatarFallback) setAvatarFallback('');
+            if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`) setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`);
+            if (src === 'delete' && avatarFallback) setAvatarFallback('');
         }
     }, [src]);
     const events = {
@@ -88,13 +71,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         <FaUserCircle />
     ) : (
         <TagH
-            to={
-                profile === 'url'
-                    ? `${
-                          window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] : 'social'
-                      }/profile?id=${id}`
-                    : ''
-            }
+            to={profile === 'url' ? `${window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] : 'social'}/profile?id=${id}` : ''}
             id={idH}
             width={width}
             css={css}
@@ -103,13 +80,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
             className={className}
         >
             {children}
-            <Img
-                src={avatarFallback}
-                alt={alt}
-                onError={handleErrorImage}
-                radius={radius}
-                onClick={handleOpentProfile}
-            />
+            <Img src={avatarFallback} alt={alt} onError={handleErrorImage} radius={radius} onClick={handleOpentProfile} />
         </TagH>
     );
 });

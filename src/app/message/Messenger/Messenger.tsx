@@ -26,20 +26,7 @@ const Send: React.FC<{
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
     id_chats: PropsId_chats[];
 }> = ({ colorBg, colorText, dataUser, userOline, setId_chats, id_chats }) => {
-    const {
-        userId,
-        rooms,
-        searchUser,
-        setSearchUser,
-        send,
-        loading,
-        moreBar,
-        setMoreBar,
-        handleShowHide,
-        handleSearch,
-        dataMore,
-        lg,
-    } = LogicMessenger(dataUser);
+    const { userId, rooms, searchUser, setSearchUser, send, loading, moreBar, setMoreBar, handleShowHide, handleSearch, dataMore, lg } = LogicMessenger(dataUser);
     const itemLg: { [en: string]: { seenBy: string; who: string }; vi: { seenBy: string; who: string } } = {
         en: {
             seenBy: 'saw',
@@ -70,32 +57,14 @@ const Send: React.FC<{
                             color: ${colorText};
                         `}
                     >
-                        <Div
-                            css="width: 40px; height: 100%; align-items: center; justify-content: center; font-size: 30px; @media(min-width: 500px){font-size: 25px} "
-                            onClick={handleShowHide}
-                        >
+                        <Div css="width: 40px; height: 100%; align-items: center; justify-content: center; font-size: 30px; @media(min-width: 500px){font-size: 25px} " onClick={handleShowHide}>
                             <UndoI />
                         </Div>
-                        <Input
-                            type="text"
-                            value={searchUser}
-                            placeholder="Search"
-                            onChange={handleSearch}
-                            color={colorText}
-                            border="0"
-                            width="auto"
-                            margin="0"
-                        />
+                        <Input type="text" value={searchUser} placeholder="Search" onChange={handleSearch} color={colorText} border="0" width="auto" margin="0" />
                         <DivPos width="35px" size="22px" right="100px" onClick={() => setSearchUser('')}>
                             <CloseI />
                         </DivPos>
-                        <Avatar
-                            src={dataUser.avatar}
-                            alt={dataUser.fullName}
-                            gender={dataUser.gender}
-                            radius="50%"
-                            css="width: 35px; height: 35px;"
-                        />
+                        <Avatar src={dataUser.avatar} alt={dataUser.fullName} gender={dataUser.gender} radius="50%" css="width: 35px; height: 35px;" />
                     </Div>
                     <DivResults>
                         <Div css=".swiper{padding: 14px 2px;} .swiper-slide, swiper-slide{user-select: none;} .swiper-pagination{top: 74px !important; height: 1px !important;} padding: 5px 2px;">
@@ -245,14 +214,7 @@ const Send: React.FC<{
                                 />
                             ))
                         )}
-                        {moreBar.id && (
-                            <MoreOption
-                                dataMore={dataMore[lg]}
-                                colorText={colorText}
-                                setMoreBar={setMoreBar}
-                                background={rooms.filter((r) => r._id === moreBar.id_room)[0].background}
-                            />
-                        )}
+                        {moreBar.id && <MoreOption dataMore={dataMore[lg]} colorText={colorText} setMoreBar={setMoreBar} background={rooms.filter((r) => r._id === moreBar.id_room)[0].background} />}
                     </DivResults>
                 </DivSend>
             )}
