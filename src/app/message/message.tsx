@@ -49,14 +49,7 @@ const Message: React.FC<{
     return (
         <DivMs width="50px" top="60px" ref={elRef} onTouchMove={handleTouchMove}>
             <Notification dataUser={dataUser} userOline={userOnline} colorText={colorText} colorBg={colorBg} />
-            <Send
-                dataUser={dataUser}
-                userOline={userOnline}
-                colorText={colorText}
-                colorBg={colorBg}
-                setId_chats={setId_chats}
-                id_chats={id_chats}
-            />
+            <Send dataUser={dataUser} userOline={userOnline} colorText={colorText} colorBg={colorBg} setId_chats={setId_chats} id_chats={id_chats} />
         </DivMs>
     );
 };

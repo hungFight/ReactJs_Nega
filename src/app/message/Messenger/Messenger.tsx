@@ -42,7 +42,6 @@ const Send: React.FC<{
             {!send && (
                 <Hovertitle Tags={DivIconMs} title="Send" size="23px" color={colorText} onClick={handleShowHide}>
                     <SendI />
-                    <p>+</p>
                 </Hovertitle>
             )}
             {send && (
@@ -60,7 +59,7 @@ const Send: React.FC<{
                         <Div css="width: 40px; height: 100%; align-items: center; justify-content: center; font-size: 30px; @media(min-width: 500px){font-size: 25px} " onClick={handleShowHide}>
                             <UndoI />
                         </Div>
-                        <Input type="text" value={searchUser} placeholder="Search" onChange={handleSearch} color={colorText} border="0" width="auto" margin="0" />
+                        <Input type="text" value={searchUser} placeholder="Search" onChange={handleSearch} color={colorText} border="0" width="73%" margin="0" />
                         <DivPos width="35px" size="22px" right="100px" onClick={() => setSearchUser('')}>
                             <CloseI />
                         </DivPos>
@@ -80,7 +79,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -91,7 +90,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://hips.hearstapps.com/hmg-prod/images/cutest-dog-breeds-64358b34b2905.jpeg?crop=0.891xw:0.357xh;0,0.137xh&resize=1200:*"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -102,7 +101,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://www.brightstarbuddies.com.au/blog/wp-content/uploads/sites/8/bonniechessiegirl4-2.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -113,7 +112,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -124,7 +123,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -135,7 +134,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -146,7 +145,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -156,7 +155,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -166,7 +165,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -176,7 +175,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"
@@ -186,7 +185,7 @@ const Send: React.FC<{
                                 <SwiperSlide>
                                     <Div>
                                         <Avatar
-                                            src="https://pbs.twimg.com/media/DefM3PPXcAABTmm.jpg"
+                                            src="f6b60c5a-b56c-4e00-aec6-99d88e9398b4"
                                             gender={0}
                                             radius="50%"
                                             css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px ;width: 45px; height: 45px; }"

@@ -933,7 +933,7 @@ const Conversation: React.FC<{
                                         onTouchStart={handleTouchStart}
                                         onTouchEnd={handleTouchEnd}
                                     >
-                                        {item.type.search('image/') >= 0 ? <Img src={item.link} radius="5px" /> : <Player key={item.link} src={item.link} />}
+                                        {item.type === 'image' ? <Img src={item.link} radius="5px" /> : <Player key={item.link} src={item.link} />}
                                     </Div>
                                 ))}
                             </Div>

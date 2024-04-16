@@ -226,7 +226,7 @@ const ItemsRoom: React.FC<{
                               wrap="wrap"
                               width="99%"
                               css={`
-                                  padding-left: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
+                                  padding-left: ${rc.imageOrVideos.length <= 1 ? '30%' : '20%'};
                                   margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};
                                   justify-content: right;
                                   position: relative;
@@ -672,7 +672,7 @@ const ItemsRoom: React.FC<{
                           wrap="wrap"
                           key={rc.text.t + index}
                           css={`
-                              padding-right: ${rc.imageOrVideos.length <= 1 ? '35%' : '20%'};
+                              padding-right: ${rc.imageOrVideos.length <= 1 ? '30%' : '20%'};
                               justify-content: left;
                               align-items: center;
                               margin-bottom: ${rc.imageOrVideos.length ? '19px' : '8px'};

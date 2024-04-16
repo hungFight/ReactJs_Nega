@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Languages from '~/reUsingComponents/languages';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
-import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, TyOnlineI } from '~/assets/Icons/Icons';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
@@ -85,14 +85,25 @@ const ListAccounts: React.FC<{
                 }
             }
         });
-        if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room?.id !== userId)
-            seenBy.current.setAttribute('style', 'color: #f0ffffde;');
+        if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room?.id !== userId) seenBy.current.setAttribute('style', 'color: #f0ffffde;');
     }, [data]);
     return (
         <>
             {data.users.map((rs, index) => {
-                const who = data.room?.id === userId ? 'You: ' : rs.fullName;
+                const who = data.room?.id === userId ? 'You' : rs.fullName;
                 const Time = moments().FromNow(data.room.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg);
+                const info = [
+                    { type: 'image', length: 0 },
+                    { type: 'video', length: 0 },
+                ];
+                data.room.imageOrVideos.forEach((f) => {
+                    if (f.type === info[0].type) info[0].length += 1;
+                    if (f.type === info[1].type) info[0].length += 1;
+                });
+                const text =
+                    data.room.text.t ?? data.room.imageOrVideos.length
+                        ? `đã gửi ${info[0].length ? info[0].length + ' ảnh' : ''} ${info[1].length ? info[1].length + ' video' : ''}`
+                        : data.room.delete === 'all' && 'deleted';
                 return (
                     <Div
                         key={rs.id}
@@ -100,13 +111,14 @@ const ListAccounts: React.FC<{
                         onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs, deleted: data.deleted })}
                         onTouchEnd={handleTouchEnd}
                         onClick={(e) => {
-                            dispatch(onChats({ id_room: data._id, id_other: rs.id }));
-                            setId_chats((pre) => {
-                                if (!chats.some((p) => p.id_room === data._id || p.id_other === rs.id)) {
-                                    return [...pre, { id_room: data._id, id_other: rs.id }];
-                                }
-                                return pre;
-                            });
+                            if (!chats.some((p) => p.id_room === data._id || p.id_other === rs.id)) {
+                                dispatch(onChats({ id_room: data._id, id_other: rs.id }));
+                                setId_chats((pre) => {
+                                    if (!pre.some((p) => p.id_room === data._id || p.id_other === rs.id)) return [...pre, { id_room: data._id, id_other: rs.id }];
+                                    return pre;
+                                });
+                            }
+
                             if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
                         }}
                         width="100%"
@@ -132,25 +144,6 @@ const ListAccounts: React.FC<{
                             }
                         `}
                     >
-                        {data.room.seenBy.includes(rs.id) && (
-                            <Div
-                                css={`
-                                    font-size: 1rem;
-                                    position: absolute;
-                                    width: 90px;
-                                    right: 54px;
-                                    top: 8px;
-                                `}
-                            >
-                                {index === 0 && itemLg.seenBy}
-                                <Avatar
-                                    src={rs.avatar}
-                                    gender={rs.gender}
-                                    radius="50%"
-                                    css="min-width: 15px; width: 15px; height: 15px; margin: 0px 5px; "
-                                />
-                            </Div>
-                        )}
                         <Avatar
                             src={rs.avatar}
                             gender={rs.gender}
@@ -163,15 +156,30 @@ const ListAccounts: React.FC<{
                             </DivPos>
                         )}
                         <Div
-                            width="73%"
+                            width="75%"
                             wrap="wrap"
                             css={`
-                                /* @media (min-width: 768px) {
-                                    width: 73%;
-                                } */
+                                position: relative;
+                                @media (min-width: 500) {
+                                    p {
+                                        font-size: 1.3rem;
+                                    }
+                                    h3 {
+                                        font-size: 1.5rem;
+                                    }
+                                }
                             `}
                         >
-                            <Hname>{rs.fullName}</Hname>
+                            <DivFlex width="auto" css="max-width: 75%;" align="flex-end">
+                                <Hname css="max-width: 81%;width: auto;" size="1.4rem">
+                                    {rs.fullName}
+                                </Hname>{' '}
+                                {data.room.seenBy.includes(rs.id) && (
+                                    <P z="1.2rem" css="color: #a3a3a3;margin-left: 8px;">
+                                        {index === 0 && itemLg.seenBy}
+                                    </P>
+                                )}
+                            </DivFlex>
                             <Div
                                 width="88%"
                                 ref={seenBy}
@@ -181,14 +189,9 @@ const ListAccounts: React.FC<{
                                     color: #adadadde;
                                 `}
                             >
-                                <P css=" overflow: hidden;min-width: 21px; width: fit-content; height: 17px; margin-right: 5px; font-size: 1.1rem; margin-top: 3px;">
-                                    {who + ' ...'}
-                                </P>
-                                <P z="1.2rem" css="width: 100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-top: 3px; ">
-                                    {data.room.text.t}
-                                </P>
-                                <P z="1rem" css="width: fit-content; margin-top: 5px;margin-left: 10px;text-wrap: nowrap;">
-                                    {Time}
+                                <P css="color: #a3a3a3; overflow: hidden;max-width: 110px; width: fit-content; height: 17px; margin-right: 5px; font-size: 1.2rem; margin-top: 3px;">{who}:</P>
+                                <P z="1.2rem" css="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;margin-top: 3px;">
+                                    {text}
                                 </P>
                                 {data.miss ? (
                                     <Div
@@ -210,6 +213,9 @@ const ListAccounts: React.FC<{
                                     <></>
                                 )}
                             </Div>
+                            <DivPos top="3px" right="40px" css="width: fit-content;" size="1.1rem">
+                                .{Time}
+                            </DivPos>
                         </Div>
                         <Div
                             width="30px"

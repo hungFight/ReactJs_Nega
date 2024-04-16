@@ -213,12 +213,11 @@ interface PropsHname {
 export const Hname = styled.h3<PropsHname>`
     width: 98%;
     height: fit-content;
-    font-size: 1.4rem;
+    font-size: ${(props: { size?: string }) => props.size ?? '1.4rem'};
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-
     ${(props) => props.css}
 `;
 interface PropsClose {

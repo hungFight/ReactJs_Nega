@@ -532,7 +532,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             //
             const formDataFile = new FormData();
             for (let i = 0; i < uploadIn?.up.length; i++) {
-                formDataFile.append('files', uploadIn?.up[i], uploadIn?.up[i]._id); // assign file and _id of the file upload
+                formDataFile.append('file', uploadIn?.up[i], uploadIn?.up[i].name + '@_id_***_get_$' + uploadIn?.up[i]._id); // assign file and _id of the file upload
             }
 
             const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(formDataFile) : [];

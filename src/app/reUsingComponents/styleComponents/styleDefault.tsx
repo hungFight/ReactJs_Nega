@@ -128,7 +128,7 @@ export const Div = styled.div<PropsDiv>`
     width: ${(props) => props.width};
     height: ${(props) => props.height};
     display: ${(props) => props.display || 'flex'};
-    flex-wrap: ${(props) => props.wrap || 'none'};
+    flex-wrap: ${(props) => props.wrap};
     ${(props) => props.css}
 `;
 export const DivNone = styled.div<PropsDivNone>`

@@ -51,8 +51,6 @@ const LogicMessenger = (dataUser: PropsUser) => {
     const { roomChat } = useSelector((state: PropsReMessengerRD) => state.messenger);
 
     const [cookies, setCookies, _del] = useCookies(['k_user', 'tks']);
-    const userId = cookies.k_user;
-
     const [rooms, setRooms] = useState<PropsRoomChat[]>([]);
     const [roomNew, setRoomNew] = useState<PropsRoomChat>();
     const [resultSearch, setResultSearch] = useState<any>([]);
@@ -114,7 +112,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
         }
         fetchRoom();
 
-        socket.on(`${userId}roomChat`, async (d: string) => {
+        socket.on(`${dataUser.id}roomChat`, async (d: string) => {
             const data: PropsRoomChat = JSON.parse(d);
             const a = CommonUtils.convertBase64(data.user.avatar);
             data.user.avatar = a;
@@ -153,18 +151,12 @@ const LogicMessenger = (dataUser: PropsUser) => {
                     const bytes = CryptoJS.AES.decrypt(roomChat.room.text?.t, `chat_${roomChat.room.secondary}`);
                     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
                     const newR = rooms.filter((r) => r._id !== roomChat._id);
-                    setRooms([
-                        { ...roomChat, room: { ...roomChat.room, text: { t: decryptedData, icon: '' } } },
-                        ...newR,
-                    ]);
+                    setRooms([{ ...roomChat, room: { ...roomChat.room, text: { t: decryptedData, icon: '' } } }, ...newR]);
                 } else {
                     const bytes = CryptoJS.AES.decrypt(roomChat.room.text?.t, `chat_${roomChat?._id}`);
                     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
                     const newR = rooms.filter((r) => r._id !== roomChat._id);
-                    setRooms([
-                        { ...roomChat, room: { ...roomChat.room, text: { t: decryptedData, icon: '' } } },
-                        ...newR,
-                    ]);
+                    setRooms([{ ...roomChat, room: { ...roomChat.room, text: { t: decryptedData, icon: '' } } }, ...newR]);
                 }
             }
         }
@@ -347,9 +339,8 @@ const LogicMessenger = (dataUser: PropsUser) => {
         dataMore[lg].options.push(undo[lg]);
     }
     console.log('in a chat');
-
     return {
-        userId,
+        userId: dataUser.id,
         rooms,
         searchUser,
         setSearchUser,

@@ -26,7 +26,7 @@ export const DivSend = styled.div`
     box-shadow: 0 0 10px #424242;
     padding: 5px;
     @media (min-width: 500px) {
-        width: 400px;
+        width: 430px;
     }
 `;
 export const DivResults = styled.div`
