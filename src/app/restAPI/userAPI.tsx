@@ -137,10 +137,28 @@ class HttpRequestUser {
             return errorHandling(err);
         }
     };
-    changesOne = async (id: string, params: PropsParamsById, value?: any) => {
+    changesOne = async (
+        id: string,
+        params: PropsParamsById,
+        value?: any,
+    ): Promise<
+        | {
+              loverData:
+                  | {
+                        id: number;
+                        userId: string;
+                        idIsLoved: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                    }
+                  | undefined;
+              count_loves: number;
+          }
+        | string | boolean
+    > => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.patch<string | number>('/user/changesOne', {
+            const res = await Axios.patch('/user/changesOne', {
                 params: {
                     id,
                     params,

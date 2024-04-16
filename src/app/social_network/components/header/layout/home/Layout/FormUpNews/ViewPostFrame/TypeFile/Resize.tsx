@@ -54,7 +54,7 @@ const Resize: React.FC<{
             {f?.type === 'image' ? (
                 <>
                     <Img
-                        src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`}
+                        src={f?.pre || f?.link}
                         id="baby"
                         alt={f?.link}
                         onLoad={(e) => handleLoadMetaData(e, f?._id)}
@@ -69,7 +69,7 @@ const Resize: React.FC<{
                     )}
                 </>
             ) : f?.type.includes('video') ? (
-                <Player src={f?.pre || `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${f?.link}`} step={step} />
+                <Player src={f?.pre || f?.link || ''} step={step} />
             ) : (
                 ''
             )}

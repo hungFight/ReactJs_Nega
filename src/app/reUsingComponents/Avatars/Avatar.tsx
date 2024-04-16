@@ -38,7 +38,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     // useEffect(() => {
     //     setAvatarFallback(!src ? Fallback : src);
     // }, [Fallback, src]);
-    console.log(gender, alt, 'avatarFallback', className);
+    console.log(gender, alt, 'avatarFallback', src);
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = (e: any) => {
         e.target.src = subImage(src, gender);
@@ -53,7 +53,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         if (staticI) {
             setAvatarFallback(subImage('', gender));
         } else {
-            if (src && avatarFallback !== `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`) setAvatarFallback(`${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${src}`);
+            if (src && avatarFallback !== src) setAvatarFallback(src);
             if (src === 'delete' && avatarFallback) setAvatarFallback('');
         }
     }, [src]);

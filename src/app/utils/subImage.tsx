@@ -3,8 +3,7 @@ import Images from '~/assets/images';
 
 const subImage = (id: string | undefined, gender: number | string | undefined) => {
     if (id) {
-        const src = `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${id}`;
-        return src;
+        return id;
     } else {
         if (typeof gender === 'string') {
             return gender === 'male'

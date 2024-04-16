@@ -19,6 +19,7 @@ const axiosJWTFile = axios.create({
 });
 class refreshToken {
     private isInterceptorAttached: boolean = false;
+    private isInterceptorAttachedR: boolean = false;
     axiosJWTs() {
         const token = Cookies.get('tks');
         console.log('token here', token);
@@ -72,7 +73,7 @@ class refreshToken {
         const token = Cookies.get('tks');
         console.log('token here', token);
         let i = 0;
-        if (!this.isInterceptorAttached && token) {
+        if (!this.isInterceptorAttachedR && token) {
             let tokenN = token;
             axiosJWTFile.interceptors.request.use(
                 async (config) => {
@@ -101,7 +102,7 @@ class refreshToken {
                                     });
                                 }
                             }
-                            this.isInterceptorAttached = true;
+                            this.isInterceptorAttachedR = true;
                             resolve(config);
                         } catch (error) {
                             reject(error);

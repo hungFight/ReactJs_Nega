@@ -98,7 +98,7 @@ export default function LogicView(
                         const formData = new FormData();
                         formData.append('file', file);
                         if (user.avatar || user.background) {
-                            formData.append('old_id', avBg);
+                            formData.append('old_id', avBg.split('getFileImg/')[1]);
                         }
                         const fileUploaded = await fileWorkerAPI.addFiles(formData);
                         console.log(fileUploaded, 'fileUploaded');
@@ -106,28 +106,27 @@ export default function LogicView(
                         if (idF) {
                             const res = await userAPI.changesOne(userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, {
                                 id_file: idF,
-                                type: file.type,
+                                type: file.type.split('/')[0],
                                 name: file.name,
-                                old_id: avBg,
                             });
                             const data = ServerBusy(res, dispatch);
-                            if (data) {
+                            if (data && typeof data === 'string') {
                                 if (id === 0) {
-                                    setUserFirst({ ...userFirst, background: idF });
+                                    setUserFirst({ ...userFirst, background: data });
                                     setUsersData((pre) =>
                                         pre.map((us) => {
                                             if (us.id === userFirst.id) {
-                                                us.background = idF;
+                                                us.background = data;
                                             }
                                             return us;
                                         }),
                                     );
                                 } else {
-                                    setUserFirst({ ...userFirst, avatar: idF });
+                                    setUserFirst({ ...userFirst, avatar: data });
                                     setUsersData((pre) =>
                                         pre.map((us) => {
                                             if (us.id === userFirst.id) {
-                                                us.avatar = idF;
+                                                us.avatar = data;
                                             }
                                             return us;
                                         }),
