@@ -71,6 +71,7 @@ const ListAccounts: React.FC<{
         console.log('no');
     };
     console.log(data, 'data room');
+    const dataR = data.rooms[0].filter[0].data[0];
     useEffect(() => {
         // check have you seen this chat?
         let check = false;
@@ -80,170 +81,166 @@ const ListAccounts: React.FC<{
                     check = true;
                 }
             } else {
-                if (data.room.seenBy.includes(i.id_other)) {
+                if (dataR.seenBy.includes(i.id_other)) {
                     check = true;
                 }
             }
         });
-        if (seenBy.current && !check && !data.room.seenBy.includes(userId) && data.room?.id !== userId) seenBy.current.setAttribute('style', 'color: #f0ffffde;');
+        if (seenBy.current && !check && !dataR.seenBy.includes(userId) && dataR?.userId !== userId) seenBy.current.setAttribute('style', 'color: #f0ffffde;');
     }, [data]);
-    return (
-        <>
-            {data.users.map((rs, index) => {
-                const who = data.room?.id === userId ? 'You' : rs.fullName;
-                const Time = moments().FromNow(data.room.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg);
-                const info = [
-                    { type: 'image', length: 0 },
-                    { type: 'video', length: 0 },
-                ];
-                data.room.imageOrVideos.forEach((f) => {
-                    if (f.type === info[0].type) info[0].length += 1;
-                    if (f.type === info[1].type) info[0].length += 1;
-                });
-                const text =
-                    data.room.text.t ?? data.room.imageOrVideos.length
-                        ? `đã gửi ${info[0].length ? info[0].length + ' ảnh' : ''} ${info[1].length ? info[1].length + ' video' : ''}`
-                        : data.room.delete === 'all' && 'deleted';
-                return (
-                    <Div
-                        key={rs.id}
-                        onTouchMove={handleTouchMove}
-                        onTouchStart={() => handleTouchStart({ id_room: data._id, ...rs, deleted: data.deleted })}
-                        onTouchEnd={handleTouchEnd}
-                        onClick={(e) => {
-                            if (!chats.some((p) => p.id_room === data._id || p.id_other === rs.id)) {
-                                dispatch(onChats({ id_room: data._id, id_other: rs.id }));
-                                setId_chats((pre) => {
-                                    if (!pre.some((p) => p.id_room === data._id || p.id_other === rs.id)) return [...pre, { id_room: data._id, id_other: rs.id }];
-                                    return pre;
-                                });
-                            }
+    const who = dataR?.userId === userId ? 'You' : data.user.fullName;
+    const info = [
+        { type: 'image', length: 0 },
+        { type: 'video', length: 0 },
+    ];
+    dataR.imageOrVideos.forEach((f) => {
+        if (f.type === info[0].type) info[0].length += 1;
+        if (f.type === info[1].type) info[0].length += 1;
+    });
+    console.log(dataR, 'dataR');
 
-                            if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
-                        }}
-                        width="100%"
-                        css={`
-                            height: 66px;
-                            align-items: center;
-                            padding: 0 3px;
-                            user-select: none;
-                            position: relative;
-                            color: ${colorText};
-                            transition: all 0.5s linear;
-                            &:active {
-                                background-color: #484848ba;
-                            }
-                            @media (min-width: 768px) {
-                                cursor: var(--pointer);
-                                &:hover {
-                                    background-color: #484848ba;
-                                }
-                            }
-                            @media (min-width: 500px) {
-                                height: 55px;
-                            }
-                        `}
-                    >
-                        <Avatar
-                            src={rs.avatar}
-                            gender={rs.gender}
-                            radius="50%"
-                            css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px;width: 45px; height: 45px; } "
-                        />
-                        {userOnline.includes(rs.id) && (
-                            <DivPos bottom="2px" left="32px" size="10px" css="color: #149314; padding: 2px; background-color: #1c1b1b;">
-                                <TyOnlineI />
-                            </DivPos>
-                        )}
+    const Time = moments().FromNow(dataR.createdAt, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg);
+    const text = dataR.text.t
+        ? dataR.text.t
+        : dataR.imageOrVideos.length
+        ? `đã gửi ${info[0].length ? info[0].length + ' ảnh' : ''} ${info[1].length ? info[1].length + ' video' : ''}`
+        : dataR.delete === 'all' && 'deleted';
+    return (
+        <Div
+            onTouchMove={handleTouchMove}
+            onTouchStart={() => handleTouchStart({ id_room: data._id, ...data.user, deleted: data.deleted })}
+            onTouchEnd={handleTouchEnd}
+            onClick={(e) => {
+                if (!chats.some((p) => p.id_room === data._id || p.id_other === data.user.id)) {
+                    dispatch(onChats({ id_room: data._id, id_other: data.user.id }));
+                    setId_chats((pre) => {
+                        if (!pre.some((p) => p.id_room === data._id || p.id_other === data.user.id)) return [...pre, { id_room: data._id, id_other: data.user.id }];
+                        return pre;
+                    });
+                }
+
+                if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
+            }}
+            width="100%"
+            css={`
+                height: 66px;
+                align-items: center;
+                padding: 0 3px;
+                user-select: none;
+                position: relative;
+                color: ${colorText};
+                transition: all 0.5s linear;
+                &:active {
+                    background-color: #484848ba;
+                }
+                @media (min-width: 768px) {
+                    cursor: var(--pointer);
+                    &:hover {
+                        background-color: #484848ba;
+                    }
+                }
+                @media (min-width: 500px) {
+                    height: 55px;
+                }
+            `}
+        >
+            <Avatar
+                src={data.user.avatar}
+                gender={data.user.gender}
+                radius="50%"
+                css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px;width: 45px; height: 45px; } "
+            />
+            {userOnline.includes(data.user.id) && (
+                <DivPos bottom="2px" left="32px" size="10px" css="color: #149314; padding: 2px; background-color: #1c1b1b;">
+                    <TyOnlineI />
+                </DivPos>
+            )}
+            <Div
+                width="75%"
+                wrap="wrap"
+                css={`
+                    position: relative;
+                    @media (min-width: 500) {
+                        p {
+                            font-size: 1.3rem;
+                        }
+                        h3 {
+                            font-size: 1.5rem;
+                        }
+                    }
+                `}
+            >
+                <DivFlex width="auto" css="max-width: 65%;" align="flex-end">
+                    <Hname css="width: auto;" size="1.4rem">
+                        {data.user.fullName}
+                    </Hname>{' '}
+                    {dataR.seenBy.includes(data.user.id) && (
+                        <P z="1.2rem" css="color: #a3a3a3;margin-left: 8px;">
+                            {itemLg.seenBy}
+                        </P>
+                    )}
+                </DivFlex>
+                <Div
+                    width="88%"
+                    ref={seenBy}
+                    css={`
+                        align-items: center;
+                        position: relative;
+                        color: #adadadde;
+                    `}
+                >
+                    <P css="color: #a3a3a3; overflow: hidden;max-width: 110px; width: fit-content; height: 17px; margin-right: 5px; font-size: 1.2rem; margin-top: 3px;">{who}:</P>
+                    <P z="1.2rem" css="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;margin-top: 3px;">
+                        {text}
+                    </P>
+                    {data.miss ? (
                         <Div
-                            width="75%"
-                            wrap="wrap"
+                            display="block"
+                            width="fit-content"
                             css={`
-                                position: relative;
-                                @media (min-width: 500) {
-                                    p {
-                                        font-size: 1.3rem;
-                                    }
-                                    h3 {
-                                        font-size: 1.5rem;
-                                    }
-                                }
+                                text-align: center;
+                                border-radius: 50%;
+                                font-size: 1.1rem;
+                                position: absolute;
+                                right: 12px;
+                                top: -18px;
+                                color: #5594c7;
                             `}
                         >
-                            <DivFlex width="auto" css="max-width: 75%;" align="flex-end">
-                                <Hname css="max-width: 81%;width: auto;" size="1.4rem">
-                                    {rs.fullName}
-                                </Hname>{' '}
-                                {data.room.seenBy.includes(rs.id) && (
-                                    <P z="1.2rem" css="color: #a3a3a3;margin-left: 8px;">
-                                        {index === 0 && itemLg.seenBy}
-                                    </P>
-                                )}
-                            </DivFlex>
-                            <Div
-                                width="88%"
-                                ref={seenBy}
-                                css={`
-                                    align-items: center;
-                                    position: relative;
-                                    color: #adadadde;
-                                `}
-                            >
-                                <P css="color: #a3a3a3; overflow: hidden;max-width: 110px; width: fit-content; height: 17px; margin-right: 5px; font-size: 1.2rem; margin-top: 3px;">{who}:</P>
-                                <P z="1.2rem" css="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;margin-top: 3px;">
-                                    {text}
-                                </P>
-                                {data.miss ? (
-                                    <Div
-                                        display="block"
-                                        width="fit-content"
-                                        css={`
-                                            text-align: center;
-                                            border-radius: 50%;
-                                            font-size: 1.1rem;
-                                            position: absolute;
-                                            right: 12px;
-                                            top: -18px;
-                                            color: #5594c7;
-                                        `}
-                                    >
-                                        miss {data.miss}
-                                    </Div>
-                                ) : (
-                                    <></>
-                                )}
-                            </Div>
-                            <DivPos top="3px" right="40px" css="width: fit-content;" size="1.1rem">
-                                .{Time}
-                            </DivPos>
+                            miss {data.miss}
                         </Div>
-                        <Div
-                            width="30px"
-                            css={`
-                                height: 30px;
-                                font-size: 20px;
-                                border-radius: 50%;
-                                align-items: center;
-                                justify-content: center;
-                                border-radius: 50%;
-                                @media (min-width: 768px) {
-                                    cursor: var(--pointer);
-                                    &:hover {
-                                        background-color: #161414ba;
-                                    }
-                                }
-                            `}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setMoreBar({ id_room: data._id, ...rs });
-                            }}
-                        >
-                            <DotI />
-                        </Div>
-                    </Div>
-                );
-            })}
-        </>
+                    ) : (
+                        <></>
+                    )}
+                </Div>
+                <DivPos top="3px" right="40px" css="width: fit-content;" size="1.1rem">
+                    .{Time}
+                </DivPos>
+            </Div>
+            <Div
+                width="30px"
+                css={`
+                    height: 30px;
+                    font-size: 20px;
+                    border-radius: 50%;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    @media (min-width: 768px) {
+                        cursor: var(--pointer);
+                        &:hover {
+                            background-color: #161414ba;
+                        }
+                    }
+                `}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreBar({ id_room: data._id, ...data.user });
+                }}
+            >
+                <DotI />
+            </Div>
+        </Div>
     );
 };
 export default ListAccounts;

@@ -262,7 +262,7 @@ const Conversation: React.FC<{
                 | undefined = ServerBusy(res, dispatch);
 
             if (data) {
-                setConversation({ ...conversation, room: [], deleted: data.deleted });
+                setConversation({ ...conversation, rooms: [], deleted: data.deleted });
                 dispatch(setDelIds(data));
             }
         }
@@ -308,41 +308,41 @@ const Conversation: React.FC<{
     const ye = !moves.some((m) => m === conversation?._id || m === conversation?.user.id);
 
     const handleImageUploadBg = async (e: any) => {
-        if (!ye) e.preventDefault();
-        if (conversation && ye) {
-            const files = e.target.files;
-            const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', false);
-            const fileC: any = upLoad[0];
-            const formData = new FormData();
-            if (fileC) {
-                formData.append('file', fileC); // assign file and _id of the file upload
-                if (conversation.background) formData.append('old_id', conversation.background.id);
-                const re = await fileWorkerAPI.addFiles(formData);
-                if (re?.length) {
-                    const res: { userId: string; latestChatId: string } = await chatAPI.setBackground({
-                        latestChatId: conversation.room[0]._id,
-                        conversationId: conversation._id,
-                        id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
-                    });
-                    if (res)
-                        setConversation((pre) => {
-                            if (pre)
-                                return {
-                                    ...pre,
-                                    background: {
-                                        id: fileC._id,
-                                        v: getFilesToPre[0].link,
-                                        type: getFilesToPre[0].type,
-                                        userId: res.userId,
-                                        latestChatId: res.latestChatId,
-                                    },
-                                };
-                            return pre;
-                        });
-                }
-            }
-            e.target.value = '';
-        }
+        // if (!ye) e.preventDefault();
+        // if (conversation && ye) {
+        //     const files = e.target.files;
+        //     const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', false);
+        //     const fileC: any = upLoad[0];
+        //     const formData = new FormData();
+        //     if (fileC) {
+        //         formData.append('file', fileC); // assign file and _id of the file upload
+        //         if (conversation.background) formData.append('old_id', conversation.background.id);
+        //         const re = await fileWorkerAPI.addFiles(formData);
+        //         if (re?.length) {
+        //             const res: { userId: string; latestChatId: string } = await chatAPI.setBackground({
+        //                 latestChatId: conversation.room[0]._id,
+        //                 conversationId: conversation._id,
+        //                 id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
+        //             });
+        //             if (res)
+        //                 setConversation((pre) => {
+        //                     if (pre)
+        //                         return {
+        //                             ...pre,
+        //                             background: {
+        //                                 id: fileC._id,
+        //                                 v: getFilesToPre[0].link,
+        //                                 type: getFilesToPre[0].type,
+        //                                 userId: res.userId,
+        //                                 latestChatId: res.latestChatId,
+        //                             },
+        //                         };
+        //                     return pre;
+        //                 });
+        //         }
+        //     }
+        //     e.target.value = '';
+        // }
     };
     const removeBall = useMutation(
         async (xd: string) => {
@@ -505,23 +505,23 @@ const Conversation: React.FC<{
             onClick: () => handleUndo(),
         });
     }
-    if (conversation?.room[0]?.id) {
-        dataMore.options.push({
-            id: 5,
-            name: conversationText.optionRoom.del,
-            load: loadDel,
-            icon: loadDel ? (
-                <DivLoading css="font-size: 12px; margin: 0;">
-                    <LoadingI />
-                </DivLoading>
-            ) : (
-                <MinusI />
-            ),
-            onClick: () => {
-                if (ye) handleDelete();
-            },
-        });
-    }
+    // if (conversation?.room[0]?.id) {
+    //     dataMore.options.push({
+    //         id: 5,
+    //         name: conversationText.optionRoom.del,
+    //         load: loadDel,
+    //         icon: loadDel ? (
+    //             <DivLoading css="font-size: 12px; margin: 0;">
+    //                 <LoadingI />
+    //             </DivLoading>
+    //         ) : (
+    //             <MinusI />
+    //         ),
+    //         onClick: () => {
+    //             if (ye) handleDelete();
+    //         },
+    //     });
+    // }
     const handleOnKeyup = (e: any) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -696,7 +696,7 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {conversation && conversation?.pins?.length ? (
+                {/* {conversation && conversation?.pins?.length ? (
                     <PinChat
                         one={one}
                         itemPin={itemPin}
@@ -714,7 +714,7 @@ const Conversation: React.FC<{
                     />
                 ) : (
                     ''
-                )}
+                )} */}
                 <Div
                     ref={ERef}
                     width="100%"
@@ -741,132 +741,136 @@ const Conversation: React.FC<{
                         if (!scrollCheck.current) scrollCheck.current = true;
                     }}
                 >
-                    {conversation?.room.map((rc, index, arr) => {
+                    {conversation?.rooms.map((aa, index) => {
                         // const timePin = moment(conversation.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
-                        let timeS = '';
-                        const mn = moment(arr[index].createdAt); //show time for every day
-                        if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
-                            timeS = '------ ' + mn.locale(lg).format('LL') + ' ------';
-                            date1.current = mn;
-                        } else {
-                            timeS = '';
-                        }
+                        return aa.filter.map((p) =>
+                            p.data.map((rc, index, arr) => {
+                                let timeS = '';
+                                const mn = moment(arr[index].createdAt); //show time for every day
+                                if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
+                                    timeS = '------ ' + mn.locale(lg).format('LL') + ' ------';
+                                    date1.current = mn;
+                                } else {
+                                    timeS = '';
+                                }
 
-                        if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD')) timeS = '';
-                        console.log(timeS, 'Times', mn);
-                        if (rc?.length && rc?.length > 0) {
-                            if (writingBy && writingBy.length > 0)
-                                return (
-                                    <Div
-                                        key={rc._id}
-                                        display="block"
-                                        className="noTouch"
-                                        css={`
-                                            position: relative;
-                                            justify-content: left;
-                                            align-items: center;
-                                            margin-bottom: 20px;
-                                        `}
-                                    >
-                                        <Div css="width: 70%;justify-content: left; z-index: 11; transition: 1s linear; position: relative;">
-                                            <P
-                                                z="1rem"
+                                if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD')) timeS = '';
+                                console.log(timeS, 'Times', mn);
+                                if (rc?.length && rc?.length > 0) {
+                                    if (writingBy && writingBy.length > 0)
+                                        return (
+                                            <Div
+                                                key={rc._id}
+                                                display="block"
+                                                className="noTouch"
                                                 css={`
-                                                    position: absolute;
-                                                    bottom: -15px;
-                                                    left: 25px;
+                                                    position: relative;
+                                                    justify-content: left;
+                                                    align-items: center;
+                                                    margin-bottom: 20px;
                                                 `}
                                             >
-                                                {conversation?.user.fullName} {conversationText.phrase.input.write}...
-                                            </P>
-                                            <Avatar
-                                                src={conversation?.user.avatar}
-                                                alt={conversation?.user.fullName}
-                                                gender={conversation?.user.gender}
-                                                radius="50%"
-                                                css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
-                                            />{' '}
-                                            <Div
-                                                wrap="wrap"
-                                                css=" padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
-                                            >
-                                                {Dot.map((f, index) => (
-                                                    <Div key={f} css=" position: relative;">
-                                                        <Div
-                                                            width="12px"
-                                                            css={`
-                                                                animation: writingChat 0.5s linear;
-                                                                @keyframes writingChat {
-                                                                    0% {
-                                                                        width: 0px;
-                                                                    }
-                                                                    50% {
-                                                                        width: 6px;
-                                                                    }
-                                                                    100% {
-                                                                        width: 12px;
-                                                                    }
-                                                                }
-                                                            `}
-                                                        >
-                                                            <MinusI />
-                                                        </Div>
-                                                        {index + 1 === Dot.length && (
-                                                            <Div
-                                                                css={`
-                                                                    position: absolute;
-                                                                    right: -14px;
-                                                                    top: -9px;
-                                                                    animation: writingChatPen 0.5s linear;
-                                                                    @keyframes writingChatPen {
-                                                                        100% {
-                                                                            right: -14px;
+                                                <Div css="width: 70%;justify-content: left; z-index: 11; transition: 1s linear; position: relative;">
+                                                    <P
+                                                        z="1rem"
+                                                        css={`
+                                                            position: absolute;
+                                                            bottom: -15px;
+                                                            left: 25px;
+                                                        `}
+                                                    >
+                                                        {conversation?.user.fullName} {conversationText.phrase.input.write}...
+                                                    </P>
+                                                    <Avatar
+                                                        src={conversation?.user.avatar}
+                                                        alt={conversation?.user.fullName}
+                                                        gender={conversation?.user.gender}
+                                                        radius="50%"
+                                                        css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
+                                                    />{' '}
+                                                    <Div
+                                                        wrap="wrap"
+                                                        css=" padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
+                                                    >
+                                                        {Dot.map((f, index) => (
+                                                            <Div key={f} css=" position: relative;">
+                                                                <Div
+                                                                    width="12px"
+                                                                    css={`
+                                                                        animation: writingChat 0.5s linear;
+                                                                        @keyframes writingChat {
+                                                                            0% {
+                                                                                width: 0px;
+                                                                            }
+                                                                            50% {
+                                                                                width: 6px;
+                                                                            }
+                                                                            100% {
+                                                                                width: 12px;
+                                                                            }
                                                                         }
-                                                                    }
-                                                                `}
-                                                            >
-                                                                {era ? <EraserI /> : <PenI />}
+                                                                    `}
+                                                                >
+                                                                    <MinusI />
+                                                                </Div>
+                                                                {index + 1 === Dot.length && (
+                                                                    <Div
+                                                                        css={`
+                                                                            position: absolute;
+                                                                            right: -14px;
+                                                                            top: -9px;
+                                                                            animation: writingChatPen 0.5s linear;
+                                                                            @keyframes writingChatPen {
+                                                                                100% {
+                                                                                    right: -14px;
+                                                                                }
+                                                                            }
+                                                                        `}
+                                                                    >
+                                                                        {era ? <EraserI /> : <PenI />}
+                                                                    </Div>
+                                                                )}
                                                             </Div>
-                                                        )}
+                                                        ))}
                                                     </Div>
-                                                ))}
+                                                </Div>
                                             </Div>
-                                        </Div>
-                                    </Div>
-                                );
-                            return null;
-                        }
+                                        );
+                                    return null;
+                                }
 
-                        return (
-                            <ItemsRoom
-                                background={conversation.background}
-                                choicePin={choicePin}
-                                setChoicePin={setChoicePin}
-                                targetChild={targetChild}
-                                phraseText={conversationText.phrase}
-                                roomId={conversation._id}
-                                key={rc.text.t + index}
-                                options={optionsForItem}
-                                setOptions={setOptions}
-                                timeS={timeS}
-                                rc={rc}
-                                index={index}
-                                archetype={arr}
-                                handleWatchMore={handleWatchMore}
-                                ERef={ERef}
-                                del={del}
-                                handleTime={handleTime}
-                                user={conversation.user}
-                                dataFirst={dataFirst}
-                                wch={wch}
-                                setWch={setWch}
-                                rr={rr}
-                                pins={conversation.pins}
-                                roomImage={roomImage}
-                                setRoomImage={setRoomImage}
-                                scrollCheck={scrollCheck}
-                                loadingChat={loadingChat}
-                            />
+                                return (
+                                    <ItemsRoom
+                                        background={conversation.background}
+                                        choicePin={choicePin}
+                                        setChoicePin={setChoicePin}
+                                        targetChild={targetChild}
+                                        phraseText={conversationText.phrase}
+                                        roomId={conversation._id}
+                                        key={rc.text.t + index}
+                                        options={optionsForItem}
+                                        setOptions={setOptions}
+                                        timeS={timeS}
+                                        rc={rc}
+                                        index={index}
+                                        archetype={arr}
+                                        handleWatchMore={handleWatchMore}
+                                        ERef={ERef}
+                                        del={del}
+                                        handleTime={handleTime}
+                                        user={conversation.user}
+                                        dataFirst={dataFirst}
+                                        wch={wch}
+                                        setWch={setWch}
+                                        rr={rr}
+                                        pins={conversation.pins}
+                                        roomImage={roomImage}
+                                        setRoomImage={setRoomImage}
+                                        scrollCheck={scrollCheck}
+                                        loadingChat={loadingChat}
+                                    />
+                                );
+                            }),
                         );
                     })}
 

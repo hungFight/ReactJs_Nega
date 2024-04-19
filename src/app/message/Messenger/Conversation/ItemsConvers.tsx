@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PropsBackground_chat, PropsChat, PropsImageOrVideos, PropsItemRoom, PropsPinC } from './LogicConver';
+import { PropsBackground_chat, PropsChat, PropsImageOrVideos, PropsItemRoom, PropsItemsData, PropsPinC } from './LogicConver';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -10,7 +10,7 @@ import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessenger';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
-type PropsRc = PropsItemRoom;
+type PropsRc = PropsItemsData;
 const ItemsRoom: React.FC<{
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
     pins: PropsPinC[];
@@ -111,7 +111,7 @@ const ItemsRoom: React.FC<{
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
 
-    if (rc.id === dataFirst.id && !wch) {
+    if (rc.userId === dataFirst.id && !wch) {
         if (rc.seenBy.includes(user.id) && !rr.current) {
             rr.current = rc._id;
         } else {
@@ -218,7 +218,7 @@ const ItemsRoom: React.FC<{
             {rc?.delete !== dataFirst.id && timeS && index !== 0 && (
                 <P css="font-size: 1.2rem; text-align: center;padding: 2px 0;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">{timeS}</P>
             )}
-            {rc.id === dataFirst.id
+            {rc.userId === dataFirst.id
                 ? rc?.delete !== dataFirst.id && (
                       <>
                           <Div
@@ -870,7 +870,7 @@ const ItemsRoom: React.FC<{
                                   onTouchStart={(e) => {
                                       handleTouchStart({
                                           _id: rc._id,
-                                          id: rc.id,
+                                          id: rc.userId,
                                           text: rc.text.t,
                                           secondary: rc?.secondary,
                                           imageOrVideos: rc.imageOrVideos,
@@ -908,7 +908,7 @@ const ItemsRoom: React.FC<{
                                               onClick={() => {
                                                   setOptions({
                                                       _id: rc._id,
-                                                      id: rc.id,
+                                                      id: rc.userId,
                                                       text: rc.text.t,
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,

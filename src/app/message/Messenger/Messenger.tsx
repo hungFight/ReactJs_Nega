@@ -201,7 +201,7 @@ const Send: React.FC<{
                         ) : (
                             rooms.map((r) => (
                                 <ListAccounts
-                                    key={r._id + r.room.id}
+                                    key={r._id}
                                     data={r}
                                     itemLg={itemLg[lg]}
                                     userId={userId}

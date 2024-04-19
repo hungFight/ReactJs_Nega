@@ -257,67 +257,66 @@ function App() {
     }
     const [fileUrl, setFileUrl] = useState('');
     useEffect(() => {
-        const search = async () => {
-            if (openProfile.newProfile.length === 1) {
-                const data = await fetchF(openProfile.newProfile);
-                if (data)
-                    if (userData.length) {
-                        let check = false;
-                        userData.forEach((da) => {
-                            if (da.id === userId) check = true;
-                        });
-                        if (!check) {
-                            setUsersData((pre) => [data[0], ...pre]);
-                        } else {
-                            const newD = userData.filter((us) => us.id !== data[0].id);
-                            const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
-                            setUsersData([...r]);
-                        }
-                    } else {
-                        setUsersData(data);
-                    }
-            }
-        };
-        if (userId && token && !handleCheck.current) search();
-        handleCheck.current = false;
-        socket.on(`${userId}roomChat`, async (dt: string) => {
-            const data: PropsRoomChat = JSON.parse(dt);
-            console.log(data, 'datadata');
-
-            const key = `chat_${data.room.secondary ? data.room.secondary : data._id}`;
-            const eleDiv1 = document.createElement('div');
-            const eleDiv2 = document.createElement('div');
-            const eleImg = document.createElement('img');
-            const eleH3 = document.createElement('h3');
-            const eleDiv3 = document.createElement('div');
-            const eleP = document.createElement('p');
-            const elePState = document.createElement('p');
-            eleDiv1.className = 'showChatDiv1';
-            eleImg.className = 'showChatImg';
-            eleImg.src = subImage(data.user.avatar, data.user.gender);
-            eleImg.alt = data.user.fullName;
-            eleDiv2.className = 'showChatDiv2';
-            eleDiv2.style.color = colorText;
-            eleH3.className = 'showChatName';
-            eleH3.innerText = data.user.fullName;
-            eleDiv3.className = 'showChatDiv3';
-            eleP.className = 'showChatTitle';
-            eleP.innerText = '... ' + decrypt(data.room.text.t, key);
-            elePState.className = 'showChatPState';
-            elePState.innerText = 'Vừa xong';
-            //Add
-            eleDiv3.appendChild(eleP);
-            eleDiv3.appendChild(elePState);
-            eleDiv2.appendChild(eleH3);
-            eleDiv2.appendChild(eleDiv3);
-            eleDiv1.appendChild(eleImg);
-            eleDiv1.appendChild(eleDiv2);
-            if (showChat.current) showChat.current.insertAdjacentElement('beforeend', eleDiv1);
-            const eleDiv1s = document.querySelectorAll('.showChatDiv1');
-            console.log('789', data);
-            ListEl.current = eleDiv1s;
-            expire(eleDiv1s);
-        });
+        // const search = async () => {
+        //     if (openProfile.newProfile.length === 1) {
+        //         const data = await fetchF(openProfile.newProfile);
+        //         if (data)
+        //             if (userData.length) {
+        //                 let check = false;
+        //                 userData.forEach((da) => {
+        //                     if (da.id === userId) check = true;
+        //                 });
+        //                 if (!check) {
+        //                     setUsersData((pre) => [data[0], ...pre]);
+        //                 } else {
+        //                     const newD = userData.filter((us) => us.id !== data[0].id);
+        //                     const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
+        //                     setUsersData([...r]);
+        //                 }
+        //             } else {
+        //                 setUsersData(data);
+        //             }
+        //     }
+        // };
+        // if (userId && token && !handleCheck.current) search();
+        // handleCheck.current = false;
+        // socket.on(`${userId}roomChat`, async (dt: string) => {
+        //     const data: PropsRoomChat = JSON.parse(dt);
+        //     console.log(data, 'datadata');
+        //     const key = `chat_${data.room.secondary ? data.room.secondary : data._id}`;
+        //     const eleDiv1 = document.createElement('div');
+        //     const eleDiv2 = document.createElement('div');
+        //     const eleImg = document.createElement('img');
+        //     const eleH3 = document.createElement('h3');
+        //     const eleDiv3 = document.createElement('div');
+        //     const eleP = document.createElement('p');
+        //     const elePState = document.createElement('p');
+        //     eleDiv1.className = 'showChatDiv1';
+        //     eleImg.className = 'showChatImg';
+        //     eleImg.src = subImage(data.user.avatar, data.user.gender);
+        //     eleImg.alt = data.user.fullName;
+        //     eleDiv2.className = 'showChatDiv2';
+        //     eleDiv2.style.color = colorText;
+        //     eleH3.className = 'showChatName';
+        //     eleH3.innerText = data.user.fullName;
+        //     eleDiv3.className = 'showChatDiv3';
+        //     eleP.className = 'showChatTitle';
+        //     eleP.innerText = '... ' + decrypt(data.room.text.t, key);
+        //     elePState.className = 'showChatPState';
+        //     elePState.innerText = 'Vừa xong';
+        //     //Add
+        //     eleDiv3.appendChild(eleP);
+        //     eleDiv3.appendChild(elePState);
+        //     eleDiv2.appendChild(eleH3);
+        //     eleDiv2.appendChild(eleDiv3);
+        //     eleDiv1.appendChild(eleImg);
+        //     eleDiv1.appendChild(eleDiv2);
+        //     if (showChat.current) showChat.current.insertAdjacentElement('beforeend', eleDiv1);
+        //     const eleDiv1s = document.querySelectorAll('.showChatDiv1');
+        //     console.log('789', data);
+        //     ListEl.current = eleDiv1s;
+        //     expire(eleDiv1s);
+        // });
     }, [openProfile]);
     const handleStopClearing = () => {
         // stop clearing the show message

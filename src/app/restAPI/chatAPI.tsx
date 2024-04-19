@@ -1,10 +1,10 @@
-import { PropsChat, PropsConversationCustoms, PropsImageOrVideos, PropsRoom } from '~/Message/Messenger/Conversation/LogicConver';
+import { PropsChat, PropsConversationCustoms, PropsImageOrVideos, PropsRooms } from '~/Message/Messenger/Conversation/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import { PropsId_chats } from 'src/App';
-export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
+export type PropsRoomChat = PropsConversationCustoms & PropsRooms;
 
 class Messenger {
     send = async (fda: any) => {
@@ -27,7 +27,7 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    getChat = async (id_chat: PropsId_chats, limit: number, offset: number, moreChat: boolean = false, id_room?: string) => {
+    getChat = async (id_chat: PropsId_chats, limit: number, offset: number, moreChat: boolean = false, indexRef: number, id_room?: string) => {
         console.log(id_room, 'id_room', moreChat);
 
         try {
@@ -39,6 +39,7 @@ class Messenger {
                     limit,
                     offset,
                     moreChat,
+                    indexRef,
                 },
             });
             return res.data;
