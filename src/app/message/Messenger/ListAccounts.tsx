@@ -113,11 +113,11 @@ const ListAccounts: React.FC<{
             onClick={(e) => {
                 if (!chats.some((p) => p.id_room === data._id || p.id_other === data.user.id)) {
                     dispatch(onChats({ id_room: data._id, id_other: data.user.id }));
-                    setId_chats((pre) => {
-                        if (!pre.some((p) => p.id_room === data._id || p.id_other === data.user.id)) return [...pre, { id_room: data._id, id_other: data.user.id }];
-                        return pre;
-                    });
                 }
+                setId_chats((pre) => {
+                    if (!pre.some((p) => p.id_room === data._id || p.id_other === data.user.id)) return [...pre, { id_room: data._id, id_other: data.user.id }];
+                    return pre;
+                });
 
                 if (seenBy.current) seenBy.current.setAttribute('style', 'color: #adadadde');
             }}

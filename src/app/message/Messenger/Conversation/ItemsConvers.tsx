@@ -408,7 +408,7 @@ const ItemsRoom: React.FC<{
                                   onTouchStart={(e) => {
                                       handleTouchStart({
                                           _id: rc._id,
-                                          id: rc.id,
+                                          id: rc.userId,
                                           text: rc.text.t,
                                           secondary: rc?.secondary,
                                           imageOrVideos: rc.imageOrVideos,
@@ -444,7 +444,7 @@ const ItemsRoom: React.FC<{
                                               onClick={() => {
                                                   setOptions({
                                                       _id: rc._id,
-                                                      id: rc.id, // id_user
+                                                      id: rc.userId, // id_user
                                                       text: rc.text.t,
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,

@@ -548,18 +548,38 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             const images = urlS.map((i) => {
                 return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
             });
+            const id_s = uuidv4();
             setLoadingChat(id_);
             const chat: any = {
                 createdAt: DateTime(),
                 imageOrVideos: images,
                 seenBy: [],
                 text: { t: regexCus(value), icon: '' },
-                id: userId,
+                userId: userId,
                 _id: id_,
             };
-            conversation.rooms.unshift(chat);
+            const con = conversation.rooms[conversation.rooms.length - 1];
+            if (con && con.count < 10) {
+                if (con.filter[con.filter.length - 1].count < 2) {
+                    con.filter[con.filter.length - 1].count += 1;
+                    con.filter[con.filter.length - 1].data.unshift(chat);
+                } else {
+                    con.filter[con.filter.length - 1].full = true;
+                    con.filter.push({ _id: id_s, count: 1, full: false, index: 1, data: [chat] });
+                }
+            } else {
+                conversation.rooms.unshift({
+                    chatId: conversation._id,
+                    count: 1,
+                    full: false,
+                    index: (con.index ?? 0) + 1,
+                    filter: [{ _id: id_s, count: 1, full: false, index: 1, data: [chat] }],
+                    _id: id_s,
+                });
+            }
+            console.log(conversation.rooms, 'conversation.rooms');
+
             const formData = new FormData();
-            const id_s = uuidv4();
             const fda: any = {};
             if (value) fda.value = encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`);
             if (conversationId) formData.append('conversationId', conversationId); // conversation._id
@@ -567,6 +587,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             if (id_s && !conversation._id) fda.id_s = id_s; // first it have no _id of the conversationId then id_s is replaced
             if (id_other) fda.id_others = id_other;
             fda.valueInfoFile = urlS;
+            fda.conversationId = conversation._id;
+            fda.indexRoom = conversation.rooms[conversation.rooms.length - 1].index ?? 0;
 
             const res = await sendChatAPI.send(fda);
             const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
