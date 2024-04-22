@@ -18,13 +18,13 @@ const axiosJWTFile = axios.create({
     },
 });
 class refreshToken {
-    private isInterceptorAttached: boolean = false;
-    private isInterceptorAttachedR: boolean = false;
+    private static isInterceptorAttached: boolean = false;
+    private static isInterceptorAttachedR: boolean = false;
     axiosJWTs() {
         const token = Cookies.get('tks');
         console.log('token here', token);
         let i = 0;
-        if (!this.isInterceptorAttached && token) {
+        if (!refreshToken.isInterceptorAttached && token) {
             let tokenN = token;
 
             axiosJWT.interceptors.request.use(
@@ -54,7 +54,7 @@ class refreshToken {
                                     });
                                 }
                             }
-                            this.isInterceptorAttached = true;
+                            refreshToken.isInterceptorAttached = true;
                             resolve(config);
                         } catch (error) {
                             reject(error);
@@ -73,7 +73,7 @@ class refreshToken {
         const token = Cookies.get('tks');
         console.log('token here', token);
         let i = 0;
-        if (!this.isInterceptorAttachedR && token) {
+        if (!refreshToken.isInterceptorAttachedR && token) {
             let tokenN = token;
             axiosJWTFile.interceptors.request.use(
                 async (config) => {
@@ -102,7 +102,7 @@ class refreshToken {
                                     });
                                 }
                             }
-                            this.isInterceptorAttachedR = true;
+                            refreshToken.isInterceptorAttachedR = true;
                             resolve(config);
                         } catch (error) {
                             reject(error);

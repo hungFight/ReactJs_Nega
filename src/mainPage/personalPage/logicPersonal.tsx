@@ -353,7 +353,7 @@ export default function LogicView(
         setLoads({ ...loads, friend: false });
     };
     const handleMessenger = async (id: string) => {
-        dispatch(onChats({ id_room: undefined, id_other: id }));
+        dispatch(onChats({ conversationId: undefined, id_other: id }));
         setId_chats((pre) => {
             if (!pre.some((p) => p.id_other === id)) {
                 return [...pre, { id_other: id }];

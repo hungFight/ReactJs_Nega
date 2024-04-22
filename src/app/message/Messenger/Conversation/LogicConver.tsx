@@ -73,12 +73,15 @@ export interface PropsItemRoom {
     chatId: string;
     full: boolean;
     index: number;
+    createdAt: string | Date;
     count: number;
     filter: {
         _id: string;
         count: number;
         full: boolean;
         index: number;
+        indexQuery: number;
+        createdAt: string | Date;
         data: PropsItemsData[];
     }[];
 }
@@ -158,6 +161,7 @@ export function regexCus(val: string): string {
     }
     return val;
 }
+const installOffset = 10;
 export type PropsChat = PropsConversationCustoms & PropsRooms;
 export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
     const dispatch = useDispatch();
@@ -170,7 +174,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const del = useRef<HTMLDivElement | null>(null);
     const cRef = useRef<number>(0);
     const mRef = useRef<any>(0);
-    const offset = useRef<number>(1);
+    const offset = useRef<number>(installOffset);
     const offsetState = useRef<number>(1);
     const indexRef = useRef<number>(1);
     const limit = 30;
@@ -258,7 +262,15 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             setLoading(true);
 
             cRef.current = 2;
-            const res = await sendChatAPi.getChat(id_chat, limit, offset.current, moreChat, indexRef.current, chatRef.current?._id);
+            const res = await sendChatAPi.getChat(
+                id_chat,
+                limit,
+                offset.current,
+                moreChat,
+                indexRef.current,
+                chatRef.current?._id,
+                chatRef.current ? chatRef.current.rooms[chatRef.current.rooms.length - 1]._id : undefined,
+            );
             const dataC: PropsConversationCustoms & PropsRooms = ServerBusy(res, dispatch);
             console.log(dataC, 'chatRef.current');
 
@@ -282,8 +294,25 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 }
                             }
                         });
+                        d.data.sort((a, b) => {
+                            const dateA = new Date(a.createdAt);
+                            const dateB = new Date(b.createdAt);
+                            // Compare `dateB` with `dateA` for descending order
+                            // If `dateB` is greater (newer) than `dateA`, it should come first
+                            if (dateB > dateA) {
+                                return 1; // `b` comes before `a` (newest first)
+                            } else if (dateB < dateA) {
+                                return -1; // `a` comes before `b` (older first)
+                            } else {
+                                return 0; // Dates are equal
+                            }
+                        });
                     });
                 });
+                if (dataC.rooms.length) {
+                    indexRef.current = dataC.rooms[0]?.index;
+                    offset.current = dataC.rooms[0]?.filter[0]?.indexQuery;
+                }
                 if (moreChat) {
                     cRef.current = 8;
                     if (dataC.rooms.length > 0 && chatRef.current) {
@@ -294,9 +323,9 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     }
                 } else {
                     chatRef.current = dataC;
+
                     cRef.current = 7;
                 }
-                offset.current += 1;
             }
             setConversation(chatRef.current);
         }
@@ -565,16 +594,17 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     con.filter[con.filter.length - 1].data.unshift(chat);
                 } else {
                     con.filter[con.filter.length - 1].full = true;
-                    con.filter.push({ _id: id_s, count: 1, full: false, index: 1, data: [chat] });
+                    con.filter.unshift({ _id: id_s, count: 1, full: false, index: 1, data: [chat], indexQuery: installOffset, createdAt: new Date() });
                 }
             } else {
                 conversation.rooms.unshift({
                     chatId: conversation._id,
                     count: 1,
                     full: false,
-                    index: (con.index ?? 0) + 1,
-                    filter: [{ _id: id_s, count: 1, full: false, index: 1, data: [chat] }],
+                    index: (con?.index ?? 0) + 1,
+                    filter: [{ _id: id_s, count: 1, full: false, index: 1, data: [chat], indexQuery: installOffset, createdAt: new Date() }],
                     _id: id_s,
+                    createdAt: new Date(),
                 });
             }
             console.log(conversation.rooms, 'conversation.rooms');

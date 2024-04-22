@@ -139,7 +139,7 @@ export interface PropsUserPer {
     }[];
 }
 export type PropsId_chats = {
-    id_room?: string;
+    conversationId?: string;
     id_other: string;
     top?: number;
     left?: number;
@@ -405,8 +405,8 @@ function App() {
                             <Div css="position: fixed; overflow: overlay; max-width: 100%; bottom: 8px; left: 4px; z-index: 9999;@media(max-width: 500px){width: auto;} @media(max-width: 768px){width: 100%;left: 0;height:100%;}">
                                 <Div css="position: relative; width: inherit;">
                                     {id_chats?.map((room, index) => {
-                                        const permanent = { index: index + 1, id: room.id_room || room.id_other };
-                                        if (chats.some((c) => c.id_room === room.id_room && c.id_other === room.id_other))
+                                        const permanent = { index: index + 1, id: room.conversationId || room.id_other };
+                                        if (chats.some((c) => c.conversationId === room.conversationId && c.id_other === room.id_other))
                                             return (
                                                 <Conversation
                                                     conversationText={ConversationText[lg]}

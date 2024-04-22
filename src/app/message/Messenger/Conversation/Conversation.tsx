@@ -646,9 +646,7 @@ const Conversation: React.FC<{
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center;  cursor: var(--pointer);font-size: 30px; @media(min-width: 500px){ width: 30px; font-size: 25px;}"
                         onClick={() => {
                             if (del.current) {
-                                dispatch(offChats(chat.filter((c) => c.id_other !== conversation?.user.id && c.id_room !== conversation?._id)));
-
-                                // del.current.remove();
+                                dispatch(offChats(chat.filter((c) => c.id_other !== conversation?.user.id && c.conversationId !== conversation?._id)));
                             }
                         }}
                     >

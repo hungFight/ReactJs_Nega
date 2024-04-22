@@ -27,19 +27,20 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    getChat = async (id_chat: PropsId_chats, limit: number, offset: number, moreChat: boolean = false, indexRef: number, id_room?: string) => {
-        console.log(id_room, 'id_room', moreChat);
+    getChat = async (id_chat: PropsId_chats, limit: number, offset: number, moreChat: boolean = false, indexRef: number, conversationId?: string, id_room?: string): Promise<PropsChat> => {
+        console.log(conversationId, 'conversationId', moreChat);
 
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.get<PropsChat>('/messenger/getChat', {
+            const res = await Axios.get('/messenger/getChat', {
                 params: {
-                    id_room: id_chat.id_room ? id_chat.id_room : id_room,
+                    conversationId: id_chat.conversationId ? id_chat.conversationId : conversationId,
                     id_other: id_chat.id_other,
                     limit,
                     offset,
                     moreChat,
                     indexRef,
+                    id_room,
                 },
             });
             return res.data;
