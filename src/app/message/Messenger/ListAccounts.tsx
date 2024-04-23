@@ -20,7 +20,7 @@ const ListAccounts: React.FC<{
     colorBg: number;
     setMoreBar: React.Dispatch<
         React.SetStateAction<{
-            id_room: string;
+            conversationId: string;
             id: string;
             avatar: string | undefined;
             fullName: string;
@@ -49,7 +49,7 @@ const ListAccounts: React.FC<{
 
     let time: string | number | NodeJS.Timeout | undefined;
     const handleTouchStart = (user: {
-        id_room: string;
+        conversationId: string;
         id: string;
         avatar: string | undefined;
         fullName: string;
@@ -76,8 +76,8 @@ const ListAccounts: React.FC<{
         // check have you seen this chat?
         let check = false;
         chats.forEach((i) => {
-            if (i?.id_room) {
-                if (i.id_room === data._id) {
+            if (i?.conversationId) {
+                if (i.conversationId === data._id) {
                     check = true;
                 }
             } else {
@@ -108,14 +108,14 @@ const ListAccounts: React.FC<{
     return (
         <Div
             onTouchMove={handleTouchMove}
-            onTouchStart={() => handleTouchStart({ id_room: data._id, ...data.user, deleted: data.deleted })}
+            onTouchStart={() => handleTouchStart({ conversationId: data._id, ...data.user, deleted: data.deleted })}
             onTouchEnd={handleTouchEnd}
             onClick={(e) => {
-                if (!chats.some((p) => p.id_room === data._id || p.id_other === data.user.id)) {
-                    dispatch(onChats({ id_room: data._id, id_other: data.user.id }));
+                if (!chats.some((p) => p.conversationId === data._id || p.id_other === data.user.id)) {
+                    dispatch(onChats({ conversationId: data._id, id_other: data.user.id }));
                 }
                 setId_chats((pre) => {
-                    if (!pre.some((p) => p.id_room === data._id || p.id_other === data.user.id)) return [...pre, { id_room: data._id, id_other: data.user.id }];
+                    if (!pre.some((p) => p.conversationId === data._id || p.id_other === data.user.id)) return [...pre, { conversationId: data._id, id_other: data.user.id }];
                     return pre;
                 });
 
@@ -235,7 +235,7 @@ const ListAccounts: React.FC<{
                 `}
                 onClick={(e) => {
                     e.stopPropagation();
-                    setMoreBar({ id_room: data._id, ...data.user });
+                    setMoreBar({ conversationId: data._id, ...data.user });
                 }}
             >
                 <DotI />

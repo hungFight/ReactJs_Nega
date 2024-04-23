@@ -44,8 +44,7 @@ export interface PropsDataMoreConversation {
         icon: JSX.Element;
         onClick: (e?: any) => void;
     }[];
-    id_room: string | undefined;
-
+    conversationId: string | undefined;
     id: string | undefined;
     avatar: string | undefined;
     fullName: string | undefined;
@@ -55,7 +54,7 @@ const Conversation: React.FC<{
     index: number;
     colorText: string;
     colorBg: number;
-    id_chat: { id_room?: string; id_other: string };
+    id_chat: { conversationId?: string; id_other: string };
     dataFirst: PropsUser;
     currentPage: number;
     chat: PropsId_chats[];
@@ -371,7 +370,7 @@ const Conversation: React.FC<{
         },
     );
     const dataMore: PropsDataMoreConversation = {
-        id_room: conversation?._id,
+        conversationId: conversation?._id,
         id: conversation?.user.id,
         avatar: conversation?.user.avatar,
         fullName: conversation?.user.fullName,
@@ -839,12 +838,14 @@ const Conversation: React.FC<{
 
                                 return (
                                     <ItemsRoom
+                                        roomId={aa._id}
+                                        filterId={p._id}
                                         background={conversation.background}
                                         choicePin={choicePin}
                                         setChoicePin={setChoicePin}
                                         targetChild={targetChild}
                                         phraseText={conversationText.phrase}
-                                        roomId={conversation._id}
+                                        conversationId={conversation._id}
                                         key={rc.text.t + index}
                                         options={optionsForItem}
                                         setOptions={setOptions}

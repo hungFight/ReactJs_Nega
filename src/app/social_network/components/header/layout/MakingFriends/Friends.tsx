@@ -48,12 +48,6 @@ const Friends: React.FC<{
         const res = await peopleAPI.getFriends(offsetRef.current, limit, 'friends');
         const data = ServerBusy(res, dispatch);
         console.log('friends', data);
-        data.map((f: { avatar: string | undefined }) => {
-            if (f.avatar) {
-                const av = CommonUtils.convertBase64(f.avatar);
-                f.avatar = av;
-            }
-        });
         if (data) {
             dataRef.current = [...(dataRef.current ?? []), ...data];
             setData(dataRef.current);
@@ -86,6 +80,8 @@ const Friends: React.FC<{
             return pre;
         });
     };
+    console.log(data, 'friend data');
+
     const css = `    display: flex;
             align-items: center;
             padding: 4px 6px;

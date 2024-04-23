@@ -351,26 +351,36 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 }
             });
 
-            // socket.on(`Conversation_chat_deleteAll_${conversation._id}`, (deleteData: { chatId: string; userId: string; updatedAt: string }) => {
-            //     if (deleteData && deleteData.userId !== id_you) {
-            //         setConversation((pre) => {
-            //             if (pre)
-            //                 return {
-            //                     ...pre,
-            //                     room: pre.room.map((r) => {
-            //                         if (r._id === deleteData.chatId) {
-            //                             r.text.t = '';
-            //                             r.imageOrVideos = [];
-            //                             r.delete = 'all';
-            //                             r.updatedAt = deleteData.updatedAt;
-            //                         }
-            //                         return r;
-            //                     }),
-            //                 };
-            //             return pre;
-            //         });
-            //     }
-            // });
+            socket.on(`Conversation_chat_deleteAll_${conversation._id}`, (deleteData: { roomId: string; filterId: string; dataId: string; userId: string; updatedAt: string }) => {
+                if (deleteData && deleteData.userId !== id_you) {
+                    setConversation((pre) => {
+                        if (pre)
+                            return {
+                                ...pre,
+                                rooms: pre.rooms.map((r) => {
+                                    if (r._id === deleteData.roomId) {
+                                        r.filter.map((f) => {
+                                            if (f._id === deleteData.filterId) {
+                                                f.data.map((d) => {
+                                                    if (d._id === deleteData.dataId) {
+                                                        d.text.t = '';
+                                                        d.imageOrVideos = [];
+                                                        d.delete = 'all';
+                                                        d.updatedAt = deleteData.updatedAt;
+                                                    }
+                                                    return d;
+                                                });
+                                            }
+                                            return f;
+                                        });
+                                    }
+                                    return r;
+                                }),
+                            };
+                        return pre;
+                    });
+                }
+            });
             // socket.on(`Conversation_chat_update_${conversation._id}`, async (updateData: { chatId: string; data: PropsItemRoom; userId: string }) => {
             //     console.log(updateData, 'updateData');
             //     upPin.mutate({

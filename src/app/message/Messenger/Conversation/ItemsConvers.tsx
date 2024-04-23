@@ -10,8 +10,11 @@ import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessenger';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
+import { PropsOptionForItem } from './OptionForItems/OptionForItem';
 type PropsRc = PropsItemsData;
 const ItemsRoom: React.FC<{
+    roomId: string;
+    filterId: string;
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;
     pins: PropsPinC[];
     del: React.MutableRefObject<HTMLDivElement | null>;
@@ -29,37 +32,13 @@ const ItemsRoom: React.FC<{
         gender: number;
     };
     timeS: string;
-    setOptions: React.Dispatch<
-        React.SetStateAction<
-            | {
-                  _id: string;
-                  id: string;
-                  text: string;
-                  secondary?: string | undefined;
-                  who: string;
-                  byWhoCreatedAt: string;
-                  id_pin?: string;
-                  imageOrVideos: PropsImageOrVideos[];
-              }
-            | undefined
-        >
-    >;
-    options:
-        | {
-              _id: string;
-              id: string;
-              text: string;
-              secondary?: string | undefined;
-              who: string;
-              byWhoCreatedAt: string;
-              imageOrVideos: PropsImageOrVideos[];
-          }
-        | undefined;
+    setOptions: React.Dispatch<React.SetStateAction<PropsOptionForItem | undefined>>;
+    options: PropsOptionForItem | undefined;
     dataFirst: PropsUser;
     wch: string | undefined;
     setWch: React.Dispatch<React.SetStateAction<string | undefined>>;
     rr: React.MutableRefObject<string>;
-    roomId: string;
+    conversationId: string;
     phraseText: PropsPhraseText;
     choicePin: string;
     background?: PropsBackground_chat;
@@ -81,6 +60,8 @@ const ItemsRoom: React.FC<{
     scrollCheck: React.MutableRefObject<boolean>;
     loadingChat: string;
 }> = ({
+    roomId,
+    filterId,
     rc,
     index,
     archetype,
@@ -96,7 +77,7 @@ const ItemsRoom: React.FC<{
     wch,
     setWch,
     rr,
-    roomId,
+    conversationId,
     phraseText,
     targetChild,
     choicePin,
@@ -444,13 +425,15 @@ const ItemsRoom: React.FC<{
                                               onClick={() => {
                                                   setOptions({
                                                       _id: rc._id,
-                                                      id: rc.userId, // id_user
+                                                      userId: rc.userId, // id_user
                                                       text: rc.text.t,
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,
                                                       who: 'you',
                                                       byWhoCreatedAt: rc.createdAt,
                                                       id_pin: rc._id,
+                                                      roomId,
+                                                      filterId,
                                                   });
                                               }}
                                           >
@@ -908,12 +891,14 @@ const ItemsRoom: React.FC<{
                                               onClick={() => {
                                                   setOptions({
                                                       _id: rc._id,
-                                                      id: rc.userId,
+                                                      userId: rc.userId,
                                                       text: rc.text.t,
                                                       secondary: rc?.secondary,
                                                       imageOrVideos: rc.imageOrVideos,
                                                       who: 'others',
                                                       byWhoCreatedAt: rc.createdAt,
+                                                      roomId,
+                                                      filterId,
                                                   });
                                               }}
                                           >

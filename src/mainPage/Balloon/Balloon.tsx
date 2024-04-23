@@ -170,10 +170,10 @@ const Balloon: React.FC<{
                             top="0px"
                             left="0px"
                             onClick={() => {
-                                dispatch(onChats({ id_room: c._id, id_other: c.userId }));
+                                dispatch(onChats({ conversationId: c._id, id_other: c.userId }));
                                 setId_chats((pre) => {
-                                    if (!pre.some((p) => p.id_room === c._id && p.id_other === c.userId)) {
-                                        return [...pre, { id_room: c._id, id_other: c.userId }];
+                                    if (!pre.some((p) => p.conversationId === c._id && p.id_other === c.userId)) {
+                                        return [...pre, { conversationId: c._id, id_other: c.userId }];
                                     }
                                     return pre;
                                 });

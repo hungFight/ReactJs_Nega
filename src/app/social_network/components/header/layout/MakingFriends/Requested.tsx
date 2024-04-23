@@ -40,12 +40,6 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
         const dataR = ServerBusy(res, dispatch);
 
         console.log(type, res);
-        dataR.map((f: { avatar: string | undefined }) => {
-            if (f.avatar) {
-                const av = CommonUtils.convertBase64(f.avatar);
-                f.avatar = av;
-            }
-        });
         if (dataR) {
             dataRef.current = [...(dataRef.current ?? []), ...dataR];
             setData(dataRef.current);

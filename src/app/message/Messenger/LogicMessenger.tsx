@@ -23,7 +23,7 @@ export interface PropsDataMore {
             icon: JSX.Element;
             onClick: () => any;
         }[];
-        id_room: string;
+        conversationId: string;
         id: string | undefined;
         avatar: string | undefined;
         fullName: string | undefined;
@@ -37,7 +37,7 @@ export interface PropsDataMore {
             icon: JSX.Element;
             onClick: () => any;
         }[];
-        id_room: string;
+        conversationId: string;
         id: string | undefined;
         avatar: string | undefined;
         fullName: string | undefined;
@@ -65,13 +65,13 @@ const LogicMessenger = (dataUser: PropsUser) => {
     const idDeleted = useRef<string[]>([]);
 
     const [moreBar, setMoreBar] = useState<{
-        id_room: string;
+        conversationId: string;
         id: string;
         avatar: string | undefined;
         fullName: string;
         gender: number;
     }>({
-        id_room: '',
+        conversationId: '',
         id: '',
         avatar: '',
         fullName: '',
@@ -184,7 +184,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
     console.log(searchUser);
     const handleDelete = async () => {
         setLoadDel(true);
-        const res = await sendChatAPi.delete(moreBar.id_room);
+        const res = await sendChatAPi.delete(moreBar.conversationId);
         const data:
             | {
                   _id: string;
@@ -198,19 +198,19 @@ const LogicMessenger = (dataUser: PropsUser) => {
 
         if (data) {
             dispatch(setDelIds(data));
-            idDeleted.current.push(moreBar.id_room);
-            setRooms((pre) => pre.filter((r) => r._id !== moreBar.id_room));
+            idDeleted.current.push(moreBar.conversationId);
+            setRooms((pre) => pre.filter((r) => r._id !== moreBar.conversationId));
         }
         setLoadDel(false);
     };
     const handleUndo = async () => {
         setLoadDel(true);
-        const res = await sendChatAPi.undo(moreBar.id_room);
+        const res = await sendChatAPi.undo(moreBar.conversationId);
         const data = ServerBusy(res, dispatch);
 
         if (data) {
             dispatch(setDelIds(undefined));
-            idDeleted.current = idDeleted.current.filter((i) => i !== moreBar.id_room);
+            idDeleted.current = idDeleted.current.filter((i) => i !== moreBar.conversationId);
             setRooms(() => preDelete.current.filter((p) => !idDeleted.current.includes(p._id)));
         }
         setLoadDel(false);
@@ -241,7 +241,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
         },
     };
 
-    if (rooms.some((r) => r._id === moreBar.id_room) && delIds?._id !== moreBar.id_room) {
+    if (rooms.some((r) => r._id === moreBar.conversationId) && delIds?._id !== moreBar.conversationId) {
         const dd: {
             [en: string]: {
                 id: number;

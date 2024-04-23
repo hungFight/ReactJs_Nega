@@ -65,12 +65,6 @@ const Strangers: React.FC<{
         const dataR = ServerBusy(res, dispatch);
 
         console.log(dataRef.current.length, rel, 'strangers', dataR);
-        dataR.map((f: { avatar: any; id: string }) => {
-            if (f.avatar) {
-                const av = CommonUtils.convertBase64(f.avatar);
-                f.avatar = av;
-            }
-        });
         dataRef.current = [...(dataRef.current ?? []), ...dataR];
         if (!rel) {
             setData(dataRef.current);
@@ -151,14 +145,10 @@ const Strangers: React.FC<{
             const newStranger = data?.filter((x: PropsData) => {
                 if (
                     (x.userRequest.length || x.userIsRequested.length) &&
-                    ((x.userRequest[0].idRequest === dataR.ok.idRequest &&
-                        x.userRequest[0].idIsRequested === dataR.ok.idIsRequested) ||
-                        (x.userRequest[0].idIsRequested === dataR.ok.idRequest &&
-                            x.userRequest[0].idRequest === dataR.ok.idIsRequested) ||
-                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest &&
-                            x.userIsRequested[0].idIsRequested === dataR.ok.idRequest) ||
-                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest &&
-                            x.userIsRequested[0].idIsRequested === dataR.ok.idIsRequested))
+                    ((x.userRequest[0].idRequest === dataR.ok.idRequest && x.userRequest[0].idIsRequested === dataR.ok.idIsRequested) ||
+                        (x.userRequest[0].idIsRequested === dataR.ok.idRequest && x.userRequest[0].idRequest === dataR.ok.idIsRequested) ||
+                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest && x.userIsRequested[0].idIsRequested === dataR.ok.idRequest) ||
+                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest && x.userIsRequested[0].idIsRequested === dataR.ok.idIsRequested))
                 ) {
                     x.userRequest = [];
                     x.userIsRequested = [];

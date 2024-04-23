@@ -1,15 +1,5 @@
 import React, { useRef, useState } from 'react';
-import {
-    CameraI,
-    ChangeChatI,
-    DelAllI,
-    DelSelfI,
-    PinI,
-    RedeemI,
-    RemoveCircleI,
-    SendI,
-    SendOPTI,
-} from '~/assets/Icons/Icons';
+import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI, SendI, SendOPTI } from '~/assets/Icons/Icons';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../../File';
 import { PropsChat, PropsImageOrVideos, PropsItemRoom, PropsPinC } from '../LogicConver';
@@ -30,13 +20,15 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from 'src';
 export interface PropsOptionForItem {
     _id: string;
-    id: string;
+    userId: string;
     text: string;
     secondary?: string | undefined;
     who: string;
     byWhoCreatedAt: string;
     id_pin?: string;
     imageOrVideos: PropsImageOrVideos[];
+    roomId: string;
+    filterId: string;
 }
 const OptionForItem: React.FC<{
     setOptions: React.Dispatch<React.SetStateAction<PropsOptionForItem | undefined>>;
@@ -66,22 +58,7 @@ const OptionForItem: React.FC<{
           }
         | undefined;
     itemPinData: React.MutableRefObject<PropsItemRoom[]>;
-}> = ({
-    setOptions,
-    optionsForItem,
-    ERef,
-    del,
-    conversation,
-    colorText,
-    setEmoji,
-    setConversation,
-    setItemPin,
-    id_you,
-    setRoomImage,
-    roomImage,
-    itemPin,
-    itemPinData,
-}) => {
+}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation, setItemPin, id_you, setRoomImage, roomImage, itemPin, itemPinData }) => {
     const { lg } = Languages();
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<string>('');
@@ -158,20 +135,33 @@ const OptionForItem: React.FC<{
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
                         const id_file_deleted = await fileWorkerAPI.deleteFileImg(id_file);
                         if (id_file_deleted) {
-                            const res = await chatAPI.delChatAll(
-                                conversation._id,
-                                optionsForItem._id,
-                                optionsForItem.id,
-                            );
+                            const res = await chatAPI.delChatAll({
+                                conversationId: conversation._id,
+                                dataId: optionsForItem._id,
+                                roomId: optionsForItem.roomId,
+                                filterId: optionsForItem.filterId,
+                                userId: optionsForItem.userId,
+                            });
                             const data: string | null = ServerBusy(res, dispatch);
                             if (data)
                                 setConversation((pre) => {
                                     if (pre) {
-                                        pre.room = pre.room.map((r) => {
-                                            if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                                r.delete = 'all';
-                                                r.text.t = '';
-                                                r.imageOrVideos = [];
+                                        pre.rooms = pre.rooms.map((r) => {
+                                            if (r._id === optionsForItem.roomId) {
+                                                r.filter.map((f) => {
+                                                    if (f._id === optionsForItem.filterId) {
+                                                        f.data.map((d) => {
+                                                            if (d._id === optionsForItem._id) {
+                                                                d.text.t = '';
+                                                                d.imageOrVideos = [];
+                                                                d.delete = 'all';
+                                                                d.updatedAt = data;
+                                                            }
+                                                            return d;
+                                                        });
+                                                    }
+                                                    return f;
+                                                });
                                             }
                                             return r;
                                         });
@@ -193,17 +183,37 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
-                        const data: string | null = ServerBusy(res, dispatch);
+                        const res = await chatAPI.delChatSelf({
+                            conversationId: conversation._id,
+                            dataId: optionsForItem._id,
+                            roomId: optionsForItem.roomId,
+                            filterId: optionsForItem.filterId,
+                        });
+                        const data: typeof res = ServerBusy(res, dispatch);
                         if (data) {
-                            const newR = conversation.room.map((r) => {
-                                if (r._id === optionsForItem._id) {
-                                    r.delete = id_you;
-                                    r.updatedAt = data;
+                            console.log('here');
+                            setConversation((pre) => {
+                                if (pre) {
+                                    pre.rooms = pre.rooms.map((r) => {
+                                        if (r._id === optionsForItem.roomId) {
+                                            r.filter.map((f) => {
+                                                if (f._id === optionsForItem.filterId) {
+                                                    f.data.map((d) => {
+                                                        if (d._id === optionsForItem._id) {
+                                                            d.delete = id_you;
+                                                            d.updatedAt = data;
+                                                        }
+                                                        return d;
+                                                    });
+                                                }
+                                                return f;
+                                            });
+                                        }
+                                        return r;
+                                    });
                                 }
-                                return r;
+                                return pre;
                             });
-                            setConversation({ ...conversation, room: newR });
                             setOptions(undefined);
                         }
                         setLoading('');
@@ -228,24 +238,19 @@ const OptionForItem: React.FC<{
                 title: 'Pin',
                 top: '-40px',
                 onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                            const res = await chatAPI.pin(
-                                optionsForItem._id,
-                                optionsForItem.id,
-                                conversation._id,
-                                conversation.room[0]._id,
-                            );
-                            if (res) {
-                                setConversation((pre) => {
-                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
-                                    return pre;
-                                });
-                                setItemPin(res);
-                            }
-                        }
-                        setOptions(undefined);
-                    }
+                    // if (conversation && optionsForItem) {
+                    //     if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                    //         const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id, conversation.room[0]._id);
+                    //         if (res) {
+                    //             setConversation((pre) => {
+                    //                 if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                    //                 return pre;
+                    //             });
+                    //             setItemPin(res);
+                    //         }
+                    //     }
+                    //     setOptions(undefined);
+                    // }
                 },
             },
         ],
@@ -263,29 +268,41 @@ const OptionForItem: React.FC<{
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
                         const id_file_deleted = await fileWorkerAPI.deleteFileImg(id_file);
                         if (id_file_deleted) {
-                            const res = await chatAPI.delChatAll(
-                                conversation._id,
-                                optionsForItem._id,
-                                optionsForItem.id,
-                            );
-                            const data: typeof res = ServerBusy(res, dispatch);
-                            if (data) {
+                            const res = await chatAPI.delChatAll({
+                                conversationId: conversation._id,
+                                dataId: optionsForItem._id,
+                                roomId: optionsForItem.roomId,
+                                filterId: optionsForItem.filterId,
+                                userId: optionsForItem.userId,
+                            });
+                            const data: string | null = ServerBusy(res, dispatch);
+                            if (data)
                                 setConversation((pre) => {
                                     if (pre) {
-                                        pre.room = pre.room.map((r) => {
-                                            if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                                                r.delete = 'all';
-                                                r.text.t = '';
-                                                r.imageOrVideos = [];
+                                        pre.rooms = pre.rooms.map((r) => {
+                                            if (r._id === optionsForItem.roomId) {
+                                                r.filter.map((f) => {
+                                                    if (f._id === optionsForItem.filterId) {
+                                                        f.data.map((d) => {
+                                                            if (d._id === optionsForItem._id) {
+                                                                d.text.t = '';
+                                                                d.imageOrVideos = [];
+                                                                d.delete = 'all';
+                                                                d.updatedAt = data;
+                                                            }
+                                                            return d;
+                                                        });
+                                                    }
+                                                    return f;
+                                                });
                                             }
                                             return r;
                                         });
                                     }
                                     return pre;
                                 });
-                                setOptions(undefined);
-                            }
                         }
+                        setOptions(undefined);
                         setLoading('');
                     }
                 },
@@ -299,18 +316,37 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
-                        const data: string | null = ServerBusy(res, dispatch);
+                        const res = await chatAPI.delChatSelf({
+                            conversationId: conversation._id,
+                            dataId: optionsForItem._id,
+                            roomId: optionsForItem.roomId,
+                            filterId: optionsForItem.filterId,
+                        });
+                        const data: typeof res = ServerBusy(res, dispatch);
                         if (data) {
                             console.log('here');
-                            const newR = conversation.room.map((r) => {
-                                if (r._id === optionsForItem._id) {
-                                    r.delete = id_you;
-                                    r.updatedAt = data;
+                            setConversation((pre) => {
+                                if (pre) {
+                                    pre.rooms = pre.rooms.map((r) => {
+                                        if (r._id === optionsForItem.roomId) {
+                                            r.filter.map((f) => {
+                                                if (f._id === optionsForItem.filterId) {
+                                                    f.data.map((d) => {
+                                                        if (d._id === optionsForItem._id) {
+                                                            d.delete = id_you;
+                                                            d.updatedAt = data;
+                                                        }
+                                                        return d;
+                                                    });
+                                                }
+                                                return f;
+                                            });
+                                        }
+                                        return r;
+                                    });
                                 }
-                                return r;
+                                return pre;
                             });
-                            setConversation({ ...conversation, room: newR });
                             setOptions(undefined);
                         }
                         setLoading('');
@@ -334,24 +370,19 @@ const OptionForItem: React.FC<{
                 title: 'Gim',
                 top: '-40px',
                 onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                            const res = await chatAPI.pin(
-                                optionsForItem._id,
-                                optionsForItem.id,
-                                conversation._id,
-                                conversation.room[0]._id,
-                            );
-                            if (res) {
-                                setConversation((pre) => {
-                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
-                                    return pre;
-                                });
-                                setItemPin(res);
-                            }
-                        }
-                        setOptions(undefined);
-                    }
+                    // if (conversation && optionsForItem) {
+                    //     if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                    //         const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id, conversation.room[0]._id);
+                    //         if (res) {
+                    //             setConversation((pre) => {
+                    //                 if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                    //                 return pre;
+                    //             });
+                    //             setItemPin(res);
+                    //         }
+                    //     }
+                    //     setOptions(undefined);
+                    // }
                 },
             },
         ],
@@ -382,23 +413,23 @@ const OptionForItem: React.FC<{
                 title: 'Remove only you can not see this text',
                 top: '-80px',
                 onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
-                        const data: string | null = ServerBusy(res, dispatch);
-                        if (data) {
-                            const newR = conversation.room.map((r) => {
-                                if (r._id === optionsForItem._id) {
-                                    r.delete = id_you;
-                                    r.updatedAt = data;
-                                }
-                                return r;
-                            });
-                            setConversation({ ...conversation, room: newR });
-                            setOptions(undefined);
-                        }
-                        setLoading('');
-                    }
+                    // if (conversation && optionsForItem) {
+                    //     setLoading('Removing...');
+                    //     const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
+                    //     const data: string | null = ServerBusy(res, dispatch);
+                    //     if (data) {
+                    //         const newR = conversation.room.map((r) => {
+                    //             if (r._id === optionsForItem._id) {
+                    //                 r.delete = id_you;
+                    //                 r.updatedAt = data;
+                    //             }
+                    //             return r;
+                    //         });
+                    //         setConversation({ ...conversation, room: newR });
+                    //         setOptions(undefined);
+                    //     }
+                    //     setLoading('');
+                    // }
                 },
             },
             {
@@ -408,24 +439,19 @@ const OptionForItem: React.FC<{
                 title: 'Pin',
                 top: '-40px',
                 onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                            const res = await chatAPI.pin(
-                                optionsForItem._id,
-                                optionsForItem.id,
-                                conversation._id,
-                                conversation.room[0]._id,
-                            );
-                            if (res) {
-                                setConversation((pre) => {
-                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
-                                    return pre;
-                                });
-                                setItemPin(res);
-                            }
-                        }
-                        setOptions(undefined);
-                    }
+                    // if (conversation && optionsForItem) {
+                    //     if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                    //         const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id, conversation.room[0]._id);
+                    //         if (res) {
+                    //             setConversation((pre) => {
+                    //                 if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                    //                 return pre;
+                    //             });
+                    //             setItemPin(res);
+                    //         }
+                    //     }
+                    //     setOptions(undefined);
+                    // }
                 },
             },
             {
@@ -447,24 +473,24 @@ const OptionForItem: React.FC<{
                 title: 'Khi xoá thi chỉ mình bạn không nhìn thấy tin nhắn này',
                 top: '-100px',
                 onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
-                        const data: string | null = ServerBusy(res, dispatch);
-                        if (data) {
-                            console.log('here');
-                            const newR = conversation.room.map((r) => {
-                                if (r._id === optionsForItem._id) {
-                                    r.delete = id_you;
-                                    r.updatedAt = data;
-                                }
-                                return r;
-                            });
-                            setConversation({ ...conversation, room: newR });
-                            setOptions(undefined);
-                        }
-                        setLoading('');
-                    }
+                    // if (conversation && optionsForItem) {
+                    //     setLoading('Removing...');
+                    //     const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
+                    //     const data: string | null = ServerBusy(res, dispatch);
+                    //     if (data) {
+                    //         console.log('here');
+                    //         const newR = conversation.room.map((r) => {
+                    //             if (r._id === optionsForItem._id) {
+                    //                 r.delete = id_you;
+                    //                 r.updatedAt = data;
+                    //             }
+                    //             return r;
+                    //         });
+                    //         setConversation({ ...conversation, room: newR });
+                    //         setOptions(undefined);
+                    //     }
+                    //     setLoading('');
+                    // }
                 },
             },
 
@@ -475,24 +501,19 @@ const OptionForItem: React.FC<{
                 title: 'Gim',
                 top: '-40px',
                 onClick: async () => {
-                    if (conversation && optionsForItem) {
-                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                            const res = await chatAPI.pin(
-                                optionsForItem._id,
-                                optionsForItem.id,
-                                conversation._id,
-                                conversation.room[0]._id,
-                            );
-                            if (res) {
-                                setConversation((pre) => {
-                                    if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
-                                    return pre;
-                                });
-                                setItemPin(res);
-                            }
-                        }
-                        setOptions(undefined);
-                    }
+                    // if (conversation && optionsForItem) {
+                    //     if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                    //         const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id, conversation.room[0]._id);
+                    //         if (res) {
+                    //             setConversation((pre) => {
+                    //                 if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                    //                 return pre;
+                    //             });
+                    //             setItemPin(res);
+                    //         }
+                    //     }
+                    //     setOptions(undefined);
+                    // }
                 },
             },
             {
@@ -542,10 +563,7 @@ const OptionForItem: React.FC<{
         } else {
             e.target.setAttribute('style', 'height: auto');
             if (e.key === 'Backspace') {
-                e.target.setAttribute(
-                    'style',
-                    `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`,
-                );
+                e.target.setAttribute('style', `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`);
             } else {
                 e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
             }
@@ -562,12 +580,7 @@ const OptionForItem: React.FC<{
     console.log(optionsForItem, 'optionsForItem');
 
     const handleChange = async () => {
-        if (
-            conversation &&
-            optionsForItem &&
-            !loading &&
-            ((value && value !== optionsForItem.text) || fileUpload?.up.length)
-        ) {
+        if (conversation && optionsForItem && !loading && ((value && value !== optionsForItem.text) || fileUpload?.up.length)) {
             setLoading('updating...');
             const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
             const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
@@ -581,33 +594,34 @@ const OptionForItem: React.FC<{
                 value: vl,
                 conversationId: conversation._id,
                 update: 'true',
-                id_chat: optionsForItem._id,
-                userId: optionsForItem.id,
+                dataId: optionsForItem._id,
+                userId: optionsForItem.userId,
+                roomId: optionsForItem.roomId,
+                filterId: optionsForItem.filterId,
                 id_other: conversation.user.id,
-                ids: value_added,
+                filesId: value_added,
                 old_ids: id_files,
             };
             const res = await chatAPI.updateChat(vlAt);
             const data: typeof res = ServerBusy(res, dispatch);
             if (data) {
-                if (data.text.t)
-                    data.text.t = decrypt(data.text.t, `chat_${data.secondary ? data.secondary : conversation._id}`);
-                setConversation({
-                    ...conversation,
-                    room: conversation.room.map((r) => {
-                        if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
-                            if (fileUpload?.up.length && data.imageOrVideos) {
-                                r.imageOrVideos = data.imageOrVideos;
-                            }
-                            r.text.t = data.text.t;
-                            upPin.mutate({
-                                file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
-                                text: data.text.t ? data.text.t : '',
-                            });
-                        }
-                        return r;
-                    }),
-                });
+                if (data.text.t) data.text.t = decrypt(data.text.t, `chat_${data.secondary ? data.secondary : conversation._id}`);
+                // setConversation({
+                //     ...conversation,
+                //     room: conversation.room.map((r) => {
+                //         if (r._id === optionsForItem._id && r.id === optionsForItem.id) {
+                //             if (fileUpload?.up.length && data.imageOrVideos) {
+                //                 r.imageOrVideos = data.imageOrVideos;
+                //             }
+                //             r.text.t = data.text.t;
+                //             upPin.mutate({
+                //                 file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
+                //                 text: data.text.t ? data.text.t : '',
+                //             });
+                //         }
+                //         return r;
+                //     }),
+                // });
                 setLoading('Change successful');
                 setChangeCus(undefined);
                 setOptions(undefined);
@@ -617,79 +631,73 @@ const OptionForItem: React.FC<{
         }
     };
     const handleReply = async () => {
-        if (
-            conversation &&
-            optionsForItem &&
-            !loading &&
-            ((replyText && replyText !== optionsForItem.text) || fileUpload?.up.length)
-        ) {
-            if (ERef.current) ERef.current.scrollTop = 0;
-            textarea.current?.setAttribute('style', 'height: 33px');
-            setValue('');
-            setLoading('sending...');
-            const images = fileUpload?.pre
-                ? fileUpload?.pre?.map((i) => {
-                      return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
-                  })
-                : [];
-            const id_ = uuidv4();
-            const chat: any = {
-                createdAt: DateTime(),
-                imageOrVideos: images,
-                seenBy: [],
-                text: { t: replyText, icon: '' },
-                sending: true,
-                id: id_you,
-                _id: id_,
-                reply: {
-                    id_reply: id_you,
-                    id_replied: optionsForItem.id,
-                    text: optionsForItem.text,
-                    id_room: optionsForItem._id,
-                    imageOrVideos: optionsForItem.imageOrVideos,
-                },
-            };
-            if (conversation) conversation.room.unshift(chat);
-            const formData = new FormData();
-            formData.append('value', encrypt(replyText, `chat_${conversation._id}`));
-            if (conversation._id) formData.append('conversationId', conversation._id); // conversation._id
-            formData.append(
-                'reply',
-                JSON.stringify({
-                    id_room: optionsForItem._id,
-                    id_reply: id_you,
-                    id_replied: optionsForItem.id,
-                    text: encrypt(optionsForItem.text, `chat_${conversation._id}`),
-                    imageOrVideos: optionsForItem.imageOrVideos.map((i) => ({
-                        _id: i._id,
-                        v: '',
-                        type: i.type,
-                        icon: '',
-                    })),
-                    byWhoCreatedAt: optionsForItem.byWhoCreatedAt,
-                }),
-            ); // id of the room
-            formData.append('id_room', id_);
-            if (optionsForItem) formData.append('id_others', optionsForItem.id);
-
-            for (let i = 0; i < fileUpload?.up.length; i++) {
-                formData.append('files', fileUpload?.up[i], fileUpload?.up[i]._id); // assign file and _id of the file upload
-            }
-            const res = await chatAPI.send(formData);
-            const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
-            if (data && conversation) {
-                conversation.room.map((r) => {
-                    if (r.sending) r.sending = false;
-                });
-                if (!conversation._id) conversation._id = data._id; // add id when id is empty
-                setConversation(conversation);
-                data.users.push(conversation.user);
-                setFileUpload(undefined);
-                setOptions(undefined);
-                setLoading('');
-                dispatch(setRoomChat(data));
-            }
-        }
+        // if (conversation && optionsForItem && !loading && ((replyText && replyText !== optionsForItem.text) || fileUpload?.up.length)) {
+        //     if (ERef.current) ERef.current.scrollTop = 0;
+        //     textarea.current?.setAttribute('style', 'height: 33px');
+        //     setValue('');
+        //     setLoading('sending...');
+        //     const images = fileUpload?.pre
+        //         ? fileUpload?.pre?.map((i) => {
+        //               return { _id: i._id, v: i.link, type: i.type, icon: '' }; // get key for _id
+        //           })
+        //         : [];
+        //     const id_ = uuidv4();
+        //     const chat: any = {
+        //         createdAt: DateTime(),
+        //         imageOrVideos: images,
+        //         seenBy: [],
+        //         text: { t: replyText, icon: '' },
+        //         sending: true,
+        //         id: id_you,
+        //         _id: id_,
+        //         reply: {
+        //             id_reply: id_you,
+        //             id_replied: optionsForItem.id,
+        //             text: optionsForItem.text,
+        //             id_room: optionsForItem._id,
+        //             imageOrVideos: optionsForItem.imageOrVideos,
+        //         },
+        //     };
+        //     if (conversation) conversation.room.unshift(chat);
+        //     const formData = new FormData();
+        //     formData.append('value', encrypt(replyText, `chat_${conversation._id}`));
+        //     if (conversation._id) formData.append('conversationId', conversation._id); // conversation._id
+        //     formData.append(
+        //         'reply',
+        //         JSON.stringify({
+        //             id_room: optionsForItem._id,
+        //             id_reply: id_you,
+        //             id_replied: optionsForItem.id,
+        //             text: encrypt(optionsForItem.text, `chat_${conversation._id}`),
+        //             imageOrVideos: optionsForItem.imageOrVideos.map((i) => ({
+        //                 _id: i._id,
+        //                 v: '',
+        //                 type: i.type,
+        //                 icon: '',
+        //             })),
+        //             byWhoCreatedAt: optionsForItem.byWhoCreatedAt,
+        //         }),
+        //     ); // id of the room
+        //     formData.append('id_room', id_);
+        //     if (optionsForItem) formData.append('id_others', optionsForItem.id);
+        //     for (let i = 0; i < fileUpload?.up.length; i++) {
+        //         formData.append('files', fileUpload?.up[i], fileUpload?.up[i]._id); // assign file and _id of the file upload
+        //     }
+        //     const res = await chatAPI.send(formData);
+        //     const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
+        //     if (data && conversation) {
+        //         conversation.room.map((r) => {
+        //             if (r.sending) r.sending = false;
+        //         });
+        //         if (!conversation._id) conversation._id = data._id; // add id when id is empty
+        //         setConversation(conversation);
+        //         data.users.push(conversation.user);
+        //         setFileUpload(undefined);
+        //         setOptions(undefined);
+        //         setLoading('');
+        //         dispatch(setRoomChat(data));
+        //     }
+        // }
     };
     console.log(conversation, 'conversationA');
 
@@ -733,7 +741,7 @@ const OptionForItem: React.FC<{
                                     }
                                 }
                             `}
-                            onClick={() => o.onClick(o.id)}
+                            // onClick={() => o.onClick(o.id)}
                         >
                             {o.icon}
                             <P
@@ -805,11 +813,7 @@ const OptionForItem: React.FC<{
             >
                 {(optionsForItem.text || value) && (
                     <Div width="100%" css="padding-left: 30%; max-height: 100%;">
-                        <Div
-                            width="100%"
-                            onClick={(e) => e.stopPropagation()}
-                            css="justify-content: end;align-items: baseline;     overflow-y: overlay;"
-                        >
+                        <Div width="100%" onClick={(e) => e.stopPropagation()} css="justify-content: end;align-items: baseline;     overflow-y: overlay;">
                             <P
                                 z="1.4rem"
                                 css={`
@@ -876,23 +880,15 @@ const OptionForItem: React.FC<{
                             onClick={(e) => e.stopPropagation()}
                         >
                             {changeCus !== 'reply' && fileUpload?.pre.length
-                                ? fileUpload.pre.map((fl) => (
-                                      <FileConversation key={fl._id} type={fl?.type} id_pre={fl.link} />
-                                  ))
-                                : optionsForItem.imageOrVideos.map((fl, index) => (
-                                      <FileConversation key={fl._id} type={fl?.type} id_file={fl._id} icon={fl.icon} />
-                                  ))}
+                                ? fileUpload.pre.map((fl) => <FileConversation key={fl._id} type={fl?.type} id_pre={fl.link} />)
+                                : optionsForItem.imageOrVideos.map((fl, index) => <FileConversation key={fl._id} type={fl?.type} id_file={fl._id} icon={fl.icon} />)}
                         </Div>
                     </Div>
                 )}
 
                 {replyText && (
                     <Div width="100%" css="padding-right: 30%; max-height: 100%; margin-top: 15px;">
-                        <Div
-                            width="100%"
-                            onClick={(e) => e.stopPropagation()}
-                            css="justify-content: start;align-items: baseline; overflow-y: overlay;"
-                        >
+                        <Div width="100%" onClick={(e) => e.stopPropagation()} css="justify-content: start;align-items: baseline; overflow-y: overlay;">
                             <P
                                 z="1.4rem"
                                 css={`
@@ -1012,14 +1008,7 @@ const OptionForItem: React.FC<{
                             `}
                         >
                             <form method="post" encType="multipart/form-data" id="formss">
-                                <input
-                                    id={conversation?._id + 'uploadConOpItem'}
-                                    type="file"
-                                    name="file[]"
-                                    onChange={handleImageUpload}
-                                    multiple
-                                    hidden
-                                />
+                                <input id={conversation?._id + 'uploadConOpItem'} type="file" name="file[]" onChange={handleImageUpload} multiple hidden />
                                 <Label htmlFor={conversation?._id + 'uploadConOpItem'} color={colorText}>
                                     <CameraI />
                                 </Label>
@@ -1057,7 +1046,7 @@ const OptionForItem: React.FC<{
                         }}
                     />
                 )}
-                {(optionsForItem.id !== id_you || changeCus === 'changeChat') && (
+                {(optionsForItem.userId !== id_you || changeCus === 'changeChat') && (
                     <Div
                         css={`
                             font-size: 1.4rem;
@@ -1076,11 +1065,7 @@ const OptionForItem: React.FC<{
                                     height: 100%;
                                     align-items: center;
                                     justify-content: center;
-                                    cursor: ${loading ||
-                                    (!value && !fileUpload) ||
-                                    (value === optionsForItem.text && !fileUpload)
-                                        ? 'no-drop'
-                                        : 'var(--pointer)'};
+                                    cursor: ${loading || (!value && !fileUpload) || (value === optionsForItem.text && !fileUpload) ? 'no-drop' : 'var(--pointer)'};
                                 `}
                                 onClick={handleChange}
                             >
@@ -1097,11 +1082,7 @@ const OptionForItem: React.FC<{
                                             height: 100%;
                                             align-items: center;
                                             justify-content: center;
-                                            cursor: ${loading ||
-                                            (!replyText && !fileUpload) ||
-                                            (replyText === optionsForItem.text && !fileUpload)
-                                                ? 'no-drop'
-                                                : 'var(--pointer)'};
+                                            cursor: ${loading || (!replyText && !fileUpload) || (replyText === optionsForItem.text && !fileUpload) ? 'no-drop' : 'var(--pointer)'};
                                         `}
                                         onClick={handleReply}
                                     >

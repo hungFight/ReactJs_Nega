@@ -9,7 +9,7 @@ const MoreOption: React.FC<{
     colorText: string;
     setMoreBar?: React.Dispatch<
         React.SetStateAction<{
-            id_room: string;
+            conversationId: string;
             id: string;
             avatar: string | undefined;
             fullName: string;
@@ -39,7 +39,7 @@ const MoreOption: React.FC<{
             onClick={() => {
                 if (setMoreBar) {
                     setMoreBar({
-                        id_room: '',
+                        conversationId: '',
                         id: '',
                         avatar: '',
                         fullName: '',

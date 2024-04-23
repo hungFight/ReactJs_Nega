@@ -80,28 +80,20 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    delChatAll = async (conversationId: string, chatId: string, userId: string) => {
+    delChatAll = async (data: { conversationId: string; dataId: string; roomId: string; filterId: string; userId: string }): Promise<Date> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/delChatAll', {
-                conversationId,
-                chatId,
-                userId,
-            });
+            const res = await Axios.post('/messenger/delChatAll', data);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
             return errorHandling(err);
         }
     };
-    delChatSelf = async (conversationId: string, chatId: string, userId: string) => {
+    delChatSelf = async (data: { conversationId: string; dataId: string; roomId: string; filterId: string }): Promise<string | null> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/delChatSelf', {
-                conversationId,
-                chatId,
-                userId,
-            });
+            const res = await Axios.post('/messenger/delChatSelf', data);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -112,9 +104,22 @@ class Messenger {
         value: string;
         conversationId: string;
         update: string;
-        id_chat: string;
+        dataId: string;
         userId: string;
         id_other: string;
+        filesId: {
+            id: string;
+            width?: string | undefined;
+            height?: string | undefined;
+            type: string;
+            tail: string;
+            title?: string | undefined;
+            id_sort?: string | undefined;
+            id_client: string;
+        }[];
+        old_ids: string[];
+        roomId: string;
+        filterId: string;
     }): Promise<{
         _id: string;
         id: string;

@@ -24,7 +24,7 @@ class refreshToken {
         const token = Cookies.get('tks');
         console.log('token here', token);
         let i = 0;
-        if (!refreshToken.isInterceptorAttached && token) {
+        if (!refreshToken.isInterceptorAttached && !refreshToken.isInterceptorAttachedR && token) {
             let tokenN = token;
 
             axiosJWT.interceptors.request.use(
@@ -71,9 +71,9 @@ class refreshToken {
     }
     axiosJWTsFIle() {
         const token = Cookies.get('tks');
-        console.log('token here', token);
+        console.log('token here File', token);
         let i = 0;
-        if (!refreshToken.isInterceptorAttachedR && token) {
+        if (!refreshToken.isInterceptorAttachedR && !refreshToken.isInterceptorAttached && token) {
             let tokenN = token;
             axiosJWTFile.interceptors.request.use(
                 async (config) => {

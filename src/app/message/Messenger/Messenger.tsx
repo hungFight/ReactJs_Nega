@@ -213,7 +213,9 @@ const Send: React.FC<{
                                 />
                             ))
                         )}
-                        {moreBar.id && <MoreOption dataMore={dataMore[lg]} colorText={colorText} setMoreBar={setMoreBar} background={rooms.filter((r) => r._id === moreBar.id_room)[0].background} />}
+                        {moreBar.id && (
+                            <MoreOption dataMore={dataMore[lg]} colorText={colorText} setMoreBar={setMoreBar} background={rooms.find((r) => r._id === moreBar.conversationId)?.background} />
+                        )}
                     </DivResults>
                 </DivSend>
             )}
