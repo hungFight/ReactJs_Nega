@@ -6,7 +6,7 @@ import { ClockCirclesI, LoadingI, MinusI, ProfileCircelI } from '~/assets/Icons/
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { setOpenProfile } from '~/redux/hideShow';
 import { PropsReloadRD, setDelIds, setSession } from '~/redux/reload';
-import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
+import sendChatAPi, { PropsRoomsChat } from '~/restAPI/chatAPI';
 import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
@@ -51,8 +51,8 @@ const LogicMessenger = (dataUser: PropsUser) => {
     const { roomChat } = useSelector((state: PropsReMessengerRD) => state.messenger);
 
     const [cookies, setCookies, _del] = useCookies(['k_user', 'tks']);
-    const [rooms, setRooms] = useState<PropsRoomChat[]>([]);
-    const [roomNew, setRoomNew] = useState<PropsRoomChat>();
+    const [rooms, setRooms] = useState<PropsRoomsChat[]>([]);
+    const [roomNew, setRoomNew] = useState<PropsRoomsChat>();
     const [resultSearch, setResultSearch] = useState<any>([]);
     const [searchUser, setSearchUser] = useState<string>('');
 
@@ -61,7 +61,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
     const [loadDel, setLoadDel] = useState<boolean>(false);
     const limit = 10;
     const offset = useRef<number>(0);
-    const preDelete = useRef<PropsRoomChat[]>([]);
+    const preDelete = useRef<PropsRoomsChat[]>([]);
     const idDeleted = useRef<string[]>([]);
 
     const [moreBar, setMoreBar] = useState<{
@@ -84,7 +84,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
         async function fetchRoom() {
             setLoading(true);
             const res = await sendChatAPi.getRoom(limit, offset.current);
-            const data: PropsRoomChat[] = ServerBusy(res, dispatch);
+            const data: PropsRoomsChat[] = ServerBusy(res, dispatch);
             data?.map((d) => {
                 const ro = d.rooms[0].filter[0].data[0];
                 if (ro) {
@@ -110,11 +110,11 @@ const LogicMessenger = (dataUser: PropsUser) => {
         fetchRoom();
 
         // socket.on(`${dataUser.id}roomChat`, async (d: string) => {
-        //     const data: PropsRoomChat = JSON.parse(d);
+        //     const data: PropsRoomsChat = JSON.parse(d);
         //     const a = CommonUtils.convertBase64(data.user.avatar);
         //     data.user.avatar = a;
         //     data.users = [data.user];
-        //     const newD = await new Promise<PropsRoomChat>(async (resolve, reject) => {
+        //     const newD = await new Promise<PropsRoomsChat>(async (resolve, reject) => {
         //         try {
         //                 const ro = d.rooms[0].filter[0].data[0];
         //             if (data.room.text?.t) {

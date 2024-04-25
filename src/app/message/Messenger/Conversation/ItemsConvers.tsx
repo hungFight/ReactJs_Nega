@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PropsBackground_chat, PropsChat, PropsImageOrVideos, PropsItemRoom, PropsItemsData, PropsPinC } from './LogicConver';
+import { PropsBackground_chat, PropsItemsData, PropsPinC } from './LogicConver';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';

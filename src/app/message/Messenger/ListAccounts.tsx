@@ -9,7 +9,7 @@ import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponen
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, TyOnlineI } from '~/assets/Icons/Icons';
-import { PropsRoomChat } from '~/restAPI/chatAPI';
+import { PropsRoomsChat } from '~/restAPI/chatAPI';
 import moments from '~/utils/moment';
 import { PropsId_chats } from 'src/App';
 import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
@@ -27,7 +27,7 @@ const ListAccounts: React.FC<{
             gender: number;
         }>
     >;
-    data: PropsRoomChat;
+    data: PropsRoomsChat;
     userId: string;
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
     id_chats: PropsId_chats[];

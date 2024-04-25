@@ -26,6 +26,7 @@ import { PropsId_chats } from 'src/App';
 import gridFS from '~/restAPI/gridFS';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { queryClient } from 'src';
+import { PropsDataFileUpload } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/FormUpNews';
 export interface PropsPinC {
     chatId: string;
     userId: string;
@@ -36,7 +37,7 @@ export interface PropsPinC {
 export interface PropsRooms {
     rooms: PropsItemRoom[];
 }
-export interface PropsImageOrVideos {
+export interface PropsImageOrVideosAtMessenger {
     type: string;
     tail: string;
     link?: string;
@@ -54,7 +55,7 @@ export interface PropsItemsData {
     update?: string;
     secondary?: string;
     length?: number;
-    imageOrVideos: PropsImageOrVideos[];
+    imageOrVideos: PropsImageOrVideosAtMessenger[];
     sending?: boolean;
     seenBy: string[];
     updatedAt: string;
@@ -64,7 +65,7 @@ export interface PropsItemsData {
         id_reply: string;
         id_replied: string;
         text: string;
-        imageOrVideos: PropsImageOrVideos[];
+        imageOrVideos: PropsImageOrVideosAtMessenger[];
     };
 }
 
@@ -86,7 +87,7 @@ export interface PropsItemRoom {
     }[];
 }
 export interface PropsRoom {
-    room: PropsItemRoom;
+    rooms: PropsItemRoom;
 }
 export interface PropsBackground_chat {
     v: string;
@@ -120,6 +121,7 @@ export interface PropsConversationCustoms {
         show?: boolean;
     }[];
     createdAt: string;
+    lastElement: { roomId: string; filterId: string };
 }
 export function regexCus(val: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -220,7 +222,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     });
     const upPin = useMutation(
         // update data in useQuery
-        async (newData: { _id: string; chatId: string; data: { file: PropsImageOrVideos[]; text: string } }) => {
+        async (newData: { _id: string; chatId: string; data: { file: PropsImageOrVideosAtMessenger[]; text: string } }) => {
             return newData;
         },
         {
@@ -231,7 +233,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 // queryClient.setQueryData(['Pins chat', newData._id], (oldData: any) => {
                 //     //PropsItemRoom[]
                 //     console.log(itemPinData.current, 'itemPind', newData, oldData);
-                //     oldData.map((t: { _id: string; imageOrVideos: PropsImageOrVideos[]; text: { t: string } }) => {
+                //     oldData.map((t: { _id: string; imageOrVideos: PropsImageOrVideosAtMessenger[]; text: { t: string } }) => {
                 //         if (t._id === newData.chatId) {
                 //             if (newData.data.file) t.imageOrVideos = newData.data.file;
                 //             if (newData.data.text)
@@ -381,38 +383,60 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     });
                 }
             });
-            // socket.on(`Conversation_chat_update_${conversation._id}`, async (updateData: { chatId: string; data: PropsItemRoom; userId: string }) => {
-            //     console.log(updateData, 'updateData');
-            //     upPin.mutate({
-            //         _id: conversation._id,
-            //         chatId: updateData.chatId,
-            //         data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
-            //     });
-            //     if (updateData.userId !== id_you && conversation) {
-            //         const newR: PropsItemRoom = await new Promise(async (resolve, reject) => {
-            //             const d = updateData.data;
-            //             if (d.text.t) {
-            //                 d.text.t = decrypt(d.text.t, `chat_${d?.secondary ? d.secondary : conversation._id}`);
-            //                 d.text.t = regexCus(d.text.t);
-            //             }
+            socket.on(
+                `Conversation_chat_update_${conversation._id}`,
+                async (updateData: {
+                    updatedBy: string;
+                    roomId: string;
+                    filterId: string;
+                    dataId: string;
+                    data: { value: string | undefined; imageOrVideos: PropsImageOrVideosAtMessenger[] };
+                    userId: string;
+                }) => {
+                    console.log(updateData, 'updateData');
+                    // upPin.mutate({
+                    //     _id: conversation._id,
+                    //     chatId: updateData.chatId,
+                    //     data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
+                    // });
+                    // upPin.mutate({
+                    //     file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
+                    //     text: data.text.t ? data.text.t : '',
+                    // });
+                    if (updateData.userId !== id_you && conversation) {
+                        setConversation((pre) => {
+                            return pre
+                                ? {
+                                      ...(pre ?? {}),
+                                      rooms: conversation.rooms.map((r) => {
+                                          if (r._id === updateData.roomId) {
+                                              r.filter.map((f) => {
+                                                  if (f._id === updateData.filterId) {
+                                                      f.data.map((d) => {
+                                                          if (d._id === updateData.dataId) {
+                                                              if (updateData.data.imageOrVideos.length) {
+                                                                  d.imageOrVideos = updateData.data.imageOrVideos;
+                                                              }
+                                                              if (updateData.data.value) {
+                                                                  d.text.t = decrypt(updateData.data.value, `chat_${d?.secondary ? d.secondary : conversation._id}`);
+                                                              }
+                                                              d.update = updateData.updatedBy;
+                                                          }
+                                                          return d;
+                                                      });
+                                                  }
+                                                  return f;
+                                              });
+                                          }
 
-            //             resolve(d);
-            //         });
-            //         setConversation((pre) => {
-            //             if (pre)
-            //                 return {
-            //                     ...pre,
-            //                     room: pre.room.map((r) => {
-            //                         if (r._id === updateData.chatId) {
-            //                             r = newR;
-            //                         }
-            //                         return r;
-            //                     }),
-            //                 };
-            //             return pre;
-            //         });
-            //     }
-            // });
+                                          return r;
+                                      }),
+                                  }
+                                : pre;
+                        });
+                    }
+                },
+            );
 
             // socket.on(`phrase_chatRoom_response_${conversation._id}_${id_you}`, (res) => {
             //     console.log('in_roomChat_personal_receive_and_saw con');
@@ -597,23 +621,35 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 userId: userId,
                 _id: id_,
             };
-            const con = conversation.rooms[conversation.rooms.length - 1];
-            if (con && con.count < 10) {
-                if (con.filter[con.filter.length - 1].count < 2) {
-                    con.filter[con.filter.length - 1].count += 1;
-                    con.filter[con.filter.length - 1].data.unshift(chat);
-                } else {
-                    con.filter[con.filter.length - 1].full = true;
-                    con.filter.unshift({ _id: id_s, count: 1, full: false, index: 1, data: [chat], indexQuery: installOffset, createdAt: new Date() });
-                }
+            const con = conversation.rooms.find((r) => r._id === conversation.lastElement.roomId);
+            console.log(con, 'connn');
+
+            if (con && con.count < 50) {
+                const filter = con.filter.find((f) => f._id === conversation.lastElement.filterId) ?? con.filter[con.filter.length - 1];
+                if (filter)
+                    if (filter.count < 10) {
+                        filter.count += 1;
+                        filter.data.unshift(chat);
+                    } else {
+                        filter.full = true;
+                        con.filter.unshift({
+                            _id: 'new',
+                            count: 1,
+                            full: false,
+                            index: filter.index + 1,
+                            data: [chat],
+                            indexQuery: filter.indexQuery - 1,
+                            createdAt: new Date(),
+                        });
+                    }
             } else {
                 conversation.rooms.unshift({
                     chatId: conversation._id,
                     count: 1,
                     full: false,
-                    index: (con?.index ?? 0) + 1,
+                    index: con?.index ?? 0,
                     filter: [{ _id: id_s, count: 1, full: false, index: 1, data: [chat], indexQuery: installOffset, createdAt: new Date() }],
-                    _id: id_s,
+                    _id: 'new',
                     createdAt: new Date(),
                 });
             }
@@ -629,10 +665,31 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             fda.valueInfoFile = urlS;
             fda.conversationId = conversation._id;
             fda.indexRoom = conversation.rooms[conversation.rooms.length - 1].index ?? 0;
-
             const res = await sendChatAPI.send(fda);
-            const data: PropsRoomChat | undefined = ServerBusy(res, dispatch);
+            const data: typeof res | undefined = ServerBusy(res, dispatch);
             if (data) {
+                setConversation((pre) => {
+                    pre?.rooms.map((r) => {
+                        if (r._id === 'new') {
+                            r = data.rooms;
+                        } else if (r._id === data.rooms._id) {
+                            r.count = data.rooms.count;
+                            r.index = data.rooms.index;
+                            r.full = data.rooms.full;
+                            r.filter.map((f) => {
+                                if (f._id === 'new') {
+                                    f = data.rooms.filter[0];
+                                } else if (f._id === data.rooms.filter[0]._id) {
+                                    f.data.unshift(data.rooms.filter[0].data[0]);
+                                    f = { ...data.rooms.filter[0], data: f.data };
+                                }
+                                return f;
+                            });
+                        }
+                        return r;
+                    });
+                    return pre;
+                });
                 rr.current = '';
                 if (!conversation._id) conversation._id = data._id; // add id when id is empty
                 data.users.push(conversation.user);

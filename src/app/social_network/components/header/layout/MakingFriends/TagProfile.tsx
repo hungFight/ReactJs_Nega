@@ -1,10 +1,7 @@
 import { memo } from 'react';
 import Avatar from '../../../../../reUsingComponents/Avatars/Avatar';
-import { DivContainer, DivImg, Hname } from '../../../../../reUsingComponents/styleComponents/styleComponents';
-import { Button, Buttons, Div, P } from '../../../../../reUsingComponents/styleComponents/styleDefault';
-import { setOpenProfile } from '~/redux/hideShow';
-import { useDispatch } from 'react-redux';
-import CommonUtils from '~/utils/CommonUtils';
+import { Hname } from '../../../../../reUsingComponents/styleComponents/styleComponents';
+import { Buttons, Div } from '../../../../../reUsingComponents/styleComponents/styleDefault';
 interface PropsTagP {
     data: {
         id: string;
@@ -35,14 +32,7 @@ const TagProfile: React.FC<PropsTagP> = ({ data, onClick, button, margin, bg, co
                     }
                 `}
             >
-                <Avatar
-                    profile="po"
-                    css={cssImage}
-                    src={data.avatar}
-                    alt={data.fullName}
-                    gender={data.gender}
-                    id={data.id}
-                />
+                <Avatar profile="po" css={cssImage} src={data.avatar} alt={data.fullName} gender={data.gender} id={data.id} />
                 <Div
                     width="100%"
                     wrap="wrap"

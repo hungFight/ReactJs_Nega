@@ -1,16 +1,16 @@
-import { PropsChat, PropsConversationCustoms, PropsImageOrVideos, PropsRooms } from '~/Message/Messenger/Conversation/LogicConver';
+import { PropsChat, PropsConversationCustoms, PropsRoom, PropsRooms } from '~/Message/Messenger/Conversation/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
-import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import { PropsId_chats } from 'src/App';
-export type PropsRoomChat = PropsConversationCustoms & PropsRooms;
+export type PropsRoomsChat = PropsConversationCustoms & PropsRooms;
+export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
 
 class Messenger {
-    send = async (fda: any) => {
+    send = async (fda: any): Promise<PropsRoomChat> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsRoomChat>('/messenger/sendChat', fda);
+            const res = await Axios.post('/messenger/sendChat', fda);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -20,7 +20,7 @@ class Messenger {
     getRoom = async (limit: number, offset: number) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.get<PropsRoomChat[]>('/messenger/getRoom', { params: { limit, offset } });
+            const res = await Axios.get<PropsRoomsChat[]>('/messenger/getRoom', { params: { limit, offset } });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -121,21 +121,15 @@ class Messenger {
         roomId: string;
         filterId: string;
     }): Promise<{
-        _id: string;
-        id: string;
-        text: {
-            t: string;
-            icon: string;
-        };
-        delete?: string;
-        update?: string;
-        secondary?: string;
-        length?: number;
-        imageOrVideos: PropsImageOrVideos[];
-        sending?: boolean;
-        seenBy: string[];
-        updatedAt: string;
-        createdAt: string;
+        value: string | undefined;
+        imageOrVideos: {
+            readonly _id: string;
+            readonly icon: string;
+            readonly type: string;
+            readonly tail: string;
+        }[];
+        updatedAt: Date;
+        updatedBy: string;
     } | null> => {
         try {
             const Axios = refreshToken.axiosJWTs();
