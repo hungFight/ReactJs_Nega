@@ -27,7 +27,7 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    getChat = async (id_chat: PropsId_chats, limit: number, offset: number, moreChat: boolean = false, indexRef: number, conversationId?: string, id_room?: string): Promise<PropsChat> => {
+    getChat = async (id_chat: PropsId_chats, indexQuery: number, moreChat: boolean = false, indexRef: number, conversationId?: string): Promise<PropsChat> => {
         console.log(conversationId, 'conversationId', moreChat);
 
         try {
@@ -36,11 +36,9 @@ class Messenger {
                 params: {
                     conversationId: id_chat.conversationId ? id_chat.conversationId : conversationId,
                     id_other: id_chat.id_other,
-                    limit,
-                    offset,
+                    indexQuery,
                     moreChat,
                     indexRef,
-                    id_room,
                 },
             });
             return res.data;

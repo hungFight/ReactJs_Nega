@@ -51,7 +51,7 @@ export interface PropsItemsData {
         t: string;
         icon: string;
     };
-    delete?: string;
+    delete?: string | 'all';
     update?: string;
     secondary?: string;
     length?: number;
@@ -123,6 +123,7 @@ export interface PropsConversationCustoms {
     createdAt: string;
     lastElement: { roomId: string; filterId: string };
 }
+type PropsItemQueryChat = { indexRef: number; indexQuery: number; data: PropsChat } | undefined;
 export function regexCus(val: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const hashTagRegex = /#([^]+?)\s*#@/g;
@@ -166,9 +167,13 @@ export function regexCus(val: string): string {
 const installOffset = 10;
 export type PropsChat = PropsConversationCustoms & PropsRooms;
 export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
+    console.log(id_you, 'id_you', id_chat);
+
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
+    //action
     const [loadingChat, setLoadingChat] = useState<string>('');
+    const [loadingGet, setLoadingGet] = useState<boolean>(false);
     const { userId } = Cookies();
     const { lg } = Languages();
     const textarea = useRef<HTMLTextAreaElement | null>(null);
@@ -181,11 +186,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const indexRef = useRef<number>(1);
     const limit = 30;
     const emptyRef = useRef<boolean>(false);
+    const moreAction = useRef<{ prevent: boolean; moreChat: boolean }>({ prevent: true, moreChat: false });
 
     const [value, setValue] = useState<string>('');
     const [emoji, setEmoji] = useState<boolean>(false);
     const [option, setOption] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
     const [opMore, setOpMore] = useState<boolean>(false);
     const [uploadIn, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
 
@@ -210,16 +215,66 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     // if (date1.isAfter(date2)) {
     //     console.log('date1 is after date2');
     // }
-    const { data } = useQuery({
-        queryKey: [`getActiveStatus: ${conversation?.user.id}`, userOnline.includes(conversation?.user.id ?? 'default')],
-        staleTime: 60 * 1000,
-        queryFn: async () => {
-            const res = await userAPI.getActiveStatus(conversation?.user.id);
-            const da: string = ServerBusy(res, dispatch);
-            return da;
+    // enabled:conversation?.user.id ? true : false, queryKey: [`getActiveStatus: ${conversation?.user.id}`, userOnline.includes(conversation?.user.id ?? 'default')],
+    const {
+        data: converData,
+        refetch,
+        isFetching,
+    } = useQuery({
+        queryKey: ['getItemChats', `${id_chat.id_other}_${id_you}`],
+        staleTime: 60 * 60 * 1000,
+        cacheTime: 1 * 60 * 60 * 1000,
+        enabled: !emptyRef.current && cRef.current !== 2,
+        queryFn: async ({ queryKey }) => {
+            cRef.current = 2;
+            const preData: PropsItemQueryChat = queryClient.getQueryData(queryKey);
+            const res = await sendChatAPi.getChat(id_chat, preData?.indexQuery ?? 0, moreAction.current.moreChat, preData?.indexRef ?? 0, preData?.data._id);
+            const dataC: PropsConversationCustoms & PropsRooms = ServerBusy(res, dispatch);
+            console.log(dataC, 'chatRef.current', indexRef.current);
+            if (dataC) {
+                if (!dataC.rooms.length) emptyRef.current = true;
+                dataC.rooms?.map((rr, index1: number) => {
+                    if (!rr.filter.length) {
+                        indexRef.current += 1;
+                        offset.current = 1;
+                    }
+                    rr.filter.map((d) => {
+                        d.data.map((rr) => {
+                            if (rr.text.t) {
+                                rr.text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : dataC._id}`);
+                                rr.text.t = regexCus(rr.text.t);
+                            }
+                            if (rr?.reply && rr.reply) {
+                                if (rr.reply.text) {
+                                    rr.reply.text = decrypt(rr.reply?.text, `chat_${rr.secondary ? rr.secondary : dataC._id}`);
+                                }
+                            }
+                        });
+                        d.data.sort((a, b) => (new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1));
+                    });
+                });
+                if (moreAction.current.moreChat) {
+                    cRef.current = 8;
+                    const preData: { indexRef: number; indexQuery: number; data: PropsChat } | undefined = queryClient.getQueryData(['getItemChats', id_chat.id_other + '_' + id_you]);
+                    if (dataC.rooms.length > 0 && preData) if (preData) preData.data.rooms = [...preData.data.rooms, ...dataC.rooms];
+                    moreAction.current.moreChat = false;
+                    return {
+                        indexQuery: dataC.rooms[0] ? dataC.rooms[0]?.filter[0]?.indexQuery : preData?.indexQuery,
+                        data: preData?.data,
+                        indexRef: dataC.rooms[0] ? dataC.rooms[0]?.index : preData?.indexRef,
+                    };
+                } else {
+                    cRef.current = 7;
+                    return {
+                        indexQuery: dataC.rooms[0] ? dataC.rooms[0]?.filter[0]?.indexQuery : preData?.indexQuery,
+                        data: dataC,
+                        indexRef: dataC.rooms[0] ? dataC.rooms[0]?.index : preData?.indexRef,
+                    };
+                }
+            }
         },
-        enabled: conversation?.user.id ? true : false,
     });
+    const data = converData?.data;
     const upPin = useMutation(
         // update data in useQuery
         async (newData: { _id: string; chatId: string; data: { file: PropsImageOrVideosAtMessenger[]; text: string } }) => {
@@ -259,184 +314,109 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         },
     );
     //get image
-    const fetchChat = async (moreChat: boolean = false) => {
-        if (!emptyRef.current && !loading) {
-            setLoading(true);
-
-            cRef.current = 2;
-            const res = await sendChatAPi.getChat(
-                id_chat,
-                limit,
-                offset.current,
-                moreChat,
-                indexRef.current,
-                chatRef.current?._id,
-                chatRef.current ? chatRef.current.rooms[chatRef.current.rooms.length - 1]._id : undefined,
-            );
-            const dataC: PropsConversationCustoms & PropsRooms = ServerBusy(res, dispatch);
-            console.log(dataC, 'chatRef.current');
-
-            if (dataC) {
-                if (!dataC.rooms.length) emptyRef.current = true;
-                dataC.rooms?.map((rr, index1: number) => {
-                    if (!rr.filter.length) {
-                        indexRef.current += 1;
-                        offset.current = 1;
-                    }
-                    rr.filter.map((d) => {
-                        date1.current = moment(d.data[0]?.createdAt);
-                        d.data.map((rr) => {
-                            if (rr.text.t) {
-                                rr.text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : dataC._id}`);
-                                rr.text.t = regexCus(rr.text.t);
-                            }
-                            if (rr?.reply && rr.reply) {
-                                if (rr.reply.text) {
-                                    rr.reply.text = decrypt(rr.reply?.text, `chat_${rr.secondary ? rr.secondary : dataC._id}`);
-                                }
-                            }
-                        });
-                        d.data.sort((a, b) => {
-                            const dateA = new Date(a.createdAt);
-                            const dateB = new Date(b.createdAt);
-                            // Compare `dateB` with `dateA` for descending order
-                            // If `dateB` is greater (newer) than `dateA`, it should come first
-                            if (dateB > dateA) {
-                                return 1; // `b` comes before `a` (newest first)
-                            } else if (dateB < dateA) {
-                                return -1; // `a` comes before `b` (older first)
-                            } else {
-                                return 0; // Dates are equal
-                            }
-                        });
-                    });
-                });
-                if (dataC.rooms.length) {
-                    indexRef.current = dataC.rooms[0]?.index;
-                    offset.current = dataC.rooms[0]?.filter[0]?.indexQuery;
-                }
-                if (moreChat) {
-                    cRef.current = 8;
-                    if (dataC.rooms.length > 0 && chatRef.current) {
-                        chatRef.current = {
-                            ...chatRef.current,
-                            rooms: [...chatRef.current.rooms, ...dataC.rooms],
-                        };
-                    }
-                } else {
-                    chatRef.current = dataC;
-
-                    cRef.current = 7;
-                }
-            }
-            setConversation(chatRef.current);
-        }
-        // first element
-        setLoading(false);
-    };
-    const code = `${conversation?._id ? conversation._id + '-' + conversation?.user.id : conversation?.user.id + '-' + id_you}roomChat_personal_receive_and_saw`;
     useEffect(() => {
-        console.log('eeeee');
-        if (code && conversation) {
-            socket.on(`conversation_deleteBG_room_${conversation._id}`, () => {
-                setConversation((pre) => {
-                    if (pre) return { ...pre, background: undefined };
-                    return pre;
-                });
-            });
-            socket.on(`conversation_changeBG_room_${conversation._id}`, async (dataBG: PropsBackground_chat) => {
-                if (dataBG && dataBG.userId !== id_you) {
-                    setConversation((pre) => {
-                        if (pre) return { ...pre, background: dataBG };
-                        return pre;
-                    });
-                }
-            });
+        if (data) {
+            const code = `${data?._id ? data._id : data?.user.id + '-' + id_you}phrase_chatRoom`;
+            console.log('eeeee', code);
+            // socket.on(`conversation_deleteBG_room_${data._id}`, () => {
+            //     setConversation((pre) => {
+            //         if (pre) return { ...pre, background: undefined };
+            //         return pre;
+            //     });
+            // });
+            // socket.on(`conversation_changeBG_room_${data._id}`, async (dataBG: PropsBackground_chat) => {
+            //     if (dataBG && dataBG.userId !== id_you) {
+            //         setConversation((pre) => {
+            //             if (pre) return { ...pre, background: dataBG };
+            //             return pre;
+            //         });
+            //     }
+            // });
 
-            socket.on(`Conversation_chat_deleteAll_${conversation._id}`, (deleteData: { roomId: string; filterId: string; dataId: string; userId: string; updatedAt: string }) => {
-                if (deleteData && deleteData.userId !== id_you) {
-                    setConversation((pre) => {
-                        if (pre)
-                            return {
-                                ...pre,
-                                rooms: pre.rooms.map((r) => {
-                                    if (r._id === deleteData.roomId) {
-                                        r.filter.map((f) => {
-                                            if (f._id === deleteData.filterId) {
-                                                f.data.map((d) => {
-                                                    if (d._id === deleteData.dataId) {
-                                                        d.text.t = '';
-                                                        d.imageOrVideos = [];
-                                                        d.delete = 'all';
-                                                        d.updatedAt = deleteData.updatedAt;
-                                                    }
-                                                    return d;
-                                                });
-                                            }
-                                            return f;
-                                        });
-                                    }
-                                    return r;
-                                }),
-                            };
-                        return pre;
-                    });
-                }
-            });
-            socket.on(
-                `Conversation_chat_update_${conversation._id}`,
-                async (updateData: {
-                    updatedBy: string;
-                    roomId: string;
-                    filterId: string;
-                    dataId: string;
-                    data: { value: string | undefined; imageOrVideos: PropsImageOrVideosAtMessenger[] };
-                    userId: string;
-                }) => {
-                    console.log(updateData, 'updateData');
-                    // upPin.mutate({
-                    //     _id: conversation._id,
-                    //     chatId: updateData.chatId,
-                    //     data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
-                    // });
-                    // upPin.mutate({
-                    //     file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
-                    //     text: data.text.t ? data.text.t : '',
-                    // });
-                    if (updateData.userId !== id_you && conversation) {
-                        setConversation((pre) => {
-                            return pre
-                                ? {
-                                      ...(pre ?? {}),
-                                      rooms: conversation.rooms.map((r) => {
-                                          if (r._id === updateData.roomId) {
-                                              r.filter.map((f) => {
-                                                  if (f._id === updateData.filterId) {
-                                                      f.data.map((d) => {
-                                                          if (d._id === updateData.dataId) {
-                                                              if (updateData.data.imageOrVideos.length) {
-                                                                  d.imageOrVideos = updateData.data.imageOrVideos;
-                                                              }
-                                                              if (updateData.data.value) {
-                                                                  d.text.t = decrypt(updateData.data.value, `chat_${d?.secondary ? d.secondary : conversation._id}`);
-                                                              }
-                                                              d.update = updateData.updatedBy;
-                                                          }
-                                                          return d;
-                                                      });
-                                                  }
-                                                  return f;
-                                              });
-                                          }
+            // socket.on(`Conversation_chat_deleteAll_${data._id}`, (deleteData: { roomId: string; filterId: string; dataId: string; userId: string; updatedAt: string }) => {
+            //     if (deleteData && deleteData.userId !== id_you) {
+            //         setConversation((pre) => {
+            //             if (pre)
+            //                 return {
+            //                     ...pre,
+            //                     rooms: pre.rooms.map((r) => {
+            //                         if (r._id === deleteData.roomId) {
+            //                             r.filter.map((f) => {
+            //                                 if (f._id === deleteData.filterId) {
+            //                                     f.data.map((d) => {
+            //                                         if (d._id === deleteData.dataId) {
+            //                                             d.text.t = '';
+            //                                             d.imageOrVideos = [];
+            //                                             d.delete = 'all';
+            //                                             d.updatedAt = deleteData.updatedAt;
+            //                                         }
+            //                                         return d;
+            //                                     });
+            //                                 }
+            //                                 return f;
+            //                             });
+            //                         }
+            //                         return r;
+            //                     }),
+            //                 };
+            //             return pre;
+            //         });
+            //     }
+            // });
+            // socket.on(
+            //     `Conversation_chat_update_${conversation._id}`,
+            //     async (updateData: {
+            //         updatedBy: string;
+            //         roomId: string;
+            //         filterId: string;
+            //         dataId: string;
+            //         data: { value: string | undefined; imageOrVideos: PropsImageOrVideosAtMessenger[] };
+            //         userId: string;
+            //     }) => {
+            //         console.log(updateData, 'updateData');
+            //         // upPin.mutate({
+            //         //     _id: conversation._id,
+            //         //     chatId: updateData.chatId,
+            //         //     data: { file: updateData.data.imageOrVideos, text: updateData.data.text.t },
+            //         // });
+            //         // upPin.mutate({
+            //         //     file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
+            //         //     text: data.text.t ? data.text.t : '',
+            //         // });
+            //         if (updateData.userId !== id_you && conversation) {
+            //             setConversation((pre) => {
+            //                 return pre
+            //                     ? {
+            //                           ...(pre ?? {}),
+            //                           rooms: conversation.rooms.map((r) => {
+            //                               if (r._id === updateData.roomId) {
+            //                                   r.filter.map((f) => {
+            //                                       if (f._id === updateData.filterId) {
+            //                                           f.data.map((d) => {
+            //                                               if (d._id === updateData.dataId) {
+            //                                                   if (updateData.data.imageOrVideos.length) {
+            //                                                       d.imageOrVideos = updateData.data.imageOrVideos;
+            //                                                   }
+            //                                                   if (updateData.data.value) {
+            //                                                       d.text.t = decrypt(updateData.data.value, `chat_${d?.secondary ? d.secondary : conversation._id}`);
+            //                                                   }
+            //                                                   d.update = updateData.updatedBy;
+            //                                               }
+            //                                               return d;
+            //                                           });
+            //                                       }
+            //                                       return f;
+            //                                   });
+            //                               }
 
-                                          return r;
-                                      }),
-                                  }
-                                : pre;
-                        });
-                    }
-                },
-            );
+            //                               return r;
+            //                           }),
+            //                       }
+            //                     : pre;
+            //             });
+            //         }
+            //     },
+            // );
 
             // socket.on(`phrase_chatRoom_response_${conversation._id}_${id_you}`, (res) => {
             //     console.log('in_roomChat_personal_receive_and_saw con');
@@ -445,57 +425,78 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             // socket.on(`user_${conversation?.user.id}_in_roomChat_${conversation._id}_personal_receive`, (res: { length: number; id: string }) => {
             //     setWritingBy(res);
             // });
-            // socket.on(code, async (d: string) => {
-            //     const { id, data }: { id: string; data: PropsRoomChat } = JSON.parse(d);
-            //     const codeS = `user_${id}_in_roomChat_personal_receive_and_saw`;
-            //     console.log(data, 'ddd');
+            socket.on(code, async (d) => {
+                const { userId, data: dataSocket }: { userId: string; data: PropsRoomChat } = d;
+                const codeS = `user_${userId}_in_roomChat_personal_receive_and_saw`;
+                if (userId !== id_you) {
+                    console.log(dataSocket, 'ddd');
+                    // socket.emit(codeS, {
+                    //     userIdReceived: id_you,
+                    //     idSent: id,
+                    //     idChat: data.room._id,
+                    // });
+                    queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
+                        let roomPo = false;
+                        let filterPo = false;
+                        const DataIn = dataSocket.rooms.filter[0].data[0];
+                        if (DataIn.text?.t) {
+                            if (DataIn?.secondary) {
+                                dataSocket.rooms.filter[0].data[0].text.t = decrypt(DataIn.text?.t, `chat_${DataIn.secondary}`);
+                            } else {
+                                dataSocket.rooms.filter[0].data[0].text.t = decrypt(DataIn.text?.t, `chat_${data._id}`);
+                            }
+                        }
+                        preData?.data.rooms.map((r) => {
+                            if (r._id === dataSocket.rooms._id) {
+                                roomPo = true;
+                                r.filter.map((f) => {
+                                    if (f._id === dataSocket.rooms.filter[0]._id) {
+                                        filterPo = true;
+                                        f.data.unshift(dataSocket.rooms.filter[0].data[0]);
+                                    }
+                                    return f;
+                                });
+                                if (!filterPo) r.filter.unshift(dataSocket.rooms.filter[0]);
+                            }
+                            return r;
+                        });
+                        if (!roomPo) {
+                            preData?.data.rooms.unshift(dataSocket.rooms);
+                        }
+                        console.log('changed', preData);
+                        return preData;
+                    });
+                    // const newD: any = await new Promise(async (resolve, reject) => {
+                    //     // if (data.room?.reply) {
+                    //     //     if (data.room.reply.text) {
+                    //     //         data.room.reply.text = decrypt(data.room.reply?.text, `chat_${data.room.secondary ? data.room.secondary : data._id}`);
+                    //     //     }
+                    //     // }
+                    //     // resolve(data.room);
+                    // });
 
-            //     // socket.emit(codeS, {
-            //     //     userIdReceived: id_you,
-            //     //     idSent: id,
-            //     //     idChat: data.room._id,
-            //     // });
-            //     const newD: any = await new Promise(async (resolve, reject) => {
-            //         if (data.room?.reply) {
-            //             if (data.room.reply.text) {
-            //                 data.room.reply.text = decrypt(data.room.reply?.text, `chat_${data.room.secondary ? data.room.secondary : data._id}`);
-            //             }
-            //         }
-            //         resolve(data.room);
-            //     });
-            //     if (newD.text?.t) {
-            //         if (newD?.secondary) {
-            //             const decryptedData = decrypt(newD.text?.t, `chat_${newD.secondary}`);
-            //             newD.text.t = decryptedData;
-            //             newD.text.t = regexCus(newD.text.t);
-            //         } else {
-            //             const bytdecryptedDatas = decrypt(newD.text?.t, `chat_${conversation?._id}`);
-            //             newD.text.t = bytdecryptedDatas;
-            //             newD.text.t = regexCus(newD.text.t);
-            //         }
-            //     }
-            //     data.users.push(data.user);
-            //     if (!conversation?._id && conversation) {
-            //         setConversation({ ...conversation, _id: data._id });
-            //         console.log('eyeye');
-            //     }
-            //     dispatch(setRoomChat(data));
-            //     setDataSent(newD);
-            //     setWritingBy(undefined);
-            // });
+                    // // data.users.push(data.user);
+                    // // if (!conversation?._id && conversation) {
+                    // //     setConversation({ ...conversation, _id: data._id });
+                    // //     console.log('eyeye');
+                    // // }
+                    // // dispatch(setRoomChat(data));
+                    // setDataSent(newD);
+                    setWritingBy(undefined);
+                }
+            });
+            return () => {
+                socket.off(`phrase_chatRoom_response_${conversation?._id}_${id_you}`);
+                socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
+                socket.off(code);
+                socket.off(`Conversation_chat_deleteAll_${conversation?._id}`);
+                socket.off(`Conversation_chat_update_${conversation?._id}`);
+            };
         }
-        return () => {
-            socket.off(`phrase_chatRoom_response_${conversation?._id}_${id_you}`);
-            socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
-            socket.off(code);
-            socket.off(`Conversation_chat_deleteAll_${conversation?._id}`);
-            socket.off(`Conversation_chat_update_${conversation?._id}`);
-        };
-    }, [code, conversation]);
-    console.log(writingBy, 'writingBy');
+    }, [data]);
+    console.log(writingBy, 'writingBy', isFetching);
 
     useEffect(() => {
-        fetchChat();
         socket.on(
             `user_${id_you}_in_roomChat_personal_receive_and_saw_other`, // display that user has been received and seen
             (data: { userIdReceived: string; idSent: string; idChat: string }) => {
@@ -506,43 +507,38 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     }, []);
     const targetChild = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
-        const re = document.getElementById(`chat_to_scroll_${choicePin}`); // auto scroll when click into pin button
-        // if (choicePin) {
-        //     if (!conversation?.room.some((r) => r._id === choicePin)) {
-        //         fetchChat(true);
-        //     } else {
-        //         const container = ERef.current;
-        //         if (container && re) {
-        //             const childRect = re.getBoundingClientRect();
-        //             const containerRect = container.getBoundingClientRect();
-        //             // Kiểm tra nếu phần tử con đang ở trên tầm nhìn của phần tử cha
-        //             container.scrollTo({
-        //                 top: container.scrollTop + (childRect.top - containerRect.top - 100), // calculate top's coordinate of child and parents
-        //                 behavior: 'smooth',
-        //             });
-        //             // if (ERef.current) ERef.current.scrollTop = -check.current;
+        // const re = document.getElementById(`chat_to_scroll_${choicePin}`); // auto scroll when click into pin button
+        // // if (choicePin) {
+        // //     if (!conversation?.room.some((r) => r._id === choicePin)) {
+        // //         fetchChat(true);
+        // //     } else {
+        // //         const container = ERef.current;
+        // //         if (container && re) {
+        // //             const childRect = re.getBoundingClientRect();
+        // //             const containerRect = container.getBoundingClientRect();
+        // //             // Kiểm tra nếu phần tử con đang ở trên tầm nhìn của phần tử cha
+        // //             container.scrollTo({
+        // //                 top: container.scrollTop + (childRect.top - containerRect.top - 100), // calculate top's coordinate of child and parents
+        // //                 behavior: 'smooth',
+        // //             });
+        // //             // if (ERef.current) ERef.current.scrollTop = -check.current;
+        // //         }
+        // //     }
+        // // }
+        // const observer = new IntersectionObserver((entries) => {
+        //     entries.forEach((entry) => {
+        //         console.log('Child element is now visible in the container', entry, ERef.current?.scrollTop);
+        //         if (entry.isIntersecting) {
+        //             setChoicePin('');
         //         }
-        //     }
-        // }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                console.log('Child element is now visible in the container', entry, ERef.current?.scrollTop);
-                if (entry.isIntersecting) {
-                    setChoicePin('');
-                }
-                // You can perform actions when the child element becomes visible here
-            });
-        });
-
-        if (re) observer.observe(re);
-        return () => {
-            if (re) observer.unobserve(re);
-        };
+        //         // You can perform actions when the child element becomes visible here
+        //     });
+        // });
+        // if (re) observer.observe(re);
+        // return () => {
+        //     if (re) observer.unobserve(re);
+        // };
     }, [choicePin, conversation]);
-    useEffect(() => {
-        chatRef.current = conversation;
-    }, [conversation]);
     useEffect(() => {
         // if (dataSent && !writingBy) {
         //     if (conversation?.room.some((r) => r.length)) {
@@ -595,7 +591,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         clearTimeout(time);
     };
     const handleSend = async (conversationId: string | undefined, id_other: string | undefined) => {
-        if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && conversation) {
+        if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && data) {
             textarea.current?.setAttribute('style', 'height: 33px');
             if (ERef.current) ERef.current.scrollTop = 0;
             setValue('');
@@ -617,15 +613,15 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 createdAt: DateTime(),
                 imageOrVideos: images,
                 seenBy: [],
-                text: { t: regexCus(value), icon: '' },
+                text: { t: value, icon: '' },
                 userId: userId,
                 _id: id_,
             };
-            const con = conversation.rooms.find((r) => r._id === conversation.lastElement.roomId);
+            const con = data.rooms.find((r) => r._id === data.lastElement.roomId);
             console.log(con, 'connn');
 
             if (con && con.count < 50) {
-                const filter = con.filter.find((f) => f._id === conversation.lastElement.filterId) ?? con.filter[con.filter.length - 1];
+                const filter = con.filter.find((f) => f._id === data.lastElement.filterId) ?? con.filter[con.filter.length - 1];
                 if (filter)
                     if (filter.count < 10) {
                         filter.count += 1;
@@ -643,8 +639,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         });
                     }
             } else {
-                conversation.rooms.unshift({
-                    chatId: conversation._id,
+                data.rooms.unshift({
+                    chatId: data._id,
                     count: 1,
                     full: false,
                     index: con?.index ?? 0,
@@ -653,49 +649,55 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     createdAt: new Date(),
                 });
             }
-            console.log(conversation.rooms, 'conversation.rooms');
+            console.log(data.rooms, 'data.rooms');
 
             const formData = new FormData();
             const fda: any = {};
-            if (value) fda.value = encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`);
+            if (value) fda.value = encrypt(value, `chat_${data._id ? data._id : id_s}`);
             if (conversationId) formData.append('conversationId', conversationId); // conversation._id
-            if (id_) fda.id_room = id_; // id of the room
-            if (id_s && !conversation._id) fda.id_s = id_s; // first it have no _id of the conversationId then id_s is replaced
+            if (id_) fda.id_data = id_; // id of the room
+            if (id_s && !data._id) fda.id_s = id_s; // first it have no _id of the conversationId then id_s is replaced
             if (id_other) fda.id_others = id_other;
             fda.valueInfoFile = urlS;
-            fda.conversationId = conversation._id;
-            fda.indexRoom = conversation.rooms[conversation.rooms.length - 1].index ?? 0;
+            fda.conversationId = data._id;
+            fda.indexRoom = data.rooms[data.rooms.length - 1].index ?? 0;
             const res = await sendChatAPI.send(fda);
-            const data: typeof res | undefined = ServerBusy(res, dispatch);
-            if (data) {
-                setConversation((pre) => {
-                    pre?.rooms.map((r) => {
+            const dataSent: typeof res | undefined = ServerBusy(res, dispatch);
+            if (dataSent) {
+                queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: { data: typeof data } | undefined) => {
+                    dataSent.rooms.filter[0].data[0].text.t = value;
+                    data?.rooms.map((r) => {
                         if (r._id === 'new') {
-                            r = data.rooms;
-                        } else if (r._id === data.rooms._id) {
-                            r.count = data.rooms.count;
-                            r.index = data.rooms.index;
-                            r.full = data.rooms.full;
+                            r = dataSent.rooms;
+                        } else if (r._id === dataSent.rooms._id) {
+                            r.count = dataSent.rooms.count;
+                            r.index = dataSent.rooms.index;
+                            r.full = dataSent.rooms.full;
                             r.filter.map((f) => {
                                 if (f._id === 'new') {
-                                    f = data.rooms.filter[0];
-                                } else if (f._id === data.rooms.filter[0]._id) {
-                                    f.data.unshift(data.rooms.filter[0].data[0]);
-                                    f = { ...data.rooms.filter[0], data: f.data };
+                                    f = dataSent.rooms.filter[0];
+                                } else if (f._id === dataSent.rooms.filter[0]._id) {
+                                    f.data.map((d) => {
+                                        if (d._id === dataSent.rooms.filter[0].data[0]._id) {
+                                            d = dataSent.rooms.filter[0].data[0];
+                                        }
+                                        return d;
+                                    });
+                                    f = { ...dataSent.rooms.filter[0], data: f.data };
                                 }
                                 return f;
                             });
                         }
                         return r;
                     });
-                    return pre;
+                    return { ...preData, data };
                 });
                 rr.current = '';
-                if (!conversation._id) conversation._id = data._id; // add id when id is empty
-                data.users.push(conversation.user);
+                if (!data._id) data._id = data._id; // add id when id is empty
+                data.users.push(data.user);
                 setupload(undefined);
                 setLoadingChat('');
-                dispatch(setRoomChat(data));
+                // dispatch(setRoomChat(dataSent));
             }
         }
     };
@@ -723,8 +725,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         conversation,
         setConversation,
         userId,
-        fetchChat,
-        loading,
         cRef,
         opMore,
         setOpMore,
@@ -734,7 +734,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         del,
         textarea,
         date1,
-        data,
         emptyRef,
         wch,
         setWch,
@@ -748,5 +747,9 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         setItemPin,
         itemPinData,
         loadingChat,
+        isFetching,
+        refetch,
+        moreAction,
+        data,
     };
 }

@@ -103,8 +103,6 @@ const Conversation: React.FC<{
         conversation,
         setConversation,
         userId,
-        fetchChat,
-        loading,
         cRef,
         opMore,
         setOpMore,
@@ -114,7 +112,6 @@ const Conversation: React.FC<{
         del,
         textarea,
         date1,
-        data,
         emptyRef,
         wch,
         setWch,
@@ -128,10 +125,14 @@ const Conversation: React.FC<{
         setItemPin,
         itemPinData,
         loadingChat,
+        isFetching,
+        refetch,
+        moreAction,
+        data,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
-    if (conversation?._id) {
-        if (!mm.current.some((m) => m.id === conversation?._id && index === m.index)) {
-            mm.current.push({ id: conversation._id, index });
+    if (data?._id) {
+        if (!mm.current.some((m) => m.id === data?._id && index === m.index)) {
+            mm.current.push({ id: data._id, index });
         }
     }
     const [moves, setMoves] = useState<string[]>([]);
@@ -143,8 +144,8 @@ const Conversation: React.FC<{
     const yRef = useRef<number | null>(null);
     const scrollCheck = useRef<boolean>(true);
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (conversation?._id && moves.includes(conversation._id) && del.current)
-            if (moves.some((m) => m === conversation?._id || m === conversation?.user.id)) {
+        if (data?._id && moves.includes(data._id) && del.current)
+            if (moves.some((m) => m === data?._id || m === data?.user.id)) {
                 const ls = document.querySelectorAll('.ofChats');
                 Array.from(ls).forEach((s) => {
                     console.log(s.getAttribute('id') === del.current?.getAttribute('id'));
@@ -157,21 +158,21 @@ const Conversation: React.FC<{
                 });
                 del.current.style.top = `${del.current.getBoundingClientRect().top}px`;
                 del.current.style.left = `${del.current.getBoundingClientRect().left}px`;
-                if (!mouse.some((m) => m === conversation._id)) {
-                    setMouse([...mouse, conversation._id]);
+                if (!mouse.some((m) => m === data._id)) {
+                    setMouse([...mouse, data._id]);
                 }
             }
     };
     const handleMouseUp = () => {
-        if (conversation && moves.includes(conversation._id)) {
+        if (data && moves.includes(data._id)) {
             if (yRef.current && xRef.current) dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
-            setMouse((pre) => pre.filter((m) => m !== conversation._id));
+            setMouse((pre) => pre.filter((m) => m !== data._id));
         }
     };
     console.log(left, 'left');
 
     const handleTouchMoveRoomChat = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (conversation?._id && mouse.includes(conversation?._id ?? '') && del.current) {
+        if (data?._id && mouse.includes(data?._id ?? '') && del.current) {
             const x = e.clientX;
             const y = e.clientY;
             const viewportWidth = window.innerWidth;
@@ -222,16 +223,18 @@ const Conversation: React.FC<{
             }
         }
     };
-
     const handleScroll = () => {
         if (scrollCheck.current) scrollCheck.current = false;
         if (!emptyRef.current && ERef.current) {
             const { scrollTop, clientHeight, scrollHeight } = ERef.current;
             const scrollBottom = -scrollTop + clientHeight;
-            if (scrollBottom >= scrollHeight - 250 && !loading) {
+            console.log('more chat', isFetching, scrollBottom >= scrollHeight - 250, cRef, emptyRef);
+            if (scrollBottom >= scrollHeight - 250) {
                 if (cRef.current !== 2) {
                     // wait for another request
-                    fetchChat(true);
+                    moreAction.current.moreChat = true;
+                    moreAction.current.prevent = true;
+                    refetch();
                 }
             }
         }
@@ -239,16 +242,16 @@ const Conversation: React.FC<{
 
     const handleProfile = () => {
         const id_oth: string[] = [];
-        conversation?.id_us.forEach((id) => {
+        data?.id_us.forEach((id) => {
             if (id !== userId) id_oth.push(id);
         });
         dispatch(setOpenProfile({ newProfile: id_oth, currentId: '' }));
     };
     const handleDelete = async () => {
         setLoadDel(true);
-        if (conversation) {
-            const res = await sendChatAPi.delete(conversation._id);
-            const data:
+        if (data) {
+            const res = await sendChatAPi.delete(data._id);
+            const dataRe:
                 | {
                       _id: string;
                       deleted: {
@@ -260,9 +263,9 @@ const Conversation: React.FC<{
                   }
                 | undefined = ServerBusy(res, dispatch);
 
-            if (data) {
-                setConversation({ ...conversation, rooms: [], deleted: data.deleted });
-                dispatch(setDelIds(data));
+            if (dataRe) {
+                setConversation({ ...data, rooms: [], deleted: dataRe.deleted });
+                dispatch(setDelIds(dataRe));
             }
         }
 
@@ -271,9 +274,9 @@ const Conversation: React.FC<{
     const handleUndo = async () => {
         console.log('Undo');
         setLoadDel(true);
-        if (conversation?._id) {
+        if (data?._id) {
             emptyRef.current = false;
-            const res = await sendChatAPi.undo(conversation._id);
+            const res = await sendChatAPi.undo(data._id);
             const dataV: PropsChat | undefined = ServerBusy(res, dispatch);
             if (dataV) {
                 const newData = await new Promise<PropsChat>(async (resolve, reject) => {
@@ -304,7 +307,7 @@ const Conversation: React.FC<{
         }
         setLoadDel(false);
     };
-    const ye = !moves.some((m) => m === conversation?._id || m === conversation?.user.id);
+    const ye = !moves.some((m) => m === data?._id || m === data?.user.id);
 
     const handleImageUploadBg = async (e: any) => {
         // if (!ye) e.preventDefault();
@@ -315,12 +318,12 @@ const Conversation: React.FC<{
         //     const formData = new FormData();
         //     if (fileC) {
         //         formData.append('file', fileC); // assign file and _id of the file upload
-        //         if (conversation.background) formData.append('old_id', conversation.background.id);
+        //         if (data.background) formData.append('old_id', data.background.id);
         //         const re = await fileWorkerAPI.addFiles(formData);
         //         if (re?.length) {
         //             const res: { userId: string; latestChatId: string } = await chatAPI.setBackground({
-        //                 latestChatId: conversation.room[0]._id,
-        //                 conversationId: conversation._id,
+        //                 latestChatId: data.room[0]._id,
+        //                 conversationId: data._id,
         //                 id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
         //             });
         //             if (res)
@@ -370,11 +373,11 @@ const Conversation: React.FC<{
         },
     );
     const dataMore: PropsDataMoreConversation = {
-        conversationId: conversation?._id,
-        id: conversation?.user.id,
-        avatar: conversation?.user.avatar,
-        fullName: conversation?.user.fullName,
-        gender: conversation?.user.gender,
+        conversationId: data?._id,
+        id: data?.user.id,
+        avatar: data?.user.avatar,
+        fullName: data?.user.fullName,
+        gender: data?.user.gender,
         options: [
             {
                 id: 1,
@@ -382,7 +385,7 @@ const Conversation: React.FC<{
                 icon: <ProfileCircelI />,
                 color: '#2880cc',
                 onClick: () => {
-                    if (conversation?.user.id && ye) dispatch(setOpenProfile({ newProfile: [conversation?.user.id] }));
+                    if (data?.user.id && ye) dispatch(setOpenProfile({ newProfile: [data?.user.id] }));
                 },
             },
             {
@@ -400,27 +403,27 @@ const Conversation: React.FC<{
                                     margin-right: 5px;
                                 }
                                 form {
-                                    ${conversation?.background ? 'margin-bottom: 12px;' : ''}
+                                    ${data?.background ? 'margin-bottom: 12px;' : ''}
                                 }
                             `}
                         >
                             <form method="post" encType="multipart/form-data">
-                                <input id={conversation?._id + 'uploadCon_BG'} type="file" name="file" onChange={handleImageUploadBg} hidden />
-                                <Label htmlFor={conversation?._id + 'uploadCon_BG'} color={colorText} css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}">
+                                <input id={data?._id + 'uploadCon_BG'} type="file" name="file" onChange={handleImageUploadBg} hidden />
+                                <Label htmlFor={data?._id + 'uploadCon_BG'} color={colorText} css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}">
                                     <Div css="font-size: 25px; color: #eedec8; @media(min-width: 768px){font-size: 20px}">
                                         <BackgroundI />
                                     </Div>{' '}
                                     {conversationText.optionRoom.background}
                                 </Label>
                             </form>
-                            {conversation?.background && (
+                            {data?.background && (
                                 <Div
                                     css="width: 100%; align-items: center; display: flex; svg{margin-right: 3px;} "
                                     onClick={async () => {
-                                        if (conversation && conversation.background) {
-                                            const fileDed = await fileWorkerAPI.deleteFileImg([conversation.background.id]);
+                                        if (data && data.background) {
+                                            const fileDed = await fileWorkerAPI.deleteFileImg([data.background.id]);
                                             if (fileDed) {
-                                                const res: boolean = await chatAPI.delBackground(conversation._id);
+                                                const res: boolean = await chatAPI.delBackground(data._id);
                                                 if (res)
                                                     setConversation((pre) => {
                                                         if (pre) return { ...pre, background: undefined };
@@ -445,43 +448,43 @@ const Conversation: React.FC<{
             },
             {
                 id: 3,
-                name: (balloon.some((b) => b === conversation?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') + conversationText.optionRoom.balloon,
+                name: (balloon.some((b) => b === data?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') + conversationText.optionRoom.balloon,
                 icon: <BalloonI />,
                 color: '#e489a2',
                 onClick: () => {
-                    if (conversation?._id && ye)
-                        if (!balloon.some((b) => b === conversation._id)) {
-                            dispatch(setBalloon(conversation?._id));
+                    if (data?._id && ye)
+                        if (!balloon.some((b) => b === data._id)) {
+                            dispatch(setBalloon(data?._id));
                         } else {
-                            removeBall.mutate(conversation._id);
-                            dispatch(removeBalloon(conversation?._id));
+                            removeBall.mutate(data._id);
+                            dispatch(removeBalloon(data?._id));
                         }
                 },
             },
             {
                 id: 4,
-                name: `${conversationText.optionRoom.move} ${moves.some((m) => m === conversation?._id || m === conversation?.user.id) ? ' stop' : ''}`,
+                name: `${conversationText.optionRoom.move} ${moves.some((m) => m === data?._id || m === data?.user.id) ? ' stop' : ''}`,
                 icon: <MoveI />,
                 device: 'mobile',
                 onClick: () => {
                     let checkM = false;
-                    if (conversation?._id) {
+                    if (data?._id) {
                         moves.forEach((m) => {
-                            if (m === conversation?._id) checkM = true;
+                            if (m === data?._id) checkM = true;
                         });
                         if (checkM) {
-                            setMoves((pre) => pre.filter((m) => m !== conversation._id));
+                            setMoves((pre) => pre.filter((m) => m !== data._id));
                         } else {
-                            setMoves([...moves, conversation?._id]);
+                            setMoves([...moves, data?._id]);
                         }
-                    } else if (conversation?.user.id) {
+                    } else if (data?.user.id) {
                         moves.forEach((m) => {
-                            if (m === conversation.user.id) checkM = true;
+                            if (m === data.user.id) checkM = true;
                         });
                         if (checkM) {
-                            setMoves((pre) => pre.filter((m) => m !== conversation.user.id));
+                            setMoves((pre) => pre.filter((m) => m !== data.user.id));
                         } else {
-                            setMoves([...moves, conversation.user.id]);
+                            setMoves([...moves, data.user.id]);
                         }
                     }
                 },
@@ -489,7 +492,7 @@ const Conversation: React.FC<{
         ],
     };
 
-    if (conversation?.deleted?.some((c) => c.id === userId)) {
+    if (data?.deleted?.some((c) => c.id === userId)) {
         dataMore.options.push({
             id: 6,
             name: conversationText.optionRoom.undo,
@@ -504,7 +507,7 @@ const Conversation: React.FC<{
             onClick: () => handleUndo(),
         });
     }
-    // if (conversation?.room[0]?.id) {
+    // if (data?.room[0]?.id) {
     //     dataMore.options.push({
     //         id: 5,
     //         name: conversationText.optionRoom.del,
@@ -524,7 +527,7 @@ const Conversation: React.FC<{
     const handleOnKeyup = (e: any) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleSend(conversation?._id, conversation?.user.id);
+            handleSend(data?._id, data?.user.id);
         } else {
             e.target.setAttribute('style', 'height: auto');
             if (e.key === 'Backspace') {
@@ -548,7 +551,7 @@ const Conversation: React.FC<{
             <Textarea placeholder="Change text" />
         </Div>,
     );
-    console.log(writingBy, 'writingBy', writingBy && writingBy.id === conversation?.user.id, writingBy?.id, conversation?.user.id);
+    console.log(writingBy, 'writingBy', writingBy && writingBy.id === data?.user.id, writingBy?.id, data?.user.id);
     const Dot: number[] = [];
     const eraser = useRef<number>(0);
 
@@ -559,11 +562,11 @@ const Conversation: React.FC<{
     }
     const era = Dot.length < eraser.current;
     eraser.current = Dot.length;
-    const Time = data ? moments().FromNow(data, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg) : '';
+    const Time = ''; //data ? moments().FromNow(data, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg) : '';
     const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         console.log(e.target.value, 'enter');
-        socket.emit(`user_${conversation?.user.id}_in_roomChat_personal_writing`, {
-            roomId: conversation?._id,
+        socket.emit(`user_${data?.user.id}_in_roomChat_personal_writing`, {
+            roomId: data?._id,
             id_other: dataFirst.id,
             value: e.target.value.length,
         });
@@ -578,16 +581,14 @@ const Conversation: React.FC<{
             id={`ofChatId${index}`}
             css={`
                 overflow: hidden;
-                ${yRef.current || top || mouse.includes(conversation?._id ?? '') ? 'position: fixed;' : ''}
+                ${yRef.current || top || mouse.includes(data?._id ?? '') ? 'position: fixed;' : ''}
                 top: ${(yRef.current || top || 329) + 'px'};
                 left: ${(xRef.current || left || 185 * (index >= 1 ? index + index : index) + 8) + 'px'};
                 z-index: 99;
                 background-position: center;
                 transition: all 0.5s linear;
                 background-blend-mode: soft-light;
-                ${conversation?.background
-                    ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${conversation?.background.id}); background-repeat: no-repeat;background-size: cover;`
-                    : ''}
+                ${data?.background ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${data?.background.id}); background-repeat: no-repeat;background-size: cover;` : ''}
 
                 @media (min-width: 500px) {
                     margin-right: 5px;
@@ -601,12 +602,12 @@ const Conversation: React.FC<{
             }}
         >
             <DivResultsConversation color="#e4e4e4">
-                {loading && (
+                {isFetching && (
                     <DivLoading css="position: absolute; top: 50px; left: 50%; right: 50%; translate: -50%; z-index: 999;">
                         <LoadingI />
                     </DivLoading>
                 )}
-                {conversation && optionsForItem && (
+                {data && optionsForItem && (
                     <OptionForItem
                         id_you={dataFirst.id}
                         itemPin={itemPin}
@@ -616,7 +617,7 @@ const Conversation: React.FC<{
                         colorText={colorText}
                         del={del}
                         optionsForItem={optionsForItem}
-                        conversation={conversation}
+                        conversation={data}
                         setConversation={setConversation}
                         setEmoji={setEmoji}
                         roomImage={roomImage}
@@ -645,26 +646,26 @@ const Conversation: React.FC<{
                         css="height: 30px; margin-right: 10px; align-items: center; justify-content: center;  cursor: var(--pointer);font-size: 30px; @media(min-width: 500px){ width: 30px; font-size: 25px;}"
                         onClick={() => {
                             if (del.current) {
-                                dispatch(offChats(chat.filter((c) => c.id_other !== conversation?.user.id && c.conversationId !== conversation?._id)));
+                                dispatch(offChats(chat.filter((c) => c.id_other !== data?.user.id && c.conversationId !== data?._id)));
                             }
                         }}
                     >
                         <UndoI />
                     </Div>
                     <Div width="85%" css="align-items: center; position: relative">
-                        {conversation && conversation.user.gender >= 0 ? (
+                        {data && data.user.gender >= 0 ? (
                             <Avatar
-                                src={conversation?.user.avatar}
-                                alt={conversation?.user.fullName}
+                                src={data?.user.avatar}
+                                alt={data?.user.fullName}
                                 className="hello"
-                                gender={conversation?.user.gender}
+                                gender={data?.user.gender}
                                 radius="50%"
                                 css="min-width: 40px; width: 40px; height: 40px; margin-right: 5px;@media(min-width: 768px){min-width: 30px; width: 30px; height: 30px;}"
                             />
                         ) : (
                             ''
                         )}
-                        {userOnline.includes(conversation?.user.id ?? '') && (
+                        {userOnline.includes(data?.user.id ?? '') && (
                             <Div
                                 css={`
                                     font-size: 11px;
@@ -678,7 +679,7 @@ const Conversation: React.FC<{
                             </Div>
                         )}
                         <Div width="98%" wrap="wrap">
-                            <Hname>{conversation?.user.fullName}</Hname>
+                            <Hname>{data?.user.fullName}</Hname>
                             {Time && (
                                 <Div>
                                     <Div css="color: #db4141; font-size: 8px; align-items: center; margin-right: 2px;">
@@ -693,19 +694,19 @@ const Conversation: React.FC<{
                         </Div>
                     </Div>
                 </Div>
-                {/* {conversation && conversation?.pins?.length ? (
+                {/* {conversation && data?.pins?.length ? (
                     <PinChat
                         one={one}
                         itemPin={itemPin}
                         setItemPin={setItemPin}
-                        conversationId={conversation._id}
-                        user={conversation.user}
+                        conversationId={data._id}
+                        user={data.user}
                         dataFirst={dataFirst}
-                        pins={conversation.pins}
+                        pins={data.pins}
                         setChoicePin={setChoicePin}
-                        avatar={conversation.user.avatar}
-                        room={conversation.room}
-                        name={conversation.user.fullName}
+                        avatar={data.user.avatar}
+                        room={data.room}
+                        name={data.user.fullName}
                         setConversation={setConversation}
                         itemPinData={itemPinData}
                     />
@@ -738,14 +739,15 @@ const Conversation: React.FC<{
                         if (!scrollCheck.current) scrollCheck.current = true;
                     }}
                 >
-                    {conversation?.rooms.map((aa, index) => {
-                        // const timePin = moment(conversation.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
-                        return aa.filter.map((p) =>
-                            p.data.map((rc, index, arr) => {
+                    {data?.rooms.map((aa, index) => {
+                        // const timePin = moment(data.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
+                        return aa.filter.map((p) => {
+                            date1.current = moment(p.data[0].createdAt);
+                            return p.data.map((rc, index, arr) => {
                                 let timeS = '';
-                                const mn = moment(arr[index].createdAt); //show time for every day
+                                const mn = moment(rc.createdAt); //show time for every day
                                 if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
-                                    timeS = '------ ' + mn.locale(lg).format('LL') + ' ------';
+                                    timeS = '------ ' + (date1.current && date1.current.diff(new Date(), 'days') < 1 ? 'Hôm nay ' : '') + date1.current?.locale(lg).format('LL') + ' ------';
                                     date1.current = mn;
                                 } else {
                                     timeS = '';
@@ -776,12 +778,12 @@ const Conversation: React.FC<{
                                                             left: 25px;
                                                         `}
                                                     >
-                                                        {conversation?.user.fullName} {conversationText.phrase.input.write}...
+                                                        {data?.user.fullName} {conversationText.phrase.input.write}...
                                                     </P>
                                                     <Avatar
-                                                        src={conversation?.user.avatar}
-                                                        alt={conversation?.user.fullName}
-                                                        gender={conversation?.user.gender}
+                                                        src={data?.user.avatar}
+                                                        alt={data?.user.fullName}
+                                                        gender={data?.user.gender}
                                                         radius="50%"
                                                         css="min-width: 17px; width: 17px; height: 17px; margin-right: 4px; margin-top: 3px;"
                                                     />{' '}
@@ -835,42 +837,42 @@ const Conversation: React.FC<{
                                         );
                                     return null;
                                 }
-
-                                return (
-                                    <ItemsRoom
-                                        roomId={aa._id}
-                                        filterId={p._id}
-                                        background={conversation.background}
-                                        choicePin={choicePin}
-                                        setChoicePin={setChoicePin}
-                                        targetChild={targetChild}
-                                        phraseText={conversationText.phrase}
-                                        conversationId={conversation._id}
-                                        key={rc.text.t + index}
-                                        options={optionsForItem}
-                                        setOptions={setOptions}
-                                        timeS={timeS}
-                                        rc={rc}
-                                        index={index}
-                                        archetype={arr}
-                                        handleWatchMore={handleWatchMore}
-                                        ERef={ERef}
-                                        del={del}
-                                        handleTime={handleTime}
-                                        user={conversation.user}
-                                        dataFirst={dataFirst}
-                                        wch={wch}
-                                        setWch={setWch}
-                                        rr={rr}
-                                        pins={conversation.pins}
-                                        roomImage={roomImage}
-                                        setRoomImage={setRoomImage}
-                                        scrollCheck={scrollCheck}
-                                        loadingChat={loadingChat}
-                                    />
-                                );
-                            }),
-                        );
+                                if (!(rc.delete === dataFirst.id))
+                                    return (
+                                        <ItemsRoom
+                                            roomId={aa._id}
+                                            filterId={p._id}
+                                            background={data.background}
+                                            choicePin={choicePin}
+                                            setChoicePin={setChoicePin}
+                                            targetChild={targetChild}
+                                            phraseText={conversationText.phrase}
+                                            conversationId={data._id}
+                                            key={rc.text.t + index}
+                                            options={optionsForItem}
+                                            setOptions={setOptions}
+                                            timeS={timeS}
+                                            rc={rc}
+                                            index={index}
+                                            archetype={arr}
+                                            handleWatchMore={handleWatchMore}
+                                            ERef={ERef}
+                                            del={del}
+                                            handleTime={handleTime}
+                                            user={data.user}
+                                            dataFirst={dataFirst}
+                                            wch={wch}
+                                            setWch={setWch}
+                                            rr={rr}
+                                            pins={data.pins}
+                                            roomImage={roomImage}
+                                            setRoomImage={setRoomImage}
+                                            scrollCheck={scrollCheck}
+                                            loadingChat={loadingChat}
+                                        />
+                                    );
+                            });
+                        });
                     })}
 
                     <Div width="100%" wrap="wrap" css="align-items: center; justify-content: center; margin-top: 80px; margin-bottom: 40px;">
@@ -973,8 +975,8 @@ const Conversation: React.FC<{
                                 `}
                             >
                                 <form method="post" encType="multipart/form-data" id="formss">
-                                    <input id={conversation?._id + 'uploadCon'} type="file" name="file[]" onChange={handleImageUpload} multiple hidden />
-                                    <Label htmlFor={conversation?._id + 'uploadCon'} css="font-size: 22px;" color={colorText}>
+                                    <input id={data?._id + 'uploadCon'} type="file" name="file[]" onChange={handleImageUpload} multiple hidden />
+                                    <Label htmlFor={data?._id + 'uploadCon'} css="font-size: 22px;" color={colorText}>
                                         <CameraI />
                                     </Label>
                                 </form>
@@ -1007,14 +1009,14 @@ const Conversation: React.FC<{
                             <Div
                                 width="34px"
                                 css="font-size: 25px; color: #23c3ec; height: 100%; align-items: center; justify-content: center; cursor: var(--pointer);"
-                                onClick={(e) => handleSend(conversation?._id, conversation?.user.id)}
+                                onClick={(e) => handleSend(data?._id, data?.user.id)}
                             >
                                 <SendOPTI />
                             </Div>
                         </Div>
                     </Div>
                 </Div>
-                {opMore && conversation && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} background={conversation.background} />}
+                {opMore && data && <MoreOption dataMore={dataMore} colorText={colorText} setOpMore={setOpMore} background={data.background} />}
             </DivResultsConversation>
         </DivConversation>
     );
