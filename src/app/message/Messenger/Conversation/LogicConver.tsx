@@ -123,7 +123,7 @@ export interface PropsConversationCustoms {
     createdAt: string;
     lastElement: { roomId: string; filterId: string };
 }
-type PropsItemQueryChat = { indexRef: number; indexQuery: number; data: PropsChat } | undefined;
+type PropsItemQueryChat = { indexRef: number; indexQuery: number; data: PropsChat; load: { id: string; status: string }[] } | undefined;
 export function regexCus(val: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const hashTagRegex = /#([^]+?)\s*#@/g;
@@ -172,8 +172,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
     //action
-    const [loadingChat, setLoadingChat] = useState<string>('');
-    const [loadingGet, setLoadingGet] = useState<boolean>(false);
     const { userId } = Cookies();
     const { lg } = Languages();
     const textarea = useRef<HTMLTextAreaElement | null>(null);
@@ -255,10 +253,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 });
                 if (moreAction.current.moreChat) {
                     cRef.current = 8;
-                    const preData: { indexRef: number; indexQuery: number; data: PropsChat } | undefined = queryClient.getQueryData(['getItemChats', id_chat.id_other + '_' + id_you]);
+                    const preData: PropsItemQueryChat = queryClient.getQueryData(['getItemChats', id_chat.id_other + '_' + id_you]);
                     if (dataC.rooms.length > 0 && preData) if (preData) preData.data.rooms = [...preData.data.rooms, ...dataC.rooms];
                     moreAction.current.moreChat = false;
                     return {
+                        load: preData?.load ?? [],
                         indexQuery: dataC.rooms[0] ? dataC.rooms[0]?.filter[0]?.indexQuery : preData?.indexQuery,
                         data: preData?.data,
                         indexRef: dataC.rooms[0] ? dataC.rooms[0]?.index : preData?.indexRef,
@@ -266,6 +265,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 } else {
                     cRef.current = 7;
                     return {
+                        load: [],
                         indexQuery: dataC.rooms[0] ? dataC.rooms[0]?.filter[0]?.indexQuery : preData?.indexQuery,
                         data: dataC,
                         indexRef: dataC.rooms[0] ? dataC.rooms[0]?.index : preData?.indexRef,
@@ -482,7 +482,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     // // }
                     // // dispatch(setRoomChat(data));
                     // setDataSent(newD);
-                    setWritingBy(undefined);
                 }
             });
             return () => {
@@ -608,7 +607,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
             });
             const id_s = uuidv4();
-            setLoadingChat(id_);
+            converData.load = [...(converData.load ?? []), { id: id_, status: 'loading' }];
             const chat: any = {
                 createdAt: DateTime(),
                 imageOrVideos: images,
@@ -623,7 +622,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             if (con && con.count < 50) {
                 const filter = con.filter.find((f) => f._id === data.lastElement.filterId) ?? con.filter[con.filter.length - 1];
                 if (filter)
-                    if (filter.count < 10) {
+                    if (filter.count < 10 * filter.index && filter.data.length < 10) {
                         filter.count += 1;
                         filter.data.unshift(chat);
                     } else {
@@ -656,49 +655,60 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             if (value) fda.value = encrypt(value, `chat_${data._id ? data._id : id_s}`);
             if (conversationId) formData.append('conversationId', conversationId); // conversation._id
             if (id_) fda.id_data = id_; // id of the room
-            if (id_s && !data._id) fda.id_s = id_s; // first it have no _id of the conversationId then id_s is replaced
+            if (id_s && !data._id) fda.id_secondary = id_s; // first it have no _id of the conversationId then id_s is replaced
             if (id_other) fda.id_others = id_other;
             fda.valueInfoFile = urlS;
             fda.conversationId = data._id;
             fda.indexRoom = data.rooms[data.rooms.length - 1].index ?? 0;
             const res = await sendChatAPI.send(fda);
             const dataSent: typeof res | undefined = ServerBusy(res, dispatch);
-            if (dataSent) {
-                queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: { data: typeof data } | undefined) => {
-                    dataSent.rooms.filter[0].data[0].text.t = value;
-                    data?.rooms.map((r) => {
-                        if (r._id === 'new') {
-                            r = dataSent.rooms;
-                        } else if (r._id === dataSent.rooms._id) {
-                            r.count = dataSent.rooms.count;
-                            r.index = dataSent.rooms.index;
-                            r.full = dataSent.rooms.full;
-                            r.filter.map((f) => {
-                                if (f._id === 'new') {
-                                    f = dataSent.rooms.filter[0];
-                                } else if (f._id === dataSent.rooms.filter[0]._id) {
-                                    f.data.map((d) => {
-                                        if (d._id === dataSent.rooms.filter[0].data[0]._id) {
-                                            d = dataSent.rooms.filter[0].data[0];
-                                        }
-                                        return d;
-                                    });
-                                    f = { ...dataSent.rooms.filter[0], data: f.data };
-                                }
-                                return f;
-                            });
-                        }
-                        return r;
-                    });
-                    return { ...preData, data };
-                });
-                rr.current = '';
-                if (!data._id) data._id = data._id; // add id when id is empty
-                data.users.push(data.user);
-                setupload(undefined);
-                setLoadingChat('');
-                // dispatch(setRoomChat(dataSent));
-            }
+            queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
+                if (preData) {
+                    if (dataSent) {
+                        dataSent.rooms.filter[0].data[0].text.t = value;
+                        data?.rooms.map((r) => {
+                            if (r._id === 'new') {
+                                r = dataSent.rooms;
+                            } else if (r._id === dataSent.rooms._id) {
+                                r.count = dataSent.rooms.count;
+                                r.index = dataSent.rooms.index;
+                                r.full = dataSent.rooms.full;
+                                r.filter.map((f) => {
+                                    if (f._id === 'new') {
+                                        f = dataSent.rooms.filter[0];
+                                    } else if (f._id === dataSent.rooms.filter[0]._id) {
+                                        f.data.map((d) => {
+                                            if (d._id === dataSent.rooms.filter[0].data[0]._id) {
+                                                d = dataSent.rooms.filter[0].data[0];
+                                            }
+                                            return d;
+                                        });
+                                        f = { ...dataSent.rooms.filter[0], data: f.data };
+                                    }
+                                    return f;
+                                });
+                            }
+                            return r;
+                        });
+                        rr.current = '';
+                        if (!data._id) data._id = dataSent._id; // add id when id is empty
+                        data.users.push(data.user);
+                        return { ...preData, data, load: converData?.load.filter((r) => r.id === dataSent.rooms.filter[0].data[0]._id) };
+                        // dispatch(setRoomChat(dataSent));
+                    } else {
+                        return {
+                            ...preData,
+                            load: converData.load.map((r) => {
+                                if (r.id === id_) r.status = 'error';
+                                return r;
+                            }),
+                        };
+                    }
+                } else {
+                    return preData;
+                }
+            });
+            setupload(undefined);
         }
     };
 
@@ -746,7 +756,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         itemPin,
         setItemPin,
         itemPinData,
-        loadingChat,
+        loadingChat: converData?.load,
         isFetching,
         refetch,
         moreAction,

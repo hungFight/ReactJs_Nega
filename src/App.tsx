@@ -401,7 +401,7 @@ function App() {
                             onMouseLeave={handleClear}
                         ></Div>
                         {/* show message from messenger */}
-                        {chats.length > 0 && (
+                        {chats.length > 0 && userFirst.id && (
                             <Div css="position: fixed; overflow: overlay; max-width: 100%; bottom: 8px; left: 4px; z-index: 9999;@media(max-width: 500px){width: auto;} @media(max-width: 768px){width: 100%;left: 0;height:100%;}">
                                 <Div css="position: relative; width: inherit;">
                                     {id_chats?.map((room, index) => {

@@ -130,6 +130,8 @@ const Conversation: React.FC<{
         moreAction,
         data,
     } = LogicConversation(id_chat, dataFirst.id, userOnline);
+    console.log(dataFirst, 'checkid', id_chat);
+
     if (data?._id) {
         if (!mm.current.some((m) => m.id === data?._id && index === m.index)) {
             mm.current.push({ id: data._id, index });
@@ -747,14 +749,13 @@ const Conversation: React.FC<{
                                 let timeS = '';
                                 const mn = moment(rc.createdAt); //show time for every day
                                 if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
-                                    timeS = '------ ' + (date1.current && date1.current.diff(new Date(), 'days') < 1 ? 'Hôm nay ' : '') + date1.current?.locale(lg).format('LL') + ' ------';
+                                    timeS = date1.current ? (date1.current.diff(new Date(), 'days') === 0 ? date1.current.locale(lg).calendar() : date1.current.locale(lg).format('LL')) : '';
                                     date1.current = mn;
                                 } else {
                                     timeS = '';
                                 }
 
                                 if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD')) timeS = '';
-                                console.log(timeS, 'Times', mn);
                                 if (rc?.length && rc?.length > 0) {
                                     if (writingBy && writingBy.length > 0)
                                         return (

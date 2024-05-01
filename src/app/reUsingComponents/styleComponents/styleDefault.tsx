@@ -107,7 +107,9 @@ interface PropsDiv {
     css?: string;
     width?: string;
     height?: string;
+    size?: string;
     display?: string;
+    bg?: string;
 }
 interface PropsDivFlex {
     wrap?: string;
@@ -116,11 +118,11 @@ interface PropsDivFlex {
     width?: string;
     align?: string;
     justify?: string;
+    size?: string;
     display?: string;
 }
 type PropsDivNone = PropsDiv &
     PropsDivFlex & {
-        size?: string;
         border?: string;
         margin?: string;
     };
@@ -129,6 +131,7 @@ export const Div = styled.div<PropsDiv>`
     height: ${(props) => props.height};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap};
+    font-size: ${(props) => props.size};
     ${(props) => props.css}
 `;
 export const DivNone = styled.div<PropsDivNone>`
@@ -141,6 +144,7 @@ export const DivNone = styled.div<PropsDivNone>`
     margin: ${(props) => props.margin};
     size: ${(props) => props.size};
     border: ${(props) => props.border};
+    background-color: ${(props) => props.bg};
     ${(props) => props.css};
 `;
 export const DivFill = styled.div<PropsDiv>`
@@ -163,6 +167,7 @@ export const DivFlex = styled.div<PropsDivFlex>`
     flex-wrap: ${(props) => props.wrap || 'none'};
     justify-content: ${(props) => props.justify || 'center'};
     align-items: ${(props) => props.align || 'center'};
+    color: ${(props) => props.color};
     ${(props) => props.css}
 `;
 interface PropsDivFlexPosition {

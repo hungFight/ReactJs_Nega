@@ -1,10 +1,10 @@
 import moment from 'moment';
 import { PropsBackground_chat, PropsItemsData, PropsPinC } from './LogicConver';
-import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, DivNone, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { memo, useEffect, useRef, useState } from 'react';
-import { DotI, GarbageI, LoadingI, ReplyI } from '~/assets/Icons/Icons';
+import { DotI, GarbageI, LoadingI, ReplyI, WarningI } from '~/assets/Icons/Icons';
 import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessenger';
@@ -58,7 +58,12 @@ const ItemsRoom: React.FC<{
           }
         | undefined;
     scrollCheck: React.MutableRefObject<boolean>;
-    loadingChat: string;
+    loadingChat:
+        | {
+              id: string;
+              status: string;
+          }[]
+        | undefined;
 }> = ({
     roomId,
     filterId,
@@ -151,7 +156,7 @@ const ItemsRoom: React.FC<{
         if (alarm.current) clearTimeout(alarm.current);
     };
     console.log(rc, 'marginTop');
-
+    const load = loadingChat?.find((l) => l.id === rc?._id);
     return (
         <>
             {changedBG && (
@@ -197,7 +202,13 @@ const ItemsRoom: React.FC<{
                 </DivFlex>
             ))}
             {rc?.delete !== dataFirst.id && timeS && index !== 0 && (
-                <P css="font-size: 1.2rem; text-align: center;padding: 2px 0;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">{timeS}</P>
+                <DivFlex>
+                    <DivNone width="20%" height="1px" bg="#828282"></DivNone>
+                    <P color="#b5b5b5f7" css="font-size: 1.2rem; text-align: center;padding: 2px 15px;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">
+                        {timeS}
+                    </P>
+                    <DivNone width="20%" height="1px" bg="#828282"></DivNone>
+                </DivFlex>
             )}
             {rc.userId === dataFirst.id
                 ? rc?.delete !== dataFirst.id && (
@@ -401,7 +412,7 @@ const ItemsRoom: React.FC<{
                                       if (scrollCheck.current) scrollCheck.current = false;
                                   }}
                               >
-                                  {!rc?.delete && (
+                                  {!rc?.delete && !load && (
                                       <Div
                                           display="none"
                                           id="showDotAtRoomChat"
@@ -552,10 +563,21 @@ const ItemsRoom: React.FC<{
                                       </Div>
                                   )}
 
-                                  {rc?._id === loadingChat ? (
-                                      <P z="1.2rem" css="text-align: end; @media (min-width: 768px){font-size: 1rem;}">
-                                          sending...
-                                      </P>
+                                  {load ? (
+                                      load.status === 'loading' ? (
+                                          <P z="1.2rem" css="text-align: end; @media (min-width: 768px){font-size: 1rem;}">
+                                              sending...
+                                          </P>
+                                      ) : (
+                                          <DivFlex width="auto" height="auto" color="#f35d5d">
+                                              <Div size="14px">
+                                                  <WarningI />
+                                              </Div>
+                                              <P z="1.2rem" css="text-align: end; @media (min-width: 768px){font-size: 1.1rem;}">
+                                                  error
+                                              </P>
+                                          </DivFlex>
+                                      )
                                   ) : (
                                       <>
                                           {rc.imageOrVideos.length > 0 ? (
@@ -866,7 +888,7 @@ const ItemsRoom: React.FC<{
                                       if (scrollCheck.current) scrollCheck.current = false;
                                   }}
                               >
-                                  {!rc?.delete && (
+                                  {!rc?.delete && !load && (
                                       <Div
                                           display="none"
                                           id="showDotAtRoomChat"

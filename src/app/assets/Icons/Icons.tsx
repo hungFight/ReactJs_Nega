@@ -77,7 +77,18 @@ import {
 } from 'react-icons/md';
 import { GoClockFill, GoScreenFull, GoScreenNormal } from 'react-icons/go';
 import { FaPeopleArrows, FaAddressCard, FaUserFriends, FaBirthdayCake, FaRegSmileBeam, FaSchool, FaPencilAlt, FaBold } from 'react-icons/fa';
-import { RiAccountPinCircleFill, RiChatPrivateFill, RiDeleteBin6Line, RiDragMoveFill, RiExchangeCnyFill, RiExchangeLine, RiLayout6Fill, RiMailSendLine, RiTyphoonLine } from 'react-icons/ri';
+import {
+    RiAccountPinCircleFill,
+    RiChatPrivateFill,
+    RiDeleteBin6Line,
+    RiDragMoveFill,
+    RiErrorWarningFill,
+    RiExchangeCnyFill,
+    RiExchangeLine,
+    RiLayout6Fill,
+    RiMailSendLine,
+    RiTyphoonLine,
+} from 'react-icons/ri';
 import { TbArrowNarrowDown, TbArrowNarrowLeft, TbGenderFemale, TbGenderMale, TbGridDots, TbTextResize } from 'react-icons/tb';
 import { CgProfile, CgWebsite } from 'react-icons/cg';
 import { VscAdd, VscPreview, VscVerifiedFilled } from 'react-icons/vsc';
@@ -223,3 +234,4 @@ export const PostCommentI = () => <LiaCommentDots />;
 export const PostCommentInI = () => <LiaComments />;
 export const EscalatorI = () => <LiaBalanceScaleRightSolid />;
 export const ArrowRightI = () => <IoIosArrowRoundForward />;
+export const WarningI = () => <RiErrorWarningFill />;
