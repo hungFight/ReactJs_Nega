@@ -201,7 +201,7 @@ const ItemsRoom: React.FC<{
                     </Div>
                 </DivFlex>
             ))}
-            {rc?.delete !== dataFirst.id && timeS && index !== 0 && (
+            {rc?.delete !== dataFirst.id && timeS && (
                 <DivFlex>
                     <DivNone width="20%" height="1px" bg="#828282"></DivNone>
                     <P color="#b5b5b5f7" css="font-size: 1.2rem; text-align: center;padding: 2px 15px;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">

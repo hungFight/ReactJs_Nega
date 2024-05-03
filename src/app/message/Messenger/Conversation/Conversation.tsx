@@ -741,21 +741,19 @@ const Conversation: React.FC<{
                         if (!scrollCheck.current) scrollCheck.current = true;
                     }}
                 >
-                    {data?.rooms.map((aa, index) => {
+                    {data?.rooms.map((aa, indexR, aR) => {
                         // const timePin = moment(data.pins.filter((p) => p.chatId === rc._id)[0].createdAt).diff();
                         return aa.filter.map((p) => {
-                            date1.current = moment(p.data[0].createdAt);
+                            if (!date1.current) date1.current = moment(p.data[0].createdAt);
                             return p.data.map((rc, index, arr) => {
-                                let timeS = '';
+                                let timeS: any = '';
                                 const mn = moment(rc.createdAt); //show time for every day
-                                if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
-                                    timeS = date1.current ? (date1.current.diff(new Date(), 'days') === 0 ? date1.current.locale(lg).calendar() : date1.current.locale(lg).format('LL')) : '';
-                                    date1.current = mn;
-                                } else {
-                                    timeS = '';
-                                }
+                                if (date1.current)
+                                    if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
+                                        timeS = date1.current?.diff(new Date(), 'days') >= 0 ? date1.current?.locale(lg).calendar() : date1.current?.locale(lg).format('LL');
+                                        date1.current = mn;
+                                    } else timeS = '';
 
-                                if (moment(new Date()).format('YYYY-MM-DD') === moment(date1.current).format('YYYY-MM-DD')) timeS = '';
                                 if (rc?.length && rc?.length > 0) {
                                     if (writingBy && writingBy.length > 0)
                                         return (
@@ -838,6 +836,7 @@ const Conversation: React.FC<{
                                         );
                                     return null;
                                 }
+                                if (aR.length - 1 === indexR && index === arr.length - 1) date1.current = null;
                                 if (!(rc.delete === dataFirst.id))
                                     return (
                                         <ItemsRoom
