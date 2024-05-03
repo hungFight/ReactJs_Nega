@@ -13,7 +13,7 @@ import { useCookies } from 'react-cookie';
 import { DivPos, DivContainer } from '../styleComponents/styleComponents';
 import { DivLanguages, DivResults } from './styleSetting';
 import { P } from '../styleComponents/styleDefault';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import { changeSN } from '~/redux/languageRD';
 
 const css2 = `
@@ -102,14 +102,7 @@ const Settingcbl: React.FC<{
     };
     return (
         <>
-            <DivContainer
-                height="500px"
-                display="flex"
-                bg=" #202124"
-                radius="5px"
-                css={css1}
-                onClick={(e) => e.stopPropagation()}
-            >
+            <DivContainer height="500px" display="flex" bg=" #202124" radius="5px" css={css1} onClick={(e) => e.stopPropagation()}>
                 <DivPos
                     size="25px"
                     top="11px"
@@ -141,9 +134,7 @@ const Settingcbl: React.FC<{
                         );
                     })}
                 </DivContainer>
-                {resultoption && (
-                    <Bar top="calc(50% - 10px);" onClick={() => setResultoption(false)} css="width: 5px;" />
-                )}
+                {resultoption && <Bar top="calc(50% - 10px);" onClick={() => setResultoption(false)} css="width: 5px;" />}
                 {resultoption && <DivResults> {showresult}</DivResults>}
             </DivContainer>
         </>

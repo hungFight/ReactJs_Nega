@@ -10,7 +10,7 @@ import CryptoJS from 'crypto-js';
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import fileGridFS from '~/restAPI/gridFS';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import Cookies from '~/utils/Cookies';
 import { PropsReloadRD } from '~/redux/reload';
 import Languages from '~/reUsingComponents/languages';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivItems, DivResults, DivTools } from './stylesTools';
 import { DotI, OfflineI, OnlineI } from '~/assets/Icons/Icons';
-import { socket } from '../nextWeb';
+import { socket } from '../NextWeb';
 import Cookies from 'universal-cookie';
 import HttpRequestUser from '~/restAPI/userAPI';
 import { PropsUser } from 'src/App';
@@ -35,20 +35,13 @@ const Tools: React.FC<{
         }
         socket.emit(o.name, cookies.get('k_user'));
     };
-    const handleStatus = (
-        e: { target: { getAttribute: (arg0: string) => any } },
-        res: { icon: React.ReactElement; name: string }[],
-    ) => {
+    const handleStatus = (e: { target: { getAttribute: (arg0: string) => any } }, res: { icon: React.ReactElement; name: string }[]) => {
         if (e.target.getAttribute('id') === 't') {
             if (!status) {
                 setStatus(
                     <Div css="width: 100%; background-color: #202023;padding: 7px; font-size: 25px">
                         {res.map((o, index) => (
-                            <Div
-                                key={index}
-                                css="padding: 4px; cursor: var(--pointer); &:hover{color: aliceblue;}"
-                                onClick={() => handleChange(o)}
-                            >
+                            <Div key={index} css="padding: 4px; cursor: var(--pointer); &:hover{color: aliceblue;}" onClick={() => handleChange(o)}>
                                 {o.icon}
                             </Div>
                         ))}

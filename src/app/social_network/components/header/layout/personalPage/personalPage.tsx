@@ -20,9 +20,7 @@ const Personalpage: React.FC<{
 }> = ({ dataUser, setDataUser, setId_chats, colorText }) => {
     const [userData, setUsersData] = useState<PropsUserPer[]>([]);
     const handleCheck = useRef<boolean>(false);
-    const userOnline = useSelector(
-        (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
-    );
+    const userOnline = useSelector((state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline);
     const [loading, setLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
 

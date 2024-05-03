@@ -11,7 +11,7 @@ import { DivBar, DivItem, DivListIs, DivRes } from './styleNot';
 import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Button, Buttons, Div, H3, Li, Ol, P, Span, Strong } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import Send from '../Messenger/Messenger';
@@ -195,14 +195,7 @@ const Notification: React.FC<{
     return (
         <>
             {!notification && (
-                <Hovertitle
-                    Tags={DivIconMs}
-                    title="NoTi"
-                    size="29px"
-                    color={colorText}
-                    colorBg={colorBg}
-                    onClick={handleShowHide}
-                >
+                <Hovertitle Tags={DivIconMs} title="NoTi" size="29px" color={colorText} colorBg={colorBg} onClick={handleShowHide}>
                     <NotificationI />
                     <p className={clsx('miss')}>{dataInfo.quantity > 0 && dataInfo.quantity}</p>
                 </Hovertitle>
@@ -224,21 +217,10 @@ const Notification: React.FC<{
                                 const fm = moment(v.id_f_user.createdAt).format('HH:mm:ss DD-MM-YYYY');
                                 const dateT = moment(fm, 'HH:mm:ss DD-MM-YYYY').locale(lg).fromNow();
                                 return (
-                                    <Div
-                                        key={v.id}
-                                        wrap="wrap"
-                                        css="width: fit-content; height: fit-content; border: 1px solid #39393b; margin-bottom: 14px; padding-top: 5px; position: relative;"
-                                    >
+                                    <Div key={v.id} wrap="wrap" css="width: fit-content; height: fit-content; border: 1px solid #39393b; margin-bottom: 14px; padding-top: 5px; position: relative;">
                                         <DivItem color={colorText}>
                                             <Div css="height: fit-content; width: 40px; height: 40px; min-width: 40px; margin: 2px 5px;">
-                                                <Avatar
-                                                    css=" var(--pointer)"
-                                                    src={v.avatar}
-                                                    radius="50%"
-                                                    gender={v.gender}
-                                                    id={v.id}
-                                                    profile="url"
-                                                />
+                                                <Avatar css=" var(--pointer)" src={v.avatar} radius="50%" gender={v.gender} id={v.id} profile="url" />
                                             </Div>
                                             <Div wrap="wrap" css="height: fit-content; align-items: center;">
                                                 {/* <Hname css="width: 100%; font-size: 1.4rem;"></Hname> */}
@@ -258,24 +240,16 @@ const Notification: React.FC<{
                                                     {dataText[lg].mess}
                                                     {v?.status === 1 ? (
                                                         <>
-                                                            <Strong
-                                                                css="color: #59b6e8; font-size: 1.4rem; cursor: var(--pointer); padding: 4px 5px;"
-                                                                onClick={() => handleConfirm(v.id)}
-                                                            >
+                                                            <Strong css="color: #59b6e8; font-size: 1.4rem; cursor: var(--pointer); padding: 4px 5px;" onClick={() => handleConfirm(v.id)}>
                                                                 {dataText[lg].confirm}
                                                             </Strong>
                                                             {dataText[lg].or}
-                                                            <Strong
-                                                                css="color: #ba4455; font-size: 1.4rem; cursor: var(--pointer); padding: 4px 5px;"
-                                                                onClick={() => handleDelete(v.id)}
-                                                            >
+                                                            <Strong css="color: #ba4455; font-size: 1.4rem; cursor: var(--pointer); padding: 4px 5px;" onClick={() => handleDelete(v.id)}>
                                                                 {dataText[lg].del}
                                                             </Strong>
                                                         </>
                                                     ) : v.status !== -1 ? (
-                                                        <Strong css="color: #59b6e8; font-size: 1.4rem; cursor: var(--pointer); padding: 4px 5px;">
-                                                            Messenger
-                                                        </Strong>
+                                                        <Strong css="color: #59b6e8; font-size: 1.4rem; cursor: var(--pointer); padding: 4px 5px;">Messenger</Strong>
                                                     ) : (
                                                         ''
                                                     )}
@@ -294,10 +268,7 @@ const Notification: React.FC<{
                                             </Div>
                                         </DivItem>
 
-                                        <Button
-                                            color={colorText}
-                                            css="width: 100%; justify-content: center; padding: 4px; font-size: 1.3rem;"
-                                        >
+                                        <Button color={colorText} css="width: 100%; justify-content: center; padding: 4px; font-size: 1.3rem;">
                                             {dataText[lg].more}
                                         </Button>
                                     </Div>

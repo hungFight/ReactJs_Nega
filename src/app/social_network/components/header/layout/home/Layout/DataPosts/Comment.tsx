@@ -18,7 +18,7 @@ import '~/reUsingComponents/Libraries/formatMoment';
 import Languages from '~/reUsingComponents/languages';
 import moments from '~/utils/moment';
 import { queryClient } from 'src';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import ReplyComment from './ReplyComment';
 const Comment: React.FC<{

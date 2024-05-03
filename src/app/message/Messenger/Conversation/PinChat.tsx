@@ -13,7 +13,7 @@ import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import { decrypt } from '~/utils/crypto';
 import { PropsChat, PropsItemRoom, PropsPinC, PropsRooms } from './LogicConver';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import ItemPin from './ItemPin';
 
 const PinChat: React.FC<{

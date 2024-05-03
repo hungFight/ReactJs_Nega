@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import { ClockCirclesI, LoadingI, MinusI, ProfileCircelI } from '~/assets/Icons/Icons';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { setOpenProfile } from '~/redux/hideShow';

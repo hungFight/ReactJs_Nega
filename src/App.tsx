@@ -14,7 +14,7 @@ import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
 import Progress from './app/reUsingComponents/Progress/Progress';
 import ErrorBoundaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
-import { socket } from './mainPage/nextWeb';
+import { socket } from './mainPage/NextWeb';
 import { LoadingI, UndoI } from '~/assets/Icons/Icons';
 import userAPI from '~/restAPI/userAPI';
 import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
@@ -145,7 +145,7 @@ export type PropsId_chats = {
     left?: number;
 };
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
-const Website = React.lazy(() => import('./mainPage/nextWeb'));
+const Website = React.lazy(() => import('./mainPage/NextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
 function App() {
     const { lg } = Languages();

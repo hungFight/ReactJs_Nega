@@ -10,7 +10,7 @@ import Posts from './Layout/DataPosts/Posts';
 import HttpRequestUser from '~/restAPI/userAPI';
 import { Button, Div, DivFlex, DivNone, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import homeAPI from '~/restAPI/socialNetwork/postAPI';
 import fileGridFS from '~/restAPI/gridFS';

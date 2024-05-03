@@ -22,7 +22,7 @@ import ServerBusy from '~/utils/ServerBusy';
 import { useSelector } from 'react-redux';
 import OptionForItem, { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import moments from '~/utils/moment';
-import { socket } from 'src/mainPage/nextWeb';
+import { socket } from 'src/mainPage/NextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessenger';
 import { decrypt } from '~/utils/crypto';
 import PinChat from './PinChat';
