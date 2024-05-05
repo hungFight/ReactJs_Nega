@@ -12,9 +12,10 @@ import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import { decrypt } from '~/utils/crypto';
-import { PropsChat, PropsItemRoom, PropsPinC, PropsRooms } from './LogicConver';
 import { socket } from 'src/mainPage/NextWeb';
 import ItemPin from './ItemPin';
+import { PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
+import { PropsChat } from './LogicConver';
 
 const PinChat: React.FC<{
     pins: PropsPinC[];

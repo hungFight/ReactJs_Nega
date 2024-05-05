@@ -9,6 +9,7 @@ import { store } from '~/redux/configStore';
 const ReduxWrapper: React.FC<{ children: any }> = ({ children }) => <Provider store={store}>{children}</Provider>;
 test('shows the children when the checkbox is checked', async () => {
     const testMessage = 'Test Message';
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
         render(<App />, { wrapper: ReduxWrapper });
         // Thực hiện tác vụ bất đồng bộ, chẳng hạn như fetching data từ API hoặc resolving promise

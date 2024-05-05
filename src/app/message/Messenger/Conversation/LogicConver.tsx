@@ -1,129 +1,40 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Buffer } from 'buffer';
 import sendChatAPi, { PropsRoomChat } from '~/restAPI/chatAPI';
 import sendChatAPI from '~/restAPI/chatAPI';
-import CommonUtils from '~/utils/CommonUtils';
 import { v4 as uuidv4 } from 'uuid';
-import CryptoJS from 'crypto-js';
+import moment from 'moment';
 
 import DateTime from '~/reUsingComponents/CurrentDateTime';
-import { setTrueErrorServer } from '~/redux/hideShow';
-import fileGridFS from '~/restAPI/gridFS';
 import { socket } from 'src/mainPage/NextWeb';
-import Cookies from '~/utils/Cookies';
-import { PropsReloadRD } from '~/redux/reload';
+import { PropsReloadRD, setDelIds } from '~/redux/reload';
 import Languages from '~/reUsingComponents/languages';
 import ServerBusy from '~/utils/ServerBusy';
-import moment from 'moment';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import userAPI from '~/restAPI/userAPI';
-import { PropsBgRD } from '~/redux/background';
 import handleFileUpload from '~/utils/handleFileUpload';
 import { decrypt, encrypt } from '~/utils/crypto';
-import { setRoomChat } from '~/redux/messenger';
 import { PropsId_chats } from 'src/App';
-import gridFS from '~/restAPI/gridFS';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { queryClient } from 'src';
-import { PropsDataFileUpload } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/FormUpNews';
-export interface PropsPinC {
-    chatId: string;
-    userId: string;
-    createdAt: string;
-    latestChatId: string;
-    _id: string;
-}
-export interface PropsRooms {
-    rooms: PropsItemRoom[];
-}
-export interface PropsImageOrVideosAtMessenger {
-    type: string;
-    tail: string;
-    link?: string;
-    icon: string;
-    _id: string;
-}
-export interface PropsItemsData {
-    _id: string;
-    userId: string;
-    text: {
-        t: string;
-        icon: string;
-    };
-    delete?: string | 'all';
-    update?: string;
-    secondary?: string;
-    length?: number;
-    imageOrVideos: PropsImageOrVideosAtMessenger[];
-    sending?: boolean;
-    seenBy: string[];
-    updatedAt: string;
-    createdAt: string;
-    reply: {
-        id_room: string;
-        id_reply: string;
-        id_replied: string;
-        text: string;
-        imageOrVideos: PropsImageOrVideosAtMessenger[];
-    };
-}
+import {
+    PropsConversationCustoms,
+    PropsDataMoreConversation,
+    PropsImageOrVideosAtMessenger,
+    PropsItemQueryChat,
+    PropsItemRoom,
+    PropsOldSeenBy,
+    PropsPinC,
+    PropsRooms,
+} from '~/typescript/messengerType';
+import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
+import { BackgroundI, BalloonI, ClockCirclesI, GarbageI, LoadingI, MoveI, ProfileCircelI } from '~/assets/Icons/Icons';
+import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { setOpenProfile } from '~/redux/hideShow';
+import { PropsConversionText } from 'src/dataText/DataMessenger';
+import chatAPI from '~/restAPI/chatAPI';
+import { removeBalloon, setBalloon, setTopLeft } from '~/redux/roomsChat';
 
-export interface PropsItemRoom {
-    _id: string;
-    chatId: string;
-    full: boolean;
-    index: number;
-    createdAt: string | Date;
-    count: number;
-    filter: {
-        _id: string;
-        count: number;
-        full: boolean;
-        index: number;
-        indexQuery: number;
-        createdAt: string | Date;
-        data: PropsItemsData[];
-    }[];
-}
-export interface PropsRoom {
-    rooms: PropsItemRoom;
-}
-export interface PropsBackground_chat {
-    v: string;
-    type: string;
-    id: string;
-    userId: string;
-    latestChatId: string;
-}
-export interface PropsConversationCustoms {
-    _id: string;
-    id_us: string[];
-    miss?: number;
-    user: {
-        id: string;
-        fullName: string;
-        avatar: string | undefined;
-        gender: number;
-    };
-    users: {
-        id: string;
-        fullName: string;
-        avatar: string | undefined;
-        gender: number;
-    }[];
-    status: string;
-    background?: PropsBackground_chat;
-    pins: PropsPinC[];
-    deleted: {
-        id: string;
-        createdAt: string;
-        show?: boolean;
-    }[];
-    createdAt: string;
-    lastElement: { roomId: string; filterId: string };
-}
-type PropsItemQueryChat = { indexRef: number; indexQuery: number; data: PropsChat; load: { id: string; status: string }[] } | undefined;
 export function regexCus(val: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const hashTagRegex = /#([^]+?)\s*#@/g;
@@ -166,13 +77,12 @@ export function regexCus(val: string): string {
 }
 const installOffset = 10;
 export type PropsChat = PropsConversationCustoms & PropsRooms;
-export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[]) {
+export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[], colorText: string, conversationText: PropsConversionText, balloon: string[]) {
     console.log(id_you, 'id_you', id_chat);
 
     const dispatch = useDispatch();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
     //action
-    const { userId } = Cookies();
     const { lg } = Languages();
     const textarea = useRef<HTMLTextAreaElement | null>(null);
     const ERef = useRef<HTMLDivElement | null>(null);
@@ -180,20 +90,27 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const cRef = useRef<number>(0);
     const mRef = useRef<any>(0);
     const offset = useRef<number>(installOffset);
-    const offsetState = useRef<number>(1);
     const indexRef = useRef<number>(1);
-    const limit = 30;
     const emptyRef = useRef<boolean>(false);
     const moreAction = useRef<{ prevent: boolean; moreChat: boolean }>({ prevent: true, moreChat: false });
 
     const [value, setValue] = useState<string>('');
     const [emoji, setEmoji] = useState<boolean>(false);
-    const [option, setOption] = useState<boolean>(false);
+    const [option, setOption] = useState<boolean>(false); // not yet
     const [opMore, setOpMore] = useState<boolean>(false);
     const [uploadIn, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
+    // loading
+    const [loadDel, setLoadDel] = useState<boolean>(false);
     const [loading, setLoading] = useState<string>('');
+    const [roomImage, setRoomImage] = useState<{ id_room: string; id_file: string } | undefined>(undefined);
+    // scroll
+    const [moves, setMoves] = useState<string[]>([]);
+    const [mouse, setMouse] = useState<string[]>([]);
+    const xRef = useRef<number | null>(null);
+    const yRef = useRef<number | null>(null);
+    const scrollCheck = useRef<boolean>(true);
+    const isIntersecting = useRef<PropsOldSeenBy[]>([]);
 
-    const chatRef = useRef<PropsChat>();
     const [wch, setWch] = useState<string | undefined>('');
     const rr = useRef<string>('');
     // pin page
@@ -202,19 +119,9 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const itemPinData = useRef<PropsItemRoom[]>([]);
 
     const [conversation, setConversation] = useState<PropsChat>();
-    const [dataSent, setDataSent] = useState<PropsItemRoom | undefined>();
     // display conversation's each day
     const date1 = useRef<moment.Moment | null>(null);
     const [writingBy, setWritingBy] = useState<{ length: number; id: string } | undefined>();
-
-    // if (date1.isBefore(date2)) {
-    //     console.log('date1 is before date2');
-    // }
-
-    // if (date1.isAfter(date2)) {
-    //     console.log('date1 is after date2');
-    // }
-    // enabled:conversation?.user.id ? true : false, queryKey: [`getActiveStatus: ${conversation?.user.id}`, userOnline.includes(conversation?.user.id ?? 'default')],
     const {
         data: converData,
         refetch,
@@ -223,7 +130,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         queryKey: ['getItemChats', `${id_chat.id_other}_${id_you}`],
         staleTime: 60 * 60 * 1000,
         cacheTime: 1 * 60 * 60 * 1000,
-        enabled: !emptyRef.current && cRef.current !== 2,
+        enabled: !emptyRef.current && cRef.current !== 2 && !!id_you,
         queryFn: async ({ queryKey }) => {
             cRef.current = 2;
             const preData: PropsItemQueryChat = queryClient.getQueryData(queryKey);
@@ -263,6 +170,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         indexQuery: latestRoom ? latestRoom?.filter[0]?.indexQuery : preData?.indexQuery,
                         data: preData?.data,
                         indexRef: latestRoom ? latestRoom?.index : preData?.indexRef,
+                        oldSeenBy: preData?.oldSeenBy,
                     };
                 } else {
                     cRef.current = 7;
@@ -270,6 +178,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         load: [],
                         indexQuery: latestRoom ? latestRoom?.filter[0]?.indexQuery : preData?.indexQuery,
                         data: dataC,
+                        oldSeenBy: [],
                         indexRef: latestRoom ? latestRoom?.index : preData?.indexRef,
                     };
                 }
@@ -315,11 +224,313 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             },
         },
     );
-    //get image
+    const handleEmojiSelect = (e: any) => {
+        console.log(e);
+        setValue(value + e.native);
+    };
+    let time: string | number | NodeJS.Timeout | undefined;
+    const handleTouchStart = () => {
+        time = setTimeout(() => {
+            setOption(true);
+        }, 500);
+    };
+    const handleTouchMove = () => {
+        clearTimeout(time);
+    };
+    const handleTouchEnd = () => {
+        clearTimeout(time);
+    };
+    const handleSend = async (conversationId: string | undefined, id_other: string | undefined) => {
+        if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && data) {
+            textarea.current?.setAttribute('style', 'height: 33px');
+            if (ERef.current) ERef.current.scrollTop = 0;
+            setValue('');
+
+            //
+            const formDataFile = new FormData();
+            for (let i = 0; i < uploadIn?.up.length; i++) {
+                formDataFile.append('file', uploadIn?.up[i], uploadIn?.up[i].name + '@_id_***_get_$' + uploadIn?.up[i]._id); // assign file and _id of the file upload
+            }
+
+            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(formDataFile) : [];
+            const id_ = uuidv4();
+            const images = urlS.map((i) => {
+                return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
+            });
+            const id_s = uuidv4();
+            converData.load = [...(converData.load ?? []), { id: id_, status: 'loading' }];
+            const chat: any = {
+                createdAt: DateTime(),
+                imageOrVideos: images,
+                seenBy: [],
+                text: { t: value, icon: '' },
+                userId: id_you,
+                _id: id_,
+            };
+            const con = data.rooms.find((r) => r._id === data.lastElement.roomId);
+            console.log(con, 'connn');
+
+            if (con && con.count < 50) {
+                const filter = con.filter.find((f) => f._id === data.lastElement.filterId) ?? con.filter[con.filter.length - 1];
+                if (filter)
+                    if (filter.count < 10 * filter.index && filter.data.length < 10) {
+                        filter.count += 1;
+                        filter.data.unshift(chat);
+                    } else {
+                        filter.full = true;
+                        con.filter.unshift({
+                            _id: 'new',
+                            count: 1,
+                            full: false,
+                            index: filter.index + 1,
+                            data: [chat],
+                            indexQuery: filter.indexQuery - 1,
+                            createdAt: new Date(),
+                        });
+                    }
+            } else {
+                data.rooms.unshift({
+                    chatId: data._id,
+                    count: 1,
+                    full: false,
+                    index: con?.index ?? 0,
+                    filter: [{ _id: id_s, count: 1, full: false, index: 1, data: [chat], indexQuery: installOffset, createdAt: new Date() }],
+                    _id: 'new',
+                    createdAt: new Date(),
+                });
+            }
+            console.log(data.rooms, 'data.rooms');
+
+            const formData = new FormData();
+            const fda: any = {};
+            if (value) fda.value = encrypt(value, `chat_${data._id ? data._id : id_s}`);
+            if (conversationId) formData.append('conversationId', conversationId); // conversation._id
+            if (id_) fda.id_data = id_; // id of the room
+            if (id_s && !data._id) fda.id_secondary = id_s; // first it have no _id of the conversationId then id_s is replaced
+            if (id_other) fda.id_others = id_other;
+            fda.valueInfoFile = urlS;
+            fda.conversationId = data._id;
+            fda.indexRoom = data.rooms[data.rooms.length - 1].index ?? 0;
+            const res = await sendChatAPI.send(fda);
+            const dataSent: typeof res | undefined = ServerBusy(res, dispatch);
+            queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
+                if (preData) {
+                    if (dataSent) {
+                        dataSent.rooms.filter[0].data[0].text.t = value;
+                        data?.rooms.map((r) => {
+                            if (r._id === 'new') {
+                                r._id = dataSent.rooms._id;
+                                r.count = dataSent.rooms.count;
+                                r.createdAt = dataSent.rooms.createdAt;
+                                r.index = dataSent.rooms.index;
+                                r.full = dataSent.rooms.full;
+                                r.filter = dataSent.rooms.filter;
+                            } else if (r._id === dataSent.rooms._id) {
+                                r.count = dataSent.rooms.count;
+                                r.index = dataSent.rooms.index;
+                                r.full = dataSent.rooms.full;
+                                r.filter.map((f) => {
+                                    if (f._id === 'new') {
+                                        f._id = dataSent.rooms.filter[0]._id;
+                                        f.count = dataSent.rooms.filter[0].count;
+                                        f.createdAt = dataSent.rooms.filter[0].createdAt;
+                                        f.index = dataSent.rooms.filter[0].index;
+                                        f.full = dataSent.rooms.filter[0].full;
+                                        f.indexQuery = dataSent.rooms.filter[0].indexQuery;
+                                    } else if (f._id === dataSent.rooms.filter[0]._id) {
+                                        f.data.map((d) => {
+                                            if (d._id === dataSent.rooms.filter[0].data[0]._id) {
+                                                d = dataSent.rooms.filter[0].data[0];
+                                            }
+                                            return d;
+                                        });
+                                        f = { ...dataSent.rooms.filter[0], data: f.data };
+                                    }
+                                    return f;
+                                });
+                            }
+                            return r;
+                        });
+                        rr.current = '';
+                        if (!data._id) data._id = dataSent._id; // add id when id is empty
+                        data.users.push(data.user);
+                        return { ...preData, data, load: converData?.load.filter((r) => r.id !== dataSent.rooms.filter[0].data[0]._id) };
+                        // dispatch(setRoomChat(dataSent));
+                    } else {
+                        return {
+                            ...preData,
+                            load: converData.load.map((r) => {
+                                if (r.id === id_) r.status = 'error';
+                                return r;
+                            }),
+                        };
+                    }
+                } else {
+                    return preData;
+                }
+            });
+            setLoading('send');
+            setupload(undefined);
+        }
+    };
+    const handleImageUpload = async (e: any) => {
+        const files = e.target.files;
+        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', true);
+        setupload({ pre: getFilesToPre, up: upLoad });
+    };
+    const handleScroll = () => {
+        if (scrollCheck.current) scrollCheck.current = false;
+        if (!emptyRef.current && ERef.current) {
+            const { scrollTop, clientHeight, scrollHeight } = ERef.current;
+            const scrollBottom = -scrollTop + clientHeight;
+            console.log('more chat', isFetching, scrollBottom >= scrollHeight - 250, cRef, emptyRef);
+            if (scrollBottom >= scrollHeight - 250) {
+                if (cRef.current !== 2) {
+                    // wait for another request
+                    moreAction.current.moreChat = true;
+                    moreAction.current.prevent = true;
+                    refetch();
+                }
+            }
+        }
+    };
+    const handleProfile = () => {
+        const id_oth: string[] = [];
+        data?.id_us.forEach((id) => {
+            if (id !== id_you) id_oth.push(id);
+        });
+        dispatch(setOpenProfile({ newProfile: id_oth, currentId: '' }));
+    };
+    const handleDelete = async () => {
+        setLoadDel(true);
+        if (data) {
+            const res = await sendChatAPi.delete(data._id);
+            const dataRe:
+                | {
+                      _id: string;
+                      deleted: {
+                          id: string;
+                          createdAt: string;
+                          _id: string;
+                          show: boolean;
+                      }[];
+                  }
+                | undefined = ServerBusy(res, dispatch);
+
+            if (dataRe) {
+                setConversation({ ...data, rooms: [], deleted: dataRe.deleted });
+                dispatch(setDelIds(dataRe));
+            }
+        }
+
+        setLoadDel(false);
+    };
+    const handleUndo = async () => {
+        console.log('Undo');
+        setLoadDel(true);
+        if (data?._id) {
+            emptyRef.current = false;
+            const res = await sendChatAPi.undo(data._id);
+            const dataV: PropsChat | undefined = ServerBusy(res, dispatch);
+            if (dataV) {
+                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
+                    const modifiedData: any = { ...dataV };
+                    await Promise.all(
+                        modifiedData.room?.map(
+                            async (
+                                rr: {
+                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
+                                    text: { t: string };
+                                    secondary?: string;
+                                },
+                                index1: number,
+                            ) => {
+                                if (rr.text.t) {
+                                    modifiedData.room[index1].text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : modifiedData._id}`);
+                                }
+                            },
+                        ),
+                    );
+                    resolve(modifiedData);
+                });
+                cRef.current = 0;
+                dispatch(setDelIds(undefined));
+                console.log(newData, 'newDataBG');
+                setConversation(newData);
+            }
+        }
+        setLoadDel(false);
+    };
+    const ye = !moves.some((m) => m === data?._id || m === data?.user.id); //stop action when moving
+    const handleImageUploadBg = async (e: any) => {
+        // if (!ye) e.preventDefault();
+        // if (conversation && ye) {
+        //     const files = e.target.files;
+        //     const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', false);
+        //     const fileC: any = upLoad[0];
+        //     const formData = new FormData();
+        //     if (fileC) {
+        //         formData.append('file', fileC); // assign file and _id of the file upload
+        //         if (data.background) formData.append('old_id', data.background.id);
+        //         const re = await fileWorkerAPI.addFiles(formData);
+        //         if (re?.length) {
+        //             const res: { userId: string; latestChatId: string } = await chatAPI.setBackground({
+        //                 latestChatId: data.room[0]._id,
+        //                 conversationId: data._id,
+        //                 id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
+        //             });
+        //             if (res)
+        //                 setConversation((pre) => {
+        //                     if (pre)
+        //                         return {
+        //                             ...pre,
+        //                             background: {
+        //                                 id: fileC._id,
+        //                                 v: getFilesToPre[0].link,
+        //                                 type: getFilesToPre[0].type,
+        //                                 userId: res.userId,
+        //                                 latestChatId: res.latestChatId,
+        //                             },
+        //                         };
+        //                     return pre;
+        //                 });
+        //         }
+        //     }
+        //     e.target.value = '';
+        // }
+    };
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (data?._id && moves.includes(data._id) && del.current)
+            if (moves.some((m) => m === data?._id || m === data?.user.id)) {
+                const ls = document.querySelectorAll('.ofChats');
+                Array.from(ls).forEach((s) => {
+                    console.log(s.getAttribute('id') === del.current?.getAttribute('id'));
+
+                    if (s.getAttribute('id') === del.current?.getAttribute('id')) {
+                        s.setAttribute('style', 'z-index: 999');
+                    } else {
+                        s.setAttribute('style', 'z-index: 99');
+                    }
+                });
+                del.current.style.top = `${del.current.getBoundingClientRect().top}px`;
+                del.current.style.left = `${del.current.getBoundingClientRect().left}px`;
+                if (!mouse.some((m) => m === data._id)) {
+                    setMouse([...mouse, data._id]);
+                }
+            }
+    };
+    const handleMouseUp = () => {
+        if (data && moves.includes(data._id)) {
+            if (yRef.current && xRef.current) dispatch(setTopLeft({ ...id_chat, top: yRef.current, left: xRef.current }));
+            setMouse((pre) => pre.filter((m) => m !== data._id));
+        }
+    };
     useEffect(() => {
         if (data) {
             const code = `${data?._id ? data._id : data?.user.id + '-' + id_you}phrase_chatRoom`;
-            console.log('eeeee', code);
+            socket.on(`conversation_see_chats_${data._id}`, (resSee: PropsOldSeenBy) => {
+                console.log('conversation_see_', resSee);
+            });
             // socket.on(`conversation_deleteBG_room_${data._id}`, () => {
             //     setConversation((pre) => {
             //         if (pre) return { ...pre, background: undefined };
@@ -571,173 +782,177 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         //     };
         //     conversation?.room.unshift(chat);
         // }
-    }, [dataSent, writingBy]);
+    }, [writingBy]);
     useEffect(() => {
         return clearInterval(mRef.current);
     }, [mRef.current]);
-    const handleEmojiSelect = (e: any) => {
-        console.log(e);
-        setValue(value + e.native);
-    };
-    let time: string | number | NodeJS.Timeout | undefined;
-    const handleTouchStart = () => {
-        time = setTimeout(() => {
-            setOption(true);
-        }, 500);
-    };
-    const handleTouchMove = () => {
-        clearTimeout(time);
-    };
-    const handleTouchEnd = () => {
-        clearTimeout(time);
-    };
-    const handleSend = async (conversationId: string | undefined, id_other: string | undefined) => {
-        if ((value.trim() || (uploadIn && uploadIn?.up?.length > 0)) && data) {
-            textarea.current?.setAttribute('style', 'height: 33px');
-            if (ERef.current) ERef.current.scrollTop = 0;
-            setValue('');
-
-            //
-            const formDataFile = new FormData();
-            for (let i = 0; i < uploadIn?.up.length; i++) {
-                formDataFile.append('file', uploadIn?.up[i], uploadIn?.up[i].name + '@_id_***_get_$' + uploadIn?.up[i]._id); // assign file and _id of the file upload
-            }
-
-            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(formDataFile) : [];
-            const id_ = uuidv4();
-            const images = urlS.map((i) => {
-                return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
-            });
-            const id_s = uuidv4();
-            converData.load = [...(converData.load ?? []), { id: id_, status: 'loading' }];
-            const chat: any = {
-                createdAt: DateTime(),
-                imageOrVideos: images,
-                seenBy: [],
-                text: { t: value, icon: '' },
-                userId: userId,
-                _id: id_,
-            };
-            const con = data.rooms.find((r) => r._id === data.lastElement.roomId);
-            console.log(con, 'connn');
-
-            if (con && con.count < 50) {
-                const filter = con.filter.find((f) => f._id === data.lastElement.filterId) ?? con.filter[con.filter.length - 1];
-                if (filter)
-                    if (filter.count < 10 * filter.index && filter.data.length < 10) {
-                        filter.count += 1;
-                        filter.data.unshift(chat);
-                    } else {
-                        filter.full = true;
-                        con.filter.unshift({
-                            _id: 'new',
-                            count: 1,
-                            full: false,
-                            index: filter.index + 1,
-                            data: [chat],
-                            indexQuery: filter.indexQuery - 1,
-                            createdAt: new Date(),
-                        });
-                    }
-            } else {
-                data.rooms.unshift({
-                    chatId: data._id,
-                    count: 1,
-                    full: false,
-                    index: con?.index ?? 0,
-                    filter: [{ _id: id_s, count: 1, full: false, index: 1, data: [chat], indexQuery: installOffset, createdAt: new Date() }],
-                    _id: 'new',
-                    createdAt: new Date(),
+    const removeBall = useMutation(
+        async (xd: string) => {
+            return xd;
+        },
+        {
+            onMutate: (xd) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = data;
+                // Cập nhật cache tạm thời với dữ liệu mới
+                queryClient.setQueryData(['getBalloonChats', 1], (oldData: any) => {
+                    // Thêm newData vào mảng dữ liệu cũ (oldData)
+                    return oldData.filter((od: { _id: string }) => od._id !== xd); //PropsRooms[]
                 });
-            }
-            console.log(data.rooms, 'data.rooms');
 
-            const formData = new FormData();
-            const fda: any = {};
-            if (value) fda.value = encrypt(value, `chat_${data._id ? data._id : id_s}`);
-            if (conversationId) formData.append('conversationId', conversationId); // conversation._id
-            if (id_) fda.id_data = id_; // id of the room
-            if (id_s && !data._id) fda.id_secondary = id_s; // first it have no _id of the conversationId then id_s is replaced
-            if (id_other) fda.id_others = id_other;
-            fda.valueInfoFile = urlS;
-            fda.conversationId = data._id;
-            fda.indexRoom = data.rooms[data.rooms.length - 1].index ?? 0;
-            const res = await sendChatAPI.send(fda);
-            const dataSent: typeof res | undefined = ServerBusy(res, dispatch);
-            queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
-                if (preData) {
-                    if (dataSent) {
-                        dataSent.rooms.filter[0].data[0].text.t = value;
-                        data?.rooms.map((r) => {
-                            if (r._id === 'new') {
-                                r._id = dataSent.rooms._id;
-                                r.count = dataSent.rooms.count;
-                                r.createdAt = dataSent.rooms.createdAt;
-                                r.index = dataSent.rooms.index;
-                                r.full = dataSent.rooms.full;
-                                r.filter = dataSent.rooms.filter;
-                            } else if (r._id === dataSent.rooms._id) {
-                                r.count = dataSent.rooms.count;
-                                r.index = dataSent.rooms.index;
-                                r.full = dataSent.rooms.full;
-                                r.filter.map((f) => {
-                                    if (f._id === 'new') {
-                                        f._id = dataSent.rooms.filter[0]._id;
-                                        f.count = dataSent.rooms.filter[0].count;
-                                        f.createdAt = dataSent.rooms.filter[0].createdAt;
-                                        f.index = dataSent.rooms.filter[0].index;
-                                        f.full = dataSent.rooms.filter[0].full;
-                                        f.indexQuery = dataSent.rooms.filter[0].indexQuery;
-                                    } else if (f._id === dataSent.rooms.filter[0]._id) {
-                                        f.data.map((d) => {
-                                            if (d._id === dataSent.rooms.filter[0].data[0]._id) {
-                                                d = dataSent.rooms.filter[0].data[0];
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['getBalloonChats', 1], context?.previousData);
+            },
+            onSettled: () => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                queryClient.invalidateQueries(['getBalloonChats', 1]);
+            },
+        },
+    );
+    const dataMore: PropsDataMoreConversation = {
+        conversationId: data?._id,
+        id: data?.user.id,
+        avatar: data?.user.avatar,
+        fullName: data?.user.fullName,
+        gender: data?.user.gender,
+        options: [
+            {
+                id: 1,
+                name: conversationText.optionRoom.personal,
+                icon: <ProfileCircelI />,
+                color: '#2880cc',
+                onClick: () => {
+                    if (data?.user.id && ye) dispatch(setOpenProfile({ newProfile: [data?.user.id] }));
+                },
+            },
+            {
+                id: 2,
+                name: '',
+                icon: (
+                    <>
+                        <Div
+                            wrap="wrap"
+                            css={`
+                                align-items: center;
+                                justify-content: left;
+                                cursor: var(--pointer);
+                                svg {
+                                    margin-right: 5px;
+                                }
+                                form {
+                                    ${data?.background ? 'margin-bottom: 12px;' : ''}
+                                }
+                            `}
+                        >
+                            <form method="post" encType="multipart/form-data">
+                                <input id={data?._id + 'uploadCon_BG'} type="file" name="file" onChange={handleImageUploadBg} hidden />
+                                <Label htmlFor={data?._id + 'uploadCon_BG'} color={colorText} css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}">
+                                    <Div css="font-size: 25px; color: #eedec8; @media(min-width: 768px){font-size: 20px}">
+                                        <BackgroundI />
+                                    </Div>{' '}
+                                    {conversationText.optionRoom.background}
+                                </Label>
+                            </form>
+                            {data?.background && (
+                                <Div
+                                    css="width: 100%; align-items: center; display: flex; svg{margin-right: 3px;} "
+                                    onClick={async () => {
+                                        if (data && data.background) {
+                                            const fileDed = await fileWorkerAPI.deleteFileImg([data.background.id]);
+                                            if (fileDed) {
+                                                const res: boolean = await chatAPI.delBackground(data._id);
+                                                if (res)
+                                                    setConversation((pre) => {
+                                                        if (pre) return { ...pre, background: undefined };
+                                                        return pre;
+                                                    });
                                             }
-                                            return d;
-                                        });
-                                        f = { ...dataSent.rooms.filter[0], data: f.data };
-                                    }
-                                    return f;
-                                });
-                            }
-                            return r;
+                                        }
+                                    }}
+                                >
+                                    <Div css="font-size: 25px; color: #e46969c9; @media(min-width: 768px){font-size: 20px}">
+                                        <GarbageI />{' '}
+                                    </Div>
+                                    <P z="1.5rem" css="@media(min-width: 768px){font-size: 1.3rem}">
+                                        Remove background
+                                    </P>
+                                </Div>
+                            )}
+                        </Div>
+                    </>
+                ),
+                onClick: () => {},
+            },
+            {
+                id: 3,
+                name: (balloon.some((b) => b === data?._id) ? conversationText.optionRoom.balloonDel + ' ' : '') + conversationText.optionRoom.balloon,
+                icon: <BalloonI />,
+                color: '#e489a2',
+                onClick: () => {
+                    if (data?._id && ye)
+                        if (!balloon.some((b) => b === data._id)) {
+                            dispatch(setBalloon(data?._id));
+                        } else {
+                            removeBall.mutate(data._id);
+                            dispatch(removeBalloon(data?._id));
+                        }
+                },
+            },
+            {
+                id: 4,
+                name: `${conversationText.optionRoom.move} ${moves.some((m) => m === data?._id || m === data?.user.id) ? ' stop' : ''}`,
+                icon: <MoveI />,
+                device: 'mobile',
+                onClick: () => {
+                    let checkM = false;
+                    if (data?._id) {
+                        moves.forEach((m) => {
+                            if (m === data?._id) checkM = true;
                         });
-                        rr.current = '';
-                        if (!data._id) data._id = dataSent._id; // add id when id is empty
-                        data.users.push(data.user);
-                        return { ...preData, data, load: converData?.load.filter((r) => r.id !== dataSent.rooms.filter[0].data[0]._id) };
-                        // dispatch(setRoomChat(dataSent));
-                    } else {
-                        return {
-                            ...preData,
-                            load: converData.load.map((r) => {
-                                if (r.id === id_) r.status = 'error';
-                                return r;
-                            }),
-                        };
+                        if (checkM) {
+                            setMoves((pre) => pre.filter((m) => m !== data._id));
+                        } else {
+                            setMoves([...moves, data?._id]);
+                        }
+                    } else if (data?.user.id) {
+                        moves.forEach((m) => {
+                            if (m === data.user.id) checkM = true;
+                        });
+                        if (checkM) {
+                            setMoves((pre) => pre.filter((m) => m !== data.user.id));
+                        } else {
+                            setMoves([...moves, data.user.id]);
+                        }
                     }
-                } else {
-                    return preData;
-                }
-            });
-            setLoading('send');
-            setupload(undefined);
-        }
+                },
+            },
+        ],
     };
 
-    const handleImageUpload = async (e: any) => {
-        const files = e.target.files;
-        const { upLoad, getFilesToPre } = await handleFileUpload(files, 15, 8, 15, dispatch, 'chat', true);
-        setupload({ pre: getFilesToPre, up: upLoad });
-    };
-
+    if (data?.deleted?.some((c) => c.id === id_you)) {
+        dataMore.options.push({
+            id: 6,
+            name: conversationText.optionRoom.undo,
+            load: loadDel,
+            icon: loadDel ? (
+                <DivLoading css="font-size: 12px; margin: 0;">
+                    <LoadingI />
+                </DivLoading>
+            ) : (
+                <ClockCirclesI />
+            ),
+            onClick: () => handleUndo(),
+        });
+    }
     return {
         handleImageUpload,
         uploadIn,
         handleTouchStart,
         handleTouchMove,
         handleTouchEnd,
-        option,
         handleSend,
         value,
         setValue,
@@ -747,22 +962,17 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         dispatch,
         conversation,
         setConversation,
-        userId,
-        cRef,
         opMore,
         setOpMore,
-        delIds,
         lg,
         ERef,
         del,
         textarea,
         date1,
-        emptyRef,
         wch,
         setWch,
         rr,
         writingBy,
-        setWritingBy,
         choicePin,
         setChoicePin,
         targetChild,
@@ -771,8 +981,18 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         itemPinData,
         loadingChat: converData?.load,
         isFetching,
-        refetch,
-        moreAction,
         data,
+        xRef,
+        yRef,
+        isIntersecting,
+        mouse,
+        roomImage,
+        setRoomImage,
+        handleScroll,
+        handleProfile,
+        handleMouseDown,
+        handleMouseUp,
+        dataMore,
+        scrollCheck,
     };
 }

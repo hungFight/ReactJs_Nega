@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PropsBackground_chat, PropsItemsData, PropsPinC } from './LogicConver';
+import { PropsBackground_chat, PropsItemQueryChat, PropsItemsData, PropsOldSeenBy, PropsPinC } from '~/typescript/messengerType';
 import { Div, DivFlex, DivNone, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -11,6 +11,7 @@ import { PropsPhraseText } from 'src/dataText/DataMessenger';
 import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
 import { PropsOptionForItem } from './OptionForItems/OptionForItem';
+import { queryClient } from 'src';
 type PropsRc = PropsItemsData;
 const ItemsRoom: React.FC<{
     roomId: string;
@@ -64,9 +65,13 @@ const ItemsRoom: React.FC<{
               status: string;
           }[]
         | undefined;
+    isIntersecting: React.MutableRefObject<PropsOldSeenBy[]>;
+    id_other: string;
+    setSeenBy(): void;
 }> = ({
     roomId,
     filterId,
+    id_other,
     rc,
     index,
     archetype,
@@ -78,7 +83,7 @@ const ItemsRoom: React.FC<{
     timeS,
     setOptions,
     options,
-    dataFirst,
+    dataFirst, //personal
     wch,
     setWch,
     rr,
@@ -93,6 +98,8 @@ const ItemsRoom: React.FC<{
     setRoomImage,
     scrollCheck,
     loadingChat,
+    isIntersecting,
+    setSeenBy,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
@@ -155,8 +162,141 @@ const ItemsRoom: React.FC<{
         console.log('end');
         if (alarm.current) clearTimeout(alarm.current);
     };
-    console.log(rc, 'marginTop');
     const load = loadingChat?.find((l) => l.id === rc?._id);
+    useEffect(() => {
+        const divElement = document.getElementById(`chat_to_scroll_${rc._id}`); // Replace 'Div' with the appropriate selector for your <Div> element
+        if (divElement) {
+            let timeout: NodeJS.Timeout;
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting && !rc.seenBy.includes(dataFirst.id) && rc.userId !== dataFirst.id) {
+                            const pre: PropsItemQueryChat = queryClient.getQueryData(['getItemChats', `${id_other}_${dataFirst.id}`]);
+                            if (pre)
+                                if (pre?.oldSeenBy?.length) {
+                                    let checkOld = false;
+                                    pre.oldSeenBy.forEach((p) => {
+                                        if (p.roomId === roomId) {
+                                            checkOld = true;
+                                            let checkOlFil = false;
+                                            p.data.forEach((f) => {
+                                                if (f.filterId === filterId) {
+                                                    checkOlFil = true;
+                                                    if (!f.data.some((d) => d.dataId === rc._id && d.userId === rc.userId)) {
+                                                        let checkPR = false;
+                                                        isIntersecting.current.map((p) => {
+                                                            if (p.roomId === roomId) {
+                                                                let checkFil = false;
+                                                                p.data.map((f) => {
+                                                                    if (f.filterId === filterId) {
+                                                                        checkFil = true;
+                                                                        if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
+                                                                            f.data.push({ dataId: rc._id, userId: rc.userId });
+                                                                        }
+                                                                    }
+                                                                    return f;
+                                                                });
+                                                                if (!checkFil) {
+                                                                    p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
+                                                                }
+                                                                checkPR = true;
+                                                            }
+                                                            return p;
+                                                        });
+                                                        if (!checkPR)
+                                                            isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
+                                                    }
+                                                }
+                                            });
+                                            if (!checkOlFil) {
+                                                let checkPR = false;
+                                                isIntersecting.current.map((p) => {
+                                                    if (p.roomId === roomId) {
+                                                        let checkFil = false;
+                                                        p.data.map((f) => {
+                                                            if (f.filterId === filterId) {
+                                                                checkFil = true;
+                                                                if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
+                                                                    f.data.push({ dataId: rc._id, userId: rc.userId });
+                                                                }
+                                                            }
+                                                            return f;
+                                                        });
+                                                        if (!checkFil) {
+                                                            p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
+                                                        }
+                                                        checkPR = true;
+                                                    }
+                                                    return p;
+                                                });
+                                                if (!checkPR) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
+                                            }
+                                        }
+                                    });
+                                    if (!checkOld) {
+                                        let checkPR = false;
+                                        isIntersecting.current.map((p) => {
+                                            if (p.roomId === roomId) {
+                                                let checkFil = false;
+                                                p.data.map((f) => {
+                                                    if (f.filterId === filterId) {
+                                                        checkFil = true;
+                                                        if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
+                                                            f.data.push({ dataId: rc._id, userId: rc.userId });
+                                                        }
+                                                    }
+                                                    return f;
+                                                });
+                                                if (!checkFil) {
+                                                    p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
+                                                }
+                                                checkPR = true;
+                                            }
+                                            return p;
+                                        });
+                                        if (!checkPR) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
+                                    }
+                                } else {
+                                    let checkPR = false;
+                                    isIntersecting.current.map((p) => {
+                                        if (p.roomId === roomId) {
+                                            let checkFil = false;
+                                            p.data.map((f) => {
+                                                if (f.filterId === filterId) {
+                                                    checkFil = true;
+                                                    if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
+                                                        f.data.push({ dataId: rc._id, userId: rc.userId });
+                                                    }
+                                                }
+                                                return f;
+                                            });
+                                            if (!checkFil) {
+                                                p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
+                                            }
+                                            checkPR = true;
+                                        }
+                                        return p;
+                                    });
+                                    if (!checkPR) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
+                                }
+                            if (!timeout)
+                                timeout = setTimeout(() => {
+                                    setSeenBy();
+                                    clearTimeout(timeout);
+                                }, 2000);
+                        }
+                    });
+                },
+                {
+                    threshold: 0, // Trigger the callback when the element's visibility changes to any degree
+                },
+            );
+            observer.observe(divElement);
+            return () => {
+                observer.disconnect();
+            };
+        }
+    }, []);
     return (
         <>
             {changedBG && (
@@ -242,6 +382,9 @@ const ItemsRoom: React.FC<{
                                           top: unset;
                                           bottom: 1px;
                                           left: 0px;
+                                      }
+                                      .dateTimeUpdate {
+                                          position: unset;
                                       }
                                       .dateTimeN {
                                           bottom: -10px;
@@ -606,7 +749,7 @@ const ItemsRoom: React.FC<{
                                                   </P>
                                                   {rc?.updatedAt && (rc.delete || rc?.update) && (
                                                       <P
-                                                          className="dateTime dateTimeN"
+                                                          className={`dateTime dateTimeN ${rc?.updatedAt ? 'dateTimeUpdate' : ''}`}
                                                           css="display: none; font-size: 1.2rem; margin-left: 5px; position: absolute; left: -203px; top: 18px; @media (min-width: 768px){font-size: 1rem;}"
                                                       >
                                                           {rc?.update ? phraseText.dateTime.replace : phraseText.dateTime.remove} {handleTime(rc?.updatedAt, 'date')}
@@ -1063,7 +1206,7 @@ const ItemsRoom: React.FC<{
                                           </P>
                                           {rc?.updatedAt && (rc?.update || rc?.delete) && (
                                               <P
-                                                  className="dateTime dateTimeN"
+                                                  className={`dateTime dateTimeN ${rc?.updatedAt ? 'dateTimeUpdate' : ''}`}
                                                   css={`
                                                       display: none;
                                                       font-size: 1.2rem;

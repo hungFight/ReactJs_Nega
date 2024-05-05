@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { ClockCirclesI, GarbageI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { PropsChat, PropsItemRoom, PropsPinC, PropsRooms } from './LogicConver';
 import { PropsUser } from 'src/App';
 import { useDispatch } from 'react-redux';
 import { setOpenProfile } from '~/redux/hideShow';
@@ -12,6 +11,8 @@ import Player from '~/reUsingComponents/Videos/Player';
 import chatAPI from '~/restAPI/chatAPI';
 import { UseMutationResult } from '@tanstack/react-query';
 import Image from '~/reUsingComponents/Avatars/Image';
+import { PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
+import { PropsChat } from './LogicConver';
 
 const ItemPin: React.FC<{
     setChoicePin: React.Dispatch<React.SetStateAction<string>>;

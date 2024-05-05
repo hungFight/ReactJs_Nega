@@ -1,8 +1,7 @@
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { PropsDataMoreConversation } from './Conversation/Conversation';
-import { PropsBackground_chat } from './Conversation/LogicConver';
+import { PropsBackground_chat, PropsDataMoreConversation } from '~/typescript/messengerType';
 
 const MoreOption: React.FC<{
     dataMore: PropsDataMoreConversation;

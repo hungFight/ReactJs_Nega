@@ -1,16 +1,18 @@
-import { PropsChat, PropsConversationCustoms, PropsRoom, PropsRooms } from '~/Message/Messenger/Conversation/LogicConver';
 import refreshToken from '~/refreshToken/refreshToken';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import { PropsId_chats } from 'src/App';
+import { PropsConversationCustoms, PropsOldSeenBy, PropsRoom, PropsRooms } from '~/typescript/messengerType';
+import { PropsChat } from '~/Message/Messenger/Conversation/LogicConver';
 export type PropsRoomsChat = PropsConversationCustoms & PropsRooms;
 export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
 
 class Messenger {
+    private domain: string = 'messenger';
     send = async (fda: any): Promise<PropsRoomChat> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post('/messenger/sendChat', fda);
+            const res = await Axios.post(`/${this.domain}/sendChat`, fda);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -20,7 +22,7 @@ class Messenger {
     getRoom = async (limit: number, offset: number) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.get<PropsRoomsChat[]>('/messenger/getRoom', { params: { limit, offset } });
+            const res = await Axios.get<PropsRoomsChat[]>(`/${this.domain}/getRoom`, { params: { limit, offset } });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -32,7 +34,7 @@ class Messenger {
 
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.get('/messenger/getChat', {
+            const res = await Axios.get(`/${this.domain}/getChat`, {
                 params: {
                     conversationId: id_chat.conversationId ? id_chat.conversationId : conversationId,
                     id_other: id_chat.id_other,
@@ -57,7 +59,7 @@ class Messenger {
                     createdAt: string;
                     _id: string;
                 }[];
-            }>('/messenger/delete', {
+            }>(`/${this.domain}/delete`, {
                 params: { id_room },
             });
             return res.data;
@@ -69,7 +71,7 @@ class Messenger {
     undo = async (id_room: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/undo', {
+            const res = await Axios.post<PropsChat>(`/${this.domain}/undo`, {
                 params: { id_room },
             });
             return res.data;
@@ -81,7 +83,7 @@ class Messenger {
     delChatAll = async (data: { conversationId: string; dataId: string; roomId: string; filterId: string; userId: string }): Promise<Date> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post('/messenger/delChatAll', data);
+            const res = await Axios.post(`/${this.domain}/delChatAll`, data);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -91,7 +93,7 @@ class Messenger {
     delChatSelf = async (data: { conversationId: string; dataId: string; roomId: string; filterId: string }): Promise<string | null> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post('/messenger/delChatSelf', data);
+            const res = await Axios.post(`/${this.domain}/delChatSelf`, data);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -131,7 +133,7 @@ class Messenger {
     } | null> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post('/messenger/updateChat', { ...formData });
+            const res = await Axios.post(`/${this.domain}/updateChat`, { ...formData });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -141,7 +143,7 @@ class Messenger {
     pin = async (chatId: string, userId: string, conversationId: string, latestChatId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/pin', {
+            const res = await Axios.post<PropsChat>(`/${this.domain}/pin`, {
                 chatId,
                 userId,
                 conversationId,
@@ -156,7 +158,7 @@ class Messenger {
     getPins = async (conversationId: string, pins: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.get('/messenger/getPins', {
+            const res = await Axios.get(`/${this.domain}/getPins`, {
                 params: {
                     conversationId,
                     pins,
@@ -171,7 +173,7 @@ class Messenger {
     deletePin = async (conversationId: string, pinId: string, roomId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.delete('/messenger/deletePin', {
+            const res = await Axios.delete(`/${this.domain}/deletePin`, {
                 params: {
                     conversationId,
                     pinId,
@@ -187,7 +189,7 @@ class Messenger {
     setBackground = async (data: { latestChatId: string; id_file: { id: string; type: string }; conversationId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>('/messenger/setBackground', { ...data });
+            const res = await Axios.post<PropsChat>(`/${this.domain}/setBackground`, { ...data });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -197,7 +199,7 @@ class Messenger {
     delBackground = async (conversationId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post('/messenger/delBackground', { conversationId });
+            const res = await Axios.post(`/${this.domain}/delBackground`, { conversationId });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
@@ -207,7 +209,17 @@ class Messenger {
     getConversationBalloon = async (conversationId: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post('/messenger/getConversationBalloon', { conversationId });
+            const res = await Axios.post(`/${this.domain}/getConversationBalloon`, { conversationId });
+            return res.data;
+        } catch (error) {
+            const err = error as AxiosError;
+            return errorHandling(err);
+        }
+    };
+    setSeenBy = async (param: PropsOldSeenBy[], conversationId: string): Promise<boolean> => {
+        try {
+            const Axios = refreshToken.axiosJWTs();
+            const res = await Axios.post(`/${this.domain}/setSeenBy`, { param, conversationId });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI, SendI, SendOPTI } from '~/assets/Icons/Icons';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../../File';
-import { PropsChat, PropsImageOrVideosAtMessenger, PropsItemRoom, PropsPinC } from '../LogicConver';
 import Languages from '~/reUsingComponents/languages';
 import chatAPI from '~/restAPI/chatAPI';
 import ServerBusy from '~/utils/ServerBusy';
@@ -14,6 +13,8 @@ import { decrypt, encrypt } from '~/utils/crypto';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { useMutation } from '@tanstack/react-query';
 import { queryClient } from 'src';
+import { PropsImageOrVideosAtMessenger, PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
+import { PropsChat } from '../LogicConver';
 export interface PropsOptionForItem {
     _id: string;
     userId: string;
