@@ -25,12 +25,11 @@ export interface PropsItemsData {
         icon: string;
     };
     delete?: string | 'all';
-    update?: string;
     secondary?: string;
     length?: number;
     imageOrVideos: PropsImageOrVideosAtMessenger[];
     sending?: boolean;
-    seenBy: string[];
+    seenBy: { id: string; createdAt: string }[];
     updatedAt: string;
     createdAt: string;
     reply: {

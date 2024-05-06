@@ -203,19 +203,6 @@ const Conversation: React.FC<{
             return newDateTime;
         }
     };
-    const handleWatchMore = (e: any) => {
-        // e.stopPropagation();
-        console.log(e);
-
-        if (e) {
-            if (e?.getAttribute('class').includes('chatTime')) {
-                e.classList.remove('chatTime');
-            } else {
-                e.classList.add('chatTime');
-            }
-        }
-    };
-
     // if (data?.room[0]?.id) {
     //     dataMore.options.push({
     //         id: 5,
@@ -290,7 +277,7 @@ const Conversation: React.FC<{
                 background-position: center;
                 transition: all 0.5s linear;
                 background-blend-mode: soft-light;
-                ${data?.background ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${data?.background.id}); background-repeat: no-repeat;background-size: cover;` : ''}
+                ${data?.background?.id ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${data?.background.id}); background-repeat: no-repeat;background-size: cover;` : ''}
 
                 @media (min-width: 500px) {
                     margin-right: 5px;
@@ -556,7 +543,6 @@ const Conversation: React.FC<{
                                             rc={rc}
                                             index={index}
                                             archetype={arr}
-                                            handleWatchMore={handleWatchMore}
                                             ERef={ERef}
                                             del={del}
                                             handleTime={handleTime}

@@ -130,42 +130,40 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        const id_file_deleted = await fileWorkerAPI.deleteFileImg(id_file);
-                        if (id_file_deleted) {
-                            const res = await chatAPI.delChatAll({
-                                conversationId: conversation._id,
-                                dataId: optionsForItem._id,
-                                roomId: optionsForItem.roomId,
-                                filterId: optionsForItem.filterId,
-                                userId: optionsForItem.userId,
+                        if (id_file.length) fileWorkerAPI.deleteFileImg(id_file);
+                        const res = await chatAPI.delChatAll({
+                            conversationId: conversation._id,
+                            dataId: optionsForItem._id,
+                            roomId: optionsForItem.roomId,
+                            filterId: optionsForItem.filterId,
+                            userId: optionsForItem.userId,
+                        });
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data)
+                            setConversation((pre) => {
+                                if (pre) {
+                                    pre.rooms = pre.rooms.map((r) => {
+                                        if (r._id === optionsForItem.roomId) {
+                                            r.filter.map((f) => {
+                                                if (f._id === optionsForItem.filterId) {
+                                                    f.data.map((d) => {
+                                                        if (d._id === optionsForItem._id) {
+                                                            d.text.t = '';
+                                                            d.imageOrVideos = [];
+                                                            d.delete = 'all';
+                                                            d.updatedAt = data;
+                                                        }
+                                                        return d;
+                                                    });
+                                                }
+                                                return f;
+                                            });
+                                        }
+                                        return r;
+                                    });
+                                }
+                                return pre;
                             });
-                            const data: string | null = ServerBusy(res, dispatch);
-                            if (data)
-                                setConversation((pre) => {
-                                    if (pre) {
-                                        pre.rooms = pre.rooms.map((r) => {
-                                            if (r._id === optionsForItem.roomId) {
-                                                r.filter.map((f) => {
-                                                    if (f._id === optionsForItem.filterId) {
-                                                        f.data.map((d) => {
-                                                            if (d._id === optionsForItem._id) {
-                                                                d.text.t = '';
-                                                                d.imageOrVideos = [];
-                                                                d.delete = 'all';
-                                                                d.updatedAt = data;
-                                                            }
-                                                            return d;
-                                                        });
-                                                    }
-                                                    return f;
-                                                });
-                                            }
-                                            return r;
-                                        });
-                                    }
-                                    return pre;
-                                });
-                        }
                         setOptions(undefined);
                         setLoading('');
                     }

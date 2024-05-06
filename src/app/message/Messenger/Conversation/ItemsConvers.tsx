@@ -23,7 +23,6 @@ const ItemsRoom: React.FC<{
     index: number;
     targetChild: React.MutableRefObject<HTMLDivElement | null>;
     archetype: PropsRc[];
-    handleWatchMore: (e: any) => void;
     ERef: React.MutableRefObject<any>;
     handleTime: (dateTime: string, type: string) => string;
     user: {
@@ -75,7 +74,6 @@ const ItemsRoom: React.FC<{
     rc,
     index,
     archetype,
-    handleWatchMore,
     ERef,
     handleTime,
     user,
@@ -105,10 +103,10 @@ const ItemsRoom: React.FC<{
     const width = useRef<HTMLDivElement | null>(null);
 
     if (rc.userId === dataFirst.id && !wch) {
-        if (rc.seenBy.includes(user.id) && !rr.current) {
+        if (rc.seenBy.some((st) => st.id === user.id) && !rr.current) {
             rr.current = rc._id;
         } else {
-            if (archetype[index + 1]?.seenBy.includes(user.id) && !rc?.seenBy.includes(user.id)) {
+            if (archetype[index + 1]?.seenBy.some((st) => st.id === user.id) && !rc?.seenBy.some((st) => st.id === user.id)) {
                 rr.current = archetype[index + 1]?._id;
             }
         }
@@ -170,7 +168,7 @@ const ItemsRoom: React.FC<{
             const observer = new IntersectionObserver(
                 (entries) => {
                     entries.forEach((entry) => {
-                        if (entry.isIntersecting && !rc.seenBy.includes(dataFirst.id) && rc.userId !== dataFirst.id) {
+                        if (entry.isIntersecting && !rc.seenBy.some((sb) => sb.id === dataFirst.id) && rc.userId !== dataFirst.id) {
                             const pre: PropsItemQueryChat = queryClient.getQueryData(['getItemChats', `${id_other}_${dataFirst.id}`]);
                             if (pre)
                                 if (pre?.oldSeenBy?.length) {
@@ -370,25 +368,9 @@ const ItemsRoom: React.FC<{
                                               display: none;
                                           }
                                       }
-                                      .dateTime {
-                                          display: block;
-                                      }
                                   }
                                   p {
                                       z-index: 1;
-                                  }
-                                  .adjustDate {
-                                      .dateTime {
-                                          top: unset;
-                                          bottom: 1px;
-                                          left: 0px;
-                                      }
-                                      .dateTimeUpdate {
-                                          position: unset;
-                                      }
-                                      .dateTimeN {
-                                          bottom: -10px;
-                                      }
                                   }
                                   &:hover {
                                       z-index: 5;
@@ -597,14 +579,7 @@ const ItemsRoom: React.FC<{
                                   )}
 
                                   {(rc.text.t || rc?.delete) && (
-                                      <Div
-                                          width="100%"
-                                          css="justify-content: end; z-index: 11; position: relative;"
-                                          onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleWatchMore(elWatChTime.current);
-                                          }}
-                                      >
+                                      <Div width="100%" css="justify-content: end; z-index: 11; position: relative;">
                                           <Div
                                               display="block"
                                               css={`
@@ -627,8 +602,7 @@ const ItemsRoom: React.FC<{
                                                       position: relative;
                                                       top: 2px;
                                                   }
-                                                  ${rc.update === dataFirst.id ? 'border: 1px solid #889a21c7;' : ''}
-                                                  @media(min-width: 768px) {
+                                                  @media (min-width: 768px) {
                                                       font-size: ${rc?.delete === 'all' ? '1.2rem' : '1.4rem'};
                                                   }
                                                   ${rc.delete ? '  overflow: hidden; display: -webkit-box;-webkit-line-clamp: 1;-webkit-box-orient: vertical;' : ''}
@@ -659,7 +633,6 @@ const ItemsRoom: React.FC<{
                                                       }
                                                       border-radius: 5px;
                                                   }
-                                                  ${rc.update === dataFirst.id && 'border: 1px solid #889a21c7;'}
                                                   ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                               `}
                                               onClick={(e) => e.stopPropagation()}
@@ -722,11 +695,10 @@ const ItemsRoom: React.FC<{
                                           </DivFlex>
                                       )
                                   ) : (
-                                      <>
+                                      <Div css="color: #bbbbbb;">
                                           {rc.imageOrVideos.length > 0 ? (
                                               <P
                                                   css={`
-                                                      display: ${!rc.text.t ? 'block' : 'none'};
                                                       width: 100%;
                                                       font-size: 1.2rem;
                                                       margin-right: 5px;
@@ -735,35 +707,22 @@ const ItemsRoom: React.FC<{
                                                           font-size: 1rem;
                                                       }
                                                   `}
-                                                  className="dateTime"
                                               >
                                                   {handleTime(rc.createdAt, 'hour')}, {handleTime(rc.createdAt, 'date')}
                                               </P>
                                           ) : (
                                               <>
-                                                  <P
-                                                      className="dateTime"
-                                                      css="display: none; font-size: 1.2rem; margin-left: 5px; position: absolute; left: -179px; top: 5px; @media (min-width: 768px){font-size: 1rem;}"
-                                                  >
-                                                      {handleTime(rc.createdAt, 'date')}
-                                                  </P>
-                                                  {rc?.updatedAt && (rc.delete || rc?.update) && (
-                                                      <P
-                                                          className={`dateTime dateTimeN ${rc?.updatedAt ? 'dateTimeUpdate' : ''}`}
-                                                          css="display: none; font-size: 1.2rem; margin-left: 5px; position: absolute; left: -203px; top: 18px; @media (min-width: 768px){font-size: 1rem;}"
-                                                      >
+                                                  {/* {rc?.updatedAt && (rc.delete || rc?.update) && (
+                                                      <P css="font-size: 1.2rem;text-wrap: nowrap; margin-right: 12px; margin-left: 5px; @media (min-width: 768px){font-size: 1rem;}">
                                                           {rc?.update ? phraseText.dateTime.replace : phraseText.dateTime.remove} {handleTime(rc?.updatedAt, 'date')}
                                                       </P>
-                                                  )}
-                                                  <P
-                                                      className="dateTime"
-                                                      css="display: none; width: 100%; @media (min-width: 768px){font-size: 1rem;} font-size: 1.2rem; margin-right: 5px; text-align: right;"
-                                                  >
+                                                  )} */}
+                                                  <P css="width: 100%; @media (min-width: 768px){font-size: 1rem;} font-size: 1.2rem; margin-right: 5px; text-align: right;">
                                                       {handleTime(rc.createdAt, 'hour')}
                                                   </P>
                                               </>
                                           )}
-                                          {rc.seenBy.includes(user.id) && (
+                                          {rc.seenBy.some((st) => st.id === user.id) && (
                                               <Avatar
                                                   className="dateTime"
                                                   src={user.avatar}
@@ -785,7 +744,7 @@ const ItemsRoom: React.FC<{
                                                   `}
                                               />
                                           )}
-                                      </>
+                                      </Div>
                                   )}
                               </Div>
                               {(wch === rc._id || rr.current === rc._id) && (
@@ -972,16 +931,6 @@ const ItemsRoom: React.FC<{
                                   position: relative;
                                   max-width: 100%;
                                   justify-content: left;
-                                  .adjustDate {
-                                      .dateTime {
-                                          right: -50px;
-                                          top: unset;
-                                          bottom: 1px;
-                                      }
-                                      .dateTimeN {
-                                          bottom: -10px;
-                                      }
-                                  }
                                   ${rc.imageOrVideos.length > 0 ? 'flex-grow: 1;' : ''}
                               `}
                           >
@@ -1010,11 +959,6 @@ const ItemsRoom: React.FC<{
                                           }
                                       }
                                   `}
-                                  onClick={(e) => {
-                                      console.log('hello');
-                                      e.stopPropagation();
-                                      handleWatchMore(elWatChTime.current);
-                                  }}
                                   onTouchStart={(e) => {
                                       handleTouchStart({
                                           _id: rc._id,
@@ -1098,7 +1042,6 @@ const ItemsRoom: React.FC<{
                                                       position: relative;
                                                       top: 2px;
                                                   }
-                                                  ${rc.update === user.id ? 'border: 1px solid #889a21c7;' : ''}
                                               `}
                                               dangerouslySetInnerHTML={{
                                                   __html: `${rc.text.t} ${rc?.delete === 'all' ? `${user.fullName} has deleted` : ''}`,
@@ -1125,7 +1068,6 @@ const ItemsRoom: React.FC<{
                                                       }
                                                   }
                                                   border-radius: 5px;
-                                                  ${rc.update === user.id && 'border: 1px solid #889a21c7;'}
                                                   ${rc.imageOrVideos.length > 2 && 'background-color: #ca64b8;'}
                                               `}
                                           >
@@ -1170,63 +1112,43 @@ const ItemsRoom: React.FC<{
                                           </Div>
                                       </Div>
                                   )}
-                                  {rc.imageOrVideos.length > 0 ? (
-                                      <P
-                                          className="dateTime"
-                                          css={`
-                                              display: ${!rc.text.t ? 'block' : 'none'};
-                                              width: 100%;
-                                              font-size: 1.2rem;
-                                              margin-left: 5px;
-                                              text-align: left;
-                                              @media (min-width: 768px) {
-                                                  font-size: 1rem;
-                                              }
-                                          `}
-                                      >
-                                          {handleTime(rc.createdAt, 'hour')}, {handleTime(rc.createdAt, 'date')}
-                                      </P>
-                                  ) : (
-                                      <>
+                                  <Div css="color: #bbbbbb;">
+                                      {rc.imageOrVideos.length > 0 ? (
                                           <P
-                                              className="dateTime"
                                               css={`
-                                                  display: none;
+                                                  width: 100%;
                                                   font-size: 1.2rem;
                                                   margin-left: 5px;
-                                                  position: absolute;
-                                                  right: -157px;
-                                                  top: 5px;
-                                                  ${rc?.delete && 'right: -55px; top: 31px;'} @media (min-width: 768px) {
+                                                  text-align: left;
+                                                  @media (min-width: 768px) {
                                                       font-size: 1rem;
                                                   }
                                               `}
                                           >
-                                              {handleTime(rc.createdAt, 'date')}
+                                              {handleTime(rc.createdAt, 'hour')}, {handleTime(rc.createdAt, 'date')}
                                           </P>
-                                          {rc?.updatedAt && (rc?.update || rc?.delete) && (
-                                              <P
-                                                  className={`dateTime dateTimeN ${rc?.updatedAt ? 'dateTimeUpdate' : ''}`}
-                                                  css={`
-                                                      display: none;
-                                                      font-size: 1.2rem;
-                                                      margin-left: 5px;
-                                                      position: absolute;
-                                                      right: -220px;
-                                                      top: 21px;
-                                                      @media (min-width: 768px) {
-                                                          font-size: 1rem;
-                                                      }
-                                                  `}
-                                              >
-                                                  {rc?.update ? phraseText.dateTime.replace : phraseText.dateTime.remove} {handleTime(rc?.updatedAt, 'date')}
+                                      ) : (
+                                          <>
+                                              <P css=" width: 100%; font-size: 1rem; @media (min-width: 768px){font-size: 1rem;} margin-left: 5px; text-align: left;">
+                                                  {handleTime(rc.createdAt, 'hour')}
                                               </P>
-                                          )}
-                                          <P className="dateTime" css="display: none; width: 100%; font-size: 1rem; @media (min-width: 768px){font-size: 1rem;} margin-left: 5px; text-align: left;">
-                                              {handleTime(rc.createdAt, 'hour')}
-                                          </P>
-                                      </>
-                                  )}
+                                              {/* {rc?.updatedAt && (rc?.update || rc?.delete) && (
+                                                  <P
+                                                      css={`
+                                                          font-size: 1.2rem;
+                                                          margin-left: 12px;
+                                                          text-wrap: nowrap;
+                                                          @media (min-width: 768px) {
+                                                              font-size: 1rem;
+                                                          }
+                                                      `}
+                                                  >
+                                                      .{rc?.update ? phraseText.dateTime.replace : phraseText.dateTime.remove} {handleTime(rc?.updatedAt, 'date')}
+                                                  </P>
+                                              )} */}
+                                          </>
+                                      )}
+                                  </Div>
                               </Div>
                           </Div>
                       </Div>

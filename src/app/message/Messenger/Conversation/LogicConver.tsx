@@ -526,9 +526,34 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         }
     };
     useEffect(() => {
+        const code = `${data?._id ? data._id : id_chat.id_other + '-' + id_you}phrase_chatRoom`;
         if (data) {
-            const code = `${data?._id ? data._id : data?.user.id + '-' + id_you}phrase_chatRoom`;
-            socket.on(`conversation_see_chats_${data._id}`, (resSee: PropsOldSeenBy) => {
+            socket.on(`conversation_see_chats_${data._id}`, (resSee: { param: PropsOldSeenBy[]; userId: string; createdAt: string }) => {
+                queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
+                    resSee.param.forEach((dr) => {
+                        preData?.data.rooms.map((r) => {
+                            if (r._id === dr.roomId) {
+                                dr.data.forEach((fr) => {
+                                    r.filter.map((ff) => {
+                                        if (ff._id === fr.filterId) {
+                                            fr.data.forEach((dd) => {
+                                                ff.data.map((df) => {
+                                                    if (df._id === dd.dataId) df.seenBy.push({ id: resSee.userId, createdAt: resSee.createdAt });
+                                                    return df;
+                                                });
+                                            });
+                                        }
+                                        return ff;
+                                    });
+                                });
+                            }
+                            return r;
+                        });
+                    });
+
+                    return preData;
+                });
+                setLoading('receive_see');
                 console.log('conversation_see_', resSee);
             });
             // socket.on(`conversation_deleteBG_room_${data._id}`, () => {
@@ -639,6 +664,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             //     setWritingBy(res);
             // });
             socket.on(code, async (d) => {
+                console.log(d, 'cccc');
+
                 const { userId, data: dataSocket }: { userId: string; data: PropsRoomChat } = d;
                 const codeS = `user_${userId}_in_roomChat_personal_receive_and_saw`;
                 if (userId !== id_you) {
@@ -659,23 +686,28 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 dataSocket.rooms.filter[0].data[0].text.t = decrypt(DataIn.text?.t, `chat_${data._id}`);
                             }
                         }
-                        preData?.data.rooms.map((r) => {
-                            if (r._id === dataSocket.rooms._id) {
-                                roomPo = true;
-                                r.filter.map((f) => {
-                                    if (f._id === dataSocket.rooms.filter[0]._id) {
-                                        filterPo = true;
-                                        f.data.unshift(dataSocket.rooms.filter[0].data[0]);
-                                    }
-                                    return f;
-                                });
-                                if (!filterPo) r.filter.unshift(dataSocket.rooms.filter[0]);
+                        if (preData?.data && !preData?.data._id) {
+                            preData.data = { ...dataSocket, rooms: [dataSocket.rooms] };
+                        } else {
+                            preData?.data.rooms.map((r) => {
+                                if (r._id === dataSocket.rooms._id) {
+                                    roomPo = true;
+                                    r.filter.map((f) => {
+                                        if (f._id === dataSocket.rooms.filter[0]._id) {
+                                            filterPo = true;
+                                            f.data.unshift(dataSocket.rooms.filter[0].data[0]);
+                                        }
+                                        return f;
+                                    });
+                                    if (!filterPo) r.filter.unshift(dataSocket.rooms.filter[0]);
+                                }
+                                return r;
+                            });
+                            if (!roomPo) {
+                                preData?.data.rooms.unshift(dataSocket.rooms);
                             }
-                            return r;
-                        });
-                        if (!roomPo) {
-                            preData?.data.rooms.unshift(dataSocket.rooms);
                         }
+
                         console.log('changed', preData);
                         return preData;
                     });
@@ -698,6 +730,13 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     // setDataSent(newD);
                 }
             });
+            socket.on(
+                `user_${id_you}_in_roomChat_personal_receive_and_saw_other`, // display that user has been received and seen
+                (data: { userIdReceived: string; idSent: string; idChat: string }) => {
+                    console.log(data, 'userIdReceived');
+                    setWch(data.idChat);
+                },
+            );
             return () => {
                 socket.off(`phrase_chatRoom_response_${conversation?._id}_${id_you}`);
                 socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
@@ -706,17 +745,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 socket.off(`Conversation_chat_update_${conversation?._id}`);
             };
         }
-    }, [data]);
-    console.log(writingBy, 'writingBy', isFetching);
-    useEffect(() => {
-        socket.on(
-            `user_${id_you}_in_roomChat_personal_receive_and_saw_other`, // display that user has been received and seen
-            (data: { userIdReceived: string; idSent: string; idChat: string }) => {
-                console.log(data, 'userIdReceived');
-                setWch(data.idChat);
-            },
-        );
-    }, []);
+    }, [data?._id]);
     const targetChild = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         // const re = document.getElementById(`chat_to_scroll_${choicePin}`); // auto scroll when click into pin button

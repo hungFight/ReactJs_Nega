@@ -81,12 +81,12 @@ const ListAccounts: React.FC<{
                     check = true;
                 }
             } else {
-                if (dataR.seenBy.includes(i.id_other)) {
+                if (dataR.seenBy.some((sb) => sb.id === i.id_other)) {
                     check = true;
                 }
             }
         });
-        if (seenBy.current && !check && !dataR.seenBy.includes(userId) && dataR?.userId !== userId) seenBy.current.setAttribute('style', 'color: #f0ffffde;');
+        if (seenBy.current && !check && !dataR.seenBy.some((sb) => sb.id === userId) && dataR?.userId !== userId) seenBy.current.setAttribute('style', 'color: #f0ffffde;');
     }, [data]);
     const who = dataR?.userId === userId ? 'You' : data.user.fullName;
     const info = [
@@ -174,7 +174,7 @@ const ListAccounts: React.FC<{
                     <Hname css="width: auto;" size="1.4rem">
                         {data.user.fullName}
                     </Hname>{' '}
-                    {dataR.seenBy.includes(data.user.id) && (
+                    {dataR.seenBy.some((sb) => sb.id === data.user.id) && (
                         <P z="1.2rem" css="color: #a3a3a3;margin-left: 8px;">
                             {itemLg.seenBy}
                         </P>
