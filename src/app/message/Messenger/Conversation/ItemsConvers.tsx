@@ -168,6 +168,8 @@ const ItemsRoom: React.FC<{
             const observer = new IntersectionObserver(
                 (entries) => {
                     entries.forEach((entry) => {
+                        console.log('go to school');
+
                         if (entry.isIntersecting && !rc.seenBy.some((sb) => sb.id === dataFirst.id) && rc.userId !== dataFirst.id) {
                             const pre: PropsItemQueryChat = queryClient.getQueryData(['getItemChats', `${id_other}_${dataFirst.id}`]);
                             if (pre)

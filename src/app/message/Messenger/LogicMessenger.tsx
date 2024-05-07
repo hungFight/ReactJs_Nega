@@ -86,7 +86,7 @@ const LogicMessenger = (dataUser: PropsUser) => {
             const res = await sendChatAPi.getRoom(limit, offset.current);
             const data: PropsRoomsChat[] = ServerBusy(res, dispatch);
             data?.map((d) => {
-                const ro = d.rooms[0].filter[0].data[0];
+                const ro = d.rooms[0]?.filter[0]?.data[0];
                 if (ro) {
                     // just one
                     if (ro?.secondary) {
@@ -98,8 +98,8 @@ const LogicMessenger = (dataUser: PropsUser) => {
                         const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
                         ro.text.t = decryptedData;
                     }
+                    d.rooms[0].filter[0].data[0] = ro;
                 }
-                d.rooms[0].filter[0].data[0] = ro;
                 return d;
             });
             console.log('newD', data);

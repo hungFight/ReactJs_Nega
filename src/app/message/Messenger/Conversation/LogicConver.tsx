@@ -267,6 +267,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 userId: id_you,
                 _id: id_,
             };
+            console.log(data, 'conn_1');
+
             const con = data.rooms.find((r) => r._id === data.lastElement.roomId);
             console.log(con, 'connn');
 
@@ -316,6 +318,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
                 if (preData) {
                     if (dataSent) {
+                        data.lastElement = dataSent.lastElement;
                         dataSent.rooms.filter[0].data[0].text.t = value;
                         data?.rooms.map((r) => {
                             if (r._id === 'new') {
@@ -689,6 +692,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         if (preData?.data && !preData?.data._id) {
                             preData.data = { ...dataSocket, rooms: [dataSocket.rooms] };
                         } else {
+                            console.log(preData, 'preData_ 2');
                             preData?.data.rooms.map((r) => {
                                 if (r._id === dataSocket.rooms._id) {
                                     roomPo = true;
@@ -704,9 +708,12 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 return r;
                             });
                             if (!roomPo) {
+                                console.log(preData, 'preData_ 3');
+
                                 preData?.data.rooms.unshift(dataSocket.rooms);
                             }
                         }
+                        if (preData?.data) preData.data.lastElement = dataSocket.lastElement;
 
                         console.log('changed', preData);
                         return preData;
