@@ -73,15 +73,15 @@ class refreshToken {
         const token = Cookies.get('tks');
         console.log('token here File', token);
         let i = 0;
-        if (!refreshToken.isInterceptorAttachedR && !refreshToken.isInterceptorAttached && token) {
-            let tokenN = token;
+        if (!refreshToken.isInterceptorAttachedR && token) {
+            let tokenNN = token;
             axiosJWTFile.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
                             console.log('all right', i++);
                             const date = new Date();
-                            const decodeToken: any = await jwt_decode(tokenN);
+                            const decodeToken: any = await jwt_decode(tokenNN);
 
                             if (decodeToken.exp < date.getTime() / 1000 + 5) {
                                 // faster 50 second
@@ -93,7 +93,7 @@ class refreshToken {
 
                                 if (data?.newAccessToken) {
                                     const newToken = 'Bearer ' + data.newAccessToken;
-                                    tokenN = newToken;
+                                    tokenNN = newToken;
                                     Cookies.set('tks', newToken, {
                                         path: '/',
                                         secure: false,

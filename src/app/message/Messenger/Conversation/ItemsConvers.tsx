@@ -127,7 +127,6 @@ const ItemsRoom: React.FC<{
         }
     }, [width, elWatChTime]);
     const chatId = pins.some((p) => p.chatId === rc._id);
-    const changedBG = background?.latestChatId === rc._id;
     const whoChangedBG = background?.userId === dataFirst.id ? 'You have' : background?.userId === user.id ? user.fullName + ' has' : '';
 
     const selfChatID = pins.filter((p) => p.chatId === rc._id)[0]?.userId === dataFirst.id;
@@ -299,13 +298,13 @@ const ItemsRoom: React.FC<{
     }, []);
     return (
         <>
-            {changedBG && (
+            {/* {changedBG && (
                 <Div width="100%" css="justify-content: center;">
                     <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
                         {whoChangedBG} changed background
                     </P>
                 </Div>
-            )}
+            )} */}
             {displayById.map((dis) => (
                 <DivFlex key={dis.chatId} css="margin: 5px 0 15px 0;">
                     <Div

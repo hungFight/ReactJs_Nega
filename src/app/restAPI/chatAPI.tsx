@@ -186,10 +186,25 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    setBackground = async (data: { latestChatId: string; id_file: { id: string; type: string }; conversationId: string }) => {
+    setBackground = async (data: {
+        id_file: { id: string; type: string };
+        conversationId: string;
+    }): Promise<{
+        operation: {
+            userId: string;
+            createdAt: string;
+            title: string;
+        };
+        ids_file: {
+            type: string;
+            v: string;
+            id: string;
+            userId: string;
+        };
+    }> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>(`/${this.domain}/setBackground`, { ...data });
+            const res = await Axios.post(`/${this.domain}/setBackground`, { ...data });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

@@ -13,7 +13,7 @@ import { decrypt, encrypt } from '~/utils/crypto';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { useMutation } from '@tanstack/react-query';
 import { queryClient } from 'src';
-import { PropsImageOrVideosAtMessenger, PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
+import { PropsImageOrVideosAtMessenger, PropsItemQueryChat, PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
 import { PropsChat } from '../LogicConver';
 export interface PropsOptionForItem {
     _id: string;
@@ -140,30 +140,32 @@ const OptionForItem: React.FC<{
                         });
                         const data: string | null = ServerBusy(res, dispatch);
                         if (data)
-                            setConversation((pre) => {
-                                if (pre) {
-                                    pre.rooms = pre.rooms.map((r) => {
-                                        if (r._id === optionsForItem.roomId) {
-                                            r.filter.map((f) => {
-                                                if (f._id === optionsForItem.filterId) {
-                                                    f.data.map((d) => {
-                                                        if (d._id === optionsForItem._id) {
-                                                            d.text.t = '';
-                                                            d.imageOrVideos = [];
-                                                            d.delete = 'all';
-                                                            d.updatedAt = data;
+                            queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                if (preData) {
+                                    conversation.rooms.map((da) => {
+                                        if (da._id === optionsForItem.roomId) {
+                                            da.filter.map((fl) => {
+                                                if (fl._id === optionsForItem.filterId) {
+                                                    fl.data.map((r) => {
+                                                        if (r._id === optionsForItem._id) {
+                                                            r.text.t = '';
+                                                            r.imageOrVideos = [];
+                                                            r.delete = 'all';
+                                                            r.updatedAt = data;
                                                         }
-                                                        return d;
+                                                        return r;
                                                     });
                                                 }
-                                                return f;
+                                                return fl;
                                             });
                                         }
-                                        return r;
+                                        return da;
                                     });
+                                    return { ...preData, data: conversation };
                                 }
-                                return pre;
+                                return preData;
                             });
+
                         setOptions(undefined);
                         setLoading('');
                     }
@@ -187,27 +189,28 @@ const OptionForItem: React.FC<{
                         const data: typeof res = ServerBusy(res, dispatch);
                         if (data) {
                             console.log('here');
-                            setConversation((pre) => {
-                                if (pre) {
-                                    pre.rooms = pre.rooms.map((r) => {
-                                        if (r._id === optionsForItem.roomId) {
-                                            r.filter.map((f) => {
-                                                if (f._id === optionsForItem.filterId) {
-                                                    f.data.map((d) => {
-                                                        if (d._id === optionsForItem._id) {
-                                                            d.delete = id_you;
-                                                            d.updatedAt = data;
+                            queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                if (preData) {
+                                    conversation.rooms.map((da) => {
+                                        if (da._id === optionsForItem.roomId) {
+                                            da.filter.map((fl) => {
+                                                if (fl._id === optionsForItem.filterId) {
+                                                    fl.data.map((r) => {
+                                                        if (r._id === optionsForItem._id) {
+                                                            r.delete = id_you;
+                                                            r.updatedAt = data;
                                                         }
-                                                        return d;
+                                                        return r;
                                                     });
                                                 }
-                                                return f;
+                                                return fl;
                                             });
                                         }
-                                        return r;
+                                        return da;
                                     });
+                                    return { ...preData, data: conversation };
                                 }
-                                return pre;
+                                return preData;
                             });
                             setOptions(undefined);
                         }
@@ -261,42 +264,42 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        const id_file_deleted = await fileWorkerAPI.deleteFileImg(id_file);
-                        if (id_file_deleted) {
-                            const res = await chatAPI.delChatAll({
-                                conversationId: conversation._id,
-                                dataId: optionsForItem._id,
-                                roomId: optionsForItem.roomId,
-                                filterId: optionsForItem.filterId,
-                                userId: optionsForItem.userId,
+                        if (id_file.length) fileWorkerAPI.deleteFileImg(id_file);
+                        const res = await chatAPI.delChatAll({
+                            conversationId: conversation._id,
+                            dataId: optionsForItem._id,
+                            roomId: optionsForItem.roomId,
+                            filterId: optionsForItem.filterId,
+                            userId: optionsForItem.userId,
+                        });
+                        const data: string | null = ServerBusy(res, dispatch);
+                        if (data)
+                            queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                if (preData) {
+                                    conversation.rooms.map((da) => {
+                                        if (da._id === optionsForItem.roomId) {
+                                            da.filter.map((fl) => {
+                                                if (fl._id === optionsForItem.filterId) {
+                                                    fl.data.map((r) => {
+                                                        if (r._id === optionsForItem._id) {
+                                                            r.text.t = '';
+                                                            r.imageOrVideos = [];
+                                                            r.delete = 'all';
+                                                            r.updatedAt = data;
+                                                        }
+                                                        return r;
+                                                    });
+                                                }
+                                                return fl;
+                                            });
+                                        }
+                                        return da;
+                                    });
+                                    return { ...preData, data: conversation };
+                                }
+                                return preData;
                             });
-                            const data: string | null = ServerBusy(res, dispatch);
-                            if (data)
-                                setConversation((pre) => {
-                                    if (pre) {
-                                        pre.rooms = pre.rooms.map((r) => {
-                                            if (r._id === optionsForItem.roomId) {
-                                                r.filter.map((f) => {
-                                                    if (f._id === optionsForItem.filterId) {
-                                                        f.data.map((d) => {
-                                                            if (d._id === optionsForItem._id) {
-                                                                d.text.t = '';
-                                                                d.imageOrVideos = [];
-                                                                d.delete = 'all';
-                                                                d.updatedAt = data;
-                                                            }
-                                                            return d;
-                                                        });
-                                                    }
-                                                    return f;
-                                                });
-                                            }
-                                            return r;
-                                        });
-                                    }
-                                    return pre;
-                                });
-                        }
+
                         setOptions(undefined);
                         setLoading('');
                     }
@@ -320,27 +323,28 @@ const OptionForItem: React.FC<{
                         const data: typeof res = ServerBusy(res, dispatch);
                         if (data) {
                             console.log('here');
-                            setConversation((pre) => {
-                                if (pre) {
-                                    pre.rooms = pre.rooms.map((r) => {
-                                        if (r._id === optionsForItem.roomId) {
-                                            r.filter.map((f) => {
-                                                if (f._id === optionsForItem.filterId) {
-                                                    f.data.map((d) => {
-                                                        if (d._id === optionsForItem._id) {
-                                                            d.delete = id_you;
-                                                            d.updatedAt = data;
+                            queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                if (preData) {
+                                    conversation.rooms.map((da) => {
+                                        if (da._id === optionsForItem.roomId) {
+                                            da.filter.map((fl) => {
+                                                if (fl._id === optionsForItem.filterId) {
+                                                    fl.data.map((r) => {
+                                                        if (r._id === optionsForItem._id) {
+                                                            r.delete = id_you;
+                                                            r.updatedAt = data;
                                                         }
-                                                        return d;
+                                                        return r;
                                                     });
                                                 }
-                                                return f;
+                                                return fl;
                                             });
                                         }
-                                        return r;
+                                        return da;
                                     });
+                                    return { ...preData, data: conversation };
                                 }
-                                return pre;
+                                return preData;
                             });
                             setOptions(undefined);
                         }
@@ -577,9 +581,11 @@ const OptionForItem: React.FC<{
     const handleChange = async () => {
         if (conversation && optionsForItem && !loading && ((value && value !== optionsForItem.text) || fileUpload?.up.length)) {
             setLoading('updating...');
+            console.log(value, 'vlvlvl');
+
             const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
             const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
-            const vl = value ? encrypt(value, `chat_${conversation._id ? conversation._id : id_s}`) : '';
+            const vl = value ? encrypt(value, `chat_${optionsForItem.secondary ? optionsForItem.secondary : conversation._id}`) : '';
             const formData = new FormData();
             for (let i = 0; i < fileUpload?.up.length; i++) {
                 formData.append('file', fileUpload?.up[i]); // assign file and _id of the file upload
@@ -600,31 +606,28 @@ const OptionForItem: React.FC<{
             const res = await chatAPI.updateChat(vlAt);
             const data: typeof res = ServerBusy(res, dispatch);
             if (data) {
-                setConversation({
-                    ...conversation,
-                    rooms: conversation.rooms.map((r) => {
-                        if (r._id === optionsForItem.roomId) {
-                            r.filter.map((f) => {
-                                if (f._id === optionsForItem.filterId) {
-                                    f.data.map((d) => {
-                                        if (d._id === optionsForItem._id) {
-                                            if (fileUpload?.up.length && data.imageOrVideos) {
-                                                d.imageOrVideos = data.imageOrVideos;
+                queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                    if (preData) {
+                        conversation.rooms.map((da) => {
+                            if (da._id === optionsForItem.roomId) {
+                                da.filter.map((fl) => {
+                                    if (fl._id === optionsForItem.filterId) {
+                                        fl.data.map((r) => {
+                                            if (r._id === optionsForItem._id) {
+                                                if (value) r.text.t = value;
+                                                if (res?.imageOrVideos.length) r.imageOrVideos = res?.imageOrVideos;
                                             }
-                                            if (data.value) d.text.t = decrypt(data.value, `chat_${d.secondary ? d.secondary : conversation._id}`);
-                                        }
-                                        return d;
-                                    });
-                                }
-                                return f;
-                            });
-                        }
-                        // upPin.mutate({
-                        //     file: fileUpload?.up.length && data.imageOrVideos ? data.imageOrVideos : undefined,
-                        //     text: data.text.t ? data.text.t : '',
-                        // });
-                        return r;
-                    }),
+                                            return r;
+                                        });
+                                    }
+                                    return fl;
+                                });
+                            }
+                            return da;
+                        });
+                        return { ...preData, data: conversation };
+                    }
+                    return preData;
                 });
                 setLoading('Change successful');
                 setChangeCus(undefined);

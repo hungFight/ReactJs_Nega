@@ -66,7 +66,6 @@ export interface PropsBackground_chat {
     type: string;
     id: string;
     userId: string;
-    latestChatId: string;
 }
 export interface PropsConversationCustoms {
     _id: string;
@@ -85,6 +84,7 @@ export interface PropsConversationCustoms {
         gender: number;
     }[];
     status: string;
+    statusOperation: { userId: string; createdAt: string; title: string }[];
     background?: PropsBackground_chat;
     pins: PropsPinC[];
     deleted: {
