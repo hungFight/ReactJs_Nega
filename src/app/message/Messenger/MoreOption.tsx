@@ -62,7 +62,7 @@ const MoreOption: React.FC<{
                     background-position: center;
                     transition: all 0.5s linear;
                     background-blend-mode: soft-light;
-                    ${background ? `background-image: url(${background.v}); background-repeat: no-repeat;background-size: cover;` : ''}
+                    ${background ? `background-image: url(${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${background.id}); background-repeat: no-repeat;background-size: cover;` : ''}
                     @keyframes chatMoveOP {
                         0% {
                             bottom: -436px;

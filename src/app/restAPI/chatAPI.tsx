@@ -2,7 +2,7 @@ import refreshToken from '~/refreshToken/refreshToken';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import { PropsId_chats } from 'src/App';
-import { PropsConversationCustoms, PropsOldSeenBy, PropsRoom, PropsRooms } from '~/typescript/messengerType';
+import { PropsConversationCustoms, PropsItemOperationsCon, PropsOldSeenBy, PropsRoom, PropsRooms } from '~/typescript/messengerType';
 import { PropsChat } from '~/Message/Messenger/Conversation/LogicConver';
 export type PropsRoomsChat = PropsConversationCustoms & PropsRooms;
 export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
@@ -211,7 +211,7 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    delBackground = async (conversationId: string) => {
+    delBackground = async (conversationId: string): Promise<PropsItemOperationsCon> => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post(`/${this.domain}/delBackground`, { conversationId });

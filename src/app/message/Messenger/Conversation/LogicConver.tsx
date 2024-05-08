@@ -21,6 +21,7 @@ import {
     PropsConversationCustoms,
     PropsDataMoreConversation,
     PropsImageOrVideosAtMessenger,
+    PropsItemOperationsCon,
     PropsItemQueryChat,
     PropsItemRoom,
     PropsOldSeenBy,
@@ -477,28 +478,30 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 formData.append('file', fileC); // assign file and _id of the file upload
                 if (data.background) formData.append('old_id', data.background.id);
                 const re = await fileWorkerAPI.addFiles(formData);
-                if (re?.length) {
+                const AddOk = ServerBusy(re, dispatch);
+                if (AddOk?.length) {
                     const res = await chatAPI.setBackground({
                         conversationId: data._id,
                         id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
                     });
-                    if (res)
+                    const resOk = ServerBusy(res, dispatch);
+                    if (resOk)
                         queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
                             if (preData) {
                                 data.background = {
-                                    id: fileC._id,
-                                    v: getFilesToPre[0].link,
-                                    type: getFilesToPre[0].type,
-                                    userId: res.operation.userId,
+                                    id: res.ids_file.id,
+                                    v: res.ids_file.id,
+                                    type: res.ids_file.type,
+                                    userId: resOk.operation.userId,
                                 };
-                                data.statusOperation.push(res.operation);
+                                data.statusOperation.push(resOk.operation);
                                 return { ...preData, data };
                             }
                             return preData;
                         });
                 }
             }
-            setLoading('background');
+            setLoading('change_background');
             e.target.value = '';
         }
     };
@@ -559,20 +562,21 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 setLoading('receive_see');
                 console.log('conversation_see_', resSee);
             });
-            // socket.on(`conversation_deleteBG_room_${data._id}`, () => {
-            //     setConversation((pre) => {
-            //         if (pre) return { ...pre, background: undefined };
-            //         return pre;
-            //     });
-            // });
+            socket.on(`conversation_deleteBG_room_${data._id}`, (dataOper: PropsItemOperationsCon) => {
+                queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
+                    if (preData) {
+                        data.background = undefined;
+                        data.statusOperation.push(dataOper);
+                        return { ...preData, data };
+                    }
+                    return preData;
+                });
+                setLoading('delete_background');
+            });
             socket.on(
                 `conversation_changeBG_room_${data._id}`,
                 async (dataBG: {
-                    operation: {
-                        userId: string;
-                        createdAt: string;
-                        title: string;
-                    };
+                    operation: PropsItemOperationsCon;
                     ids_file: {
                         type: string;
                         v: string;
@@ -589,7 +593,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                             }
                             return preData;
                         });
-                        setLoading('background');
+                        setLoading('change_background');
                     }
                 },
             );
@@ -905,13 +909,20 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                     onClick={async () => {
                                         if (data && data.background) {
                                             const fileDed = await fileWorkerAPI.deleteFileImg([data.background.id]);
-                                            if (fileDed) {
-                                                const res: boolean = await chatAPI.delBackground(data._id);
-                                                if (res)
-                                                    setConversation((pre) => {
-                                                        if (pre) return { ...pre, background: undefined };
-                                                        return pre;
+                                            const delOk = ServerBusy(fileDed, dispatch);
+                                            if (delOk) {
+                                                const res = await chatAPI.delBackground(data._id);
+                                                const resOk = ServerBusy(res, dispatch);
+                                                if (resOk)
+                                                    queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                                        if (preData) {
+                                                            data.background = undefined;
+                                                            data.statusOperation.push(resOk);
+                                                            return { ...preData, data };
+                                                        }
+                                                        return preData;
                                                     });
+                                                setLoading('delete_background');
                                             }
                                         }
                                     }}
@@ -927,6 +938,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         </Div>
                     </>
                 ),
+                load: loading === 'change_background',
                 onClick: () => {},
             },
             {

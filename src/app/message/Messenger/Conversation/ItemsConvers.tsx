@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PropsBackground_chat, PropsItemQueryChat, PropsItemsData, PropsOldSeenBy, PropsPinC } from '~/typescript/messengerType';
+import { PropsBackground_chat, PropsItemOperationsCon, PropsItemQueryChat, PropsItemsData, PropsOldSeenBy, PropsPinC } from '~/typescript/messengerType';
 import { Div, DivFlex, DivNone, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
@@ -67,6 +67,7 @@ const ItemsRoom: React.FC<{
     isIntersecting: React.MutableRefObject<PropsOldSeenBy[]>;
     id_other: string;
     setSeenBy(): void;
+    statusOperation: PropsItemOperationsCon[];
 }> = ({
     roomId,
     filterId,
@@ -98,10 +99,10 @@ const ItemsRoom: React.FC<{
     loadingChat,
     isIntersecting,
     setSeenBy,
+    statusOperation,
 }) => {
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
-
     if (rc.userId === dataFirst.id && !wch) {
         if (rc.seenBy.some((st) => st.id === user.id) && !rr.current) {
             rr.current = rc._id;
@@ -126,9 +127,10 @@ const ItemsRoom: React.FC<{
             }
         }
     }, [width, elWatChTime]);
+    const reuse = (whoseId: string, allUsers: PropsUser[]) => {
+        return allUsers.find((u) => u.id === whoseId);
+    };
     const chatId = pins.some((p) => p.chatId === rc._id);
-    const whoChangedBG = background?.userId === dataFirst.id ? 'You have' : background?.userId === user.id ? user.fullName + ' has' : '';
-
     const selfChatID = pins.filter((p) => p.chatId === rc._id)[0]?.userId === dataFirst.id;
     const otherChatId = pins.filter((p) => p.chatId === rc._id)[0]?.userId === user.id;
     const fullNameChatId = selfChatID ? 'You have pined' : otherChatId ? user.fullName + ' has pined' : '';
@@ -167,93 +169,44 @@ const ItemsRoom: React.FC<{
             const observer = new IntersectionObserver(
                 (entries) => {
                     entries.forEach((entry) => {
-                        console.log('go to school');
-
                         if (entry.isIntersecting && !rc.seenBy.some((sb) => sb.id === dataFirst.id) && rc.userId !== dataFirst.id) {
                             const pre: PropsItemQueryChat = queryClient.getQueryData(['getItemChats', `${id_other}_${dataFirst.id}`]);
                             if (pre)
                                 if (pre?.oldSeenBy?.length) {
-                                    let checkOld = false;
-                                    pre.oldSeenBy.forEach((p) => {
-                                        if (p.roomId === roomId) {
-                                            checkOld = true;
-                                            let checkOlFil = false;
-                                            p.data.forEach((f) => {
-                                                if (f.filterId === filterId) {
-                                                    checkOlFil = true;
-                                                    if (!f.data.some((d) => d.dataId === rc._id && d.userId === rc.userId)) {
-                                                        let checkPR = false;
-                                                        isIntersecting.current.map((p) => {
-                                                            if (p.roomId === roomId) {
-                                                                let checkFil = false;
-                                                                p.data.map((f) => {
-                                                                    if (f.filterId === filterId) {
-                                                                        checkFil = true;
-                                                                        if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
-                                                                            f.data.push({ dataId: rc._id, userId: rc.userId });
-                                                                        }
-                                                                    }
-                                                                    return f;
-                                                                });
-                                                                if (!checkFil) {
-                                                                    p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
-                                                                }
-                                                                checkPR = true;
-                                                            }
-                                                            return p;
-                                                        });
-                                                        if (!checkPR)
-                                                            isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
-                                                    }
-                                                }
-                                            });
-                                            if (!checkOlFil) {
-                                                let checkPR = false;
+                                    const foundRoom = pre.oldSeenBy.find((p) => p.roomId === roomId) ?? isIntersecting.current.find((p) => p.roomId === roomId);
+                                    if (foundRoom) {
+                                        const foundFilter =
+                                            foundRoom.data.find((f) => f.filterId === filterId) ?? isIntersecting.current.find((p) => p.roomId === roomId)?.data.find((f) => f.filterId === filterId);
+                                        if (foundFilter) {
+                                            const foundData = isIntersecting.current.find((p) => p.roomId === roomId)?.data.find((f) => f.filterId === filterId);
+                                            if (
+                                                !foundFilter.data.some((d) => d.dataId === rc._id && d.userId === rc.userId) &&
+                                                !foundData?.data.some((d) => d.dataId === rc._id && d.userId === rc.userId)
+                                            ) {
                                                 isIntersecting.current.map((p) => {
                                                     if (p.roomId === roomId) {
-                                                        let checkFil = false;
                                                         p.data.map((f) => {
-                                                            if (f.filterId === filterId) {
-                                                                checkFil = true;
+                                                            if (f.filterId === foundFilter.filterId) {
                                                                 if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
                                                                     f.data.push({ dataId: rc._id, userId: rc.userId });
                                                                 }
                                                             }
                                                             return f;
                                                         });
-                                                        if (!checkFil) {
-                                                            p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
-                                                        }
-                                                        checkPR = true;
                                                     }
                                                     return p;
                                                 });
-                                                if (!checkPR) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
                                             }
-                                        }
-                                    });
-                                    if (!checkOld) {
-                                        let checkPR = false;
-                                        isIntersecting.current.map((p) => {
-                                            if (p.roomId === roomId) {
-                                                let checkFil = false;
-                                                p.data.map((f) => {
-                                                    if (f.filterId === filterId) {
-                                                        checkFil = true;
-                                                        if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
-                                                            f.data.push({ dataId: rc._id, userId: rc.userId });
-                                                        }
-                                                    }
-                                                    return f;
-                                                });
-                                                if (!checkFil) {
+                                        } else {
+                                            isIntersecting.current.map((p) => {
+                                                if (p.roomId === foundRoom.roomId) {
                                                     p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
                                                 }
-                                                checkPR = true;
-                                            }
-                                            return p;
-                                        });
-                                        if (!checkPR) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
+                                                return p;
+                                            });
+                                        }
+                                    } else {
+                                        isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
                                     }
                                 } else {
                                     let checkPR = false;
@@ -298,13 +251,13 @@ const ItemsRoom: React.FC<{
     }, []);
     return (
         <>
-            {/* {changedBG && (
+            {statusOperation.map((st) => (
                 <Div width="100%" css="justify-content: center;">
                     <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
-                        {whoChangedBG} changed background
+                        {st.userId}
                     </P>
                 </Div>
-            )} */}
+            ))}
             {displayById.map((dis) => (
                 <DivFlex key={dis.chatId} css="margin: 5px 0 15px 0;">
                     <Div

@@ -67,6 +67,12 @@ export interface PropsBackground_chat {
     id: string;
     userId: string;
 }
+export interface PropsItemOperationsCon {
+    userId: string;
+    createdAt: string;
+    title: string;
+}
+
 export interface PropsConversationCustoms {
     _id: string;
     id_us: string[];
@@ -84,7 +90,7 @@ export interface PropsConversationCustoms {
         gender: number;
     }[];
     status: string;
-    statusOperation: { userId: string; createdAt: string; title: string }[];
+    statusOperation: PropsItemOperationsCon[];
     background?: PropsBackground_chat;
     pins: PropsPinC[];
     deleted: {

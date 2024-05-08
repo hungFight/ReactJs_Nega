@@ -558,6 +558,7 @@ const Conversation: React.FC<{
                                             loadingChat={loadingChat}
                                             isIntersecting={isIntersecting}
                                             setSeenBy={setSeenBy}
+                                            statusOperation={data.statusOperation}
                                         />
                                     );
                             });
