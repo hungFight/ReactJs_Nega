@@ -10,6 +10,7 @@ import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from 
 import CommonUtils from '~/utils/CommonUtils';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import subImage from '~/utils/subImage';
+import { convertFIle } from '~/utils/convertFilt';
 
 interface _Avatar {
     className?: string;
@@ -32,16 +33,17 @@ interface _Avatar {
 
 const Avatar = forwardRef((props: _Avatar, ref: any) => {
     const { className, idH, id, src, alt, width, radius, staticI, gender, onClick, onTouchMove, css, profile = '', children, currentId } = props;
+
     const dispatch = useDispatch();
     const [avatar, setAvatar] = useState<boolean>(false);
-    const [avatarFallback, setAvatarFallback] = useState<string>(() => subImage(src, gender));
+    const [avatarFallback, setAvatarFallback] = useState<string>(() => subImage(convertFIle(src), gender));
     // useEffect(() => {
     //     setAvatarFallback(!src ? Fallback : src);
     // }, [Fallback, src]);
     console.log(gender, alt, 'avatarFallback', src);
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = (e: any) => {
-        e.target.src = subImage(src, gender);
+        e.target.src = subImage('', gender);
         setRepetitions((pev) => pev + 1);
         if (repetitions >= 2) {
             setAvatar(true);
@@ -53,7 +55,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
         if (staticI) {
             setAvatarFallback(subImage('', gender));
         } else {
-            if (src && avatarFallback !== src) setAvatarFallback(src);
+            if (src && avatarFallback !== convertFIle(src)) setAvatarFallback(convertFIle(src));
             if (src === 'delete' && avatarFallback) setAvatarFallback('');
         }
     }, [src]);

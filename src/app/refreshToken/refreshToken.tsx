@@ -11,7 +11,7 @@ const axiosJWT = axios.create({
     },
 });
 const axiosJWTFile = axios.create({
-    baseURL: 'http://localhost:3002/api/v1/files',
+    baseURL: process.env.REACT_APP_SERVER_FILE_V1,
     headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',

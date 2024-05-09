@@ -12,6 +12,7 @@ import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/s
 import Conversation from './Conversation';
 import { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import { queryClient } from 'src';
+import Languages from '~/reUsingComponents/languages';
 type PropsRc = PropsItemsData;
 const ItemsRoom: React.FC<{
     roomId: string;
@@ -101,6 +102,7 @@ const ItemsRoom: React.FC<{
     setSeenBy,
     statusOperation,
 }) => {
+    const { lg } = Languages();
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
     if (rc.userId === dataFirst.id && !wch) {
@@ -250,7 +252,7 @@ const ItemsRoom: React.FC<{
         }
     }, []);
     const statusRender = (title: string) => {
-        return title === 'change_background' ? 'Đã thay đổi nền' : title === 'delete_background' ? 'Đã xoá nền' : '';
+        return title === 'change_background' ? 'đã thay đổi nền' : title === 'delete_background' ? 'đã xoá nền' : '';
     };
     return (
         <>
@@ -259,7 +261,7 @@ const ItemsRoom: React.FC<{
                     return (
                         <Div width="100%" css="justify-content: center;">
                             <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
-                                {reuse(st.userId)?.fullName + ' ' + statusRender(st.title)}
+                                {reuse(st.userId)?.fullName + ' ' + statusRender(st.title) + ' ' + moment(st.createdAt).locale(lg).format('LT')}
                             </P>
                         </Div>
                     );

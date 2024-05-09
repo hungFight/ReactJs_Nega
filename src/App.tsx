@@ -255,29 +255,29 @@ function App() {
     }
     const [fileUrl, setFileUrl] = useState('');
     useEffect(() => {
-        // const search = async () => {
-        //     if (openProfile.newProfile.length === 1) {
-        //         const data = await fetchF(openProfile.newProfile);
-        //         if (data)
-        //             if (userData.length) {
-        //                 let check = false;
-        //                 userData.forEach((da) => {
-        //                     if (da.id === userId) check = true;
-        //                 });
-        //                 if (!check) {
-        //                     setUsersData((pre) => [data[0], ...pre]);
-        //                 } else {
-        //                     const newD = userData.filter((us) => us.id !== data[0].id);
-        //                     const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
-        //                     setUsersData([...r]);
-        //                 }
-        //             } else {
-        //                 setUsersData(data);
-        //             }
-        //     }
-        // };
-        // if (userId && token && !handleCheck.current) search();
-        // handleCheck.current = false;
+        const search = async () => {
+            if (openProfile.newProfile.length === 1) {
+                const data = await fetchF(openProfile.newProfile);
+                if (data)
+                    if (userData.length) {
+                        let check = false;
+                        userData.forEach((da) => {
+                            if (da.id === userId) check = true;
+                        });
+                        if (!check) {
+                            setUsersData((pre) => [data[0], ...pre]);
+                        } else {
+                            const newD = userData.filter((us) => us.id !== data[0].id);
+                            const r = newD.map((us) => (us.id === openProfile.currentId ? data[0] : us));
+                            setUsersData([...r]);
+                        }
+                    } else {
+                        setUsersData(data);
+                    }
+            }
+        };
+        if (userId && token && !handleCheck.current) search();
+        handleCheck.current = false;
         // socket.on(`${userId}roomChat`, async (dt: string) => {
         //     const data: PropsRoomChat = JSON.parse(dt);
         //     console.log(data, 'datadata');

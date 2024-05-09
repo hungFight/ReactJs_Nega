@@ -18,6 +18,7 @@ import Image from '~/reUsingComponents/Avatars/Image';
 
 interface PropsPer {
     AllArray: PropsUserPer[];
+    where?: string;
     setUsersData: React.Dispatch<React.SetStateAction<PropsUserPer[]>>;
     user: PropsUserPer;
     leng: number;
@@ -38,7 +39,7 @@ interface PropsPer {
     handleCheck: React.MutableRefObject<boolean>;
 }
 
-const PersonalPage: React.FC<PropsPer> = ({ AllArray, setUsersData, user, leng = 1, index, colorText, colorBg, online, userFirst, setUserFirst, setId_chats, handleCheck }) => {
+const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user, leng = 1, index, colorText, colorBg, online, userFirst, setUserFirst, setId_chats, handleCheck }) => {
     const [editTitle, setEditTitle] = useState<boolean>(false);
     const {
         edit,
@@ -80,7 +81,7 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, setUsersData, user, leng =
         loads,
         setMore,
         more,
-    } = LogicView(user, userFirst, setUserFirst, leng, online, setId_chats, setUsersData, index, AllArray, colorText);
+    } = LogicView(user, userFirst, setUserFirst, leng, online, setId_chats, setUsersData, index, AllArray, colorText, where);
     console.log(colorText, 'colorText');
 
     const inputChange = (onEvent: (e: any) => void, value: string, holder: string) => {

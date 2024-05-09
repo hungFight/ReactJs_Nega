@@ -99,6 +99,7 @@ const MoreOption: React.FC<{
                     >
                         <Div
                             css={`
+                                ${item.id === 2 ? 'width: 100%;' : ''}
                                 margin: 0 5px;
                                 font-size: 25px;
                                 @media (min-width: 768px) {

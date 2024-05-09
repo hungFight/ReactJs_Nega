@@ -7,6 +7,7 @@ import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsDataFileUpload } from '../../FormUpNews';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { convertFIle } from '~/utils/convertFilt';
 
 const Resize: React.FC<{
     f: PropsDataFileUpload;
@@ -54,7 +55,7 @@ const Resize: React.FC<{
             {f?.type === 'image' ? (
                 <>
                     <Img
-                        src={f?.pre || f?.link}
+                        src={convertFIle(f?.pre || f?.link)}
                         id="baby"
                         alt={f?.link}
                         onLoad={(e) => handleLoadMetaData(e, f?._id)}

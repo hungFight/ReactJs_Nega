@@ -882,6 +882,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 icon: (
                     <>
                         <Div
+                            width="100%"
                             wrap="wrap"
                             css={`
                                 align-items: center;
@@ -895,9 +896,13 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                 }
                             `}
                         >
-                            <form method="post" encType="multipart/form-data">
+                            <form method="post" encType="multipart/form-data" style={{ width: '100%' }}>
                                 <input id={data?._id + 'uploadCon_BG'} type="file" name="file" onChange={handleImageUploadBg} hidden />
-                                <Label htmlFor={data?._id + 'uploadCon_BG'} color={colorText} css="align-items: center; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}">
+                                <Label
+                                    htmlFor={data?._id + 'uploadCon_BG'}
+                                    color={colorText}
+                                    css="width: 100%;align-items: center; justify-content:left; font-size: 1.5rem; @media(min-width: 768px){font-size: 1.3rem}"
+                                >
                                     <Div css="font-size: 25px; color: #eedec8; @media(min-width: 768px){font-size: 20px}">
                                         <BackgroundI />
                                     </Div>{' '}

@@ -43,6 +43,7 @@ export default function LogicView(
     index: number,
     AllArray: PropsUserPer[],
     colorText: string,
+    where?: string,
 ) {
     const dispatch = useDispatch();
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
@@ -91,14 +92,13 @@ export default function LogicView(
             const file: File = data[0];
             if (file) {
                 if (file.type.includes('image/jpg') || file.type.includes('image/jpeg') || file.type.includes('image/png') || file.type.includes('image/webp')) {
-                    const img = URL.createObjectURL(file);
                     const sizeImage = Number((file.size / 1024 / 1024).toFixed(1));
                     if (sizeImage <= 8) {
                         setLoading(true);
                         const formData = new FormData();
                         formData.append('file', file);
                         if (user.avatar || user.background) {
-                            formData.append('old_id', avBg.split('getFileImg/')[1]);
+                            formData.append('old_id', avBg);
                         }
                         const fileUploaded = await fileWorkerAPI.addFiles(formData);
                         console.log(fileUploaded, 'fileUploaded');
@@ -698,6 +698,7 @@ export default function LogicView(
             width: 100%;
             height: 100%;
             position: relative;
+            ${where ? 'margin-top:50px;' : ''}
             &::-webkit-scrollbar {
                 width: 0px;
             }

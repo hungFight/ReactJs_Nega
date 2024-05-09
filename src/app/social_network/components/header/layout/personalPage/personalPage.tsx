@@ -93,6 +93,7 @@ const Personalpage: React.FC<{
                     leng={arr.length}
                     handleCheck={handleCheck}
                     setId_chats={setId_chats}
+                    where="social"
                 />
             ))}
         </Div>
