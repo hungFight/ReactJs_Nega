@@ -71,6 +71,7 @@ export interface PropsItemOperationsCon {
     userId: string;
     createdAt: string;
     title: string;
+    dataId: string;
 }
 
 export interface PropsConversationCustoms {

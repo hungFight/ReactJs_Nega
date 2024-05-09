@@ -482,6 +482,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 if (AddOk?.length) {
                     const res = await chatAPI.setBackground({
                         conversationId: data._id,
+                        dataId: data.rooms[0].filter[0].data[0]._id,
                         id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
                     });
                     const resOk = ServerBusy(res, dispatch);
@@ -911,7 +912,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                             const fileDed = await fileWorkerAPI.deleteFileImg([data.background.id]);
                                             const delOk = ServerBusy(fileDed, dispatch);
                                             if (delOk) {
-                                                const res = await chatAPI.delBackground(data._id);
+                                                const res = await chatAPI.delBackground(data._id, data.rooms[0].filter[0].data[0]._id);
                                                 const resOk = ServerBusy(res, dispatch);
                                                 if (resOk)
                                                     queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {

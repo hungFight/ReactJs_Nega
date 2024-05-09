@@ -127,8 +127,8 @@ const ItemsRoom: React.FC<{
             }
         }
     }, [width, elWatChTime]);
-    const reuse = (whoseId: string, allUsers: PropsUser[]) => {
-        return allUsers.find((u) => u.id === whoseId);
+    const reuse = (whoseId: string) => {
+        return [user, dataFirst].find((u) => u.id === whoseId);
     };
     const chatId = pins.some((p) => p.chatId === rc._id);
     const selfChatID = pins.filter((p) => p.chatId === rc._id)[0]?.userId === dataFirst.id;
@@ -142,10 +142,10 @@ const ItemsRoom: React.FC<{
     const displayById = pins.filter((p) => p.latestChatId === rc._id);
     const marginTop = moment(archetype[index + 1]?.createdAt ? archetype[index + 1].createdAt : new Date()).diff(rc?.createdAt, 'minutes');
     // reply
-    const selfReply = rc?.reply?.id_replied === dataFirst.id;
-    const avatarReply = selfReply ? dataFirst.avatar : rc?.reply?.id_replied === user.id ? user.avatar : '';
-    const nameReply = selfReply ? dataFirst.fullName : rc?.reply?.id_replied === user.id ? user.fullName : '';
-    const genderReply = selfReply ? dataFirst.gender : rc?.reply?.id_replied === user.id ? user.gender : 0;
+    const selfReply = reuse(rc?.reply?.id_replied);
+    const avatarReply = selfReply?.avatar;
+    const nameReply = selfReply?.fullName;
+    const genderReply = selfReply?.gender;
     let alarm = useRef<NodeJS.Timeout | null>(null);
     const handleTouchStart = (data: any) => {
         if (!(rc?.delete === 'all')) {
@@ -249,15 +249,21 @@ const ItemsRoom: React.FC<{
             };
         }
     }, []);
+    const statusRender = (title: string) => {
+        return title === 'change_background' ? 'Đã thay đổi nền' : title === 'delete_background' ? 'Đã xoá nền' : '';
+    };
     return (
         <>
-            {statusOperation.map((st) => (
-                <Div width="100%" css="justify-content: center;">
-                    <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
-                        {st.userId}
-                    </P>
-                </Div>
-            ))}
+            {statusOperation.map((st) => {
+                if (st.dataId === rc._id)
+                    return (
+                        <Div width="100%" css="justify-content: center;">
+                            <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
+                                {reuse(st.userId)?.fullName + ' ' + statusRender(st.title)}
+                            </P>
+                        </Div>
+                    );
+            })}
             {displayById.map((dis) => (
                 <DivFlex key={dis.chatId} css="margin: 5px 0 15px 0;">
                     <Div

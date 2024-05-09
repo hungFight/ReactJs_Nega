@@ -189,6 +189,7 @@ class Messenger {
     setBackground = async (data: {
         id_file: { id: string; type: string };
         conversationId: string;
+        dataId: string;
     }): Promise<{
         operation: {
             userId: string;
@@ -211,10 +212,10 @@ class Messenger {
             return errorHandling(err);
         }
     };
-    delBackground = async (conversationId: string): Promise<PropsItemOperationsCon> => {
+    delBackground = async (conversationId: string, dataId: string): Promise<PropsItemOperationsCon> => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post(`/${this.domain}/delBackground`, { conversationId });
+            const res = await Axios.post(`/${this.domain}/delBackground`, { conversationId, dataId });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
