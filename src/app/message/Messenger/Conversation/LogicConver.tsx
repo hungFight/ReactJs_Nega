@@ -275,7 +275,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             console.log(con, 'connn');
 
             if (con && con.count < 50) {
-                const filter = con.filter.find((f) => f._id === data.lastElement.filterId) ?? con.filter[con.filter.length - 1];
+                const filter = con.filter.find((f) => !f.full);
                 if (filter)
                     if (filter.count < 10 * filter.index && filter.data.length < 10) {
                         filter.count += 1;
@@ -680,20 +680,14 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             //     setWritingBy(res);
             // });
             socket.on(code, async (d) => {
-                console.log(d, 'cccc');
-
                 const { userId, data: dataSocket }: { userId: string; data: PropsRoomChat } = d;
-                const codeS = `user_${userId}_in_roomChat_personal_receive_and_saw`;
                 if (userId !== id_you) {
-                    console.log(dataSocket, 'ddd');
-                    socket.emit(codeS, {
+                    socket.emit(`user_${userId}_in_roomChat_personal_receive_and_saw`, {
                         userIdReceived: id_you,
                         conversationId: dataSocket._id,
                         idChat: dataSocket.rooms.filter[0]?.data[0]._id,
                     });
                     queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
-                        let roomPo = false;
-                        let filterPo = false;
                         const DataIn = dataSocket.rooms.filter[0].data[0];
                         if (DataIn.text?.t) {
                             if (DataIn?.secondary) {
@@ -705,10 +699,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         if (preData?.data && !preData?.data._id) {
                             preData.data = { ...dataSocket, rooms: [dataSocket.rooms] };
                         } else {
-                            console.log(preData, 'preData_ 2');
+                            let roomPo = false;
                             preData?.data.rooms.map((r) => {
                                 if (r._id === dataSocket.rooms._id) {
                                     roomPo = true;
+                                    let filterPo = false;
                                     r.filter.map((f) => {
                                         if (f._id === dataSocket.rooms.filter[0]._id) {
                                             filterPo = true;
@@ -727,7 +722,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                             }
                         }
                         if (preData?.data) preData.data.lastElement = dataSocket.lastElement;
-                        console.log('changed', preData);
                         return preData;
                     });
                     setLoading('receive');
@@ -751,7 +745,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             });
             socket.on(
                 `user_${data._id}_in_roomChat_personal_receive_and_saw_other`, // display that user has been received and seen
-                (data: { userIdReceived: string; idSent: string; idChat: string }) => {
+                (data: { userIdReceived: string; conversationId: string; idChat: string }) => {
                     console.log(data, 'userIdReceived');
                     setWch(data.idChat);
                 },

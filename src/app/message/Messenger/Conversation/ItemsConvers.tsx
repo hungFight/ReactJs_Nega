@@ -13,6 +13,7 @@ import Conversation from './Conversation';
 import { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import { queryClient } from 'src';
 import Languages from '~/reUsingComponents/languages';
+import { socket } from 'src/mainPage/NextWeb';
 type PropsRc = PropsItemsData;
 const ItemsRoom: React.FC<{
     roomId: string;
@@ -106,6 +107,7 @@ const ItemsRoom: React.FC<{
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
     if (rc.userId === dataFirst.id && !wch) {
+        // your chats
         if (rc.seenBy.some((st) => st.id === user.id) && !rr.current) {
             rr.current = rc._id;
         } else {
@@ -185,31 +187,39 @@ const ItemsRoom: React.FC<{
                                                 !foundFilter.data.some((d) => d.dataId === rc._id && d.userId === rc.userId) &&
                                                 !foundData?.data.some((d) => d.dataId === rc._id && d.userId === rc.userId)
                                             ) {
+                                                let checkRoom = false;
                                                 isIntersecting.current.map((p) => {
                                                     if (p.roomId === roomId) {
+                                                        checkRoom = true;
+                                                        let checkFilter = false;
+
                                                         p.data.map((f) => {
                                                             if (f.filterId === foundFilter.filterId) {
+                                                                checkFilter = true;
                                                                 if (!f.data.some((df) => df.dataId === rc._id && df.userId === rc.userId)) {
                                                                     f.data.push({ dataId: rc._id, userId: rc.userId });
                                                                 }
                                                             }
                                                             return f;
                                                         });
+                                                        if (!checkFilter) p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
                                                     }
                                                     return p;
                                                 });
+                                                if (!checkRoom) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
                                             }
                                         } else {
+                                            let checkRoom = false;
                                             isIntersecting.current.map((p) => {
                                                 if (p.roomId === foundRoom.roomId) {
+                                                    checkRoom = true;
                                                     p.data.push({ filterId, data: [{ dataId: rc._id, userId: rc.userId }] });
                                                 }
                                                 return p;
                                             });
+                                            if (!checkRoom) isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
                                         }
-                                    } else {
-                                        isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
-                                    }
+                                    } else isIntersecting.current = [...isIntersecting.current, { roomId, data: [{ filterId, data: [{ dataId: rc._id, userId: rc.userId }] }] }];
                                 } else {
                                     let checkPR = false;
                                     isIntersecting.current.map((p) => {
@@ -727,7 +737,7 @@ const ItemsRoom: React.FC<{
                                           position: absolute;
                                           right: -10px;
                                           z-index: 11;
-                                          bottom: 0;
+                                          bottom: 13px;
                                       `}
                                   />
                               )}

@@ -53,9 +53,7 @@ const Website: React.FC<{
 }> = ({ openProfile, dataUser, setDataUser, setId_chats }) => {
     const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-    const userOnline = useSelector(
-        (state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline,
-    );
+    const userOnline = useSelector((state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline);
     const path = useNavigate();
     const [cookies, setCookie] = useCookies(['tks', 'k_user']);
     const [friendsOnline, setFriendsOnline] = useState<number>(0);
@@ -77,8 +75,8 @@ const Website: React.FC<{
         });
     }, []);
     useEffect(() => {
+        socket.emit('sendId', { userId: dataUser.active ? userId : undefined, any: userId });
         if (dataUser.active) {
-            socket.emit('sendId', userId);
             socket.on('user connectedd', (re) => {
                 console.log(`connected`, JSON.parse(re));
                 dispatch(setOnline(JSON.parse(re)));
@@ -93,10 +91,7 @@ const Website: React.FC<{
     }, [dataUser]);
     useEffect(() => {
         const am = friends?.reduce((total, value) => {
-            return (userOnline.includes(value.idFriend) && !value.idFriend.includes(userId)) ||
-                (userOnline.includes(value.idCurrentUser) && !value.idCurrentUser.includes(userId))
-                ? total + 1
-                : total;
+            return (userOnline.includes(value.idFriend) && !value.idFriend.includes(userId)) || (userOnline.includes(value.idCurrentUser) && !value.idCurrentUser.includes(userId)) ? total + 1 : total;
         }, 0);
         setFriendsOnline(am);
         console.log(userOnline, 'dd');
@@ -108,23 +103,11 @@ const Website: React.FC<{
 
     const [hrefState, setHrefState] = useState<string>('');
     function reTap() {
-        if (
-            window.location.pathname.toLowerCase().includes('social') &&
-            !window.location.pathname.toLowerCase().includes('sd') &&
-            !window.location.pathname.toLowerCase().includes('w')
-        ) {
+        if (window.location.pathname.toLowerCase().includes('social') && !window.location.pathname.toLowerCase().includes('sd') && !window.location.pathname.toLowerCase().includes('w')) {
             hanNextWebsite(1);
-        } else if (
-            window.location.pathname.toLowerCase().includes('sd') &&
-            !window.location.pathname.toLowerCase().includes('social') &&
-            !window.location.pathname.toLowerCase().includes('w')
-        ) {
+        } else if (window.location.pathname.toLowerCase().includes('sd') && !window.location.pathname.toLowerCase().includes('social') && !window.location.pathname.toLowerCase().includes('w')) {
             hanNextWebsite(2);
-        } else if (
-            window.location.pathname.toLowerCase().includes('w') &&
-            !window.location.pathname.toLowerCase().includes('sd') &&
-            !window.location.pathname.toLowerCase().includes('social')
-        ) {
+        } else if (window.location.pathname.toLowerCase().includes('w') && !window.location.pathname.toLowerCase().includes('sd') && !window.location.pathname.toLowerCase().includes('social')) {
             hanNextWebsite(3);
         } else {
             setCurrentPage(0);
@@ -226,9 +209,7 @@ const Website: React.FC<{
     return (
         <>
             <DivMainPage>
-                {warningBrs && (
-                    <WarningBrowser currentPage={currentPage} warningBros={warningBrs} setWarningBrs={setWarningBrs} />
-                )}
+                {warningBrs && <WarningBrowser currentPage={currentPage} warningBros={warningBrs} setWarningBrs={setWarningBrs} />}
                 {dataUser ? (
                     <>
                         <Suspense>
@@ -257,39 +238,20 @@ const Website: React.FC<{
                                 />
                             )}
 
-                            <CurrentPageL
-                                currentPage={currentPage}
-                                listPage={optionWebsite}
-                                setDataUser={setDataUser}
-                                dataUser={dataUser}
-                                setId_chats={setId_chats}
-                            />
+                            <CurrentPageL currentPage={currentPage} listPage={optionWebsite} setDataUser={setDataUser} dataUser={dataUser} setId_chats={setId_chats} />
                         </Suspense>
                         {!optionWebsite && (
                             <DivListWebProfile backgr={colorBg}>
                                 <DivDate color={colorText}>
                                     <Time />
                                 </DivDate>
-                                <DivPersonalPage
-                                    width="430px"
-                                    height="150px"
-                                    margin="10px"
-                                    wrap="wrap"
-                                    content="center"
-                                >
+                                <DivPersonalPage width="430px" height="150px" margin="10px" wrap="wrap" content="center">
                                     <DivAvatar
                                         css={`
                                             ${onli}
                                         `}
                                     >
-                                        <Avatar
-                                            profile="po"
-                                            src={dataUser.avatar}
-                                            alt={dataUser.fullName}
-                                            gender={dataUser.gender}
-                                            radius="50%"
-                                            id={cookies.k_user}
-                                        />
+                                        <Avatar profile="po" src={dataUser.avatar} alt={dataUser.fullName} gender={dataUser.gender} radius="50%" id={cookies.k_user} />
                                     </DivAvatar>
                                     <HfullName color={colorText}>{dataUser.fullName}</HfullName>
                                     <Pstatus color={colorText}>{dataUser.biography}</Pstatus>
@@ -309,16 +271,7 @@ const Website: React.FC<{
                                             <DivElements
                                                 color={colorText}
                                                 onClick={() =>
-                                                    setOption(
-                                                        <Tools
-                                                            dataUser={dataUser}
-                                                            setDataUser={setDataUser}
-                                                            userId={userId}
-                                                            colorText={colorText}
-                                                            colorBg={colorBg}
-                                                            active={dataUser.active}
-                                                        />,
-                                                    )
+                                                    setOption(<Tools dataUser={dataUser} setDataUser={setDataUser} userId={userId} colorText={colorText} colorBg={colorBg} active={dataUser.active} />)
                                                 }
                                             >
                                                 <GridDotI />
