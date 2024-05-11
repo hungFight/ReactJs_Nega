@@ -31,24 +31,23 @@ const Settingcbl: React.FC<{
     LgNow: string;
     turnSetting: boolean;
 }> = ({ dataO, LgNow, turnSetting }) => {
+    const dispatch = useDispatch();
     const datas = dataO.data;
+    const navigate = useNavigate();
     const showHideSettingn = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow?.setting);
     const [cookies, setCookie, removeCookie] = useCookies(['tks', 'k_user']);
-    const token: string = cookies.tks;
     const k_user: string = cookies.k_user;
     const checkLg = useRef<string>(LgNow);
 
-    const navigate = useNavigate();
     const [showresult, setShowresult] = useState<ReactNode>();
     const [resultoption, setResultoption] = useState<boolean>(false);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         if (!showHideSettingn) setResultoption(false);
     }, [showHideSettingn]);
     const handleChangeLanguage = async (lg: string) => {
         if (checkLg.current !== lg) {
-            const res = await HttpRequestUser.setLg(k_user, lg);
+            const res = await HttpRequestUser.setLg(dispatch, k_user, lg);
             console.log('laggggg', res);
             dispatch(changeSN(res));
             checkLg.current = lg;

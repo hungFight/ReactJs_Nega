@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { PropsRoomChat } from '~/restAPI/chatAPI';
-
+export type PropsSessionCode = 'NeGA_off' | 'NeGA_ExcessiveRequest' | null;
 type PropsReLoad = {
     people: number;
-    session: string;
+    session: PropsSessionCode;
     delIds:
         | {
               _id: string;
@@ -20,7 +20,7 @@ export interface PropsReloadRD {
 }
 const initialState: PropsReLoad = {
     people: 0, // reload page people
-    session: '', // display server error
+    session: null, // display server error
     delIds: undefined, // delete in chat
 };
 const reloadPage = createSlice({
@@ -30,7 +30,7 @@ const reloadPage = createSlice({
         setPeople: (state, action) => {
             state.people = action.payload;
         },
-        setSession: (state, action: { payload: string }) => {
+        setSession: (state, action: { payload: PropsSessionCode }) => {
             state.session = action.payload;
         },
         setDelIds: (

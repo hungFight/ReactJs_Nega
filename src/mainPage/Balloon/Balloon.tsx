@@ -35,7 +35,7 @@ const Balloon: React.FC<{
                     fullName: string;
                     gender: number;
                 };
-            }[] = await chatAPI.getConversationBalloon(balloon);
+            }[] = await chatAPI.getConversationBalloon(dispatch, balloon);
             memory.current = false;
             return data.map((r) => {
                 r.user.avatar = CommonUtils.convertBase64(r.user.avatar);

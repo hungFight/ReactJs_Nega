@@ -76,27 +76,27 @@ const Notification: React.FC<{
     });
     const [delReq, setDelReq] = useState<{ st: number; id: string }>({ st: 0, id: '' });
     useEffect(() => {
-        async function fetch() {
-            const res = await userAPI.getNewMes();
-            const newData = res.user.map((v: { avatar: any }) => {
-                if (v.avatar) v.avatar = CommonUtils.convertBase64(v.avatar);
-                return v;
-            });
-            res.user = newData;
-            if (res) setDataInfo(res);
-        }
-        // fetch();
-        socket.on(`Request others?id=${userId}`, (msg: string) => {
-            console.log('Received message id:', socket.id);
-            console.log('Received message', JSON.parse(msg));
-            const user = JSON.parse(msg).user;
-            if (user.avatar) user.avatar = CommonUtils.convertBase64(user.avatar);
-            setDataTest({ user: user, quantity: JSON.parse(msg).quantity });
-        });
-        socket.on(`Delete request friends or relatives${userId}`, (msg: string) => {
-            console.log('Delete Request message id:', msg, delReq);
-            setDelReq({ id: msg, st: Math.random() });
-        });
+        // async function fetch() {
+        //     const res = await userAPI.getNewMes();
+        //     const newData = res.user.map((v: { avatar: any }) => {
+        //         if (v.avatar) v.avatar = CommonUtils.convertBase64(v.avatar);
+        //         return v;
+        //     });
+        //     res.user = newData;
+        //     if (res) setDataInfo(res);
+        // }
+        // // fetch();
+        // socket.on(`Request others?id=${userId}`, (msg: string) => {
+        //     console.log('Received message id:', socket.id);
+        //     console.log('Received message', JSON.parse(msg));
+        //     const user = JSON.parse(msg).user;
+        //     if (user.avatar) user.avatar = CommonUtils.convertBase64(user.avatar);
+        //     setDataTest({ user: user, quantity: JSON.parse(msg).quantity });
+        // });
+        // socket.on(`Delete request friends or relatives${userId}`, (msg: string) => {
+        //     console.log('Delete Request message id:', msg, delReq);
+        //     setDelReq({ id: msg, st: Math.random() });
+        // });
     }, []);
     useEffect(() => {
         const newDa = dataInfo.user.filter((x) => x.id !== delReq.id);
@@ -116,8 +116,8 @@ const Notification: React.FC<{
 
     const handleShowHide = async () => {
         setNotification(!notification);
-        const res = await userAPI.delMessage();
-        if (res.ok) setDataInfo({ ...dataInfo, quantity: 0 });
+        // const res = await userAPI.delMessage();
+        // if (res.ok) setDataInfo({ ...dataInfo, quantity: 0 });
     };
     const handleUndo = () => {
         setlLeft(false);
@@ -126,33 +126,33 @@ const Notification: React.FC<{
     console.log(dataInfo, dataTest);
     const handleConfirm = async (id: string) => {
         if (id) {
-            const res = await peopleAPI.setConfirm(id, 'friends');
-            if (res.ok === 1) {
-                const newData = dataInfo.user.filter((x) => {
-                    if (x.id === res.id_fr) {
-                        x.status = 0;
-                        return x;
-                    }
+            // const res = await peopleAPI.setConfirm(id, 'friends');
+            // if (res.ok === 1) {
+            //     const newData = dataInfo.user.filter((x) => {
+            //         if (x.id === res.id_fr) {
+            //             x.status = 0;
+            //             return x;
+            //         }
 
-                    return x;
-                });
-                setDataInfo({ ...dataInfo, user: newData });
-            }
+            //         return x;
+            //     });
+            //     setDataInfo({ ...dataInfo, user: newData });
+            // }
         }
     };
     const handleDelete = async (id: string) => {
-        const res = await peopleAPI.delete(id, 'friends');
-        if (res) {
-            const newData = dataInfo.user.filter((x) => {
-                if (x.id === res.idCurrentUser) {
-                    x.status = -1;
-                    return x;
-                }
-                return x;
-            });
-            setDataInfo({ ...dataInfo, user: newData });
-        }
-        console.log('deleeeeeeeeeeeeeee', res);
+        // const res = await peopleAPI.delete(id, 'friends');
+        // if (res) {
+        //     const newData = dataInfo.user.filter((x) => {
+        //         if (x.id === res.idCurrentUser) {
+        //             x.status = -1;
+        //             return x;
+        //         }
+        //         return x;
+        //     });
+        //     setDataInfo({ ...dataInfo, user: newData });
+        // }
+        // console.log('deleeeeeeeeeeeeeee', res);
     };
     // const gender = dataInfo?.user.gender;
     const dataText: {

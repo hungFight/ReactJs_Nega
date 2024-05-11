@@ -22,20 +22,14 @@ const Account: React.FC<{
 }> = ({ data, location, Element, css, profile, onClick }) => {
     const dispatch = useDispatch();
     const handleHistory = async (res: { id: string; avatar: string; fullName: string; gender: number }) => {
-        const result = await userAPI.setHistory(res);
+        // const result = await userAPI.setHistory(res);
         console.log('sss');
     };
     const TagH: any = profile === 'url' ? Smooth : Div;
     return (
         <>
             <TagH
-                to={
-                    profile === 'url'
-                        ? `${
-                              window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] : 'social'
-                          }/profile?id=${data.id}`
-                        : ''
-                }
+                to={profile === 'url' ? `${window.location.pathname.split('/')[1] ? window.location.pathname.split('/')[1] : 'social'}/profile?id=${data.id}` : ''}
                 key={data.id}
                 onClick={onClick}
                 css={`
@@ -65,9 +59,7 @@ const Account: React.FC<{
                     <Avatar src={data.avatar || ''} alt={data.fullName} gender={data.gender} />
                 </Div>
                 <Div css="padding:0 8px">
-                    <Hname css="font-family: 'GentiumPlusItalic', sans-serif; width: fit-content; display: flex; align-items: center; font-size: 1.5rem; font-weight: 600;">
-                        {data.fullName}
-                    </Hname>
+                    <Hname css="font-family: 'GentiumPlusItalic', sans-serif; width: fit-content; display: flex; align-items: center; font-size: 1.5rem; font-weight: 600;">{data.fullName}</Hname>
                 </Div>
                 {Element}
             </TagH>

@@ -41,15 +41,14 @@ const Tags: React.FC<{
 
     useEffect(() => {
         async function fetchFriends() {
-            const res: PropsFriends[] = await peopleAPI.getFriends(offsetRef.current, limit, 'friends');
-            const dataRes = ServerBusy(res, dispatch);
-            dataRes.map((f: { avatar: string | undefined }) => {
+            const dataRes = await peopleAPI.getFriends(dispatch, offsetRef.current, limit, 'friends');
+            dataRes?.map((f: { avatar: string | undefined }) => {
                 if (f.avatar) {
                     const av = CommonUtils.convertBase64(f.avatar);
                     f.avatar = av;
                 }
             });
-            if (res) {
+            if (dataRes) {
                 dataRef.current = [...(dataRef.current ?? []), ...dataRes];
                 setData(dataRef.current);
                 offsetRef.current += limit;
@@ -145,10 +144,7 @@ const Tags: React.FC<{
                             onClick={() => {
                                 setTags((pre) => {
                                     if (!pre.some((v) => v.id === r.id)) {
-                                        return [
-                                            ...pre,
-                                            { id: r.id, avatar: r.avatar, fullName: r.fullName, gender: r.gender },
-                                        ];
+                                        return [...pre, { id: r.id, avatar: r.avatar, fullName: r.fullName, gender: r.gender }];
                                     } else {
                                         pre = pre.filter((v) => v.id !== r.id);
                                         return pre;

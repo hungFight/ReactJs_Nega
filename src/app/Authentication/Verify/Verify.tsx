@@ -79,18 +79,16 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                 console.log('prohibit', res);
 
                 setLoading(false);
-                if (res?.status === 200 && res.data?.status === 1) {
+                if (res && res.status === 1) {
                     setError({ otp: '', mail: '' });
-
                     setAccount(valuePhoneNumberEmail.value);
                     setOtpStatus(true);
                     setOtpTime(60);
                 } else {
-                    setError({ ...error, mail: res?.data.message });
+                    setError({ ...error, mail: res?.message });
                 }
             }
-            if (!valuePhoneNumberEmail.value)
-                setCheckPhoneNumberEmail({ check: true, title: 'Please Enter Your Data!' });
+            if (!valuePhoneNumberEmail.value) setCheckPhoneNumberEmail({ check: true, title: 'Please Enter Your Data!' });
         } else {
             if (otp) {
                 if (otp.length === 6) {
@@ -99,16 +97,14 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                         otp: otp,
                     };
                     const res = await authAPI.postVerifyOTP(params);
-                    setAcc(Number(res?.data.acc));
-                    console.log('wrong', res);
-
-                    if (res?.status === 200 && res?.data?.status === 1) {
+                    setAcc(Number(res?.acc));
+                    if (res?.status === 1) {
                         setError({ otp: '', mail: '' });
                         setEnable(true);
                         setOtpStatus(false);
                         setOtpTime(0);
                     } else {
-                        setError({ ...error, otp: res?.data.message });
+                        setError({ ...error, otp: res?.message });
                     }
                 } else {
                     setError({ ...error, otp: 'Please otp code must 6 characters!' });
@@ -163,7 +159,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                 }
             },
             Div2: () => (
-                <Button size="2.2rem" css={css1}>
+                <Button size="2.2rem" css={css1} color="var(--color-light)">
                     <SendOPTI />
                 </Button>
             ),
@@ -180,11 +176,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                     {Next}
                 </Htitle>
                 <DivSendMail>
-                    <Input
-                        placeholder="Your Email"
-                        onChange={handlePhoneNumberEmail}
-                        color={checkPhoneNumberEmail.check ? 'rgb(255 97 97 / 83%)' : colorText}
-                    />
+                    <Input placeholder="Your Email" onChange={handlePhoneNumberEmail} color={checkPhoneNumberEmail.check ? 'rgb(255 97 97 / 83%)' : colorText} />
 
                     <Pcontent>{error.mail}</Pcontent>
                     <SpanIconPhoneMail top="25px">{valuePhoneNumberEmail.icon}</SpanIconPhoneMail>

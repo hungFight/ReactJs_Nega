@@ -17,8 +17,10 @@ import postAPI from '~/restAPI/socialNetwork/postAPI';
 import { keyframes } from 'styled-components';
 import Comment from './Comment';
 import { queryClient } from 'src';
+import { useDispatch } from 'react-redux';
 
 const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options, setOptions, setFormThat, form, setShowComment, showComment }) => {
+    const dispatch = useDispatch();
     const dataPostRef = useRef<PropsDataPosts>(dataP);
     if (!dataPostRef.current.user.length || dataPostRef.current.user[0]?.id === "It's me") dataPostRef.current.user[0] = user;
     const [d, setD] = useState<string>('');
@@ -31,8 +33,6 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
         const divConstant = document.getElementById('emoBarPost');
         if (divConstant) divConstant.removeAttribute('style');
         document.addEventListener('touchstart', handleMouseDown);
-        console.log('touchstart');
-
         function handleMouseDown(event: any) {
             if (event.target.getAttribute('id') === 'parent_emo') {
                 // Clicked inside the div
@@ -143,7 +143,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                 });
             });
             if (emo) {
-                const res = await postAPI.setEmotion({
+                const res = await postAPI.setEmotion(dispatch, {
                     _id: dataPostRef.current._id,
                     index: emo.id,
                     id_user: user.id,
@@ -180,7 +180,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     return p;
                 });
             });
-            const res = await postAPI.setEmotion({
+            const res = await postAPI.setEmotion(dispatch, {
                 _id: dataPostRef.current._id,
                 index: dataPostRef.current.feel.act,
                 id_user: user.id,
@@ -239,7 +239,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                 });
             });
 
-            const res = await postAPI.setEmotion({
+            const res = await postAPI.setEmotion(dispatch, {
                 _id: dataPostRef.current._id,
                 index: i.id,
                 id_user: user.id,
@@ -277,7 +277,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                 });
             });
 
-            const res = await postAPI.setEmotion({
+            const res = await postAPI.setEmotion(dispatch, {
                 _id: dataPostRef.current._id,
                 index: i.id,
                 id_user: user.id,

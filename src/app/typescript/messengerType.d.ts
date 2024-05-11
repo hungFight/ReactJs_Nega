@@ -68,6 +68,7 @@ export interface PropsBackground_chat {
     userId: string;
 }
 export interface PropsItemOperationsCon {
+    _id: string;
     userId: string;
     createdAt: string;
     title: string;

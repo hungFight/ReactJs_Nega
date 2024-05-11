@@ -76,8 +76,8 @@ export interface PropsUserPer {
               idRequest: string;
               idIsRequested: string;
               level: number;
-              createdAt: string;
-              updatedAt: string;
+              createdAt: string | Date;
+              updatedAt: string | Date;
           }[]
         | [];
     userIsRequested:
@@ -86,8 +86,8 @@ export interface PropsUserPer {
               idRequest: string;
               idIsRequested: string;
               level: number;
-              createdAt: string;
-              updatedAt: string;
+              createdAt: string | Date;
+              updatedAt: string | Date;
           }[]
         | [];
     isLoved:
@@ -95,7 +95,7 @@ export interface PropsUserPer {
               id: string;
               userId: string;
               idIsLoved: string;
-              createdAt: string;
+              createdAt: string | Date;
           }[]
         | [];
     loved:
@@ -103,7 +103,7 @@ export interface PropsUserPer {
               id: string;
               userId: string;
               idIsLoved: string;
-              createdAt: string;
+              createdAt: string | Date;
           }[]
         | [];
     followings:
@@ -113,7 +113,7 @@ export interface PropsUserPer {
               idIsFollowed: string;
               following: number;
               followed: number;
-              createdAt: string;
+              createdAt: string | Date;
           }[]
         | [];
     followed:
@@ -123,7 +123,7 @@ export interface PropsUserPer {
               idIsFollowed: string;
               following: number;
               followed: number;
-              createdAt: string;
+              createdAt: string | Date;
           }[]
         | [];
     accountUser: {
@@ -194,7 +194,8 @@ function App() {
     const handleCheck = useRef<boolean>(false);
     async function fetchF(id: string | string[], first?: string) {
         if (!first) setLoading(true);
-        const res: PropsUserPer[] | PropsUser = await userAPI.getById(
+        const res = await userAPI.getById(
+            dispatch,
             id,
             {
                 id: true,
@@ -229,15 +230,14 @@ function App() {
             },
             first,
         );
-        const data: typeof res = ServerBusy(res, dispatch);
-        console.log(data, 'dfaf');
         // Tìm ảnh trong mã HTML và lấy URL của ảnh đầu tiên
-        if (!Array.isArray(data)) {
-            setUserFirst(data);
-        } else {
-            setLoading(false);
-            return data;
-        }
+        if (res)
+            if (!Array.isArray(res)) {
+                setUserFirst(res);
+            } else {
+                setLoading(false);
+                return res;
+            }
     }
     console.log(userFirst, 'userFirst');
     console.log(userData, 'userData');
@@ -351,7 +351,7 @@ function App() {
 
     `;
     // console.log('id_cookie', userId, userData, id_chats, chats);
-    if (session) return <ErrorBoundaries message={session} />;
+    if (session === 'NeGA_off') return <ErrorBoundaries code={session} />;
     if (token && userId) {
         return (
             <Suspense
@@ -378,7 +378,7 @@ function App() {
                         }
                     `}
                 >
-                    {session || errorServer?.message ? <ErrorBoundaries message={session || (errorServer?.message ?? '')} /> : ''}
+                    {session === 'NeGA_ExcessiveRequest' && <ErrorBoundaries code={session} />}
                     {/* {userFirst ? ( */}
                     <>
                         <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} setId_chats={setId_chats} />

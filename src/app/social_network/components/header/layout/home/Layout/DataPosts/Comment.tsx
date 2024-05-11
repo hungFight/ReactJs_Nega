@@ -21,6 +21,7 @@ import { queryClient } from 'src';
 import { socket } from 'src/mainPage/NextWeb';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import ReplyComment from './ReplyComment';
+import { useDispatch } from 'react-redux';
 const Comment: React.FC<{
     anony: {
         id: string;
@@ -32,6 +33,7 @@ const Comment: React.FC<{
     dataPost?: PropsDataPosts;
     setDD?: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ anony, setShowComment, colorText, you, dataPost, setDD }) => {
+    const dispatch = useDispatch();
     const anonymousIndex = 'anonymousComment';
     const offset = useRef<number>(0);
     const limit = 15;
@@ -64,18 +66,17 @@ const Comment: React.FC<{
                     if (data && data.offset && offset.current === 0) {
                         offset.current = data.offset;
                     }
-                    const res = await postAPI.getComments(dataPost?._id, offset.current, limit);
-                    if (res.length) {
-                        offset.current += limit;
-                    } else {
-                        noData.current = true;
+                    const res = (await postAPI.getComments(dispatch, dataPost?._id, offset.current, limit)) ?? [];
+                    if (res) {
+                        if (!res.length) noData.current = true;
+                        else offset.current += limit;
+                        if (data) {
+                            const d: any = data;
+                            const newD: PropsComments[] | undefined = [...d.comments, ...res];
+                            return { offset: offset.current, comments: newD };
+                        }
+                        return { offset: offset.current, comments: res };
                     }
-                    if (data) {
-                        const d: any = data;
-                        const newD: PropsComments[] | undefined = [...d.comments, ...res];
-                        return { offset: offset.current, comments: newD };
-                    }
-                    return { offset: offset.current, comments: res };
                 }
             } catch (error) {
                 return { offset: 0, comments: [] };
@@ -113,7 +114,7 @@ const Comment: React.FC<{
                         return r;
                     }),
                 };
-                const newValue = await postAPI.sendComment({ postId: dataPost._id, text: reply_com.text, anonymousC: onAc, emos, commentId: reply_com.id, repliedId: reply_com.id_user });
+                const newValue = await postAPI.sendComment(dispatch, { postId: dataPost._id, text: reply_com.text, anonymousC: onAc, emos, commentId: reply_com.id, repliedId: reply_com.id_user });
                 if (newValue) {
                     queryClient.setQueryData(['Comment', dataPost?._id], (prevData: { comments: PropsComments[] } | undefined) => {
                         // Update the data by adding newValue to the existing data
@@ -136,7 +137,7 @@ const Comment: React.FC<{
                             return { ...r, id_user: [] };
                         }),
                     };
-                    const newValue = await postAPI.sendComment({ postId: dataPost._id, text: inputValue, anonymousC: onAc, emos });
+                    const newValue = await postAPI.sendComment(dispatch, { postId: dataPost._id, text: inputValue, anonymousC: onAc, emos });
                     if (newValue) {
                         queryClient.setQueryData(['Comment', dataPost?._id], (prevData: any) => {
                             // Update the data by adding newValue to the existing data
@@ -290,7 +291,7 @@ const Comment: React.FC<{
                     });
                     return preData;
                 });
-                const res = await postAPI.setEmotion({
+                const res = await postAPI.setEmotion(dispatch, {
                     _id: dataPost._id,
                     index: emo.id,
                     id_user: you.id,
@@ -331,7 +332,7 @@ const Comment: React.FC<{
                     });
                     return preData;
                 });
-                const res = await postAPI.setEmotion({
+                const res = await postAPI.setEmotion(dispatch, {
                     _id: dataPost._id,
                     index: c.feel.act,
                     id_user: you.id,
@@ -405,7 +406,7 @@ const Comment: React.FC<{
                     });
                     return preData;
                 });
-                const res = await postAPI.setEmotion({
+                const res = await postAPI.setEmotion(dispatch, {
                     _id: dataPost._id,
                     index: i.id,
                     id_user: you.id,
@@ -447,7 +448,7 @@ const Comment: React.FC<{
                     });
                     return preData;
                 });
-                const res = await postAPI.setEmotion({
+                const res = await postAPI.setEmotion(dispatch, {
                     _id: dataPost._id,
                     index: i.id,
                     id_user: you.id,
@@ -687,7 +688,7 @@ const Comment: React.FC<{
                                     </DivFlex>
                                 </SkeletonTheme>
                             ) : (
-                                data?.comments.map((comment, indexR) =>
+                                data?.comments?.map((comment, indexR) =>
                                     comment.data.map((c) => {
                                         const emo = c.feel.onlyEmo.filter((o) => o.id_user.includes(you.id))[0];
                                         let amount = 0;

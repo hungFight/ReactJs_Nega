@@ -1,25 +1,19 @@
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
-import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, ClockCirclesI, BalloonI, MoveI, TyOnlineI, PenI, EraserI, PinI, BackgroundI, GarbageI } from '~/assets/Icons/Icons';
+import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, TyOnlineI, PenI, EraserI, PinI, BackgroundI, GarbageI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
-import LogicConversation, { PropsChat } from './LogicConver';
+import LogicConversation from './LogicConver';
 import { Player } from 'video-react';
 import { PropsId_chats, PropsUser } from 'src/App';
 import moment from 'moment';
 import 'moment/locale/vi';
-import { setOpenProfile } from '~/redux/hideShow';
 import ItemsRoom from './ItemsConvers';
-import { PropsBgRD } from '~/redux/background';
 import MoreOption from '../MoreOption';
-import { setDelIds } from '~/redux/reload';
-import sendChatAPi from '~/restAPI/chatAPI';
-import ServerBusy from '~/utils/ServerBusy';
-import { useSelector } from 'react-redux';
 import OptionForItem, { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/NextWeb';
@@ -29,12 +23,8 @@ import PinChat from './PinChat';
 import { offChats, removeBalloon, setBalloon, setTopLeft } from '~/redux/roomsChat';
 import handleFileUpload from '~/utils/handleFileUpload';
 import chatAPI from '~/restAPI/chatAPI';
-import gridFS from '~/restAPI/gridFS';
-import CommonUtils from '~/utils/CommonUtils';
-import { useMutation } from '@tanstack/react-query';
 import { queryClient } from 'src';
-import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
-import { PropsDataMoreConversation, PropsItemQueryChat, PropsOldSeenBy } from '~/typescript/messengerType';
+import { PropsItemQueryChat, PropsOldSeenBy } from '~/typescript/messengerType';
 
 const Conversation: React.FC<{
     index: number;
@@ -188,7 +178,7 @@ const Conversation: React.FC<{
                     }
                 return undefined;
             });
-            chatAPI.setSeenBy(isIntersecting.current, data._id);
+            chatAPI.setSeenBy(dispatch, isIntersecting.current, data._id);
             isIntersecting.current = [];
         }
     }

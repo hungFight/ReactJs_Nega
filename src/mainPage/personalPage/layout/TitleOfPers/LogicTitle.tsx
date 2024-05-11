@@ -110,7 +110,7 @@ const LogicTitle = (
         { id: 3, name: 'Videos' },
     ];
     const handlePosition = async (id: number) => {
-        const res = await userAPI.getMore(offset.current, limit);
+        const res = await userAPI.getMore(dispatch, offset.current, limit);
         setPosition(id);
     };
     const handleAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,8 +202,7 @@ const LogicTitle = (
             icon: <LocationI />,
             color: '#d1a2fdc4',
             length: 240,
-            private:
-                privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
+            private: privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.address,
         },
         gender: {
@@ -221,8 +220,7 @@ const LogicTitle = (
             icon: <BirthI />,
             color: 'antiquewhite',
             length: 10,
-            private:
-                privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
+            private: privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.birthday,
         },
         relationship: {
@@ -231,14 +229,7 @@ const LogicTitle = (
             icon: <HeartMI />,
             color: '#c13b55',
             length: 20,
-            private:
-                privacy.relationship === 'only' ? (
-                    <PrivateI />
-                ) : privacy.relationship === 'friends' ? (
-                    <FriendI />
-                ) : (
-                    <EarthI />
-                ),
+            private: privacy.relationship === 'only' ? <PrivateI /> : privacy.relationship === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.relationship,
         },
         occupation: {
@@ -247,14 +238,7 @@ const LogicTitle = (
             icon: <WorkingI />,
             color: '#d3d859',
             length: 95,
-            private:
-                privacy.occupation === 'only' ? (
-                    <PrivateI />
-                ) : privacy.occupation === 'friends' ? (
-                    <FriendI />
-                ) : (
-                    <EarthI />
-                ),
+            private: privacy.occupation === 'only' ? <PrivateI /> : privacy.occupation === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.occupation,
         },
         schoolName: {
@@ -263,14 +247,7 @@ const LogicTitle = (
             color: '#2eabc0',
             icon: <SchoolI />,
             length: 95,
-            private:
-                privacy.schoolName === 'only' ? (
-                    <PrivateI />
-                ) : privacy.schoolName === 'friends' ? (
-                    <FriendI />
-                ) : (
-                    <EarthI />
-                ),
+            private: privacy.schoolName === 'only' ? <PrivateI /> : privacy.schoolName === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.schoolName,
         },
     });
@@ -327,8 +304,7 @@ const LogicTitle = (
             color: 'pink',
             icon: <LanguageI />,
             subVal: '',
-            private:
-                privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
+            private: privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.language,
         },
     });
@@ -339,8 +315,7 @@ const LogicTitle = (
             color: '#d1a2fdc4',
             icon: <LocationI />,
             length: 240,
-            private:
-                privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
+            private: privacy.address === 'only' ? <PrivateI /> : privacy.address === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.address,
         },
         gender: {
@@ -358,8 +333,7 @@ const LogicTitle = (
             color: 'antiquewhite',
             icon: <BirthI />,
             length: 10,
-            private:
-                privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
+            private: privacy.birthday === 'only' ? <PrivateI /> : privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.birthday,
         },
         relationship: {
@@ -368,14 +342,7 @@ const LogicTitle = (
             color: '#c13b55',
             icon: <HeartMI />,
             length: 20,
-            private:
-                privacy.relationship === 'only' ? (
-                    <PrivateI />
-                ) : privacy.relationship === 'friends' ? (
-                    <FriendI />
-                ) : (
-                    <EarthI />
-                ),
+            private: privacy.relationship === 'only' ? <PrivateI /> : privacy.relationship === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.relationship,
         },
         occupation: {
@@ -384,14 +351,7 @@ const LogicTitle = (
             icon: <WorkingI />,
             color: '#d3d859',
             length: 95,
-            private:
-                privacy.occupation === 'only' ? (
-                    <PrivateI />
-                ) : privacy.occupation === 'friends' ? (
-                    <FriendI />
-                ) : (
-                    <EarthI />
-                ),
+            private: privacy.occupation === 'only' ? <PrivateI /> : privacy.occupation === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.occupation,
         },
         schoolName: {
@@ -400,14 +360,7 @@ const LogicTitle = (
             icon: <SchoolI />,
             color: '#2eabc0',
             length: 95,
-            private:
-                privacy.schoolName === 'only' ? (
-                    <PrivateI />
-                ) : privacy.schoolName === 'friends' ? (
-                    <FriendI />
-                ) : (
-                    <EarthI />
-                ),
+            private: privacy.schoolName === 'only' ? <PrivateI /> : privacy.schoolName === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.schoolName,
         },
     };
@@ -436,22 +389,13 @@ const LogicTitle = (
             color: 'pink',
             icon: <LanguageI />,
             subVal: '',
-            private:
-                privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
+            private: privacy.language === 'only' ? <PrivateI /> : privacy.language === 'friends' ? <FriendI /> : <EarthI />,
             letPrivate: mores[0].privacy.language,
         },
     };
     console.log('title', privacy, ObjectRender);
 
-    const renderInfo = (
-        res: string,
-        placeholder: string,
-        icon: ReactElement,
-        key: string,
-        length: number,
-        privates: ReactElement,
-        color: string,
-    ) => {
+    const renderInfo = (res: string, placeholder: string, icon: ReactElement, key: string, length: number, privates: ReactElement, color: string) => {
         return (
             <Div
                 key={key}
@@ -482,17 +426,9 @@ const LogicTitle = (
                         margin-right: 2px;
                         position: relative;
                         color: ${color};
-                        ${ObjectRender[key].val === 'Female'
-                            ? 'color: #c36aca'
-                            : ObjectRender[key].val === 'Male'
-                            ? 'color: #5397c7;'
-                            : ObjectRender[key].val === 'Other'
-                            ? 'color: #4e9c8b;'
-                            : ''};
+                        ${ObjectRender[key].val === 'Female' ? 'color: #c36aca' : ObjectRender[key].val === 'Male' ? 'color: #5397c7;' : ObjectRender[key].val === 'Other' ? 'color: #4e9c8b;' : ''};
 
-                        ${editValue === key && editTitle && key !== 'gender'
-                            ? 'position: absolute; top: 37px; z-index: 1;'
-                            : ''}
+                        ${editValue === key && editTitle && key !== 'gender' ? 'position: absolute; top: 37px; z-index: 1;' : ''}
                     `}
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -522,11 +458,7 @@ const LogicTitle = (
                                         {'/' + length}
                                     </DivPos>
                                 </Div>
-                                <ButtonSubmit
-                                    title="As I want"
-                                    css="margin: 0; width: 20%;"
-                                    onClick={() => setEditValue(undefined)}
-                                />
+                                <ButtonSubmit title="As I want" css="margin: 0; width: 20%;" onClick={() => setEditValue(undefined)} />
                             </>
                         ) : (
                             <>
@@ -575,13 +507,7 @@ const LogicTitle = (
                 ) : (
                     <>
                         <P css="font-size: 1.4rem; margin-top: 2.5px;">{res || placeholder}</P>
-                        {editTitle && (
-                            <DivPos
-                                right="0"
-                                css="padding: 6px;"
-                                onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-                            ></DivPos>
-                        )}
+                        {editTitle && <DivPos right="0" css="padding: 6px;" onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}></DivPos>}
                     </>
                 )}
                 {editTitle && editValue !== key && (
@@ -637,10 +563,7 @@ const LogicTitle = (
                                         Everyone
                                     </P>{' '}
                                     <div style={{ position: 'relative' }}>
-                                        <Div
-                                            width="33px"
-                                            css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"
-                                        ></Div>
+                                        <Div width="33px" css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"></Div>
                                     </div>{' '}
                                 </Div>
                             )}
@@ -690,14 +613,7 @@ const LogicTitle = (
                 icon: <LocationI />,
                 color: '#d1a2fdc4',
                 length: 240,
-                private:
-                    mores[0].privacy.address === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.address === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.address === 'only' ? <PrivateI /> : mores[0].privacy.address === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.address,
             },
             gender: {
@@ -706,14 +622,7 @@ const LogicTitle = (
                 color: '',
                 icon: <GenderMaleI />,
                 length: 1,
-                private:
-                    mores[0].privacy.gender === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.gender === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.gender === 'only' ? <PrivateI /> : mores[0].privacy.gender === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.gender,
             },
             birthday: {
@@ -722,14 +631,7 @@ const LogicTitle = (
                 color: 'antiquewhite',
                 icon: <BirthI />,
                 length: 10,
-                private:
-                    mores[0].privacy.birthday === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.birthday === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.birthday === 'only' ? <PrivateI /> : mores[0].privacy.birthday === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.birthday,
             },
             relationship: {
@@ -738,14 +640,7 @@ const LogicTitle = (
                 color: '#c13b55',
                 icon: <HeartMI />,
                 length: 20,
-                private:
-                    mores[0].privacy.relationship === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.relationship === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.relationship === 'only' ? <PrivateI /> : mores[0].privacy.relationship === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.relationship,
             },
             occupation: {
@@ -754,14 +649,7 @@ const LogicTitle = (
                 color: '#d3d859',
                 icon: <WorkingI />,
                 length: 95,
-                private:
-                    mores[0].privacy.occupation === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.occupation === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.occupation === 'only' ? <PrivateI /> : mores[0].privacy.occupation === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.occupation,
             },
             schoolName: {
@@ -770,14 +658,7 @@ const LogicTitle = (
                 icon: <SchoolI />,
                 color: '#2eabc0',
                 length: 95,
-                private:
-                    mores[0].privacy.schoolName === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.schoolName === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.schoolName === 'only' ? <PrivateI /> : mores[0].privacy.schoolName === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.schoolName,
             },
         };
@@ -788,14 +669,7 @@ const LogicTitle = (
                 icon: <HobbyI />,
                 color: '#4da15f',
                 subVal: '',
-                private:
-                    mores[0].privacy.hobby === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.hobby === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.hobby === 'only' ? <PrivateI /> : mores[0].privacy.hobby === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.hobby,
             },
             skill: {
@@ -804,14 +678,7 @@ const LogicTitle = (
                 icon: <StrengthI />,
                 color: 'deeppink',
                 subVal: '',
-                private:
-                    mores[0].privacy.skill === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.skill === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.skill === 'only' ? <PrivateI /> : mores[0].privacy.skill === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.skill,
             },
             language: {
@@ -820,14 +687,7 @@ const LogicTitle = (
                 icon: <LanguageI />,
                 color: 'pink',
                 subVal: '',
-                private:
-                    mores[0].privacy.language === 'only' ? (
-                        <PrivateI />
-                    ) : mores[0].privacy.language === 'friends' ? (
-                        <FriendI />
-                    ) : (
-                        <EarthI />
-                    ),
+                private: mores[0].privacy.language === 'only' ? <PrivateI /> : mores[0].privacy.language === 'friends' ? <FriendI /> : <EarthI />,
                 letPrivate: mores[0].privacy.language,
             },
         };
@@ -881,12 +741,7 @@ const LogicTitle = (
                     {icon}
                 </Div>
                 {editValue === key && editTitle ? (
-                    <Div
-                        width="100%"
-                        wrap="wrap"
-                        css="align-items: center; border-bottom: 1px solid #517ea1;"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                    <Div width="100%" wrap="wrap" css="align-items: center; border-bottom: 1px solid #517ea1;" onClick={(e) => e.stopPropagation()}>
                         <Div width="100%" css="align-items: center;">
                             <Input
                                 ref={inputRef}
@@ -909,10 +764,7 @@ const LogicTitle = (
                                 title="Apply"
                                 css="margin: 0; width: 20%; button{ background: #135d66;}"
                                 onClick={() => {
-                                    if (
-                                        !ArrayRender[key].val.some((s) => s === ArrayRender[key].subVal) &&
-                                        ArrayRender[key].subVal
-                                    ) {
+                                    if (!ArrayRender[key].val.some((s) => s === ArrayRender[key].subVal) && ArrayRender[key].subVal) {
                                         setArrayRender({
                                             ...ArrayRender,
                                             [key]: {
@@ -934,10 +786,7 @@ const LogicTitle = (
                                     }
                                 `}
                                 onClick={() => {
-                                    if (
-                                        !ArrayRender[key].val.some((s) => s === ArrayRender[key].subVal) &&
-                                        ArrayRender[key].subVal
-                                    ) {
+                                    if (!ArrayRender[key].val.some((s) => s === ArrayRender[key].subVal) && ArrayRender[key].subVal) {
                                         setArrayRender({
                                             ...ArrayRender,
                                             [key]: {
@@ -1047,10 +896,7 @@ const LogicTitle = (
                                         Everyone
                                     </P>{' '}
                                     <div style={{ position: 'relative' }}>
-                                        <Div
-                                            width="33px"
-                                            css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"
-                                        ></Div>
+                                        <Div width="33px" css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"></Div>
                                     </div>{' '}
                                 </Div>
                             )}
@@ -1127,12 +973,7 @@ const LogicTitle = (
             checks = true;
         }
         if (checks && check) {
-            const resF: { countUser: number; countMores: number } = await userAPI.changesMany(
-                paramsUser,
-                paramsMores,
-                privacyF,
-            );
-            const res = ServerBusy(resF, dispatch);
+            const res: { countUser: number; countMores: number } = await userAPI.changesMany(dispatch, paramsUser, paramsMores, privacyF);
             if (res.countUser || res.countMores) {
                 setUsersData((pre) =>
                     pre.map((us) => {
@@ -1238,7 +1079,7 @@ const LogicTitle = (
     };
     const handleDelSubAc = async (id: string, phoneOREmail: string) => {
         if (id && phoneOREmail) {
-            const res = await userAPI.delSubAccount(id, phoneOREmail);
+            const res = await userAPI.delSubAccount(dispatch, id, phoneOREmail);
             if (res) setSubAccountsData((pre) => pre.filter((sub) => sub.account.id !== id));
         }
     };

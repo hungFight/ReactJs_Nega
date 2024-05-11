@@ -24,7 +24,7 @@ const settingData = [
         logout: true,
     },
 ];
-interface InNetWork {
+export interface InNetWork {
     header: PropsSN;
     sett: {
         data: PropsSetting;

@@ -12,6 +12,8 @@ import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
 import { PropsId_chats } from 'src/App';
 import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
+import { useQuery } from '@tanstack/react-query';
+import { queryClient } from 'src';
 export interface PropsFriends {
     avatar: any;
     birthday: string;
@@ -28,44 +30,43 @@ const Friends: React.FC<{
     const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
 
     const [loading, setLoading] = useState<boolean>(false);
-    const [data, setData] = useState<PropsFriends[]>();
-
-    const offsetRef = useRef<number>(0);
-    const [limit, setLimit] = useState(10);
+    const isRefetch = useRef<boolean>(false);
+    const limit = 10;
     const cRef = useRef<number>(0);
     const eleRef = useRef<any>();
     const dataRef = useRef<any>([]);
-
-    async function fetch(rel: boolean) {
-        cRef.current = 1;
-        if (rel) {
-            // for scroll
-            offsetRef.current = 0;
-            dataRef.current = [];
-            setLoading(true);
-        }
-
-        const res = await peopleAPI.getFriends(offsetRef.current, limit, 'friends');
-        const data = ServerBusy(res, dispatch);
-        console.log('friends', data);
-        if (data) {
-            dataRef.current = [...(dataRef.current ?? []), ...data];
-            setData(dataRef.current);
-            offsetRef.current += limit;
-            setLoading(false);
-        }
-    }
-
+    const {
+        data: asNew,
+        refetch,
+        isFetching,
+    } = useQuery({
+        queryKey: ['getFirends'],
+        staleTime: 15 * 60 * 60 * 1000,
+        cacheTime: 15 * 60 * 60 * 1000,
+        queryFn: async () => {
+            cRef.current = 1;
+            const preData: { offset: number; data: PropsFriends[] } | undefined = queryClient.getQueryData(['getFirends']);
+            const res = await peopleAPI.getFriends(dispatch, preData?.offset ?? 0, limit, 'friends');
+            if (res) {
+                if (preData) {
+                    if (isRefetch.current)
+                        // for scroll
+                        return { offset: preData.offset + limit, data: [...preData.data, ...res] };
+                    return preData;
+                } else {
+                    return { offset: 0, data: res };
+                }
+            }
+        },
+    });
+    const data = asNew?.data;
     const handleScroll = () => {
         const { scrollTop, clientHeight, scrollHeight } = eleRef.current;
-        console.log(scrollTop, clientHeight, scrollHeight);
-
-        if (scrollTop + clientHeight >= scrollHeight - 20 && !loading) {
-            fetch(false);
+        if (scrollTop + clientHeight >= scrollHeight - 20 && !isFetching) {
+            refetch();
         }
     };
     useEffect(() => {
-        if (type === 'friends' || cRef.current === 0) fetch(true);
         eleRef.current.addEventListener('scroll', handleScroll);
         return () => {
             eleRef?.current?.removeEventListener('scroll', handleScroll);

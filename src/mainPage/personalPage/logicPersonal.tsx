@@ -100,11 +100,11 @@ export default function LogicView(
                         if (user.avatar || user.background) {
                             formData.append('old_id', avBg);
                         }
-                        const fileUploaded = await fileWorkerAPI.addFiles(formData);
+                        const fileUploaded = await fileWorkerAPI.addFiles(dispatch, formData);
                         console.log(fileUploaded, 'fileUploaded');
-                        const idF = fileUploaded[0].id;
-                        if (idF) {
-                            const res = await userAPI.changesOne(userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, {
+                        if (fileUploaded) {
+                            const idF = fileUploaded[0]?.id;
+                            const res = await userAPI.changesOne(dispatch, userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, {
                                 id_file: idF,
                                 type: file.type.split('/')[0],
                                 name: file.name,
@@ -146,11 +146,10 @@ export default function LogicView(
             //delete
             console.log('delete', id, data, user);
             if (user.avatar || user.background) {
-                const fileUploaded = await fileWorkerAPI.deleteFileImg([avBg]);
+                const fileUploaded = await fileWorkerAPI.deleteFileImg(dispatch, [avBg]);
                 if (fileUploaded) {
                     setLoading(true);
-                    const res = await userAPI.changesOne(userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, { id_file: avBg });
-                    const data = ServerBusy(res, dispatch);
+                    const data = await userAPI.changesOne(dispatch, userFirst.id, id === 0 ? { background: 'background' } : { avatar: 'avatar' }, { id_file: avBg });
                     if (data) {
                         setLoading(false);
                         if (id === 0) {
@@ -183,7 +182,7 @@ export default function LogicView(
     const handleNameU = async () => {
         if (valueName && valueName.length <= 30 && valueName !== userFirst.fullName) {
             setLoading(true);
-            const res = await userAPI.changesOne(userFirst.id, { fullName: 'fullName' }, valueName); // return new Name
+            const res = await userAPI.changesOne(dispatch, userFirst.id, { fullName: 'fullName' }, valueName); // return new Name
             const data = ServerBusy(res, dispatch);
             setLoading(false);
             console.log(data, 'change');
@@ -227,7 +226,7 @@ export default function LogicView(
     const loadsRef = useRef<boolean>(false);
     const handleAddF = async (id: string) => {
         setLoads({ ...loads, friend: true });
-        const res: {
+        const data: {
             id_friend: string;
             data: {
                 createdAt: string;
@@ -240,10 +239,7 @@ export default function LogicView(
             count_flw: number;
             id: string;
             id_fl: string;
-        } = await peopleAPI.setFriend(id, 'yes');
-        const data: typeof res = ServerBusy(res, dispatch);
-        console.log(data, 's');
-
+        } = await peopleAPI.setFriend(dispatch, id, 'yes');
         user.userIsRequested[0] = {
             ...data.data,
         };
@@ -267,7 +263,6 @@ export default function LogicView(
 
     const handleConfirm = async (id: string) => {
         if (id) {
-            const res = await peopleAPI.setConfirm(id, 'friends', 'personal');
             const data: {
                 ok: {
                     createdAt: string;
@@ -314,8 +309,7 @@ export default function LogicView(
                         }[];
                     };
                 };
-            } = ServerBusy(res, dispatch);
-
+            } = await peopleAPI.setConfirm(dispatch, id, 'friends', 'personal');
             if (data) {
                 // du lieu chua chinh xac khi tra ve
                 user.userRequest[0] = {
@@ -333,8 +327,7 @@ export default function LogicView(
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         setLoads({ ...loads, friend: true });
 
-        const res = await peopleAPI.delete(id, kindOf, 'personal');
-        const data = ServerBusy(res, dispatch);
+        const data = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
         console.log('Abolish', kindOf, data);
         if (data) {
             user.userIsRequested = [];
@@ -365,19 +358,16 @@ export default function LogicView(
     const handleFollower = async (id: string, follow?: string) => {
         setLoads({ ...loads, follow: true });
         console.log('handleFollowe', id);
-        const res: {
+        const data: {
             count_flwe: number;
             follow: string;
             id: string;
             id_fl: string;
             ok: number;
-        } = await userAPI.follow(id, follow);
-        const data: typeof res = ServerBusy(res, dispatch);
-
-        console.log(res, 'followres');
+        } = await userAPI.follow(dispatch, id, follow);
         if (data?.ok === 1) {
             if (user.followings[0]?.following) {
-                if (res.follow === 'following') {
+                if (data.follow === 'following') {
                     user.followings[0].following = 2;
                     user.mores[0].followedAmount = data.count_flwe;
                     setUsersData((pre) =>
@@ -460,17 +450,13 @@ export default function LogicView(
 
     const handleUnFollower = async (id: string, unfollow: string) => {
         setLoads({ ...loads, follow: true });
-        console.log('handleUnFollowe', id);
-        const res: {
+        const data: {
             count_flwe: number;
             id: string;
             id_fl: string;
             ok: number;
             unfollow: string;
-        } = await userAPI.Unfollow(id, unfollow);
-        const data: typeof res = ServerBusy(res, dispatch);
-
-        console.log(data);
+        } = await userAPI.Unfollow(dispatch, id, unfollow);
 
         if (data.ok === 1) {
             if (user.followings[0]?.following) {
@@ -562,37 +548,38 @@ export default function LogicView(
     };
     const handleLoves = async () => {
         if (user.isLoved[0]?.userId !== userFirst.id) {
-            const res = await userAPI.changesOne(user.id, { mores: { loverAmount: 'love' } });
-            const data = ServerBusy(res, dispatch);
-
-            setUsersData((pre) =>
-                pre.map((us) => {
-                    if (us.id === user.id) {
-                        return {
-                            ...us,
-                            mores: [{ ...us.mores[0], loverAmount: data.count_loves }],
-                            isLoved: [data.loverData],
-                        };
-                    }
-                    return us;
-                }),
-            );
-            console.log('data loved', user);
+            const data = await userAPI.changesOne(dispatch, user.id, { mores: { loverAmount: 'love' } });
+            if (typeof data === 'object' && data && data?.loverData) {
+                const fff = data.loverData;
+                setUsersData((pre) =>
+                    pre.map((us) => {
+                        if (us.id === user.id) {
+                            return {
+                                ...us,
+                                mores: [{ ...us.mores[0], loverAmount: data.count_loves }],
+                                isLoved: [fff],
+                            };
+                        }
+                        return us;
+                    }),
+                );
+                console.log('data loved', user);
+            }
         } else {
-            const res = await userAPI.changesOne(user.id, { mores: { loverAmount: 'unLove' } });
-            const data = ServerBusy(res, dispatch);
-            setUsersData((pre) =>
-                pre.map((us) => {
-                    if (us.id === user.id) {
-                        return {
-                            ...us,
-                            mores: [{ ...us.mores[0], loverAmount: data.count_loves }],
-                            isLoved: [],
-                        };
-                    }
-                    return us;
-                }),
-            );
+            const data = await userAPI.changesOne(dispatch, user.id, { mores: { loverAmount: 'unLove' } });
+            if (typeof data === 'object' && data)
+                setUsersData((pre) =>
+                    pre.map((us) => {
+                        if (us.id === user.id) {
+                            return {
+                                ...us,
+                                mores: [{ ...us.mores[0], loverAmount: data.count_loves }],
+                                isLoved: [],
+                            };
+                        }
+                        return us;
+                    }),
+                );
             console.log('data unloved', user);
         }
     };

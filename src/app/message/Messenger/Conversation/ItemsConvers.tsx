@@ -269,7 +269,7 @@ const ItemsRoom: React.FC<{
             {statusOperation.map((st) => {
                 if (st.dataId === rc._id)
                     return (
-                        <Div width="100%" css="justify-content: center;">
+                        <Div width="100%" css="justify-content: center;" key={st._id}>
                             <P z="1.2rem" css="@media (min-width: 768px){font-size: 1rem;}">
                                 {reuse(st.userId)?.fullName + ' ' + statusRender(st.title) + ' ' + moment(st.createdAt).locale(lg).format('LT')}
                             </P>

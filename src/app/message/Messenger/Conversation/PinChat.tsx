@@ -8,7 +8,6 @@ import { ArrowDownI, LoadingI } from '~/assets/Icons/Icons';
 import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import chatAPI from '~/restAPI/chatAPI';
-import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import { decrypt } from '~/utils/crypto';

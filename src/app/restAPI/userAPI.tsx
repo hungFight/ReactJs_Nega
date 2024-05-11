@@ -4,6 +4,8 @@ import Cookies from 'universal-cookie';
 import { PropsUser, PropsUserPer } from 'src/App';
 import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
+import { Dispatch } from 'react';
+import { AnyAction } from '@reduxjs/toolkit';
 
 export interface PropsParamsById {
     id?: boolean;
@@ -51,8 +53,9 @@ interface PropsMoresGetting {
     privacy: boolean;
     createdAt?: boolean;
 }
+type PropsErrorCode = 'NeGA_off' | 'NeGA_ExcessiveRequest' | null;
 class HttpRequestUser {
-    getById = async (id: string | string[], params: PropsParamsById, mores: PropsMoresGetting, first?: string) => {
+    getById = async (dispatch: Dispatch<AnyAction>, id: string | string[], params: PropsParamsById, mores: PropsMoresGetting, first?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsUserPer[] | PropsUser>('/user/getById', {
@@ -64,10 +67,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getByName = async (name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {
+    getByName = async (dispatch: Dispatch<AnyAction>, name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/getByName', {
@@ -79,10 +82,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    setLg = async (id: string, lg: string) => {
+    setLg = async (dispatch: Dispatch<AnyAction>, id: string, lg: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setLg', {
@@ -92,10 +95,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    setActive = async (active: boolean) => {
+    setActive = async (dispatch: Dispatch<AnyAction>, active: boolean) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/setActive', {
@@ -104,40 +107,41 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getNewMes = async () => {
+    getNewMes = async (dispatch: Dispatch<AnyAction>) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getNewMes');
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    delMessage = async () => {
+    delMessage = async (dispatch: Dispatch<AnyAction>) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/delMessage');
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    delSubAccount = async (id: string, phoneOrEmail: string) => {
+    delSubAccount = async (dispatch: Dispatch<AnyAction>, id: string, phoneOrEmail: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/delSubAccount', { id, phoneOrEmail });
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
     changesOne = async (
+        dispatch: Dispatch<AnyAction>,
         id: string,
         params: PropsParamsById,
         value?: any,
@@ -145,7 +149,7 @@ class HttpRequestUser {
         | {
               loverData:
                   | {
-                        id: number;
+                        id: string;
                         userId: string;
                         idIsLoved: string;
                         createdAt: Date;
@@ -154,7 +158,9 @@ class HttpRequestUser {
                   | undefined;
               count_loves: number;
           }
-        | string | boolean
+        | string
+        | boolean
+        | PropsErrorCode
     > => {
         try {
             const Axios = refreshToken.axiosJWTs();
@@ -168,10 +174,11 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
     changesMany = async (
+        dispatch: Dispatch<AnyAction>,
         params: PropsParamsById,
         mores: PropsParamsMores,
         privacy: {
@@ -200,10 +207,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    follow = async (id: string, follow?: string) => {
+    follow = async (dispatch: Dispatch<AnyAction>, id: string, follow?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/follow', {
@@ -215,10 +222,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    Unfollow = async (id: string, unfollow: string) => {
+    Unfollow = async (dispatch: Dispatch<AnyAction>, id: string, unfollow: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/Unfollow', {
@@ -232,10 +239,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getMore = async (offset: number, limit: number) => {
+    getMore = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getMore', {
@@ -249,10 +256,10 @@ class HttpRequestUser {
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    setHistory = async (data: { id: string; avatar: string; fullName: string; gender: number }) => {
+    setHistory = async (dispatch: Dispatch<AnyAction>, data: { id: string; avatar: string; fullName: string; gender: number }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setHistory', {
@@ -262,27 +269,27 @@ class HttpRequestUser {
             });
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getHistory = async () => {
+    getHistory = async (dispatch: Dispatch<AnyAction>) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getHistory');
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getActiveStatus = async (id_other?: string) => {
+    getActiveStatus = async (dispatch: Dispatch<AnyAction>, id_other?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getActiveStatus', { params: { id_other } });
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
 }

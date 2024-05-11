@@ -130,15 +130,14 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        if (id_file.length) fileWorkerAPI.deleteFileImg(id_file);
-                        const res = await chatAPI.delChatAll({
+                        if (id_file.length) fileWorkerAPI.deleteFileImg(dispatch, id_file);
+                        const data = await chatAPI.delChatAll(dispatch, {
                             conversationId: conversation._id,
                             dataId: optionsForItem._id,
                             roomId: optionsForItem.roomId,
                             filterId: optionsForItem.filterId,
                             userId: optionsForItem.userId,
                         });
-                        const data: string | null = ServerBusy(res, dispatch);
                         if (data)
                             queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
                                 if (preData) {
@@ -180,13 +179,12 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf({
+                        const data = await chatAPI.delChatSelf(dispatch, {
                             conversationId: conversation._id,
                             dataId: optionsForItem._id,
                             roomId: optionsForItem.roomId,
                             filterId: optionsForItem.filterId,
                         });
-                        const data: typeof res = ServerBusy(res, dispatch);
                         if (data) {
                             console.log('here');
                             queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
@@ -264,15 +262,14 @@ const OptionForItem: React.FC<{
                         setLoading('Deleting...');
                         //  id room and chat
                         const id_file = optionsForItem.imageOrVideos.map((r) => r._id);
-                        if (id_file.length) fileWorkerAPI.deleteFileImg(id_file);
-                        const res = await chatAPI.delChatAll({
+                        if (id_file.length) fileWorkerAPI.deleteFileImg(dispatch, id_file);
+                        const data = await chatAPI.delChatAll(dispatch, {
                             conversationId: conversation._id,
                             dataId: optionsForItem._id,
                             roomId: optionsForItem.roomId,
                             filterId: optionsForItem.filterId,
                             userId: optionsForItem.userId,
                         });
-                        const data: string | null = ServerBusy(res, dispatch);
                         if (data)
                             queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
                                 if (preData) {
@@ -314,13 +311,12 @@ const OptionForItem: React.FC<{
                 onClick: async () => {
                     if (conversation && optionsForItem) {
                         setLoading('Removing...');
-                        const res = await chatAPI.delChatSelf({
+                        const data = await chatAPI.delChatSelf(dispatch, {
                             conversationId: conversation._id,
                             dataId: optionsForItem._id,
                             roomId: optionsForItem.roomId,
                             filterId: optionsForItem.filterId,
                         });
-                        const data: typeof res = ServerBusy(res, dispatch);
                         if (data) {
                             console.log('here');
                             queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
@@ -412,23 +408,42 @@ const OptionForItem: React.FC<{
                 title: 'Remove only you can not see this text',
                 top: '-80px',
                 onClick: async () => {
-                    // if (conversation && optionsForItem) {
-                    //     setLoading('Removing...');
-                    //     const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
-                    //     const data: string | null = ServerBusy(res, dispatch);
-                    //     if (data) {
-                    //         const newR = conversation.room.map((r) => {
-                    //             if (r._id === optionsForItem._id) {
-                    //                 r.delete = id_you;
-                    //                 r.updatedAt = data;
-                    //             }
-                    //             return r;
-                    //         });
-                    //         setConversation({ ...conversation, room: newR });
-                    //         setOptions(undefined);
-                    //     }
-                    //     setLoading('');
-                    // }
+                    if (conversation && optionsForItem) {
+                        setLoading('Removing...');
+                        const data = await chatAPI.delChatSelf(dispatch, {
+                            conversationId: conversation._id,
+                            dataId: optionsForItem._id,
+                            roomId: optionsForItem.roomId,
+                            filterId: optionsForItem.filterId,
+                        });
+                        if (data) {
+                            queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                if (preData) {
+                                    conversation.rooms.map((da) => {
+                                        if (da._id === optionsForItem.roomId) {
+                                            da.filter.map((fl) => {
+                                                if (fl._id === optionsForItem.filterId) {
+                                                    fl.data.map((r) => {
+                                                        if (r._id === optionsForItem._id) {
+                                                            r.delete = id_you;
+                                                            r.updatedAt = data;
+                                                        }
+                                                        return r;
+                                                    });
+                                                }
+                                                return fl;
+                                            });
+                                        }
+                                        return da;
+                                    });
+                                    return { ...preData, data: conversation };
+                                }
+                                return preData;
+                            });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
+                    }
                 },
             },
             {
@@ -472,24 +487,42 @@ const OptionForItem: React.FC<{
                 title: 'Khi xoá thi chỉ mình bạn không nhìn thấy tin nhắn này',
                 top: '-100px',
                 onClick: async () => {
-                    // if (conversation && optionsForItem) {
-                    //     setLoading('Removing...');
-                    //     const res = await chatAPI.delChatSelf(conversation._id, optionsForItem._id, id_you);
-                    //     const data: string | null = ServerBusy(res, dispatch);
-                    //     if (data) {
-                    //         console.log('here');
-                    //         const newR = conversation.room.map((r) => {
-                    //             if (r._id === optionsForItem._id) {
-                    //                 r.delete = id_you;
-                    //                 r.updatedAt = data;
-                    //             }
-                    //             return r;
-                    //         });
-                    //         setConversation({ ...conversation, room: newR });
-                    //         setOptions(undefined);
-                    //     }
-                    //     setLoading('');
-                    // }
+                    if (conversation && optionsForItem) {
+                        setLoading('Removing...');
+                        const data = await chatAPI.delChatSelf(dispatch, {
+                            conversationId: conversation._id,
+                            dataId: optionsForItem._id,
+                            roomId: optionsForItem.roomId,
+                            filterId: optionsForItem.filterId,
+                        });
+                        if (data) {
+                            queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
+                                if (preData) {
+                                    conversation.rooms.map((da) => {
+                                        if (da._id === optionsForItem.roomId) {
+                                            da.filter.map((fl) => {
+                                                if (fl._id === optionsForItem.filterId) {
+                                                    fl.data.map((r) => {
+                                                        if (r._id === optionsForItem._id) {
+                                                            r.delete = id_you;
+                                                            r.updatedAt = data;
+                                                        }
+                                                        return r;
+                                                    });
+                                                }
+                                                return fl;
+                                            });
+                                        }
+                                        return da;
+                                    });
+                                    return { ...preData, data: conversation };
+                                }
+                                return preData;
+                            });
+                            setOptions(undefined);
+                        }
+                        setLoading('');
+                    }
                 },
             },
 
@@ -590,7 +623,7 @@ const OptionForItem: React.FC<{
             for (let i = 0; i < fileUpload?.up.length; i++) {
                 formData.append('file', fileUpload?.up[i]); // assign file and _id of the file upload
             }
-            const value_added = fileUpload?.up.length ? await fileWorkerAPI.addFiles(formData) : [];
+            const value_added = fileUpload?.up.length ? await fileWorkerAPI.addFiles(dispatch, formData) : [];
             const vlAt = {
                 value: vl,
                 conversationId: conversation._id,
@@ -603,8 +636,7 @@ const OptionForItem: React.FC<{
                 filesId: value_added,
                 old_ids: id_files,
             };
-            const res = await chatAPI.updateChat(vlAt);
-            const data: typeof res = ServerBusy(res, dispatch);
+            const data = await chatAPI.updateChat(dispatch, vlAt);
             if (data) {
                 queryClient.setQueryData(['getItemChats', conversation.user.id + '_' + id_you], (preData: PropsItemQueryChat) => {
                     if (preData) {
@@ -615,7 +647,7 @@ const OptionForItem: React.FC<{
                                         fl.data.map((r) => {
                                             if (r._id === optionsForItem._id) {
                                                 if (value) r.text.t = value;
-                                                if (res?.imageOrVideos.length) r.imageOrVideos = res?.imageOrVideos;
+                                                if (data?.imageOrVideos.length) r.imageOrVideos = data?.imageOrVideos;
                                             }
                                             return r;
                                         });

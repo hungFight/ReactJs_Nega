@@ -7,7 +7,7 @@ import Cookies from 'universal-cookie';
 import HttpRequestUser from '~/restAPI/userAPI';
 import { PropsUser } from 'src/App';
 import { PropsReloadRD } from '~/redux/reload';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const cookies = new Cookies();
 
@@ -19,10 +19,11 @@ const Tools: React.FC<{
     dataUser: PropsUser;
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser>>;
 }> = ({ colorText, colorBg, active, userId, dataUser, setDataUser }) => {
+    const dispatch = useDispatch();
     const [status, setStatus] = useState<React.ReactNode>(null);
     const [onOff, setOnOff] = useState<React.ReactElement>(() => (active ? <OnlineI /> : <OfflineI />));
     const handleChange = async (o: { name: string }) => {
-        const res = await HttpRequestUser.setActive(o.name === 'online');
+        const res = await HttpRequestUser.setActive(dispatch, o.name === 'online');
         console.log(res, o, 'res here');
         if (res) {
             if (o.name === 'online') {

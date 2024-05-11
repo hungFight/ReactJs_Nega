@@ -7,7 +7,6 @@ import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents'
 import { setOpenProfile } from '~/redux/hideShow';
 import { PropsReloadRD, setDelIds, setSession } from '~/redux/reload';
 import sendChatAPi, { PropsRoomsChat } from '~/restAPI/chatAPI';
-import gridFS from '~/restAPI/gridFS';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import CryptoJS from 'crypto-js';
@@ -83,9 +82,8 @@ const LogicMessenger = (dataUser: PropsUser) => {
     useEffect(() => {
         async function fetchRoom() {
             setLoading(true);
-            const res = await sendChatAPi.getRoom(limit, offset.current);
-            const data: PropsRoomsChat[] = ServerBusy(res, dispatch);
-            data?.map((d) => {
+            const res = await sendChatAPi.getRoom(dispatch, limit, offset.current);
+            res?.map((d) => {
                 const ro = d.rooms[0]?.filter[0]?.data[0];
                 if (ro) {
                     // just one
@@ -102,10 +100,12 @@ const LogicMessenger = (dataUser: PropsUser) => {
                 }
                 return d;
             });
-            console.log('newD', data);
-            setRooms(data);
-            preDelete.current = data;
-            setLoading(false);
+            if (res) {
+                console.log('newD', res);
+                setRooms(res);
+                preDelete.current = res;
+                setLoading(false);
+            }
         }
         fetchRoom();
 
@@ -184,20 +184,9 @@ const LogicMessenger = (dataUser: PropsUser) => {
     console.log(searchUser);
     const handleDelete = async () => {
         setLoadDel(true);
-        const res = await sendChatAPi.delete(moreBar.conversationId);
-        const data:
-            | {
-                  _id: string;
-                  deleted: {
-                      id: string;
-                      createdAt: string;
-                      _id: string;
-                  }[];
-              }
-            | undefined = ServerBusy(res, dispatch);
-
-        if (data) {
-            dispatch(setDelIds(data));
+        const res = await sendChatAPi.delete(dispatch, moreBar.conversationId);
+        if (res) {
+            dispatch(setDelIds(res));
             idDeleted.current.push(moreBar.conversationId);
             setRooms((pre) => pre.filter((r) => r._id !== moreBar.conversationId));
         }
@@ -205,10 +194,8 @@ const LogicMessenger = (dataUser: PropsUser) => {
     };
     const handleUndo = async () => {
         setLoadDel(true);
-        const res = await sendChatAPi.undo(moreBar.conversationId);
-        const data = ServerBusy(res, dispatch);
-
-        if (data) {
+        const res = await sendChatAPi.undo(dispatch, moreBar.conversationId);
+        if (res) {
             dispatch(setDelIds(undefined));
             idDeleted.current = idDeleted.current.filter((i) => i !== moreBar.conversationId);
             setRooms(() => preDelete.current.filter((p) => !idDeleted.current.includes(p._id)));

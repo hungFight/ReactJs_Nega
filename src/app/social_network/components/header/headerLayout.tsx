@@ -9,18 +9,7 @@ import Search, { PropsSearchTextSN } from './layout/Search/Search';
 import Images from '~/assets/images';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import { CameraI, ExchangeI, FriendI, HomeI, LanguageI, SearchI, SettingI } from '~/assets/Icons/Icons';
-import {
-    Alogo,
-    ButtonSt,
-    DivHeader,
-    DivHollow,
-    DivWrapper,
-    LinkCall,
-    LinkExchange,
-    LinkHome,
-    Plogo,
-    SpanX,
-} from './styleHeader';
+import { Alogo, ButtonSt, DivHeader, DivHollow, DivWrapper, LinkCall, LinkExchange, LinkHome, Plogo, SpanX } from './styleHeader';
 import styled from 'styled-components';
 import Socialnetwork from '~/social_network';
 import { PropsTextHome } from './layout/Home/Home';
@@ -102,8 +91,7 @@ const Header: React.FC<{
         if (e.target.getAttribute('id') !== 'notS') setSearchC(!searchC);
         if (!searchC) {
             console.log('ddddd');
-            const res = await userAPI.getHistory();
-            const data = ServerBusy(res, dispatch);
+            const data = await userAPI.getHistory(dispatch);
             setHistory(data);
         }
         console.log(searchC, '--');
@@ -248,17 +236,7 @@ const Header: React.FC<{
                                 dispatch(setPeople(Math.random()));
                             }}
                         />
-                        <Hovertitle
-                            id="link"
-                            colorBg={colorBg}
-                            Tags={LinkCall}
-                            to="/sn/profile"
-                            children={<CameraI />}
-                            title={video}
-                            size="20px"
-                            color={colorText}
-                            onClick={() => setBorder('link')}
-                        />
+                        <Hovertitle id="link" colorBg={colorBg} Tags={LinkCall} to="/sn/profile" children={<CameraI />} title={video} size="20px" color={colorText} onClick={() => setBorder('link')} />
                         <Div
                             width="40px"
                             css={`
@@ -277,27 +255,14 @@ const Header: React.FC<{
                                         border-bottom: 3px solid #3e75bc;
                                     }
                                 }
-                                ${searchC
-                                    ? 'width: 100%; input{display: block; width: 100%; height: 85%;} @media (min-width: 650px){width: 380px;}'
-                                    : 'input{ width: 0%}'}
+                                ${searchC ? 'width: 100%; input{display: block; width: 100%; height: 85%;} @media (min-width: 650px){width: 380px;}' : 'input{ width: 0%}'}
                             `}
                         >
-                            {searchC && (
-                                <Search
-                                    history={history}
-                                    location={location}
-                                    colorBg={colorBg}
-                                    colorText={colorText}
-                                    dataText={search.children}
-                                    title={search.title}
-                                />
-                            )}
+                            {searchC && <Search history={history} location={location} colorBg={colorBg} colorText={colorText} dataText={search.children} title={search.title} />}
 
                             <Div
                                 css={`
-                                    ${searchC
-                                        ? 'width: 16%; right: -4px '
-                                        : 'width: 100%; left: 50%; right: 50%; top: 50%; bottom: 50%; translate: -50% -50%;'};
+                                    ${searchC ? 'width: 16%; right: -4px ' : 'width: 100%; left: 50%; right: 50%; top: 50%; bottom: 50%; translate: -50% -50%;'};
                                     height: 75%;
                                     position: absolute;
                                     align-items: center;
@@ -311,16 +276,7 @@ const Header: React.FC<{
                         </Div>
                     </Div>
                     <Div css="height: 100%;">
-                        <Hovertitle
-                            id="sett"
-                            colorBg={colorBg}
-                            color={colorText}
-                            Tags={ButtonSt}
-                            children={<SettingI />}
-                            title={sett}
-                            onClick={handleSetting}
-                            size="25px"
-                        />
+                        <Hovertitle id="sett" colorBg={colorBg} color={colorText} Tags={ButtonSt} children={<SettingI />} title={sett} onClick={handleSetting} size="25px" />
                     </Div>
                 </DivWrapper>
             </DivHeader>

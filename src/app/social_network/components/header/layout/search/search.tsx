@@ -64,22 +64,17 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
             return;
         }
         const fechApi = async () => {
-            try {
-                const results = await userAPI.getByName(searchUser, cateMore, searchUserMore, {
-                    id: true,
-                    avatar: true,
-                    fullName: true,
-                    gender: true,
-                });
-                const data = ServerBusy(results, dispatch);
-                console.log(results, 'results');
-                data.map((result: any) => {
-                    if (result.avatar) result.avatar = CommonUtils.convertBase64(result.avatar);
-                });
-                setResultSearch(results);
-            } catch (err) {
-                console.log(err);
-            }
+            const results = await userAPI.getByName(dispatch, searchUser, cateMore, searchUserMore, {
+                id: true,
+                avatar: true,
+                fullName: true,
+                gender: true,
+            });
+            console.log(results, 'results');
+            results.map((result: any) => {
+                if (result.avatar) result.avatar = CommonUtils.convertBase64(result.avatar);
+            });
+            setResultSearch(results);
         };
         fechApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,11 +116,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
             setMore(
                 <Div width="100%" wrap="wrap" css=" margin-top: 30px;">
                     {dataText.menu.map((res) => (
-                        <Div
-                            key={res.title}
-                            width="100%"
-                            css="border: 1px solid #5a5a5a; position: relative; margin-bottom: 20px;"
-                        >
+                        <Div key={res.title} width="100%" css="border: 1px solid #5a5a5a; position: relative; margin-bottom: 20px;">
                             <P z="1.3rem" css="position: absolute; top: -20px; left: 4px;">
                                 {res.title}
                             </P>
@@ -158,15 +149,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
     };
     return (
         <DivSearch>
-            <Input
-                id="notS"
-                ref={closeRef}
-                type="text"
-                color={colorText}
-                value={searchUser}
-                placeholder={title}
-                onChange={(e) => handleResultSearch(e)}
-            />
+            <Input id="notS" ref={closeRef} type="text" color={colorText} value={searchUser} placeholder={title} onChange={(e) => handleResultSearch(e)} />
             <DivPos width="30px" size="1.8rem" top="3.5px" right="0px" color={colorText} onClick={handleCloseSearch}>
                 <CloseI />
             </DivPos>
@@ -176,23 +159,10 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                     <DivResults bg={colorBg === 1 ? '#292a2d;' : ''}>
                         <Div wrap="wrap" css="margin-bottom: 6px; box-shadow: 0 0 3px rgb(31 29 29);">
                             {/* search more here */}
-                            <Div
-                                width="100%"
-                                css="margin: 2px 5px; align-items: center; justify-content: space-between"
-                            >
+                            <Div width="100%" css="margin: 2px 5px; align-items: center; justify-content: space-between">
                                 <P z="1.3rem">{placeholder ? <SearchI /> : dataText.rec}</P>
-                                {placeholder && (
-                                    <Input
-                                        type="text"
-                                        color={colorText}
-                                        placeholder={placeholder}
-                                        onChange={handleResultSearchMore}
-                                    />
-                                )}
-                                <Div
-                                    css="cursor: var(--pointer);font-size: 25px; margin-right: 10px;"
-                                    onClick={handleMore}
-                                >
+                                {placeholder && <Input type="text" color={colorText} placeholder={placeholder} onChange={handleResultSearchMore} />}
+                                <Div css="cursor: var(--pointer);font-size: 25px; margin-right: 10px;" onClick={handleMore}>
                                     <DotI />
                                 </Div>
                             </Div>
@@ -215,9 +185,7 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                         <Div css="height: 91%; overflow: auto; ">
                             <Div width="100%" css="display: block;">
                                 {resultSearch.length > 0 ? (
-                                    resultSearch.map((re) => (
-                                        <Account profile="url" key={re.id} data={re} location={location} />
-                                    ))
+                                    resultSearch.map((re) => <Account profile="url" key={re.id} data={re} location={location} />)
                                 ) : (
                                     <P>{dataText.rec === 'Recently' ? 'No one of this name' : 'Không tìm thấy'}</P>
                                 )}

@@ -36,12 +36,10 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
             dataRef.current = [];
             setLoading(true);
         }
-        const res = await peopleAPI.getFriends(offsetRef.current, limit, 'yousent');
-        const dataR = ServerBusy(res, dispatch);
-
+        const res = await peopleAPI.getFriends(dispatch, offsetRef.current, limit, 'yousent');
         console.log(type, res);
-        if (dataR) {
-            dataRef.current = [...(dataRef.current ?? []), ...dataR];
+        if (res) {
+            dataRef.current = [...(dataRef.current ?? []), ...res];
             setData(dataRef.current);
             offsetRef.current += limit;
             setLoading(false);
@@ -63,8 +61,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     }, [reload]);
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         console.log('Abolish', kindOf, id);
-        const res = await peopleAPI.delete(id, kindOf);
-        const dataR = ServerBusy(res, dispatch);
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             setData(newData);
@@ -72,8 +69,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
     };
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
-        const res = await peopleAPI.delete(id, kindOf);
-        const dataR = ServerBusy(res, dispatch);
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             console.log('delete', dataR);

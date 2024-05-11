@@ -136,12 +136,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         queryFn: async ({ queryKey }) => {
             cRef.current = 2;
             const preData: PropsItemQueryChat = queryClient.getQueryData(queryKey);
-            const res = await sendChatAPi.getChat(id_chat, preData?.indexQuery ?? 0, moreAction.current.moreChat, preData?.indexRef ?? 0, preData?.data._id);
-            const dataC: PropsConversationCustoms & PropsRooms = ServerBusy(res, dispatch);
-            console.log(dataC, 'chatRef.current', indexRef.current);
-            if (dataC) {
-                if (!dataC.rooms.length) emptyRef.current = true;
-                dataC.rooms?.map((rr, index1: number) => {
+            const res = await sendChatAPi.getChat(dispatch, id_chat, preData?.indexQuery ?? 0, moreAction.current.moreChat, preData?.indexRef ?? 0, preData?.data._id);
+            console.log(res, 'chatRef.current', indexRef.current);
+            if (res) {
+                if (!res.rooms.length) emptyRef.current = true;
+                res.rooms?.map((rr, index1: number) => {
                     if (!rr.filter.length) {
                         indexRef.current += 1;
                         offset.current = 1;
@@ -149,23 +148,23 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     rr.filter.map((d) => {
                         d.data.map((rr) => {
                             if (rr.text.t) {
-                                rr.text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : dataC._id}`);
+                                rr.text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : res._id}`);
                                 rr.text.t = regexCus(rr.text.t);
                             }
                             if (rr?.reply && rr.reply) {
                                 if (rr.reply.text) {
-                                    rr.reply.text = decrypt(rr.reply?.text, `chat_${rr.secondary ? rr.secondary : dataC._id}`);
+                                    rr.reply.text = decrypt(rr.reply?.text, `chat_${rr.secondary ? rr.secondary : res._id}`);
                                 }
                             }
                         });
                         d.data.sort((a, b) => (new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1));
                     });
                 });
-                const latestRoom = dataC.rooms[dataC.rooms.length - 1];
+                const latestRoom = res.rooms[res.rooms.length - 1];
                 if (moreAction.current.moreChat) {
                     cRef.current = 8;
                     const preData: PropsItemQueryChat = queryClient.getQueryData(['getItemChats', id_chat.id_other + '_' + id_you]);
-                    if (dataC.rooms.length > 0 && preData) if (preData) preData.data.rooms = [...preData.data.rooms, ...dataC.rooms];
+                    if (res.rooms.length > 0 && preData) if (preData) preData.data.rooms = [...preData.data.rooms, ...res.rooms];
                     moreAction.current.moreChat = false;
                     return {
                         load: preData?.load ?? [],
@@ -179,7 +178,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     return {
                         load: [],
                         indexQuery: latestRoom ? latestRoom?.filter[0]?.indexQuery : preData?.indexQuery,
-                        data: dataC,
+                        data: res,
                         oldSeenBy: [],
                         indexRef: latestRoom ? latestRoom?.index : preData?.indexRef,
                     };
@@ -254,16 +253,17 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 formDataFile.append('file', uploadIn?.up[i], uploadIn?.up[i].name + '@_id_***_get_$' + uploadIn?.up[i]._id); // assign file and _id of the file upload
             }
 
-            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(formDataFile) : [];
+            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(dispatch, formDataFile) : null;
+            const onData: { id: string; width?: string; height?: string; type: string; tail: string; title?: string; id_sort?: string; id_client: string }[] | null = ServerBusy(urlS, dispatch);
             const id_ = uuidv4();
-            const images = urlS.map((i) => {
+            const imageOrVideos = onData?.map((i) => {
                 return { _id: i.id, v: i.id, icon: '', type: i.type }; // get key for _id
             });
             const id_s = uuidv4();
             converData.load = [...(converData.load ?? []), { id: id_, status: 'loading' }];
             const chat: any = {
                 createdAt: DateTime(),
-                imageOrVideos: images,
+                imageOrVideos,
                 seenBy: [],
                 text: { t: value, icon: '' },
                 userId: id_you,
@@ -315,8 +315,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             fda.valueInfoFile = urlS;
             fda.conversationId = data._id;
             fda.indexRoom = data.rooms[data.rooms.length - 1].index ?? 0;
-            const res = await sendChatAPI.send(fda);
-            const dataSent: typeof res | undefined = ServerBusy(res, dispatch);
+            const res = await sendChatAPI.send(dispatch, fda);
+            const dataSent: PropsRoomChat = ServerBusy(res, dispatch);
             queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
                 if (preData) {
                     if (dataSent) {
@@ -409,22 +409,10 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     const handleDelete = async () => {
         setLoadDel(true);
         if (data) {
-            const res = await sendChatAPi.delete(data._id);
-            const dataRe:
-                | {
-                      _id: string;
-                      deleted: {
-                          id: string;
-                          createdAt: string;
-                          _id: string;
-                          show: boolean;
-                      }[];
-                  }
-                | undefined = ServerBusy(res, dispatch);
-
-            if (dataRe) {
-                setConversation({ ...data, rooms: [], deleted: dataRe.deleted });
-                dispatch(setDelIds(dataRe));
+            const res = await sendChatAPi.delete(dispatch, data._id);
+            if (res) {
+                setConversation({ ...data, rooms: [], deleted: res.deleted });
+                dispatch(setDelIds(res));
             }
         }
 
@@ -432,38 +420,32 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
     };
     const handleUndo = async () => {
         console.log('Undo');
-        setLoadDel(true);
-        if (data?._id) {
-            emptyRef.current = false;
-            const res = await sendChatAPi.undo(data._id);
-            const dataV: PropsChat | undefined = ServerBusy(res, dispatch);
-            if (dataV) {
-                const newData = await new Promise<PropsChat>(async (resolve, reject) => {
-                    const modifiedData: any = { ...dataV };
-                    await Promise.all(
-                        modifiedData.room?.map(
-                            async (
-                                rr: {
-                                    imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
-                                    text: { t: string };
-                                    secondary?: string;
-                                },
-                                index1: number,
-                            ) => {
-                                if (rr.text.t) {
-                                    modifiedData.room[index1].text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : modifiedData._id}`);
-                                }
-                            },
-                        ),
-                    );
-                    resolve(modifiedData);
-                });
-                cRef.current = 0;
-                dispatch(setDelIds(undefined));
-                console.log(newData, 'newDataBG');
-                setConversation(newData);
-            }
-        }
+        // setLoadDel(true);
+        // if (data?._id) {
+        //     emptyRef.current = false;
+        //     const res = await sendChatAPi.undo(data._id);
+        //     const dataV: PropsChat | null = ServerBusy(res, dispatch);
+        //     if (dataV) {
+        //                 dataV.rooms?.map(
+        //                      (
+        //                         rr: {
+        //                             imageOrVideos: { _id: string; v: string; icon: string; type: string }[];
+        //                             text: { t: string };
+        //                             secondary?: string;
+        //                         },
+        //                         index1: number,
+        //                     ) => {
+        //                         if (rr.text.t) {
+        //                             dataV.rooms[index1].text.t = decrypt(rr.text.t, `chat_${rr.secondary ? rr.secondary : modifiedData._id}`);
+        //                         }
+        //                     },
+        //                 )
+        //         cRef.current = 0;
+        //         dispatch(setDelIds(undefined));
+        //         console.log(newData, 'newDataBG');
+        //         setConversation(newData);
+        //     }
+        // }
         setLoadDel(false);
     };
     const ye = !moves.some((m) => m === data?._id || m === data?.user.id); //stop action when moving
@@ -477,25 +459,24 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
             if (fileC) {
                 formData.append('file', fileC); // assign file and _id of the file upload
                 if (data.background) formData.append('old_id', data.background.id);
-                const re = await fileWorkerAPI.addFiles(formData);
+                const re = await fileWorkerAPI.addFiles(dispatch, formData);
                 const AddOk = ServerBusy(re, dispatch);
-                if (AddOk?.length) {
-                    const res = await chatAPI.setBackground({
+                if (re?.length) {
+                    const res = await chatAPI.setBackground(dispatch, {
                         conversationId: data._id,
                         dataId: data.rooms[0].filter[0].data[0]._id,
                         id_file: re.map((f) => ({ id: f.id, type: f.type }))[0],
                     });
-                    const resOk = ServerBusy(res, dispatch);
-                    if (resOk)
+                    if (res)
                         queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
                             if (preData) {
                                 data.background = {
                                     id: res.ids_file.id,
                                     v: res.ids_file.id,
                                     type: res.ids_file.type,
-                                    userId: resOk.operation.userId,
+                                    userId: res.operation.userId,
                                 };
-                                data.statusOperation.push(resOk.operation);
+                                data.statusOperation.push(res.operation);
                                 return { ...preData, data };
                             }
                             return preData;
@@ -908,10 +889,10 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                     css="width: 100%; align-items: center; display: flex; svg{margin-right: 3px;} "
                                     onClick={async () => {
                                         if (data && data.background) {
-                                            const fileDed = await fileWorkerAPI.deleteFileImg([data.background.id]);
+                                            const fileDed = await fileWorkerAPI.deleteFileImg(dispatch, [data.background.id]);
                                             const delOk = ServerBusy(fileDed, dispatch);
                                             if (delOk) {
-                                                const res = await chatAPI.delBackground(data._id, data.rooms[0].filter[0].data[0]._id);
+                                                const res = await chatAPI.delBackground(dispatch, data._id, data.rooms[0].filter[0].data[0]._id);
                                                 const resOk = ServerBusy(res, dispatch);
                                                 if (resOk)
                                                     queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {

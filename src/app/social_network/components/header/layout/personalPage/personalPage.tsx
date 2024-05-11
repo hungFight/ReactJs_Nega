@@ -25,7 +25,8 @@ const Personalpage: React.FC<{
     const dispatch = useDispatch();
 
     async function fetchD(ids: string[]) {
-        const res: PropsUserPer[] | PropsUser = await userAPI.getById(
+        const res = await userAPI.getById(
+            dispatch,
             ids,
             {
                 id: true,
@@ -59,10 +60,8 @@ const Personalpage: React.FC<{
                 privacy: true,
             },
         );
-        const data: typeof res = ServerBusy(res, dispatch);
-        console.log('slug', data);
-        if (Array.isArray(data)) {
-            setUsersData(data);
+        if (Array.isArray(res)) {
+            setUsersData(res);
         }
         setLoading(false);
     }

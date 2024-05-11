@@ -186,8 +186,8 @@ export default function LogicPreView(
                     }
                     formDataFake.bg_default = bg;
                     if (file.length) {
-                        const returnDataAdded = await fileWorkerAPI.addFiles(formData);
-                        returnDataAdded.map((r) => {
+                        const returnDataAdded = await fileWorkerAPI.addFiles(dispatch, formData);
+                        returnDataAdded?.map((r) => {
                             const title = file.find((f) => f._id === r.id_client)?.title;
                             if (title) r.title = title;
                             const width = file.find((f) => f._id === r.id_client)?.width;
@@ -198,20 +198,17 @@ export default function LogicPreView(
                         formDataFake.id_file = returnDataAdded;
                     }
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
-                    res = await postAPI.setPost(formDataFake);
-                    const dataR: PropsDataPosts | null = ServerBusy(res, dispatch);
-                    console.log(dataR, 'dataRR');
-
-                    if (dataR) {
+                    res = await postAPI.setPost(dispatch, formDataFake);
+                    if (res) {
                         queryClient.setQueryData(['collections_post', user.fullName], (preData: PropsDataPosts[] | undefined) => {
-                            return [dataR, ...(preData ?? [])];
+                            return [res, ...(preData ?? [])];
                         });
                     } else {
                         if (formDataFake.id_file?.length) {
                             const Id_img = formDataFake.id_file?.filter((f) => f.type === 'image').map((f) => f.id);
                             const Id_vid = formDataFake.id_file?.filter((f) => f.type === 'video').map((f) => f.id);
-                            if (Id_img.length) await fileWorkerAPI.deleteFileImg(Id_img);
-                            if (Id_vid.length) await fileWorkerAPI.deleteFileVideo(Id_vid);
+                            if (Id_img.length) await fileWorkerAPI.deleteFileImg(dispatch, Id_img);
+                            if (Id_vid.length) await fileWorkerAPI.deleteFileVideo(dispatch, Id_vid);
                         }
                     }
                     setLoading(false);
@@ -229,8 +226,7 @@ export default function LogicPreView(
                                 if (f.file) formData.append('file', f.file, JSON.stringify(c.id));
                             }
                         });
-                        res = await postAPI.setPost(formData);
-                        const dataR = ServerBusy(res, dispatch);
+                        res = await postAPI.setPost(dispatch, formData);
 
                         setLoading(false);
                         //     console.log(res, 'res');
@@ -239,9 +235,7 @@ export default function LogicPreView(
                             if (fil.file) formData.append('files', fil.file);
                         }
                         console.log('text', valueText, 'file', file, 'fontFamily', font, 'swiper', selectChild);
-                        res = await postAPI.setPost(formData);
-                        const dataR = ServerBusy(res, dispatch);
-
+                        res = await postAPI.setPost(dispatch, formData);
                         setLoading(false);
                         console.log(res, 'res');
                     }
@@ -250,8 +244,7 @@ export default function LogicPreView(
                     console.log('text', valueText, 'file', file, 'fontFamily', font, 'color-bg', bg, 'column', column);
                     formData.append('BgColor', bg);
                     formData.append('columnOfGrid', JSON.stringify(column));
-                    res = await postAPI.setPost(formData);
-                    const dataRq = ServerBusy(res, dispatch);
+                    res = await postAPI.setPost(dispatch, formData);
 
                     setLoading(false);
                     break;
@@ -260,8 +253,7 @@ export default function LogicPreView(
                         if (fil.file) formData.append('files', fil.file);
                     }
                     console.log('text', valueText, 'file', file, 'fontFamily', font, Imotions);
-                    res = await postAPI.setPost(formData);
-                    const dataRs = ServerBusy(res, dispatch);
+                    res = await postAPI.setPost(dispatch, formData);
 
                     console.log(res, 'res');
                     setLoading(false);

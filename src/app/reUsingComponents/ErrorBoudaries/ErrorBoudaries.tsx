@@ -3,15 +3,15 @@ import { DivMessage } from './stylesErrorBoudaries';
 import { Button, P } from '../styleComponents/styleDefault';
 import { useDispatch } from 'react-redux';
 import { setFalseErrorServer } from '~/redux/hideShow';
-import { setSession } from '~/redux/reload';
+import { PropsSessionCode, setSession } from '~/redux/reload';
 import { useCookies } from 'react-cookie';
 import Cookies from 'js-cookie';
 const ErrorBoundaries: React.FC<{
-    message: string;
-}> = ({ message }) => {
+    code: PropsSessionCode;
+}> = ({ code }) => {
     const dispatch = useDispatch();
     const [c, s, removeCookies] = useCookies(['k_user', 'tks']);
-    const login = message === 'The session expired! Please login again' ? true : false;
+    const message = code === 'NeGA_ExcessiveRequest' ? 'Server is now busy! just wait for moment.' : code === 'NeGA_off' ? 'The session expired! Please login again' : '';
     return (
         <DivMessage>
             <P
@@ -33,15 +33,15 @@ const ErrorBoundaries: React.FC<{
                     size="1.3rem"
                     css="margin: 10px auto; "
                     onClick={() => {
-                        dispatch(setSession(''));
+                        dispatch(setSession(null));
                         dispatch(setFalseErrorServer());
-                        if (login) {
+                        if (code === 'NeGA_off') {
                             Cookies.remove('tks');
                             removeCookies('k_user');
                         }
                     }}
                 >
-                    {login ? 'Login' : 'Xác nhận'}
+                    {code === 'NeGA_off' ? 'Login' : 'Xác nhận'}
                 </Button>
             </P>
         </DivMessage>

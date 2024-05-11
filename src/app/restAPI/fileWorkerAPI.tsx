@@ -2,57 +2,59 @@ import refreshToken from '~/refreshToken/refreshToken';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import httpFile from '~/utils/httpFile';
+import { Dispatch } from 'react';
+import { AnyAction } from '@reduxjs/toolkit';
 
 class fileWorkerAPI {
-    addFiles = async (formData: FormData): Promise<{ id: string; width?: string; height?: string; type: string; tail: string; title?: string; id_sort?: string; id_client: string }[]> => {
+    addFiles = async (dispatch: Dispatch<AnyAction>, formData: FormData) => {
         try {
             // file, title?, id_sort?, old_id?(to delete old file)
             const Axios = refreshToken.axiosJWTsFIle();
-            const res = await Axios.post(`/addFiles`, formData);
+            const res = await Axios.post<{ id: string; width?: string; height?: string; type: string; tail: string; title?: string; id_sort?: string; id_client: string }[]>(`/addFiles`, formData);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    deleteFileImg = async (ids: string[]): Promise<boolean> => {
+    deleteFileImg = async (dispatch: Dispatch<AnyAction>, ids: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.post<boolean>(`/deleteFileImg`, { ids });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    deleteFileVideo = async (ids: string[]) => {
+    deleteFileVideo = async (dispatch: Dispatch<AnyAction>, ids: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.post<boolean>(`/deleteFileVideo`, { ids });
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getFileImg = async (id: string) => {
+    getFileImg = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.get(`/getFileImg/${id}`);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
-    getFileVideo = async (id: string) => {
+    getFileVideo = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.get(`/getFileVideo/${id}`);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;
-            return errorHandling(err);
+            return errorHandling(err, dispatch);
         }
     };
 }

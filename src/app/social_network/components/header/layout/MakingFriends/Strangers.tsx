@@ -61,9 +61,7 @@ const Strangers: React.FC<{
             setLoading(true);
         }
 
-        const res = await peopleAPI.getStrangers(limit, rel);
-        const dataR = ServerBusy(res, dispatch);
-
+        const dataR = await peopleAPI.getStrangers(dispatch, limit, rel);
         console.log(dataRef.current.length, rel, 'strangers', dataR);
         dataRef.current = [...(dataRef.current ?? []), ...dataR];
         if (!rel) {
@@ -101,7 +99,7 @@ const Strangers: React.FC<{
     }, [reload]);
 
     const handleAdd = async (id: string, kindOf: string = 'friend') => {
-        const res: {
+        const dataR: {
             id_friend: string;
             data: {
                 createdAt: string;
@@ -109,9 +107,7 @@ const Strangers: React.FC<{
                 idIsRequested: string;
                 idRequest: string;
             };
-        } = await peopleAPI.setFriend(id);
-        const dataR: typeof res = ServerBusy(res, dispatch);
-
+        } = await peopleAPI.setFriend(dispatch, id);
         const newStranger = data?.filter((x: PropsData) => {
             if (x.id === dataR.data.idIsRequested) {
                 x.userRequest[0] = {
@@ -129,7 +125,7 @@ const Strangers: React.FC<{
         setData(newStranger);
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const res: {
+        const dataR: {
             ok: {
                 createdAt: string;
                 id: number;
@@ -138,9 +134,7 @@ const Strangers: React.FC<{
                 level: number;
                 updatedAt: string;
             };
-        } = await peopleAPI.delete(id, kindOf);
-        const dataR: typeof res = ServerBusy(res, dispatch);
-
+        } = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) {
             const newStranger = data?.filter((x: PropsData) => {
                 if (
@@ -164,8 +158,7 @@ const Strangers: React.FC<{
         console.log('messenger', id);
     };
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
-        const res = await peopleAPI.setConfirm(id, kindOf);
-        const dataR = ServerBusy(res, dispatch);
+        const dataR = await peopleAPI.setConfirm(dispatch, id, kindOf);
         refresh(dataR);
         function refresh(res: any) {
             if (res.ok === 1) {
@@ -192,8 +185,7 @@ const Strangers: React.FC<{
             console.log('newData', newData);
         } else {
             console.log('deleted', id);
-            const res = await peopleAPI.delete(id, kindOf);
-            const dataR = ServerBusy(res, dispatch);
+            const dataR = await peopleAPI.delete(dispatch, id, kindOf);
             if (dataR) {
                 const newData: any = data?.filter((d: { id: string }) => d.id !== id);
                 setData(newData);

@@ -7,10 +7,7 @@ import errorHandling from '../errorHandling/errorHandling';
 import Cookies from 'js-cookie';
 
 class AuthRequest {
-    postLogin = async (
-        params: { nameAccount: string; password: string },
-        setCookies?: (name: 'tks' | 'k_user', value: any, options?: CookieSetOptions | undefined) => void,
-    ) => {
+    postLogin = async (params: { nameAccount: string; password: string }, setCookies?: (name: 'tks' | 'k_user', value: any, options?: CookieSetOptions | undefined) => void) => {
         try {
             const res = await http.post('/account/login', { params });
             console.log(res, setCookies);
@@ -71,35 +68,19 @@ class AuthRequest {
             return errorHandling(err);
         }
     };
-    postSendOTP = async (params: { phoneMail: string | number }) => {
-        try {
-            const path = 'otp/send';
-            const response = await http.post(path, { params });
-            return response;
-        } catch (error) {
-            const err = error as AxiosError;
-            return errorHandling(err);
-        }
+    postSendOTP = async (params: { phoneMail: string | number }): Promise<{ status: number; message: string }> => {
+        const path = 'otp/send';
+        const response = await http.post(path, { params }).then((data) => {
+            return data.data;
+        });
+        return response;
     };
-    postVerifyOTP = async (params: { phoneMail: string; otp: string }) => {
-        try {
-            const path = 'verify/otp';
-            const res = await http.post(path, { params });
-            console.log('rés', res);
-
-            return res;
-        } catch (error) {
-            const err = error as AxiosError;
-            return errorHandling(err);
-        }
+    postVerifyOTP = async (params: { phoneMail: string; otp: string }): Promise<{ status: number; message: string; acc: number }> => {
+        const path = 'verify/otp';
+        const res = await http.post(path, { params }).then((data) => data.data);
+        return res;
     };
-    postRegister = async (params: {
-        name: string;
-        phoneMail: string | Number;
-        password: string;
-        gender: number | null;
-        date: string;
-    }) => {
+    postRegister = async (params: { name: string; phoneMail: string | Number; password: string; gender: number | null; date: string }) => {
         try {
             const res = await http.post('/account/register', { params });
             return res?.data;

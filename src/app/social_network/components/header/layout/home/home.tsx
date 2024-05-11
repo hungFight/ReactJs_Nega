@@ -52,8 +52,7 @@ const Home: React.FC<PropsHome> = ({ home, colorBg, colorText, dataUser }) => {
         cacheTime: 1 * 60 * 60 * 1000,
         queryFn: async () => {
             try {
-                const res = await homeAPI.getPosts(limit, offset.current, 'friend');
-                const data: typeof res = ServerBusy(res, dispatch);
+                const data = await homeAPI.getPosts(dispatch, limit, offset.current, 'friend');
                 return data;
             } catch (error) {
                 return [];

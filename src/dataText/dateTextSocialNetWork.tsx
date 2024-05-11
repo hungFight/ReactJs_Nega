@@ -1,6 +1,7 @@
 import { LanguageI } from '~/assets/Icons/Icons';
+import { InNetWork } from '~/social_network';
 
-export const socialnetwork = {
+export const socialnetwork: { vi: InNetWork; en: InNetWork } = {
     vi: {
         header: {
             logo: 'Trang Chính',
