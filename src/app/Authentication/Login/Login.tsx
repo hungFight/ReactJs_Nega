@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { ButtonSubmit, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
 import { changeLogin } from '~/redux/languageRD';
 
 import Language from '~/Language/Language';
@@ -87,7 +87,7 @@ const Login: React.FC<{
                     </DivAccount>
                     {errText && <Perror> {errText}</Perror>}
                     <DivRegister onClick={handleRegister}>{register}</DivRegister>
-                    <ButtonSubmit title={submit} loading={loading} />
+                    <ButtonAnimationSurround title={submit} loading={loading} />
                 </form>
             </DivForm>
         </>

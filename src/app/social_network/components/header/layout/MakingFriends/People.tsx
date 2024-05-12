@@ -10,11 +10,12 @@ import Friends from './Friends';
 import Requested from './Requested';
 import Others from './OthersRequest';
 import { PropsId_chats } from 'src/App';
+import { ButtonAnimationSurround } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const socket = io('http://localhost:3001', { transports: ['websocket'] });
 
 export interface PropsTextFriends {
-    menu: { name: string; id: 'strangers' | 'friends' | 'family' | 'yousent' | 'otherssent' }[];
+    menu: { name: string; id: 'strangers' | 'friends' | 'family' | 'yousent' | 'otherssent'; bgAnimation: string[] }[];
 }
 export interface PropsUserPeople {
     avatar?: string;
@@ -40,17 +41,20 @@ const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colo
             <Div width="100%" css="height: 30px;"></Div>
             <Div css="height: 91%">
                 <DivNone>
-                    {menu.map((u) => (
-                        <DivFlex
-                            key={u.id}
-                            width="fit-content"
-                            padding="5px 20px"
-                            margin="5px 20px"
-                            cursor="var(--pointer)"
-                            css="background-color: #282827; border-radius: 5px; &:hover{box-shadow: 0 0 5px;transition: all 0.3s linear;}"
-                            onClick={() => setType(u.id)}
-                        >
-                            <P>{u.name}</P>
+                    {menu.map((u, index) => (
+                        <DivFlex key={u.id} width="fit-content" margin="5px 40px" cursor="var(--pointer)" onClick={() => setType(u.id)}>
+                            <ButtonAnimationSurround
+                                title={u.name}
+                                bgImg={u.bgAnimation[0]}
+                                bgSecond={u.bgAnimation[1]}
+                                css={`
+                                    width: 120px;
+                                    border-radius: 5px;
+                                    padding: 0 10px;
+                                    ${u.id === type ? 'background-color: antiquewhite;' : ''}
+                                    ${index ? 'margin: 8px 0;' : 'margin:0;'}
+                                `}
+                            />
                         </DivFlex>
                     ))}
                 </DivNone>

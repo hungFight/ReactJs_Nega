@@ -7,7 +7,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
 import CommonUtils from '~/utils/CommonUtils';
-import { ButtonSubmit, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Button, Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivTitleP } from '../styleLayout';
 import UserBar from 'src/mainPage/personalPage/layout/UserBar';
@@ -67,23 +67,7 @@ const Title: React.FC<{
     id_loved: string;
     editTitle: boolean;
     setEditTitle: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({
-    userFirst,
-    setUserFirst,
-    setUsersData,
-    AllArray,
-    colorText,
-    colorBg,
-    data,
-    status,
-    id_o,
-    userRequested,
-    level,
-    resTitle,
-    id_loved,
-    editTitle,
-    setEditTitle,
-}) => {
+}> = ({ userFirst, setUserFirst, setUsersData, AllArray, colorText, colorBg, data, status, id_o, userRequested, level, resTitle, id_loved, editTitle, setEditTitle }) => {
     const { mores } = data;
 
     const {
@@ -130,27 +114,12 @@ const Title: React.FC<{
         viewMore,
         setViewMore,
         loadingSub,
-    } = LogicTitle(
-        data,
-        resTitle,
-        id_loved,
-        editTitle,
-        setEditTitle,
-        setUserFirst,
-        setUsersData,
-        userRequested,
-        level,
-        userFirst,
-    );
+    } = LogicTitle(data, resTitle, id_loved, editTitle, setEditTitle, setUserFirst, setUsersData, userRequested, level, userFirst);
     console.log(viewMore, 'viewMore');
 
     return (
         <DivTitleP onClick={() => setAcPrivate('')}>
-            <Div
-                width="100%"
-                wrap="wrap"
-                css="justify-content: space-evenly; background-color: #222222; padding: 9px 0; border-radius: 5px; box-shadow: 0 0 1px #949090;"
-            >
+            <Div width="100%" wrap="wrap" css="justify-content: space-evenly; background-color: #222222; padding: 9px 0; border-radius: 5px; box-shadow: 0 0 1px #949090;">
                 <Div>
                     {itemsT.map((i) => (
                         <Div
@@ -164,9 +133,7 @@ const Title: React.FC<{
                                 font-size: 20px;
                                 color: ${colorText};
                                 div {
-                                    color: ${i.key === 3 && [id_o, userRequested].includes(userId) && level === 2
-                                        ? '#257fc2'
-                                        : ''};
+                                    color: ${i.key === 3 && [id_o, userRequested].includes(userId) && level === 2 ? '#257fc2' : ''};
                                 }
                                 @media (min-width: 768px) {
                                     font-size: 22px;
@@ -215,10 +182,7 @@ const Title: React.FC<{
                             `}
                         >
                             <Div width="100%" css="align-items: center; justify-content: center; ">
-                                <H3
-                                    css="font-size: 1.5rem; cursor: var(--pointer); "
-                                    onClick={() => handlePosition(i.key)}
-                                >
+                                <H3 css="font-size: 1.5rem; cursor: var(--pointer); " onClick={() => handlePosition(i.key)}>
                                     <a href={`#title${i.key}`}> {i.icon}</a>
                                 </H3>
                             </Div>
@@ -244,11 +208,7 @@ const Title: React.FC<{
                         <P z="1.4rem" css="width: 100%; text-align: center; position: absolute; left: 0; top: 4px;">
                             In editing
                         </P>
-                        <Button
-                            css="margin: 0; cursor: var(--pointer); z-index: 1;"
-                            color={colorText}
-                            onClick={() => setEditTitle(false)}
-                        >
+                        <Button css="margin: 0; cursor: var(--pointer); z-index: 1;" color={colorText} onClick={() => setEditTitle(false)}>
                             Exit
                         </Button>
                     </Div>
@@ -298,9 +258,7 @@ const Title: React.FC<{
                             position: relative;
                             ${editTitle ? 'cursor: var(--pointer);' : ''}
                             &:hover {
-                                ${editTitle
-                                    ? 'transition: all 0.5s linear; padding-left: 3px; border-radius: 5px;'
-                                    : ''}
+                                ${editTitle ? 'transition: all 0.5s linear; padding-left: 3px; border-radius: 5px;' : ''}
                             }
                         `}
                     >
@@ -360,10 +318,7 @@ const Title: React.FC<{
                                                 Everyone
                                             </P>
                                             <div style={{ position: 'relative' }}>
-                                                <Div
-                                                    width="33px"
-                                                    css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"
-                                                ></Div>
+                                                <Div width="33px" css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"></Div>
                                             </div>
                                         </Div>
                                     )}
@@ -375,13 +330,7 @@ const Title: React.FC<{
                                             ${acPrivate === 'position' ? 'color: #3db972;' : ''}
                                         `}
                                     >
-                                        {privacy.position === 'only' ? (
-                                            <PrivateI />
-                                        ) : privacy.position === 'friends' ? (
-                                            <FriendI />
-                                        ) : (
-                                            <EarthI />
-                                        )}
+                                        {privacy.position === 'only' ? <PrivateI /> : privacy.position === 'friends' ? <FriendI /> : <EarthI />}
                                     </Div>
                                 </Div>
                             </DivPos>
@@ -439,14 +388,7 @@ const Title: React.FC<{
             >
                 {Object.keys(ArrayRender).map((key) => {
                     if ((ArrayRender[key].val?.length && !editTitle) || editTitle) {
-                        return renderArrayInfo(
-                            ArrayRender[key].val,
-                            ArrayRender[key].placeholder,
-                            ArrayRender[key].icon,
-                            key,
-                            ArrayRender[key].private,
-                            ArrayRender[key].color,
-                        );
+                        return renderArrayInfo(ArrayRender[key].val, ArrayRender[key].placeholder, ArrayRender[key].icon, key, ArrayRender[key].private, ArrayRender[key].color);
                     }
                 })}
                 {((subAccountsData?.length && !editTitle) || editTitle) && (
@@ -462,9 +404,7 @@ const Title: React.FC<{
                             z-index: 1;
                             ${editTitle ? 'cursor: var(--pointer);' : ''}
                             &:hover {
-                                ${editTitle
-                                    ? 'transition: all 0.5s linear; padding-left: 3px; border-radius: 5px;'
-                                    : ''}
+                                ${editTitle ? 'transition: all 0.5s linear; padding-left: 3px; border-radius: 5px;' : ''}
                             }
                         `}
                         onClick={() => {
@@ -519,13 +459,7 @@ const Title: React.FC<{
                                                     }}
                                                 />
 
-                                                <Eyes
-                                                    value={login?.password}
-                                                    setShow={setShowPass}
-                                                    show={showPass}
-                                                    top="3px"
-                                                    right="3px"
-                                                />
+                                                <Eyes value={login?.password} setShow={setShowPass} show={showPass} top="3px" right="3px" />
                                             </Div>
                                         </Div>
                                         {error !== undefined && (
@@ -536,22 +470,15 @@ const Title: React.FC<{
                                                     color: ${error !== null ? '#74c196;' : '#c17474'};
                                                 `}
                                             >
-                                                {error === null
-                                                    ? "You had logged in or your Account's name or password are already wrong! "
-                                                    : 'successfully!'}
+                                                {error === null ? "You had logged in or your Account's name or password are already wrong! " : 'successfully!'}
                                             </P>
                                         )}
                                     </Div>
 
                                     <Div width="100%" css="justify-content: center;">
                                         {' '}
-                                        <ButtonSubmit
-                                            loading={loadingSub}
-                                            title="Login"
-                                            css="margin: 0;  width: 20%; button{ background: #135d66;}"
-                                            onClick={() => handleLogin()}
-                                        />
-                                        <ButtonSubmit
+                                        <ButtonAnimationSurround loading={loadingSub} title="Login" css="margin: 0;  width: 20%; button{ background: #135d66;}" onClick={() => handleLogin()} />
+                                        <ButtonAnimationSurround
                                             title="No"
                                             css={`
                                                 margin: 0;
@@ -572,18 +499,8 @@ const Title: React.FC<{
                                     {subAccountsData?.map((ac) => {
                                         const sub = ac.account;
                                         return (
-                                            <Div
-                                                key={sub.id}
-                                                wrap="wrap"
-                                                css="margin: 4px 5px; justify-content: center; position: relative;"
-                                            >
-                                                <Avatar
-                                                    src={sub.avatar}
-                                                    alt={sub.fullName}
-                                                    gender={sub.gender}
-                                                    radius="50%"
-                                                    css="width: 38px; height: 38px;"
-                                                />
+                                            <Div key={sub.id} wrap="wrap" css="margin: 4px 5px; justify-content: center; position: relative;">
+                                                <Avatar src={sub.avatar} alt={sub.fullName} gender={sub.gender} radius="50%" css="width: 38px; height: 38px;" />
                                                 <Hname css="text-align: center;">{sub.fullName}</Hname>
                                                 <Div
                                                     width="100%"
@@ -605,11 +522,7 @@ const Title: React.FC<{
                                         const sub = ac.account;
                                         sub.avatar = CommonUtils.convertBase64(sub.avatar);
                                         return (
-                                            <Div
-                                                key={sub.id}
-                                                width="fit-content"
-                                                css="margin: 0 3px; position: relative; margin-bottom: 10px;"
-                                            >
+                                            <Div key={sub.id} width="fit-content" css="margin: 0 3px; position: relative; margin-bottom: 10px;">
                                                 {subAccount && userFirst.id === data.id ? ( // is your
                                                     <>
                                                         <DivPos
@@ -621,17 +534,13 @@ const Title: React.FC<{
                                                         >
                                                             <BackI />
                                                         </DivPos>
-                                                        <Div
-                                                            wrap="wrap"
-                                                            css=" justify-content: center; background-color: #4c5260;  border-radius: 5px; text-align: center; padding: 5px;"
-                                                        >
+                                                        <Div wrap="wrap" css=" justify-content: center; background-color: #4c5260;  border-radius: 5px; text-align: center; padding: 5px;">
                                                             <Div css="align-items: center;">
                                                                 <Div
                                                                     width="38px"
                                                                     css="height: 38px; margin: 4px 5px; cursor: var(--pointer);"
                                                                     onClick={() => {
-                                                                        if (userFirst.id === data.id)
-                                                                            setSubAccount(true);
+                                                                        if (userFirst.id === data.id) setSubAccount(true);
                                                                     }}
                                                                 >
                                                                     <Avatar
@@ -653,11 +562,7 @@ const Title: React.FC<{
                                                             ></Div>
 
                                                             {pass?.id === sub.id ? ( // insert value to login
-                                                                <Div
-                                                                    width="100%"
-                                                                    wrap="wrap"
-                                                                    css="align-items: center;"
-                                                                >
+                                                                <Div width="100%" wrap="wrap" css="align-items: center;">
                                                                     <Div css="align-items: center">
                                                                         <Input
                                                                             type="text"
@@ -674,17 +579,11 @@ const Title: React.FC<{
                                                                             }
                                                                         />
 
-                                                                        <ButtonSubmit
+                                                                        <ButtonAnimationSurround
                                                                             loading={loadingSub}
                                                                             title="Login"
                                                                             css="width: 50px; margin: 0; button{ background: #135d66;}"
-                                                                            onClick={() =>
-                                                                                handleLogin(
-                                                                                    sub.id,
-                                                                                    sub.phoneNumberEmail,
-                                                                                    'other',
-                                                                                )
-                                                                            }
+                                                                            onClick={() => handleLogin(sub.id, sub.phoneNumberEmail, 'other')}
                                                                         />
                                                                     </Div>
                                                                     {error === 'false' && (
@@ -698,9 +597,7 @@ const Title: React.FC<{
                                                                 <P
                                                                     z="1.3rem"
                                                                     css=" cursor: var(--pointer); &:hover{color: #9bd6e2;}  background-color: #0074bc; border-radius: 5px; margin-top: 10px; margin-right: 10px; padding: 4px 10px;"
-                                                                    onClick={() =>
-                                                                        setPass({ id: sub.id, kind: 'login', val: '' })
-                                                                    }
+                                                                    onClick={() => setPass({ id: sub.id, kind: 'login', val: '' })}
                                                                 >
                                                                     Login
                                                                 </P>
@@ -735,11 +632,7 @@ const Title: React.FC<{
                                                             src={sub.avatar}
                                                             alt={sub.fullName}
                                                             currentId={data.id}
-                                                            profile={
-                                                                !(userFirst.id === data.id && userFirst.id === userId)
-                                                                    ? 'po'
-                                                                    : ''
-                                                            }
+                                                            profile={!(userFirst.id === data.id && userFirst.id === userId) ? 'po' : ''}
                                                             gender={sub.gender}
                                                             radius="50%"
                                                         />
@@ -804,10 +697,7 @@ const Title: React.FC<{
                                                 Everyone
                                             </P>
                                             <div style={{ position: 'relative' }}>
-                                                <Div
-                                                    width="33px"
-                                                    css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"
-                                                ></Div>
+                                                <Div width="33px" css="height: 1px; position: absolute; background-color: #096794; left: 10px; top: -58px;"></Div>
                                             </div>{' '}
                                         </Div>
                                     )}
@@ -819,13 +709,7 @@ const Title: React.FC<{
                                             ${acPrivate === 'subAccount' ? 'color: #3db972;' : ''}
                                         `}
                                     >
-                                        {privacy.subAccount === 'only' ? (
-                                            <PrivateI />
-                                        ) : privacy.subAccount === 'friends' ? (
-                                            <FriendI />
-                                        ) : (
-                                            <EarthI />
-                                        )}
+                                        {privacy.subAccount === 'only' ? <PrivateI /> : privacy.subAccount === 'friends' ? <FriendI /> : <EarthI />}
                                     </Div>
                                 </Div>
                             </DivPos>
@@ -855,10 +739,7 @@ const Title: React.FC<{
             )}
             {editTitle && (
                 <Div width="100%" css="justify-content: right;">
-                    <Button
-                        css=" margin-right: 10px; background-color: #9f3636; box-shadow: 0 0 1px #949090; margin-top: 7px;border-radius: 5px;"
-                        onClick={() => setEditTitle(false)}
-                    >
+                    <Button css=" margin-right: 10px; background-color: #9f3636; box-shadow: 0 0 1px #949090; margin-top: 7px;border-radius: 5px;" onClick={() => setEditTitle(false)}>
                         Exit
                     </Button>
                     <Button
@@ -965,18 +846,12 @@ const Title: React.FC<{
                 `}
             >
                 {itemMemoryBar.map((m) => (
-                    <P
-                        key={m.id}
-                        z="1.5rem"
-                        css="margin: 0 5px; padding: 5px; display: flex; align-items: center; cursor: var(--pointer);"
-                    >
+                    <P key={m.id} z="1.5rem" css="margin: 0 5px; padding: 5px; display: flex; align-items: center; cursor: var(--pointer);">
                         {m.name}
                     </P>
                 ))}
             </Div>
-            {position > 0 && (
-                <UserBar id_loved={id_loved} colorBg={colorBg} position={position} setPosition={setPosition} />
-            )}
+            {position > 0 && <UserBar id_loved={id_loved} colorBg={colorBg} position={position} setPosition={setPosition} />}
         </DivTitleP>
     );
 };

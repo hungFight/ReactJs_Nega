@@ -2,18 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { EmailI, LGBTI, PhoneI } from '~/assets/Icons/Icons';
-import { ButtonSubmit, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
-import {
-    DivForm,
-    DivFormGroup,
-    DivGenderC,
-    DivGenderP,
-    DivLGBT,
-    PcontentPassword,
-    Pcontent,
-    SpanIconPhoneMail,
-    Pmessage,
-} from './styleRegister';
+import { ButtonAnimationSurround, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivForm, DivFormGroup, DivGenderC, DivGenderP, DivLGBT, PcontentPassword, Pcontent, SpanIconPhoneMail, Pmessage } from './styleRegister';
 import Language from '~/Language/Language';
 import { changeRegister } from '~/redux/languageRD';
 import { DivLanguage } from '../Login/styleLogin';
@@ -30,8 +20,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
 
     const [language, setLanguage] = useState<boolean>(false);
-    const { title, input, submit, messagePhoneEmail, messagePassword, messageDate, messageName } =
-        dataRegister[dataLanguages];
+    const { title, input, submit, messagePhoneEmail, messagePassword, messageDate, messageName } = dataRegister[dataLanguages];
     // const {} = dataRegister;
     const dispatch = useDispatch();
     //value
@@ -211,19 +200,9 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
     const handleSubmit = async (e: { preventDefault: () => void; target: any }) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        if (
-            valueUserName !== '' &&
-            valuePhoneNumberEmail.value !== '' &&
-            valuePassword.password1 !== '' &&
-            valueDate !== ''
-        ) {
+        if (valueUserName !== '' && valuePhoneNumberEmail.value !== '' && valuePassword.password1 !== '' && valueDate !== '') {
             setCheckAll({ username: false, phoneNumberEmail: false, password1: false, password2: false, date: false });
-            if (
-                checkPhoneNumberEmail.check === false &&
-                checkPassword.check === false &&
-                checkDate.check === false &&
-                checkUserName.check === false
-            ) {
+            if (checkPhoneNumberEmail.check === false && checkPassword.check === false && checkDate.check === false && checkUserName.check === false) {
                 delete valuePhoneNumberEmail.icon;
                 const params = {
                     name: valueUserName,
@@ -246,13 +225,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                 }
                 setLoading(false);
             }
-        } else if (
-            valueUserName === '' &&
-            valuePhoneNumberEmail.value === '' &&
-            valuePassword.password1 === '' &&
-            valuePassword.password2 === '' &&
-            valueDate === ''
-        ) {
+        } else if (valueUserName === '' && valuePhoneNumberEmail.value === '' && valuePassword.password1 === '' && valuePassword.password2 === '' && valueDate === '') {
             setCheckAll({ username: true, phoneNumberEmail: true, password1: true, password2: true, date: true });
         }
         checkAllRef.current.username = !valueUserName ? true : false;
@@ -275,23 +248,9 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
 
     //input
     const handlePhoneNumberEmail = () => {};
-    const eventsOnChange = [
-        handleValueUserName,
-        handlePhoneNumberEmail,
-        handleValuePassword1,
-        handleValuePassword2,
-        handleBirthDate,
-        handleBirthDate,
-    ];
+    const eventsOnChange = [handleValueUserName, handlePhoneNumberEmail, handleValuePassword1, handleValuePassword2, handleBirthDate, handleBirthDate];
     const colorInput = (id: number) => {
-        const colorInputs = [
-            checkAll.username,
-            checkAll.phoneNumberEmail,
-            checkAll.password1,
-            checkAll.password2,
-            '',
-            checkAll.date,
-        ];
+        const colorInputs = [checkAll.username, checkAll.phoneNumberEmail, checkAll.password1, checkAll.password2, '', checkAll.date];
         return colorInputs[id] ? 'rgb(255 97 97 / 83%)' : colorText;
     };
     const handlelanguage = () => {
@@ -317,13 +276,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
             </>
         );
     };
-    const value = [
-        valueUserName,
-        valuePhoneNumberEmail.value,
-        valuePassword.password1,
-        valuePassword.password2,
-        valueDate,
-    ];
+    const value = [valueUserName, valuePhoneNumberEmail.value, valuePassword.password1, valuePassword.password2, valueDate];
     const pass = [];
     return (
         <DivForm>
@@ -346,9 +299,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                                             <DivGenderC
                                                 key={valC.id}
                                                 css={`
-                                                    ${optionGender[valC.id]
-                                                        ? 'background-image: linear-gradient(45deg, black, #2a8828);'
-                                                        : 'background-color: rgb(32 33 36);'}
+                                                    ${optionGender[valC.id] ? 'background-image: linear-gradient(45deg, black, #2a8828);' : 'background-color: rgb(32 33 36);'}
                                                     ${index ? 'padding-left: 5px;' : 'padding-right: 5px;'}
                                                 `}
                                                 onClick={eventsOnClickGender[valC.id]}
@@ -359,9 +310,7 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                                             <DivLGBT
                                                 key={valC.id}
                                                 css={`
-                                                    ${optionGender[valC.id]
-                                                        ? 'background-image: linear-gradient(45deg, black, #2a8828);'
-                                                        : 'background-color: rgb(32 33 36);'}
+                                                    ${optionGender[valC.id] ? 'background-image: linear-gradient(45deg, black, #2a8828);' : 'background-color: rgb(32 33 36);'}
                                                 `}
                                                 onClick={handleValueOther}
                                             >
@@ -381,38 +330,18 @@ const Register: React.FC<PropsRegister> = ({ acc, account, dataRegister, Next })
                             <Input
                                 color={colorInput(val.id)}
                                 value={value[val.id]}
-                                type={
-                                    Array.isArray(val.type)
-                                        ? val.type[val.role === 'password1' ? showPass1.check : showPass2.check]
-                                        : val.type
-                                }
+                                type={Array.isArray(val.type) ? val.type[val.role === 'password1' ? showPass1.check : showPass2.check] : val.type}
                                 placeholder={val.placeholder}
                                 onChange={eventsOnChange[val.id]}
                             />
-                            {val.role === 'password1' && (
-                                <Eyes
-                                    setShow={setShowPass1}
-                                    show={showPass1}
-                                    top="15px"
-                                    value={valuePassword[val.role]}
-                                />
-                            )}
-                            {val.role === 'password2' && (
-                                <Eyes
-                                    setShow={setShowPass2}
-                                    show={showPass2}
-                                    top="15px"
-                                    value={valuePassword[val.role]}
-                                />
-                            )}
+                            {val.role === 'password1' && <Eyes setShow={setShowPass1} show={showPass1} top="15px" value={valuePassword[val.role]} />}
+                            {val.role === 'password2' && <Eyes setShow={setShowPass2} show={showPass2} top="15px" value={valuePassword[val.role]} />}
                             {error(val.role)}
                         </DivFormGroup>
                     );
                 })}
-                <ButtonSubmit title={submit} loading={loading} />
-                <Pmessage color={registerStatus.status ? '#fa5f5f' : 'rgb(102 239 120)'}>
-                    {registerStatus.title}
-                </Pmessage>
+                <ButtonAnimationSurround title={submit} loading={loading} />
+                <Pmessage color={registerStatus.status ? '#fa5f5f' : 'rgb(102 239 120)'}>{registerStatus.title}</Pmessage>
             </form>
         </DivForm>
     );

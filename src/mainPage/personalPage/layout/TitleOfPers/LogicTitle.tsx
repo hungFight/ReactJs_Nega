@@ -21,7 +21,7 @@ import {
     StrengthI,
     WorkingI,
 } from '~/assets/Icons/Icons';
-import { ButtonSubmit, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import userAPI from '~/restAPI/userAPI';
@@ -458,7 +458,7 @@ const LogicTitle = (
                                         {'/' + length}
                                     </DivPos>
                                 </Div>
-                                <ButtonSubmit title="As I want" css="margin: 0; width: 20%;" onClick={() => setEditValue(undefined)} />
+                                <ButtonAnimationSurround title="As I want" css="margin: 0; width: 20%;" onClick={() => setEditValue(undefined)} />
                             </>
                         ) : (
                             <>
@@ -760,7 +760,7 @@ const LogicTitle = (
                                     });
                                 }}
                             />
-                            <ButtonSubmit
+                            <ButtonAnimationSurround
                                 title="Apply"
                                 css="margin: 0; width: 20%; button{ background: #135d66;}"
                                 onClick={() => {
@@ -776,7 +776,7 @@ const LogicTitle = (
                                     }
                                 }}
                             />
-                            <ButtonSubmit
+                            <ButtonAnimationSurround
                                 title="That's all "
                                 css={`
                                     margin: 0;

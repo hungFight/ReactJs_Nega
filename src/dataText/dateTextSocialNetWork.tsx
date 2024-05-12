@@ -59,11 +59,19 @@ export const socialnetwork: { vi: InNetWork; en: InNetWork } = {
                 title: 'Bạn bè',
                 children: {
                     menu: [
-                        { name: 'Chưa kết bạn', id: 'strangers' },
-                        { name: 'Đã kêt bạn', id: 'friends' },
-                        { name: 'Gia đình', id: 'family' },
-                        { name: 'Bạn đã gửi', id: 'yousent' },
-                        { name: 'Người khác gửi', id: 'otherssent' },
+                        {
+                            name: 'Chưa kết bạn',
+                            id: 'strangers',
+                            bgAnimation: ['linear-gradient(90deg, transparent, #fcfcfc4d, #6bff81)', 'linear-gradient(270deg, transparent, #fbfbfb4d, #c05353);'],
+                        },
+                        { name: 'Đã kêt bạn', id: 'friends', bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #5af0df);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #d267e0);'] },
+                        { name: 'Gia đình', id: 'family', bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #def05a);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #ff2d4e);'] },
+                        { name: 'Bạn đã gửi', id: 'yousent', bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #4b80e8);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #da6b3a);'] },
+                        {
+                            name: 'Người khác gửi',
+                            id: 'otherssent',
+                            bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #4be2e8);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #408eff);'],
+                        },
                     ],
                 },
             },
@@ -148,11 +156,15 @@ export const socialnetwork: { vi: InNetWork; en: InNetWork } = {
                 title: 'Friends',
                 children: {
                     menu: [
-                        { name: 'Not Friends', id: 'strangers' },
-                        { name: 'Friends', id: 'friends' },
-                        { name: 'Family', id: 'family' },
-                        { name: 'You sent', id: 'yousent' },
-                        { name: 'others sent', id: 'otherssent' },
+                        { name: 'Not Friends', id: 'strangers', bgAnimation: ['linear-gradient(90deg, transparent, #fcfcfc4d, #6bff81)', 'linear-gradient(270deg, transparent, #fbfbfb4d, #c05353);'] },
+                        { name: 'Friends', id: 'friends', bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #5af0df);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #d267e0);'] },
+                        { name: 'Family', id: 'family', bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #def05a);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #ff2d4e);'] },
+                        { name: 'You sent', id: 'yousent', bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #4b80e8);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #da6b3a);'] },
+                        {
+                            name: 'others sent',
+                            id: 'otherssent',
+                            bgAnimation: ['linear-gradient(270deg, transparent, #fcfcfc4d, #4be2e8);', 'linear-gradient(90deg, transparent, #fcfcfc4d, #408eff);'],
+                        },
                     ],
                 },
             },

@@ -29,7 +29,7 @@ export const Htitle = styled.h3`
     position: relative;
 `;
 
-const Div = styled.div<{ css?: string; bg?: string }>`
+const Div = styled.div<{ css?: string; bgFirst?: string; bgSecond?: string }>`
     width: 100px;
     height: 35px;
     margin: 28px auto 8px;
@@ -51,7 +51,7 @@ const Div = styled.div<{ css?: string; bg?: string }>`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-image: ${(props) => props.bg || 'linear-gradient(270deg, transparent, #fcfcfc4d, #fdfcfc)'};
+        background-image: ${(props) => props.bgFirst || 'linear-gradient(270deg, transparent, #fcfcfc4d, #fdfcfc)'};
         transform-origin: top left;
         animation: rotate 3s linear infinite;
         border-top-right-radius: 100%;
@@ -65,7 +65,7 @@ const Div = styled.div<{ css?: string; bg?: string }>`
         right: 50%;
         bottom: 50%;
         transform: translate(-50%, -50%);
-        background-image: linear-gradient(90deg, transparent, #fcfcfc4d, #fdfcfc);
+        background-image: ${(props) => props.bgSecond || 'linear-gradient(90deg, transparent, #fcfcfc4d, #fdfcfc)'};
         transform-origin: bottom right;
         animation: rotate 3s linear infinite;
         border-bottom-left-radius: 100%;
@@ -98,17 +98,18 @@ const Button = styled.button`
     cursor: pointer;
     color: var(--color-light);
 `;
-export const ButtonSubmit: React.FC<{
+export const ButtonAnimationSurround: React.FC<{
     title: string;
     bgImg?: string;
+    bgSecond?: string;
     css?: string;
     loading?: boolean;
     submit?: boolean;
     onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}> = ({ title, bgImg, css, onClick, submit = true, loading }) => {
+}> = ({ title, bgImg, bgSecond, css, onClick, submit = true, loading }) => {
     return (
         <>
-            <Div bg={bgImg} css={css} onClick={onClick}>
+            <Div bgFirst={bgImg} bgSecond={bgSecond} css={css} onClick={onClick}>
                 <Button type={submit ? 'submit' : 'button'}>
                     {loading ? (
                         <>

@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { CheckI, ImageI, SortFileI, UndoIRegister, VideoI } from '~/assets/Icons/Icons';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsDataFileUpload } from '../FormUpNews';
-import { ButtonSubmit, UpLoadForm } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, UpLoadForm } from '~/reUsingComponents/styleComponents/styleComponents';
 import handleFileUpload from '~/utils/handleFileUpload';
 import Player from '~/reUsingComponents/Videos/Player';
 import { Textarea } from '../styleFormUpNews';
@@ -157,7 +157,7 @@ const EditFiles: React.FC<{
                                     ),
                                 )}
                                 <Div width="100%" css="text-align: center;">
-                                    <ButtonSubmit
+                                    <ButtonAnimationSurround
                                         title="Hoàn thành"
                                         css="background: #263f8b;"
                                         submit={false}

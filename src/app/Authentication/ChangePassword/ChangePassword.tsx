@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 import { DivChangePass } from './styleChangePassword';
 import { DivAccount } from '../Login/styleLogin';
-import { ButtonSubmit, Hname, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, Hname, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Div, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
@@ -152,13 +152,7 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
                                             wrap="wrap"
                                             css="width: 183px; height: 150px; margin: 5px 15px; justify-content: center; color: #cbcbcb;background-color: #454646; background-image: linear-gradient(177deg, #789382, #4e4242);"
                                         >
-                                            <Avatar
-                                                css="width: 100px; height: 100px;"
-                                                src={data.avatar}
-                                                alt={data.fullName}
-                                                gender={data.gender}
-                                                onClick={handleChangePass}
-                                            />
+                                            <Avatar css="width: 100px; height: 100px;" src={data.avatar} alt={data.fullName} gender={data.gender} onClick={handleChangePass} />
                                             <Div width="100%">
                                                 <Hname>{data.fullName}</Hname>
                                                 <P>{data.nickName}</P>
@@ -179,14 +173,10 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
                                             onChange={handleInputChangeP2}
                                             color={checkValue.value2 ? 'rgb(255 97 97 / 83%)' : colorText}
                                         />
-                                        <Pmessage
-                                            color={messageStatus.status ? ' rgb(124, 245, 122)' : 'rgb(255, 142, 142)'}
-                                        >
-                                            {checkValue.message || messageStatus.message}
-                                        </Pmessage>
+                                        <Pmessage color={messageStatus.status ? ' rgb(124, 245, 122)' : 'rgb(255, 142, 142)'}>{checkValue.message || messageStatus.message}</Pmessage>
                                         <Eyes value={value2} setShow={setShow2} show={show2} top="73px" />
                                     </DivAccount>
-                                    <ButtonSubmit title="Change" />
+                                    <ButtonAnimationSurround title="Change" />
                                 </div>
                             );
                     })}
@@ -202,12 +192,7 @@ const ChangePassword: React.FC<PropsChangeP> = ({ phoneMail, Next, setWhatKind, 
                         css="width: 183px; height: 150px;margin: 5px 15px; cursor: pointer; text-align: center; justify-content: center; color: #cbcbcb;background-color: #454646; background-image: linear-gradient(177deg, #789382, #4e4242);"
                         onClick={() => handleChangePass(data.id)}
                     >
-                        <Avatar
-                            css="width: 100px; height: 100px;"
-                            src={data.avatar}
-                            alt={data.fullName}
-                            gender={data.gender}
-                        />
+                        <Avatar css="width: 100px; height: 100px;" src={data.avatar} alt={data.fullName} gender={data.gender} />
                         <Div width="100%" wrap="wrap" css="justify-content: center;">
                             <Hname>{data.fullName}</Hname>
                             <P z="1.2rem">{data.nickName}</P>
