@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import ServerBusy from '~/utils/ServerBusy';
+import { PropsUser } from 'src/App';
 interface PropsYouSent {
     avatar: any;
     birthday: string;
@@ -16,7 +17,7 @@ interface PropsYouSent {
     gender: number;
     id: string;
 }
-const Requested: React.FC<{ type: string }> = ({ type }) => {
+const Requested: React.FC<{ userData: PropsUser }> = ({ userData }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
 
@@ -37,7 +38,6 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
             setLoading(true);
         }
         const res = await peopleAPI.getFriends(dispatch, offsetRef.current, limit, 'yousent');
-        console.log(type, res);
         if (res) {
             dataRef.current = [...(dataRef.current ?? []), ...res];
             setData(dataRef.current);
@@ -53,7 +53,7 @@ const Requested: React.FC<{ type: string }> = ({ type }) => {
         }
     };
     useEffect(() => {
-        if (type === 'yousent' || cRef.current === 0) fetch(true);
+        // if (type === 'yousent' || cRef.current === 0) fetch(true);
         eleRef.current.addEventListener('scroll', handleScroll);
         return () => {
             eleRef?.current?.removeEventListener('scroll', handleScroll);

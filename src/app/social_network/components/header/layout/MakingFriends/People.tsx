@@ -9,7 +9,7 @@ import Strangers from './Strangers';
 import Friends from './Friends';
 import Requested from './Requested';
 import Others from './OthersRequest';
-import { PropsId_chats } from 'src/App';
+import { PropsId_chats, PropsUser } from 'src/App';
 import { ButtonAnimationSurround } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const socket = io('http://localhost:3001', { transports: ['websocket'] });
@@ -17,16 +17,12 @@ const socket = io('http://localhost:3001', { transports: ['websocket'] });
 export interface PropsTextFriends {
     menu: { name: string; id: 'strangers' | 'friends' | 'family' | 'yousent' | 'otherssent'; bgAnimation: string[] }[];
 }
-export interface PropsUserPeople {
-    avatar?: string;
-    fullName?: string;
-    gender?: number;
-}
+
 interface PropsMakingFriends {
     friendsT: PropsTextFriends;
     colorText: string;
     colorBg: number;
-    dataUser?: PropsUserPeople;
+    dataUser: PropsUser;
     cRef: React.MutableRefObject<number>;
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
 }
@@ -70,10 +66,10 @@ const MakingFriends: React.FC<PropsMakingFriends> = ({ friendsT, colorText, colo
                         }
                     `}
                 >
-                    {type === 'strangers' && <Strangers type={type} cRef={cRef} />}
-                    {type === 'friends' && <Friends type={type} setId_chats={setId_chats} />}
-                    {type === 'otherssent' && <Requested type={type} />}
-                    {type === 'yousent' && <Others type={type} />}
+                    {type === 'strangers' && <Strangers userData={dataUser} cRef={cRef} />}
+                    {type === 'friends' && <Friends userData={dataUser} setId_chats={setId_chats} />}
+                    {type === 'otherssent' && <Requested userData={dataUser} />}
+                    {type === 'yousent' && <Others userData={dataUser} />}
                     {/* <Strangers type={type} />
 
                     <Friends type={type} />

@@ -4,6 +4,7 @@ import errorHandling from '../errorHandling/errorHandling';
 import { PropsFriends } from '~/social_network/components/Header/layout/MakingFriends/Friends';
 import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
+import { PropsDataStranger } from '~/social_network/components/Header/layout/MakingFriends/Strangers';
 class PeopleRequest {
     setFriend = async (dispatch: Dispatch<AnyAction>, id: string, per?: string) => {
         try {
@@ -20,7 +21,17 @@ class PeopleRequest {
     delete = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
+            const res = await axiosJWTss.post<{
+                ok: {
+                    createdAt: string;
+                    id: number;
+                    idIsRequested: string;
+                    idRequest: string;
+                    level: number;
+                    updatedAt: string;
+                };
+                count_flwe?: number;
+            }>('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
@@ -39,13 +50,14 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    getStrangers = async (dispatch: Dispatch<AnyAction>, limit: number, rel?: string) => {
+    getStrangers = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number, rel?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.get('/SN/people/getStrangers', {
+            const res = await axiosJWTss.get<PropsDataStranger[]>('/SN/people/getStrangers', {
                 params: {
                     limit,
                     rel,
+                    offset,
                 },
             });
             return res.data;

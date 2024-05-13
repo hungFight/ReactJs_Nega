@@ -329,7 +329,7 @@ export default function LogicView(
 
         const data = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
         console.log('Abolish', kindOf, data);
-        if (data) {
+        if (data?.count_flwe) {
             user.userIsRequested = [];
             user.userRequest = [];
             user.followings = [];

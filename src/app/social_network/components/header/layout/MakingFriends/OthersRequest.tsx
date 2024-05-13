@@ -10,6 +10,7 @@ import Requested from './Requested';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { DivResults } from './styleMakingFriends';
 import ServerBusy from '~/utils/ServerBusy';
+import { PropsUser } from 'src/App';
 
 interface PropsOthers {
     avatar: any;
@@ -19,7 +20,7 @@ interface PropsOthers {
     id: string;
     nickName: string | undefined;
 }
-const Others: React.FC<{ type: string }> = ({ type }) => {
+const Others: React.FC<{ userData: PropsUser }> = ({ userData }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
     const [data, setData] = useState<PropsOthers[]>();
@@ -41,7 +42,6 @@ const Others: React.FC<{ type: string }> = ({ type }) => {
         }
 
         const res = await peopleAPI.getFriends(dispatch, offsetRef.current, limit, 'others');
-        console.log(type, res);
         if (res) {
             dataRef.current = [...(dataRef.current ?? []), ...res];
             setData(dataRef.current);
@@ -59,7 +59,7 @@ const Others: React.FC<{ type: string }> = ({ type }) => {
         }
     };
     useEffect(() => {
-        if (type === 'otherssent' || cRef.current === 0) fetch(true);
+        // if (type === 'otherssent' || cRef.current === 0) fetch(true);
         eleRef.current.addEventListener('scroll', handleScroll);
         return () => {
             eleRef?.current?.removeEventListener('scroll', handleScroll);

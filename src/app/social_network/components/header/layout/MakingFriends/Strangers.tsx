@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import TagProfile from './TagProfile';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { useCookies } from 'react-cookie';
@@ -8,9 +8,14 @@ import { DotI, LoadingI } from '~/assets/Icons/Icons';
 import CommonUtils from '~/utils/CommonUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
-import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import ServerBusy from '~/utils/ServerBusy';
-interface PropsData {
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { queryClient } from 'src';
+import { io } from 'socket.io-client';
+import { PropsUser } from 'src/App';
+import { socket } from 'src/mainPage/NextWeb';
+export interface PropsDataStranger {
     avatar: any;
     birthday: string;
     fullName: string;
@@ -37,67 +42,158 @@ interface PropsData {
           }[]
         | [];
 }
+type PropsQueryItem = { offset: number; data: PropsDataStranger[] } | undefined;
 const Strangers: React.FC<{
-    type: string;
     cRef: React.MutableRefObject<number>;
-}> = ({ type = 'strangers', cRef }) => {
+    userData: PropsUser;
+}> = ({ cRef, userData }) => {
     const dispatch = useDispatch();
-    const [data, setData] = useState<PropsData[] | undefined>();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
 
     const [cookies, setCookies] = useCookies(['tks', 'k_user']);
     const [loading, setLoading] = useState<boolean>(false);
     const offsetRef = useRef<number>(0);
     const limit: number = 3;
-    const userId = cookies.k_user;
     const eleRef = useRef<any>();
+    const isRefetch = useRef<boolean>(false);
     const dataRef = useRef<any>([]);
-
-    const fetch = async (rel: string) => {
-        cRef.current = 1;
-        if (rel) {
-            dataRef.current = [];
-            cRef.current = 3;
-            setLoading(true);
-        }
-
-        const dataR = await peopleAPI.getStrangers(dispatch, limit, rel);
-        console.log(dataRef.current.length, rel, 'strangers', dataR);
-        dataRef.current = [...(dataRef.current ?? []), ...dataR];
-        if (!rel) {
-            setData(dataRef.current);
-            offsetRef.current += limit;
-        } else {
-            setData(dataR);
-            setLoading(false);
-        }
-        cRef.current = 1;
-        console.log(dataRef.current, rel, 'data', cRef);
-    };
-
+    const {
+        data: asNew,
+        refetch,
+        isFetching,
+    } = useQuery({
+        queryKey: ['getStrangers'],
+        staleTime: 15 * 60 * 60 * 1000,
+        cacheTime: 15 * 60 * 60 * 1000,
+        queryFn: async () => {
+            cRef.current = 1;
+            const preData: PropsQueryItem = queryClient.getQueryData(['getFirends']);
+            const res = await peopleAPI.getStrangers(dispatch, preData?.offset ?? 0, limit, preData ? 'ok' : undefined);
+            if (res) {
+                if (preData) {
+                    if (isRefetch.current)
+                        // for scroll
+                        return { offset: preData.offset + limit, data: [...preData.data, ...res] };
+                    return preData;
+                } else {
+                    return { offset: 0, data: res };
+                }
+            }
+        },
+    });
+    const data = asNew?.data;
     const handleScroll = () => {
         const { scrollTop, clientHeight, scrollHeight } = eleRef.current;
-        console.log(scrollTop, clientHeight, scrollHeight);
-
-        if (scrollTop + clientHeight >= scrollHeight - 20 && !loading) {
-            console.log(cRef.current);
-            if (cRef.current !== 3) fetch('');
+        if (scrollTop + clientHeight >= scrollHeight - 20 && !isFetching) {
+            refetch();
         }
     };
     useEffect(() => {
-        console.log(cRef, 'cRef');
-
-        if (type === 'strangers' && cRef.current === 0) {
-            fetch('ok');
-        } else {
-            fetch('');
-        }
         eleRef.current.addEventListener('scroll', handleScroll);
+        socket.on(
+            `Request others?id=${userData.id}`,
+            (res: {
+                id_friend: string;
+                user: {
+                    id: string;
+                    fullName: string;
+                    avatar: string | null;
+                    gender: number;
+                };
+                data: {
+                    id: string;
+                    idRequest: string;
+                    idIsRequested: string;
+                    level: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+                quantity: number;
+            }) => {},
+        );
         return () => {
             eleRef.current?.removeEventListener('scroll', handleScroll);
         };
     }, [reload]);
+    console.log('hello friend');
+    const updateData = useMutation(
+        async (newData: any) => {
+            return newData;
+        },
+        {
+            onMutate: (newData) => {
+                // Trả về dữ liệu cũ trước khi thêm mới để lưu trữ tạm thời
+                const previousData = data ?? [];
+                // Cập nhật cache tạm thời với dữ liệu mới
+                console.log(newData, 'newData_1');
 
+                queryClient.setQueryData(['getStrangers'], (preData: PropsQueryItem) => {
+                    if (data && preData) {
+                        if (newData.type === 'add') {
+                            // {
+                            //     id_friend: string;
+                            //     data: {
+                            //         createdAt: string;
+                            //         id: 79;
+                            //         idIsRequested: string;
+                            //         idRequest: string;
+                            //     }
+                            //     type: string;
+                            // }
+                            data?.map((x) => {
+                                if (x.id === newData.data.idIsRequested) {
+                                    x.userRequest[0] = {
+                                        id: newData.data.id,
+                                        idRequest: newData.data.idRequest,
+                                        idIsRequested: newData.data.idIsRequested,
+                                        createdAt: newData.data.createdAt,
+                                        level: 1,
+                                    };
+                                }
+                                return x;
+                            });
+                        } else if (newData.type === 'abolish') {
+                            //  {
+                            //      ok: {
+                            //          createdAt: string;
+                            //          id: number;
+                            //          idIsRequested: string;
+                            //          idRequest: string;
+                            //          level: number;
+                            //          updatedAt: string;
+                            //      }
+                            //  }
+                            data?.map((x) => {
+                                if (
+                                    (x.userRequest.length || x.userIsRequested.length) &&
+                                    ((x.userRequest[0].idRequest === newData.ok.idRequest && x.userRequest[0].idIsRequested === newData.ok.idIsRequested) ||
+                                        (x.userIsRequested[0].idRequest === newData.ok.idRequest && x.userIsRequested[0].idIsRequested === newData.ok.idIsRequested))
+                                ) {
+                                    x.userRequest = [];
+                                    x.userIsRequested = [];
+                                }
+                                return x;
+                            });
+                        } else if (newData.type === 'deleteReal') {
+                            const newDa = data?.filter((d: { id: string }) => d.id !== newData?.id);
+                            return { ...preData, data: newDa };
+                        }
+                        return { ...preData, data };
+                    }
+                    return preData;
+                });
+                return { previousData };
+            },
+            onError: (error, newData, context) => {
+                // Xảy ra lỗi, khôi phục dữ liệu cũ từ cache tạm thời
+                queryClient.setQueryData(['getStrangers'], context?.previousData);
+            },
+            onSettled: () => {
+                // Dọn dẹp cache tạm thời sau khi thực hiện mutation
+                // queryClient.invalidateQueries(['getStrangers']);
+            },
+        },
+    );
     const handleAdd = async (id: string, kindOf: string = 'friend') => {
         const dataR: {
             id_friend: string;
@@ -108,88 +204,39 @@ const Strangers: React.FC<{
                 idRequest: string;
             };
         } = await peopleAPI.setFriend(dispatch, id);
-        const newStranger = data?.filter((x: PropsData) => {
-            if (x.id === dataR.data.idIsRequested) {
-                x.userRequest[0] = {
-                    id: dataR.data.id,
-                    idRequest: dataR.data.idRequest,
-                    idIsRequested: dataR.data.idIsRequested,
-                    createdAt: dataR.data.createdAt,
-                    level: 1,
-                };
-                return x;
-            } else {
-                return x;
-            }
-        });
-        setData(newStranger);
+        // const newStranger = data?.filter((x) => {
+        //     if (x.id === dataR.data.idIsRequested) {
+        //         x.userRequest[0] = {
+        //             id: dataR.data.id,
+        //             idRequest: dataR.data.idRequest,
+        //             idIsRequested: dataR.data.idIsRequested,
+        //             createdAt: dataR.data.createdAt,
+        //             level: 1,
+        //         };
+        //         return x;
+        //     } else {
+        //         return x;
+        //     }
+        // });
+        updateData.mutate({ ...dataR, type: 'add' });
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const dataR: {
-            ok: {
-                createdAt: string;
-                id: number;
-                idIsRequested: string;
-                idRequest: string;
-                level: number;
-                updatedAt: string;
-            };
-        } = await peopleAPI.delete(dispatch, id, kindOf);
-        if (dataR) {
-            const newStranger = data?.filter((x: PropsData) => {
-                if (
-                    (x.userRequest.length || x.userIsRequested.length) &&
-                    ((x.userRequest[0].idRequest === dataR.ok.idRequest && x.userRequest[0].idIsRequested === dataR.ok.idIsRequested) ||
-                        (x.userRequest[0].idIsRequested === dataR.ok.idRequest && x.userRequest[0].idRequest === dataR.ok.idIsRequested) ||
-                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest && x.userIsRequested[0].idIsRequested === dataR.ok.idRequest) ||
-                        (x.userIsRequested[0].idRequest === dataR.ok.idRequest && x.userIsRequested[0].idIsRequested === dataR.ok.idIsRequested))
-                ) {
-                    x.userRequest = [];
-                    x.userIsRequested = [];
-                    return x;
-                } else {
-                    return x;
-                }
-            });
-            setData(newStranger);
-        }
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
+        updateData.mutate({ ...dataR, type: 'abolish' });
     };
     const handleMessenger = (id: string) => {
         console.log('messenger', id);
     };
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
         const dataR = await peopleAPI.setConfirm(dispatch, id, kindOf);
-        refresh(dataR);
-        function refresh(res: any) {
-            if (res.ok === 1) {
-                const newStranger = data?.filter((x: PropsData) => {
-                    if (
-                        (x.userRequest[0].idRequest === res.id_fr && x.userRequest[0].idIsRequested === userId) ||
-                        (x.userIsRequested[0].idRequest === res.id_fr && x.userIsRequested[0].idIsRequested === userId)
-                    ) {
-                        if (x.userRequest[0].level) x.userRequest[0].level = 2;
-                        if (x.userIsRequested[0].level) x.userIsRequested[0].level = 2;
-                        return x;
-                    } else {
-                        return x;
-                    }
-                });
-                setData(newStranger);
-            }
-        }
+        if (dataR.ok === 1) updateData.mutate({ ...dataR, type: 'confirm' });
     };
     const handleRemove = async (id: string, of: string = 'yes', kindOf?: string) => {
         if (of === 'no' && id) {
-            const newData: any = data?.filter((d: { id: string }) => d.id !== id);
-            setData(newData);
-            console.log('newData', newData);
+            updateData.mutate({ id, type: 'deleteReal' }); // just remove
         } else {
-            console.log('deleted', id);
             const dataR = await peopleAPI.delete(dispatch, id, kindOf);
-            if (dataR) {
-                const newData: any = data?.filter((d: { id: string }) => d.id !== id);
-                setData(newData);
-            }
+            if (dataR) updateData.mutate({ id, type: 'deleteReal' }); // delete friend
         }
     };
 
@@ -223,112 +270,116 @@ const Strangers: React.FC<{
     return (
         <>
             <DivResults ref={eleRef} id="strangers">
-                {loading && (
+                {isFetching ? (
                     <DivLoading>
                         <LoadingI />
                     </DivLoading>
-                )}
+                ) : data?.length ? (
+                    data?.map((vl) => {
+                        const buttons = [];
+                        const idU = vl.userIsRequested[0]?.idRequest || vl.userRequest[0]?.idRequest;
+                        const idFr = vl.userRequest[0]?.idIsRequested || vl.userIsRequested[0]?.idIsRequested;
+                        const level = vl.userIsRequested[0]?.level || vl.userRequest[0]?.level;
 
-                {data?.map((vl) => {
-                    const buttons = [];
-                    const idU = vl.userIsRequested[0]?.idRequest || vl.userRequest[0]?.idRequest;
-                    const idFr = vl.userRequest[0]?.idIsRequested || vl.userIsRequested[0]?.idIsRequested;
-                    const level = vl.userIsRequested[0]?.level || vl.userRequest[0]?.level;
-
-                    if (level === 2 || level === 2) {
-                        buttons.push({
-                            text: 'Messenger',
-                            css: css + ' background-color: #366ab3; ',
-                            onClick: () => handleMessenger(vl.id),
-                        });
-                    } else {
-                        if (idU === userId) {
-                            buttons.push(
-                                {
-                                    text: 'Delete',
-                                    css: css,
-                                    onClick: () => handleRemove(vl.id, 'yes', 'friends'),
-                                },
-                                {
-                                    text: 'Abolish',
-                                    css: css + 'background-color: #af2c48; ',
-                                    onClick: () => handleAbolish(vl.id),
-                                },
-                            );
-                        } else if (idFr === userId) {
-                            console.log('friend --others');
-                            buttons.push(
-                                {
-                                    text: 'Delete',
-                                    css: css,
-                                    onClick: () => handleRemove(vl.id, 'yes', 'friends'),
-                                },
-                                {
-                                    text: 'Confirm',
-                                    css: css + 'background-color:   #1553a1; ',
-                                    onClick: () => handleConfirm(vl.id),
-                                },
-                            );
+                        if (level === 2 || level === 2) {
+                            buttons.push({
+                                text: 'Messenger',
+                                css: css + ' background-color: #366ab3; ',
+                                onClick: () => handleMessenger(vl.id),
+                            });
                         } else {
-                            console.log('else');
-                            buttons.push(
-                                {
-                                    text: 'Remove',
-                                    css: css,
-                                    onClick: () => handleRemove(vl.id, 'no'),
-                                },
-                                {
-                                    text: 'Add friend',
-                                    css: css + ' background-color: #366ab3;',
-                                    onClick: () => handleAdd(vl.id),
-                                },
-                            );
+                            if (idU === userData.id) {
+                                buttons.push(
+                                    {
+                                        text: 'Delete',
+                                        css: css,
+                                        onClick: () => handleRemove(vl.id, 'yes', 'friends'),
+                                    },
+                                    {
+                                        text: 'Abolish',
+                                        css: css + 'background-color: #af2c48; ',
+                                        onClick: () => handleAbolish(vl.id),
+                                    },
+                                );
+                            } else if (idFr === userData.id) {
+                                console.log('friend --others');
+                                buttons.push(
+                                    {
+                                        text: 'Delete',
+                                        css: css,
+                                        onClick: () => handleRemove(vl.id, 'yes', 'friends'),
+                                    },
+                                    {
+                                        text: 'Confirm',
+                                        css: css + 'background-color:   #1553a1; ',
+                                        onClick: () => handleConfirm(vl.id),
+                                    },
+                                );
+                            } else {
+                                console.log('else');
+                                buttons.push(
+                                    {
+                                        text: 'Remove',
+                                        css: css,
+                                        onClick: () => handleRemove(vl.id, 'no'),
+                                    },
+                                    {
+                                        text: 'Add friend',
+                                        css: css + ' background-color: #366ab3;',
+                                        onClick: () => handleAdd(vl.id),
+                                    },
+                                );
+                            }
                         }
-                    }
-
-                    return (
-                        <Div
-                            key={vl.id}
-                            wrap="wrap"
-                            css={`
-                                width: 185px;
-                                padding: 5px;
-                                border: 1px solid #414141;
-                                margin: 10px;
-                                transition: all 0.2s linear;
-                                position: relative;
-                                &:hover {
-                                    box-shadow: 0 0 8px #6a48bc;
-                                }
-                                @media (min-width: 480px) {
-                                    width: 306px;
-                                }
-                                @media (min-width: 769px) {
-                                    width: 190px;
-                                    height: fit-content;
-                                    flex-wrap: wrap;
-                                    justify-content: center;
-                                    text-align: center;
-                                    background-color: #292a2c;
-                                    box-shadow: 0 0 5px #7b797987;
-                                    border-radius: 5px;
-                                    padding: 0 0 12px;
-                                }
-                            `}
-                        >
+                        return (
                             <Div
+                                key={vl.id}
+                                wrap="wrap"
                                 css={`
-                                    position: absolute;
-                                    right: 9px;
-                                    font-size: 20px;
+                                    width: 185px;
+                                    padding: 5px;
+                                    border: 1px solid #414141;
+                                    margin: 10px;
+                                    transition: all 0.2s linear;
+                                    position: relative;
+                                    &:hover {
+                                        box-shadow: 0 0 8px #6a48bc;
+                                    }
+                                    @media (min-width: 480px) {
+                                        width: 306px;
+                                    }
+                                    @media (min-width: 769px) {
+                                        width: 190px;
+                                        height: fit-content;
+                                        flex-wrap: wrap;
+                                        justify-content: center;
+                                        text-align: center;
+                                        background-color: #292a2c;
+                                        box-shadow: 0 0 5px #7b797987;
+                                        border-radius: 5px;
+                                        padding: 0 0 12px;
+                                    }
                                 `}
                             >
-                                <DotI />
+                                <Div
+                                    css={`
+                                        position: absolute;
+                                        right: 9px;
+                                        font-size: 20px;
+                                    `}
+                                >
+                                    <DotI />
+                                </Div>
+                                <TagProfile button={buttons} cssImage={cssImage} data={vl} />
                             </Div>
-                            <TagProfile button={buttons} cssImage={cssImage} data={vl} />
-                        </Div>
-                    );
-                })}
+                        );
+                    })
+                ) : (
+                    <DivFlex wrap="wrap">
+                        <P css="width:100% ;text-align: center">Không có dữ liệu</P> <ButtonAnimationSurround title="Refetch" onClick={() => refetch()} />
+                    </DivFlex>
+                )}
+                <ButtonAnimationSurround title="Refetch" onClick={() => refetch()} />
             </DivResults>
         </>
     );

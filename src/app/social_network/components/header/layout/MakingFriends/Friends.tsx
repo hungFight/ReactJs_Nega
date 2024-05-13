@@ -10,7 +10,7 @@ import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
-import { PropsId_chats } from 'src/App';
+import { PropsId_chats, PropsUser } from 'src/App';
 import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from 'src';
@@ -22,9 +22,9 @@ export interface PropsFriends {
     id: string;
 }
 const Friends: React.FC<{
-    type: string;
+    userData: PropsUser;
     setId_chats: React.Dispatch<React.SetStateAction<PropsId_chats[]>>;
-}> = ({ type, setId_chats }) => {
+}> = ({ setId_chats }) => {
     const dispatch = useDispatch();
     const reload = useSelector((state: { reload: { people: number } }) => state.reload.people);
     const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
