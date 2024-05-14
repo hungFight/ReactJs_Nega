@@ -149,7 +149,7 @@ const Strangers: React.FC<{
                             //      }
                             //  }
                             data?.map((x) => {
-                                if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0].id === newData.ok.id || x.userIsRequested[0].id === newData.ok.id)) {
+                                if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0].id === newData.ok?.id || x.userIsRequested[0].id === newData.ok?.id)) {
                                     x.userRequest = [];
                                     x.userIsRequested = [];
                                 }
@@ -199,12 +199,13 @@ const Strangers: React.FC<{
             }) => {
                 console.log(res, 'resresres');
                 res.data.idIsRequested = res.data.idRequest;
-                if (res) updateData.mutate({ ...res, type: 'add' });
+                if (res && userData.id !== res.user.id) updateData.mutate({ ...res, type: 'add' });
             },
         );
         socket.on(
             `Del request others?id=${userData.id}`,
             (res: {
+                userId: string;
                 data: {
                     id: string;
                     idRequest: string;
@@ -214,7 +215,7 @@ const Strangers: React.FC<{
             }) => {
                 console.log(res, 'resresres del');
 
-                if (res) updateData.mutate({ ok: { id: res.data.id }, type: 'abolish' });
+                if (res.userId !== userData.id) updateData.mutate({ ok: { id: res.data?.id }, type: 'abolish' });
             },
         );
         return () => {
@@ -251,7 +252,7 @@ const Strangers: React.FC<{
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         const dataR = await peopleAPI.delete(dispatch, id, kindOf);
-        updateData.mutate({ ...dataR, type: 'abolish' });
+        if (dataR) updateData.mutate({ ...dataR, type: 'abolish' });
     };
     const handleMessenger = (id: string) => {
         console.log('messenger', id);

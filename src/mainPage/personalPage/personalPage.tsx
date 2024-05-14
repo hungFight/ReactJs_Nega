@@ -106,7 +106,7 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
         );
     };
     const cssMoreAva = online.includes(user.id) ? 'border: 1px solid #418a7a;' : 'border: 1px solid #696969;';
-    console.log(cssAvatar + cssMoreAva, 'cssMoreAva');
+    console.log(user, 'cssMoreAva');
     const handleUndo = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         handleCheck.current = true;

@@ -16,6 +16,7 @@ import { ExpandI, LoadingI } from '~/assets/Icons/Icons';
 import { onChats } from '~/redux/roomsChat';
 import httpFile from '~/utils/httpFile';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
+import { socket } from '../NextWeb';
 interface PropsLanguage {
     persistedReducer: {
         language: {
@@ -84,6 +85,70 @@ export default function LogicView(
 
     const follwed = user.followings[0]?.followed || user.followed[0]?.followed;
     const DivRef = useRef<HTMLDivElement | null>(null);
+    console.log(user, 'userrrr');
+
+    useEffect(() => {
+        socket.on(
+            `Request others?id=${userFirst.id}`,
+            (res: {
+                id_friend: string;
+                user: {
+                    id: string;
+                    fullName: string;
+                    avatar: string | null;
+                    gender: number;
+                };
+                data: {
+                    id: string;
+                    idRequest: string;
+                    idIsRequested: string;
+                    level: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+                follow: {
+                    id: string;
+                    idFollowing: string;
+                    idIsFollowed: string;
+                    following: number;
+                    followed: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+                quantity: number;
+            }) => {
+                console.log(res, 'resresres');
+                res.data.idIsRequested = res.data.idRequest;
+                if (res) {
+                    setUsersData((pre) => {
+                        const newD = pre.map((x) => {
+                            if (x.id === res.data.idIsRequested) {
+                                console.log(res, 'newData_88');
+                                const userRequest = [
+                                    {
+                                        id: res.data.id,
+                                        idRequest: res.data.idRequest,
+                                        idIsRequested: res.data.idIsRequested,
+                                        createdAt: res.data.createdAt,
+                                        updatedAt: res.data.updatedAt,
+                                        level: 1,
+                                    },
+                                ];
+                                x.followed[0] = res.follow;
+                                return { ...x, userRequest };
+                            }
+
+                            return x;
+                        });
+                        return newD;
+                    });
+                }
+            },
+        );
+        return () => {
+            socket.off(`Request others?id=${userFirst.id}`);
+        };
+    }, []);
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
         const avBg = id === 0 ? user.background : user.avatar;
         setEdit(false);
@@ -230,26 +295,27 @@ export default function LogicView(
             id_friend: string;
             data: {
                 createdAt: string;
-                id: number;
+                id: string;
                 idIsRequested: string;
                 idRequest: string;
                 level: number;
                 updatedAt: string;
             };
             count_flw: number;
-            id: string;
-            id_fl: string;
+            follow: {
+                id: string;
+                idFollowing: string;
+                idIsFollowed: string;
+                following: number;
+                followed: number;
+                createdAt: Date;
+                updatedAt: Date;
+            };
         } = await peopleAPI.setFriend(dispatch, id, 'yes');
         user.userIsRequested[0] = {
             ...data.data,
         };
-        user.followed[0] = {
-            ...user.followed[0],
-            followed: 1,
-            following: 2,
-            idFollowing: data.id_fl,
-            idIsFollowed: data.id,
-        };
+        user.followings[0] = data.follow;
         user.mores[0].followedAmount = data.count_flw;
         setUsersData((pre) =>
             pre.map((us) => {
@@ -266,7 +332,7 @@ export default function LogicView(
             const data: {
                 ok: {
                     createdAt: string;
-                    id: number;
+                    id: string;
                     idIsRequested: string;
                     idRequest: string;
                     level: number;
@@ -329,16 +395,17 @@ export default function LogicView(
 
         const data = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
         console.log('Abolish', kindOf, data);
-        if (data?.count_flwe) {
-            user.userIsRequested = [];
-            user.userRequest = [];
-            user.followings = [];
-            user.followed = [];
-            user.mores[0].followedAmount = data.count_flwe;
-            user.mores[0].friendAmount = user.mores[0].friendAmount - 1;
+        if (data) {
             setUsersData((pre) =>
                 pre.map((us) => {
-                    if (us.id === user.id) return user;
+                    if (us.id === user.id) {
+                        us.userIsRequested = [];
+                        us.userRequest = [];
+                        us.followings = [];
+                        us.followed = [];
+                        us.mores[0].followedAmount -= 1;
+                        us.mores[0].friendAmount = us.mores[0].friendAmount - 1;
+                    }
                     return us;
                 }),
             );
@@ -816,11 +883,11 @@ export default function LogicView(
             id_fl === userFirst.id
                 ? following === 1
                     ? { name: 'Follow', onClick: () => handleFollower(user.id) }
-                    : { name: 'Unfollow', onClick: () => handleUnFollower(user.id, 'following') }
+                    : { name: 'UnFollow', onClick: () => handleUnFollower(user.id, 'following') }
                 : id_fled === userFirst.id
                 ? follwed === 1
                     ? { name: 'Follow', onClick: () => handleFollower(user.id) }
-                    : { name: 'Unfollow', onClick: () => handleUnFollower(user.id, 'followed') }
+                    : { name: 'UnFollow', onClick: () => handleUnFollower(user.id, 'followed') }
                 : { name: 'Follow', onClick: () => handleFollower(user.id) },
         ],
         vi: [
@@ -892,7 +959,7 @@ export default function LogicView(
         },
         {
             text: buttons[lg][2].name,
-            css: cssBt,
+            css: cssBt + `${['Bỏ theo dõi', 'UnFollow'].includes(buttons[lg][2].name) ? 'background-color:#156068;' : ''}`,
             onClick: buttons[lg][2].onClick,
             tx: loads.follow ? (
                 <DivLoading css="width: auto; font-size: 15px; margin: 0;">

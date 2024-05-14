@@ -70,43 +70,39 @@ export interface PropsUserPer {
     firstPage: string;
     secondPage: string;
     thirdPage: string;
-    mores: PropsMores[] | [];
+    mores: PropsMores[];
     userRequest:
         | {
-              id: number;
+              id: string;
               idRequest: string;
               idIsRequested: string;
               level: number;
               createdAt: string | Date;
               updatedAt: string | Date;
-          }[]
-        | [];
+          }[];
     userIsRequested:
         | {
-              id: number;
+              id: string;
               idRequest: string;
               idIsRequested: string;
               level: number;
               createdAt: string | Date;
               updatedAt: string | Date;
-          }[]
-        | [];
+          }[];
     isLoved:
         | {
               id: string;
               userId: string;
               idIsLoved: string;
               createdAt: string | Date;
-          }[]
-        | [];
+          }[];
     loved:
         | {
               id: string;
               userId: string;
               idIsLoved: string;
               createdAt: string | Date;
-          }[]
-        | [];
+          }[];
     followings:
         | {
               id: string;
@@ -115,8 +111,7 @@ export interface PropsUserPer {
               following: number;
               followed: number;
               createdAt: string | Date;
-          }[]
-        | [];
+          }[];
     followed:
         | {
               id: string;
@@ -125,8 +120,7 @@ export interface PropsUserPer {
               following: number;
               followed: number;
               createdAt: string | Date;
-          }[]
-        | [];
+          }[];
     accountUser: {
         account: {
             id: string;
@@ -255,64 +249,13 @@ function App() {
             timeouts.current.push(timeOut);
         }
     }
-    const [fileUrl, setFileUrl] = useState('');
-    const { data } = useQuery({
-        queryKey: ['getPersonalAbsolute'],
-        staleTime: 5 * 60 * 1000,
-        cacheTime: 6 * 60 * 1000,
-        enabled: idAbsolute.length ? true : false,
-        queryFn: async () => {
-            const res: PropsUserPer[] = await userAPI.getById(
-                dispatch,
-                idAbsolute,
-                {
-                    id: true,
-                    avatar: true,
-                    background: true,
-                    fullName: true,
-                    address: true,
-                    biography: true,
-                    birthday: true,
-                    gender: true,
-                    active: true,
-                    hobby: true,
-                    skill: true,
-                    occupation: true,
-                    schoolName: true,
-                    firstPage: true,
-                    secondPage: true,
-                    thirdPage: true,
-                },
-                {
-                    position: true,
-                    star: true,
-                    loverAmount: true,
-                    friendAmount: true,
-                    visitorAmount: true,
-                    followedAmount: true,
-                    followingAmount: true,
-                    relationship: true,
-                    language: true,
-                    createdAt: true,
-                    privacy: true,
-                },
-            );
-            return res;
-        },
-    });
     useEffect(() => {
         const search = async () => {
             const search = window.location.search;
-            if (search) {
-                const ids = search.split('id=').filter((r) => r !== '?');
-                if (ids.length < 5 && ids.length > 0) {
-                    //  const datas = await fetch(ids);
-                    setIdAbsolute(ids);
-                    // console.log(ids, 'idsids');
-                }
-            }
-            if (openProfile.newProfile.length === 1) {
-                const data = await fetchF(openProfile.newProfile);
+            const ids = search.split('id=').filter((r) => r !== '?');
+            if (ids.length < 4 && ids.length > 0) setIdAbsolute(ids);
+            if (openProfile.newProfile.length === 1 || ids.length) {
+                const data = await fetchF([...ids, ...openProfile.newProfile]);
                 if (data)
                     if (userData.length) {
                         let check = false;
@@ -506,9 +449,9 @@ function App() {
                                 </DivLoading>
                             </Div>
                         )}
-                        {data?.length && (
+                        {userData?.length && (
                             <DivContainer width="100%" height="99%" css={css} bg={`${colorBg === 1 ? '#272727' : 'white'}`} content={leng === 1 ? 'center' : 'start'} display="flex">
-                                {data?.length > 1 && (
+                                {userData?.length > 1 && (
                                     <Div
                                         css={`
                                             display: none;
@@ -525,7 +468,7 @@ function App() {
                                             }
                                         `}
                                     >
-                                        {data?.map((rs) => {
+                                        {userData?.map((rs) => {
                                             return (
                                                 <A key={rs.id} href={`#profiles${rs.id}`}>
                                                     <Avatar src={rs.avatar} alt={rs.fullName} gender={rs.gender} radius="50%" id={userId} css=" width: 40px; height: 40px; cursor: var(--pointer);" />
@@ -534,9 +477,9 @@ function App() {
                                         })}
                                     </Div>
                                 )}
-                                {data?.map((da, index, arr) => (
+                                {userData?.map((da, index, arr) => (
                                     <PersonalPage
-                                        AllArray={data}
+                                        AllArray={userData}
                                         setUsersData={setUsersData}
                                         setUserFirst={setUserFirst}
                                         userFirst={userFirst}
