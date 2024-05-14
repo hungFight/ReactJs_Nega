@@ -30,6 +30,7 @@ import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
 import Balloon from './mainPage/Balloon/Balloon';
 import subImage from '~/utils/subImage';
+import { useQuery } from '@tanstack/react-query';
 const DivOpacity = styled.div`
     width: 100%;
     height: 100%;
@@ -191,10 +192,11 @@ function App() {
     //     },
     //     skip: !userId || !token,
     // });
+    const [idAbsolute, setIdAbsolute] = useState<string[]>([]);
     const handleCheck = useRef<boolean>(false);
     async function fetchF(id: string | string[], first?: string) {
         if (!first) setLoading(true);
-        const res = await userAPI.getById(
+        const res: PropsUser = await userAPI.getById(
             dispatch,
             id,
             {
@@ -254,8 +256,61 @@ function App() {
         }
     }
     const [fileUrl, setFileUrl] = useState('');
+    const { data } = useQuery({
+        queryKey: ['getPersonalAbsolute'],
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 6 * 60 * 1000,
+        enabled: idAbsolute.length ? true : false,
+        queryFn: async () => {
+            const res: PropsUserPer[] = await userAPI.getById(
+                dispatch,
+                idAbsolute,
+                {
+                    id: true,
+                    avatar: true,
+                    background: true,
+                    fullName: true,
+                    address: true,
+                    biography: true,
+                    birthday: true,
+                    gender: true,
+                    active: true,
+                    hobby: true,
+                    skill: true,
+                    occupation: true,
+                    schoolName: true,
+                    firstPage: true,
+                    secondPage: true,
+                    thirdPage: true,
+                },
+                {
+                    position: true,
+                    star: true,
+                    loverAmount: true,
+                    friendAmount: true,
+                    visitorAmount: true,
+                    followedAmount: true,
+                    followingAmount: true,
+                    relationship: true,
+                    language: true,
+                    createdAt: true,
+                    privacy: true,
+                },
+            );
+            return res;
+        },
+    });
     useEffect(() => {
         const search = async () => {
+            const search = window.location.search;
+            if (search) {
+                const ids = search.split('id=').filter((r) => r !== '?');
+                if (ids.length < 5 && ids.length > 0) {
+                    //  const datas = await fetch(ids);
+                    setIdAbsolute(ids);
+                    // console.log(ids, 'idsids');
+                }
+            }
             if (openProfile.newProfile.length === 1) {
                 const data = await fetchF(openProfile.newProfile);
                 if (data)
@@ -451,9 +506,9 @@ function App() {
                                 </DivLoading>
                             </Div>
                         )}
-                        {userData?.length > 0 && (
+                        {data?.length && (
                             <DivContainer width="100%" height="99%" css={css} bg={`${colorBg === 1 ? '#272727' : 'white'}`} content={leng === 1 ? 'center' : 'start'} display="flex">
-                                {userData?.length > 1 && (
+                                {data?.length > 1 && (
                                     <Div
                                         css={`
                                             display: none;
@@ -470,7 +525,7 @@ function App() {
                                             }
                                         `}
                                     >
-                                        {userData.map((rs) => {
+                                        {data?.map((rs) => {
                                             return (
                                                 <A key={rs.id} href={`#profiles${rs.id}`}>
                                                     <Avatar src={rs.avatar} alt={rs.fullName} gender={rs.gender} radius="50%" id={userId} css=" width: 40px; height: 40px; cursor: var(--pointer);" />
@@ -479,15 +534,15 @@ function App() {
                                         })}
                                     </Div>
                                 )}
-                                {userData?.map((data, index, arr) => (
+                                {data?.map((da, index, arr) => (
                                     <PersonalPage
-                                        AllArray={userData}
+                                        AllArray={data}
                                         setUsersData={setUsersData}
                                         setUserFirst={setUserFirst}
                                         userFirst={userFirst}
                                         colorText={colorText}
                                         colorBg={colorBg}
-                                        user={data}
+                                        user={da}
                                         online={userOnline}
                                         key={index}
                                         index={index}

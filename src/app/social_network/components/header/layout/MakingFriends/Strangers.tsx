@@ -23,7 +23,7 @@ export interface PropsDataStranger {
     id: string;
     userRequest:
         | {
-              id: number;
+              id: string;
               idRequest: string;
               idIsRequested: string;
               level: number;
@@ -33,7 +33,7 @@ export interface PropsDataStranger {
         | [];
     userIsRequested:
         | {
-              id: number;
+              id: string;
               idRequest: string;
               idIsRequested: string;
               level: number;
@@ -88,34 +88,6 @@ const Strangers: React.FC<{
             refetch();
         }
     };
-    useEffect(() => {
-        eleRef.current.addEventListener('scroll', handleScroll);
-        socket.on(
-            `Request others?id=${userData.id}`,
-            (res: {
-                id_friend: string;
-                user: {
-                    id: string;
-                    fullName: string;
-                    avatar: string | null;
-                    gender: number;
-                };
-                data: {
-                    id: string;
-                    idRequest: string;
-                    idIsRequested: string;
-                    level: number;
-                    createdAt: Date;
-                    updatedAt: Date;
-                };
-                quantity: number;
-            }) => {},
-        );
-        return () => {
-            eleRef.current?.removeEventListener('scroll', handleScroll);
-        };
-    }, [reload]);
-    console.log('hello friend');
     const updateData = useMutation(
         async (newData: any) => {
             return newData;
@@ -142,13 +114,26 @@ const Strangers: React.FC<{
                             // }
                             data?.map((x) => {
                                 if (x.id === newData.data.idIsRequested) {
-                                    x.userRequest[0] = {
-                                        id: newData.data.id,
-                                        idRequest: newData.data.idRequest,
-                                        idIsRequested: newData.data.idIsRequested,
-                                        createdAt: newData.data.createdAt,
-                                        level: 1,
-                                    };
+                                    if (newData.data.idIsRequested === newData.data.idRequest) {
+                                        console.log(newData, 'newData_77');
+
+                                        x.userRequest[0] = {
+                                            id: newData.data.id,
+                                            idRequest: newData.data.idRequest,
+                                            idIsRequested: userData.id,
+                                            createdAt: newData.data.createdAt,
+                                            level: 1,
+                                        };
+                                    } else {
+                                        console.log(newData, 'newData_88');
+                                        x.userRequest[0] = {
+                                            id: newData.data.id,
+                                            idRequest: newData.data.idRequest,
+                                            idIsRequested: newData.data.idIsRequested,
+                                            createdAt: newData.data.createdAt,
+                                            level: 1,
+                                        };
+                                    }
                                 }
                                 return x;
                             });
@@ -156,7 +141,7 @@ const Strangers: React.FC<{
                             //  {
                             //      ok: {
                             //          createdAt: string;
-                            //          id: number;
+                            //          id: string;
                             //          idIsRequested: string;
                             //          idRequest: string;
                             //          level: number;
@@ -164,11 +149,7 @@ const Strangers: React.FC<{
                             //      }
                             //  }
                             data?.map((x) => {
-                                if (
-                                    (x.userRequest.length || x.userIsRequested.length) &&
-                                    ((x.userRequest[0].idRequest === newData.ok.idRequest && x.userRequest[0].idIsRequested === newData.ok.idIsRequested) ||
-                                        (x.userIsRequested[0].idRequest === newData.ok.idRequest && x.userIsRequested[0].idIsRequested === newData.ok.idIsRequested))
-                                ) {
+                                if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0].id === newData.ok.id || x.userIsRequested[0].id === newData.ok.id)) {
                                     x.userRequest = [];
                                     x.userIsRequested = [];
                                 }
@@ -194,6 +175,54 @@ const Strangers: React.FC<{
             },
         },
     );
+    useEffect(() => {
+        eleRef.current.addEventListener('scroll', handleScroll);
+        socket.on(
+            `Request others?id=${userData.id}`,
+            (res: {
+                id_friend: string;
+                user: {
+                    id: string;
+                    fullName: string;
+                    avatar: string | null;
+                    gender: number;
+                };
+                data: {
+                    id: string;
+                    idRequest: string;
+                    idIsRequested: string;
+                    level: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+                quantity: number;
+            }) => {
+                console.log(res, 'resresres');
+                res.data.idIsRequested = res.data.idRequest;
+                if (res) updateData.mutate({ ...res, type: 'add' });
+            },
+        );
+        socket.on(
+            `Del request others?id=${userData.id}`,
+            (res: {
+                data: {
+                    id: string;
+                    idRequest: string;
+                    idFriend: null;
+                    createdAt: null;
+                };
+            }) => {
+                console.log(res, 'resresres del');
+
+                if (res) updateData.mutate({ ok: { id: res.data.id }, type: 'abolish' });
+            },
+        );
+        return () => {
+            eleRef.current?.removeEventListener('scroll', handleScroll);
+        };
+    }, [reload]);
+    console.log('hello friend');
+
     const handleAdd = async (id: string, kindOf: string = 'friend') => {
         const dataR: {
             id_friend: string;
@@ -281,7 +310,7 @@ const Strangers: React.FC<{
                         const idFr = vl.userRequest[0]?.idIsRequested || vl.userIsRequested[0]?.idIsRequested;
                         const level = vl.userIsRequested[0]?.level || vl.userRequest[0]?.level;
 
-                        if (level === 2 || level === 2) {
+                        if (level === 2) {
                             buttons.push({
                                 text: 'Messenger',
                                 css: css + ' background-color: #366ab3; ',

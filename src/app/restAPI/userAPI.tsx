@@ -58,7 +58,7 @@ class HttpRequestUser {
     getById = async (dispatch: Dispatch<AnyAction>, id: string | string[], params: PropsParamsById, mores: PropsMoresGetting, first?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsUserPer[] | PropsUser>('/user/getById', {
+            const res = await Axios.post('/user/getById', {
                 id: id,
                 first,
                 params: params,
