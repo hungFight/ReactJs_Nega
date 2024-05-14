@@ -149,7 +149,7 @@ const Strangers: React.FC<{
                             //      }
                             //  }
                             data?.map((x) => {
-                                if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0].id === newData.ok?.id || x.userIsRequested[0].id === newData.ok?.id)) {
+                                if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === newData.ok?.id || x.userIsRequested[0]?.id === newData.ok?.id)) {
                                     x.userRequest = [];
                                     x.userIsRequested = [];
                                 }
@@ -158,6 +158,14 @@ const Strangers: React.FC<{
                         } else if (newData.type === 'deleteReal') {
                             const newDa = data?.filter((d: { id: string }) => d.id !== newData?.id);
                             return { ...preData, data: newDa };
+                        } else if (newData.type === 'confirm') {
+                            data?.map((x) => {
+                                if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === newData.ok?.id || x.userIsRequested[0]?.id === newData.ok?.id)) {
+                                    if (x.userRequest[0].level) x.userRequest[0].level = 2;
+                                    if (x.userIsRequested[0].level) x.userIsRequested[0].level = 2;
+                                }
+                                return x;
+                            });
                         }
                         return { ...preData, data };
                     }
@@ -199,7 +207,7 @@ const Strangers: React.FC<{
             }) => {
                 console.log(res, 'resresres');
                 res.data.idIsRequested = res.data.idRequest;
-                if (res && userData.id !== res.user.id) updateData.mutate({ ...res, type: 'add' });
+                if (res) updateData.mutate({ ...res, type: 'add' });
             },
         );
         socket.on(
@@ -213,9 +221,24 @@ const Strangers: React.FC<{
                     createdAt: null;
                 };
             }) => {
-                console.log(res, 'resresres del');
+                if (res) updateData.mutate({ ok: { id: res.data?.id }, type: 'abolish' });
+            },
+        );
+        socket.on(
+            `Confirmed_friend_${userData.id}`,
+            (res: {
+                ok: {
+                    id: string;
+                    idRequest: string;
+                    idIsRequested: string;
+                    level: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+            }) => {
+                console.log(res, 'Confirmed_friend_');
 
-                if (res.userId !== userData.id) updateData.mutate({ ok: { id: res.data?.id }, type: 'abolish' });
+                if (res) updateData.mutate({ ...res, type: 'confirm' });
             },
         );
         return () => {
@@ -258,8 +281,17 @@ const Strangers: React.FC<{
         console.log('messenger', id);
     };
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
-        const dataR = await peopleAPI.setConfirm(dispatch, id, kindOf);
-        if (dataR.ok === 1) updateData.mutate({ ...dataR, type: 'confirm' });
+        const dataR: {
+            ok: {
+                id: string;
+                idRequest: string;
+                idIsRequested: string;
+                level: number;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+        } = await peopleAPI.setConfirm(dispatch, id, kindOf);
+        if (dataR) updateData.mutate({ ...dataR, type: 'confirm' });
     };
     const handleRemove = async (id: string, of: string = 'yes', kindOf?: string) => {
         if (of === 'no' && id) {

@@ -124,7 +124,6 @@ const LogicTitle = (
     function whoCanSee(key: string) {
         return key === 'friends' && level === 2 ? true : key === 'only' ? false : key === 'everyone' ? true : false;
     }
-
     const [acPrivate, setAcPrivate] = useState<string>('');
     const [privacy, setPrivacy] = useState<{
         [position: string]: string;
@@ -393,7 +392,7 @@ const LogicTitle = (
             letPrivate: mores[0].privacy.language,
         },
     };
-    console.log('title', privacy, ObjectRender);
+    console.log('title__', data);
 
     const renderInfo = (res: string, placeholder: string, icon: ReactElement, key: string, length: number, privates: ReactElement, color: string) => {
         return (

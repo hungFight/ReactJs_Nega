@@ -117,13 +117,11 @@ export default function LogicView(
                 };
                 quantity: number;
             }) => {
-                console.log(res, 'resresres');
                 res.data.idIsRequested = res.data.idRequest;
                 if (res) {
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
                             if (x.id === res.data.idIsRequested) {
-                                console.log(res, 'newData_88');
                                 const userRequest = [
                                     {
                                         id: res.data.id,
@@ -134,10 +132,63 @@ export default function LogicView(
                                         level: 1,
                                     },
                                 ];
-                                x.followed[0] = res.follow;
+                                x.followings[0] = res.follow;
+                                x.mores[0].followingAmount += 1;
                                 return { ...x, userRequest };
                             }
-
+                            return x;
+                        });
+                        return newD;
+                    });
+                }
+            },
+        );
+        socket.on(
+            `Del request others?id=${userFirst.id}`,
+            (res: {
+                userId: string;
+                data: {
+                    id: string;
+                    idRequest: string;
+                    idFriend: null;
+                    createdAt: null;
+                };
+            }) => {
+                if (res)
+                    setUsersData((pre) => {
+                        const newD = pre.map((x) => {
+                            if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0].id === res.data.id || x.userIsRequested[0].id === res.data.id)) {
+                                x.userRequest = [];
+                                x.userIsRequested = [];
+                                x.followings = [];
+                                x.mores[0].followingAmount -= 1;
+                            }
+                            return x;
+                        });
+                        return newD;
+                    });
+            },
+        );
+        socket.on(
+            `Confirmed_friend ${userFirst.id}`,
+            (res: {
+                ok: {
+                    id: string;
+                    idRequest: string;
+                    idIsRequested: string;
+                    level: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+            }) => {
+                if (res) {
+                    setUsersData((pre) => {
+                        const newD = pre.map((x) => {
+                            if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === res.ok?.id || x.userIsRequested[0]?.id === res.ok?.id)) {
+                                if (x.userRequest[0].level) x.userRequest[0].level = 2;
+                                if (x.userIsRequested[0].level) x.userIsRequested[0].level = 2;
+                                x.mores[0].friendAmount += 1;
+                            }
                             return x;
                         });
                         return newD;
@@ -315,7 +366,7 @@ export default function LogicView(
         user.userIsRequested[0] = {
             ...data.data,
         };
-        user.followings[0] = data.follow;
+        user.followed[0] = data.follow;
         user.mores[0].followedAmount = data.count_flw;
         setUsersData((pre) =>
             pre.map((us) => {
