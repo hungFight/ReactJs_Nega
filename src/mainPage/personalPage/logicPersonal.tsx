@@ -89,8 +89,12 @@ export default function LogicView(
 
     useEffect(() => {
         socket.on(
-            `Request others?id=${userFirst.id}`,
+            `Request others?id=${user.id}`,
             (res: {
+                count_followed: number;
+                count_following: number;
+                count_followed_other: number;
+                count_following_other: number;
                 id_friend: string;
                 user: {
                     id: string;
@@ -117,11 +121,13 @@ export default function LogicView(
                 };
                 quantity: number;
             }) => {
-                res.data.idIsRequested = res.data.idRequest;
-                if (res) {
+                console.log('Request others', res, userFirst.id);
+
+                if (res && res.id_friend === userFirst.id) {
+                    res.data.idIsRequested = res.data.idRequest;
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
-                            if (x.id === res.data.idIsRequested) {
+                            if (x.id === res.data?.idIsRequested) {
                                 const userRequest = [
                                     {
                                         id: res.data.id,
@@ -133,7 +139,8 @@ export default function LogicView(
                                     },
                                 ];
                                 x.followings[0] = res.follow;
-                                x.mores[0].followingAmount += 1;
+                                x.mores[0].followingAmount = res.count_following;
+                                x.mores[0].followedAmount = res.count_followed;
                                 return { ...x, userRequest };
                             }
                             return x;
@@ -144,24 +151,117 @@ export default function LogicView(
             },
         );
         socket.on(
-            `Del request others?id=${userFirst.id}`,
+            `Unfollow_${user.id}`,
+            (res: {
+                userId: string;
+                ok: {
+                    id: string;
+                    idFollowing: string;
+                    idIsFollowed: string;
+                    following: number;
+                    followed: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+                count_followed: number;
+                count_following: number;
+                count_followed_other: number;
+                count_following_other: number;
+            }) => {
+                console.log('Unfollow_', res, userFirst.id);
+                if (res && res.userId !== userFirst.id)
+                    setUsersData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) {
+                                if (res.userId === user.id) {
+                                    us.mores[0].followingAmount = res.count_following;
+                                    us.mores[0].followedAmount = res.count_followed;
+                                } else {
+                                    if (res.userId === userFirst.id)
+                                        if (us.followed.length) us.followed = res.ok ? [res.ok] : [];
+                                        else if (us.followings.length) us.followings = res.ok ? [res.ok] : [];
+                                    us.mores[0].followingAmount = res.count_following;
+                                    us.mores[0].followedAmount = res.count_followed;
+                                }
+                            }
+                            return us;
+                        }),
+                    );
+            },
+        );
+        socket.on(
+            `follow_${user.id}`,
+            (res: {
+                userId: string;
+                ok: {
+                    id: string;
+                    idFollowing: string;
+                    idIsFollowed: string;
+                    following: number;
+                    followed: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+                count_followed: number;
+                count_following: number;
+                count_followed_other: number;
+                count_following_other: number;
+            }) => {
+                console.log('follow_', res, userFirst.id);
+                if (res && res.userId !== userFirst.id)
+                    setUsersData((pre) =>
+                        pre.map((us) => {
+                            if (us.id === user.id) {
+                                if (res.userId === user.id) {
+                                    us.mores[0].followingAmount = res.count_following;
+                                    us.mores[0].followedAmount = res.count_followed;
+                                } else {
+                                    if (res.userId === userFirst.id)
+                                        if (us.followed.length) us.followed = res.ok ? [res.ok] : [];
+                                        else if (us.followings.length) us.followings = res.ok ? [res.ok] : [];
+                                    us.mores[0].followingAmount = res.count_following;
+                                    us.mores[0].followedAmount = res.count_followed;
+                                }
+                            }
+                            return us;
+                        }),
+                    );
+            },
+        );
+        socket.on(
+            `Del request others?id=${user.id}`,
             (res: {
                 userId: string;
                 data: {
                     id: string;
                     idRequest: string;
-                    idFriend: null;
-                    createdAt: null;
+                    idIsRequested: string;
+                    level: number;
+                    createdAt: Date;
+                    updatedAt: Date;
                 };
+                count_followed: number;
+                count_following: number;
+                count_followed_other: number;
+                count_following_other: number;
             }) => {
+                console.log('Del request others', res, res.userId, user.id);
                 if (res)
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
-                            if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0].id === res.data.id || x.userIsRequested[0].id === res.data.id)) {
-                                x.userRequest = [];
-                                x.userIsRequested = [];
-                                x.followings = [];
-                                x.mores[0].followingAmount -= 1;
+                            if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === res.data?.id || x.userIsRequested[0]?.id === res.data?.id)) {
+                                console.log('Del request others _N', res.userId, user.id);
+                                if (res.userId === user.id) {
+                                    x.userRequest = [];
+                                    x.userIsRequested = [];
+                                    x.followings = [];
+                                    x.followed = [];
+                                    x.mores[0].followingAmount = res.count_following;
+                                    x.mores[0].followedAmount = res.count_followed;
+                                } else if (res.userId !== userFirst.id) {
+                                    x.mores[0].followingAmount = res.count_following;
+                                    x.mores[0].followedAmount = res.count_followed;
+                                }
                             }
                             return x;
                         });
@@ -170,7 +270,7 @@ export default function LogicView(
             },
         );
         socket.on(
-            `Confirmed_friend ${userFirst.id}`,
+            `Confirmed_friend ${user.id}`,
             (res: {
                 ok: {
                     id: string;
@@ -197,7 +297,11 @@ export default function LogicView(
             },
         );
         return () => {
-            socket.off(`Request others?id=${userFirst.id}`);
+            socket.off(`Request others?id=${user.id}`);
+            socket.off(`Confirmed_friend ${user.id}`);
+            socket.off(`Del request others?id=${user.id}`);
+            socket.off(`follow_${user.id}`);
+            socket.off(`Unfollow_${user.id}`);
         };
     }, []);
     const handleChangeAvatar = async (e?: { target: { files: any } }, id?: number) => {
@@ -352,7 +456,10 @@ export default function LogicView(
                 level: number;
                 updatedAt: string;
             };
-            count_flw: number;
+            count_followed: number;
+            count_following: number;
+            count_followed_other: number;
+            count_following_other: number;
             follow: {
                 id: string;
                 idFollowing: string;
@@ -367,7 +474,8 @@ export default function LogicView(
             ...data.data,
         };
         user.followed[0] = data.follow;
-        user.mores[0].followedAmount = data.count_flw;
+        user.mores[0].followedAmount = data.count_followed_other;
+        user.mores[0].followingAmount = data.count_following_other;
         setUsersData((pre) =>
             pre.map((us) => {
                 if (us.id === user.id) return user;
@@ -381,6 +489,15 @@ export default function LogicView(
     const handleConfirm = async (id: string) => {
         if (id) {
             const data: {
+                follower: {
+                    id: string;
+                    idFollowing: string;
+                    idIsFollowed: string;
+                    following: number;
+                    followed: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
                 ok: {
                     createdAt: string;
                     id: string;
@@ -432,6 +549,7 @@ export default function LogicView(
                 user.userRequest[0] = {
                     ...data.ok,
                 };
+                user.followings = [data.follower];
                 setUsersData((pre) =>
                     pre.map((us) => {
                         if (us.id === id) return { ...user, ...data.ok.userRequest };
@@ -444,22 +562,36 @@ export default function LogicView(
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         setLoads({ ...loads, friend: true });
 
-        const data = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
+        const data: {
+            ok: {
+                createdAt: string;
+                id: number;
+                idIsRequested: string;
+                idRequest: string;
+                level: number;
+                updatedAt: string;
+            };
+            count_followed: number;
+            count_following: number;
+            count_followed_other: number;
+            count_following_other: number;
+        } = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
         console.log('Abolish', kindOf, data);
         if (data) {
-            setUsersData((pre) =>
-                pre.map((us) => {
+            setUsersData((pre) => {
+                const newD = pre.map((us) => {
                     if (us.id === user.id) {
                         us.userIsRequested = [];
                         us.userRequest = [];
                         us.followings = [];
                         us.followed = [];
-                        us.mores[0].followedAmount -= 1;
-                        us.mores[0].friendAmount = us.mores[0].friendAmount - 1;
+                        us.mores[0].followedAmount = data.count_followed_other;
+                        us.mores[0].followingAmount = data.count_following_other;
                     }
                     return us;
-                }),
-            );
+                });
+                return newD;
+            });
         }
         setLoads({ ...loads, friend: false });
     };
@@ -477,91 +609,35 @@ export default function LogicView(
         setLoads({ ...loads, follow: true });
         console.log('handleFollowe', id);
         const data: {
-            count_flwe: number;
-            follow: string;
-            id: string;
-            id_fl: string;
-            ok: number;
+            ok: {
+                id: string;
+                idFollowing: string;
+                idIsFollowed: string;
+                following: number;
+                followed: number;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+            count_followed: number;
+            count_following: number;
+            count_followed_other: number;
+            count_following_other: number;
         } = await userAPI.follow(dispatch, id, follow);
-        if (data?.ok === 1) {
-            if (user.followings[0]?.following) {
-                if (data.follow === 'following') {
-                    user.followings[0].following = 2;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                } else {
-                    user.followings[0].followed = 2;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                }
-            } else if (user.followed[0]?.followed) {
-                if (data.follow === 'following') {
-                    user.followed[0].following = 2;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                } else {
-                    user.followed[0].followed = 2;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                }
-            } else {
-                setUsersData((pre) =>
-                    pre.map((us) => {
-                        if (us.id === user.id) {
-                            user.followed[0] = {
-                                ...user.followed[0],
-                                followed: 1,
-                                following: 2,
-                                idIsFollowed: data.id,
-                                idFollowing: data.id_fl,
-                            };
-                            user.mores[0].followedAmount = data.count_flwe;
-                            return user;
-                        }
-                        if (us.id === userFirst.id) {
-                            us.mores[0].followingAmount = us.mores[0].followingAmount + 1;
-                            return us;
-                        }
-                        return us;
-                    }),
-                );
-            }
+        if (data) {
+            setUsersData((pre) =>
+                pre.map((us) => {
+                    if (us.id === user.id) {
+                        if (us.followed.length) {
+                            us.followed = data.ok ? [data.ok] : [];
+                        } else if (us.followings.length) {
+                            us.followings = data.ok ? [data.ok] : [];
+                        } else us.followed = data.ok ? [data.ok] : [];
+                        us.mores[0].followedAmount = data.count_followed_other;
+                        us.mores[0].followingAmount = data.count_following_other;
+                    }
+                    return us;
+                }),
+            );
         }
         setLoads({ ...loads, follow: false });
     };
@@ -569,87 +645,32 @@ export default function LogicView(
     const handleUnFollower = async (id: string, unfollow: string) => {
         setLoads({ ...loads, follow: true });
         const data: {
-            count_flwe: number;
-            id: string;
-            id_fl: string;
-            ok: number;
-            unfollow: string;
+            ok: {
+                id: string;
+                idFollowing: string;
+                idIsFollowed: string;
+                following: number;
+                followed: number;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+            count_followed: number;
+            count_following: number;
+            count_followed_other: number;
+            count_following_other: number;
         } = await userAPI.Unfollow(dispatch, id, unfollow);
-
-        if (data.ok === 1) {
-            if (user.followings[0]?.following) {
-                if (data.unfollow === 'following') {
-                    user.followings[0].following = 1;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                } else {
-                    user.followings[0].followed = 1;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                }
-            } else if (user.followed[0]?.followed) {
-                if (data.unfollow === 'following') {
-                    user.followed[0].following = 1;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                } else {
-                    user.followed[0].followed = 1;
-                    user.mores[0].followedAmount = data.count_flwe;
-                    setUsersData((pre) =>
-                        pre.map((us) => {
-                            if (us.id === user.id) return user;
-                            if (us.id === userFirst.id) {
-                                us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
-                                return us;
-                            }
-                            return us;
-                        }),
-                    );
-                }
-            } else {
-                setUsersData((pre) =>
-                    pre.map((us) => {
-                        if (us.id === user.id) {
-                            user.followed[0].followed = 1;
-                            user.mores[0].followedAmount = data.count_flwe;
-                            return user;
-                        }
-                        if (us.id === userFirst.id) {
-                            us.mores[0].followingAmount = us.mores[0].followingAmount - 1;
-                            return us;
-                        }
-
-                        return us;
-                    }),
-                );
-            }
+        if (data) {
+            setUsersData((pre) =>
+                pre.map((us) => {
+                    if (us.id === user.id) {
+                        us.followed = [];
+                        us.followings = [];
+                        us.mores[0].followedAmount = data.count_followed_other;
+                        us.mores[0].followingAmount = data.count_following_other;
+                    }
+                    return us;
+                }),
+            );
         }
         setLoads({ ...loads, follow: false });
     };

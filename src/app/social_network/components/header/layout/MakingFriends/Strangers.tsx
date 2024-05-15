@@ -65,22 +65,23 @@ const Strangers: React.FC<{
         queryKey: ['getStrangers'],
         staleTime: 15 * 60 * 60 * 1000,
         cacheTime: 15 * 60 * 60 * 1000,
+        // enabled:
         queryFn: async () => {
             cRef.current = 1;
-            const preData: PropsQueryItem = queryClient.getQueryData(['getFirends']);
+            const preData: PropsQueryItem = queryClient.getQueryData(['getStrangers']);
             const res = await peopleAPI.getStrangers(dispatch, preData?.offset ?? 0, limit, preData ? 'ok' : undefined);
             if (res) {
                 if (preData) {
                     if (isRefetch.current)
                         // for scroll
                         return { offset: preData.offset + limit, data: [...preData.data, ...res] };
-                    return preData;
-                } else {
-                    return { offset: 0, data: res };
                 }
+                return { offset: 0, data: res };
             }
         },
     });
+    console.log(asNew, 'asNew');
+
     const data = asNew?.data;
     const handleScroll = () => {
         const { scrollTop, clientHeight, scrollHeight } = eleRef.current;
@@ -116,7 +117,6 @@ const Strangers: React.FC<{
                                 if (x.id === newData.data.idIsRequested) {
                                     if (newData.data.idIsRequested === newData.data.idRequest) {
                                         console.log(newData, 'newData_77');
-
                                         x.userRequest[0] = {
                                             id: newData.data.id,
                                             idRequest: newData.data.idRequest,
@@ -207,7 +207,7 @@ const Strangers: React.FC<{
             }) => {
                 console.log(res, 'resresres');
                 res.data.idIsRequested = res.data.idRequest;
-                if (res) updateData.mutate({ ...res, type: 'add' });
+                if (res && res.user.id !== userData.id) updateData.mutate({ ...res, type: 'add' });
             },
         );
         socket.on(
@@ -338,103 +338,105 @@ const Strangers: React.FC<{
                     </DivLoading>
                 ) : data?.length ? (
                     data?.map((vl) => {
-                        const buttons = [];
-                        const idU = vl.userIsRequested[0]?.idRequest || vl.userRequest[0]?.idRequest;
-                        const idFr = vl.userRequest[0]?.idIsRequested || vl.userIsRequested[0]?.idIsRequested;
-                        const level = vl.userIsRequested[0]?.level || vl.userRequest[0]?.level;
-
-                        if (level === 2) {
-                            buttons.push({
-                                text: 'Messenger',
-                                css: css + ' background-color: #366ab3; ',
-                                onClick: () => handleMessenger(vl.id),
-                            });
-                        } else {
-                            if (idU === userData.id) {
-                                buttons.push(
-                                    {
-                                        text: 'Delete',
-                                        css: css,
-                                        onClick: () => handleRemove(vl.id, 'yes', 'friends'),
-                                    },
-                                    {
-                                        text: 'Abolish',
-                                        css: css + 'background-color: #af2c48; ',
-                                        onClick: () => handleAbolish(vl.id),
-                                    },
-                                );
-                            } else if (idFr === userData.id) {
-                                console.log('friend --others');
-                                buttons.push(
-                                    {
-                                        text: 'Delete',
-                                        css: css,
-                                        onClick: () => handleRemove(vl.id, 'yes', 'friends'),
-                                    },
-                                    {
-                                        text: 'Confirm',
-                                        css: css + 'background-color:   #1553a1; ',
-                                        onClick: () => handleConfirm(vl.id),
-                                    },
-                                );
+                        console.log(vl, 'vlllll');
+                        if (vl?.userIsRequested || vl?.userRequest) {
+                            const buttons = [];
+                            const idU = vl?.userIsRequested[0]?.idRequest ?? vl?.userRequest[0]?.idRequest;
+                            const idFr = vl?.userRequest[0]?.idIsRequested ?? vl?.userIsRequested[0]?.idIsRequested;
+                            const level = vl?.userIsRequested[0]?.level ?? vl?.userRequest[0]?.level;
+                            if (level === 2) {
+                                buttons.push({
+                                    text: 'Messenger',
+                                    css: css + ' background-color: #366ab3; ',
+                                    onClick: () => handleMessenger(vl.id),
+                                });
                             } else {
-                                console.log('else');
-                                buttons.push(
-                                    {
-                                        text: 'Remove',
-                                        css: css,
-                                        onClick: () => handleRemove(vl.id, 'no'),
-                                    },
-                                    {
-                                        text: 'Add friend',
-                                        css: css + ' background-color: #366ab3;',
-                                        onClick: () => handleAdd(vl.id),
-                                    },
-                                );
+                                if (idU === userData.id) {
+                                    buttons.push(
+                                        {
+                                            text: 'Delete',
+                                            css: css,
+                                            onClick: () => handleRemove(vl.id, 'yes', 'friends'),
+                                        },
+                                        {
+                                            text: 'Abolish',
+                                            css: css + 'background-color: #af2c48; ',
+                                            onClick: () => handleAbolish(vl.id),
+                                        },
+                                    );
+                                } else if (idFr === userData.id) {
+                                    console.log('friend --others');
+                                    buttons.push(
+                                        {
+                                            text: 'Delete',
+                                            css: css,
+                                            onClick: () => handleRemove(vl.id, 'yes', 'friends'),
+                                        },
+                                        {
+                                            text: 'Confirm',
+                                            css: css + 'background-color:   #1553a1; ',
+                                            onClick: () => handleConfirm(vl.id),
+                                        },
+                                    );
+                                } else {
+                                    console.log('else');
+                                    buttons.push(
+                                        {
+                                            text: 'Remove',
+                                            css: css,
+                                            onClick: () => handleRemove(vl.id, 'no'),
+                                        },
+                                        {
+                                            text: 'Add friend',
+                                            css: css + ' background-color: #366ab3;',
+                                            onClick: () => handleAdd(vl.id),
+                                        },
+                                    );
+                                }
                             }
-                        }
-                        return (
-                            <Div
-                                key={vl.id}
-                                wrap="wrap"
-                                css={`
-                                    width: 185px;
-                                    padding: 5px;
-                                    border: 1px solid #414141;
-                                    margin: 10px;
-                                    transition: all 0.2s linear;
-                                    position: relative;
-                                    &:hover {
-                                        box-shadow: 0 0 8px #6a48bc;
-                                    }
-                                    @media (min-width: 480px) {
-                                        width: 306px;
-                                    }
-                                    @media (min-width: 769px) {
-                                        width: 190px;
-                                        height: fit-content;
-                                        flex-wrap: wrap;
-                                        justify-content: center;
-                                        text-align: center;
-                                        background-color: #292a2c;
-                                        box-shadow: 0 0 5px #7b797987;
-                                        border-radius: 5px;
-                                        padding: 0 0 12px;
-                                    }
-                                `}
-                            >
+                            return (
                                 <Div
+                                    key={vl.id}
+                                    wrap="wrap"
                                     css={`
-                                        position: absolute;
-                                        right: 9px;
-                                        font-size: 20px;
+                                        width: 185px;
+                                        padding: 5px;
+                                        border: 1px solid #414141;
+                                        margin: 10px;
+                                        transition: all 0.2s linear;
+                                        position: relative;
+                                        &:hover {
+                                            box-shadow: 0 0 8px #6a48bc;
+                                        }
+                                        @media (min-width: 480px) {
+                                            width: 306px;
+                                        }
+                                        @media (min-width: 769px) {
+                                            width: 190px;
+                                            height: fit-content;
+                                            flex-wrap: wrap;
+                                            justify-content: center;
+                                            text-align: center;
+                                            background-color: #292a2c;
+                                            box-shadow: 0 0 5px #7b797987;
+                                            border-radius: 5px;
+                                            padding: 0 0 12px;
+                                        }
                                     `}
                                 >
-                                    <DotI />
+                                    <Div
+                                        css={`
+                                            position: absolute;
+                                            right: 9px;
+                                            font-size: 20px;
+                                        `}
+                                    >
+                                        <DotI />
+                                    </Div>
+                                    <TagProfile button={buttons} cssImage={cssImage} data={vl} />
                                 </Div>
-                                <TagProfile button={buttons} cssImage={cssImage} data={vl} />
-                            </Div>
-                        );
+                            );
+                        }
                     })
                 ) : (
                     <DivFlex wrap="wrap">

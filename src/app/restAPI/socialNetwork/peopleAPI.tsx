@@ -21,17 +21,7 @@ class PeopleRequest {
     delete = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.post<{
-                ok: {
-                    createdAt: string;
-                    id: number;
-                    idIsRequested: string;
-                    idRequest: string;
-                    level: number;
-                    updatedAt: string;
-                };
-                count_flwe?: number;
-            }>('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
+            const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;

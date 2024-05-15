@@ -31,6 +31,7 @@ class refreshToken {
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
+                            refreshToken.isInterceptorAttached = true;
                             console.log('all right', i++);
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenN);
@@ -54,7 +55,6 @@ class refreshToken {
                                     });
                                 }
                             }
-                            refreshToken.isInterceptorAttached = true;
                             resolve(config);
                         } catch (error) {
                             reject(error);
@@ -82,7 +82,7 @@ class refreshToken {
                             console.log('all right', i++);
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenNN);
-
+                            refreshToken.isInterceptorAttachedR = true;
                             if (decodeToken.exp < date.getTime() / 1000 + 5) {
                                 // faster 50 second
                                 console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
@@ -102,7 +102,6 @@ class refreshToken {
                                     });
                                 }
                             }
-                            refreshToken.isInterceptorAttachedR = true;
                             resolve(config);
                         } catch (error) {
                             reject(error);
