@@ -122,17 +122,11 @@ export default function LogicView(
                 };
                 quantity: number;
             }) => {
-                console.log('Request others', res, userFirst.id);
-
                 if (res) {
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
                             if (x.id === res.data?.idRequest) {
-                                console.log('Request others __');
-
                                 if (res.id_friend === userFirst.id) {
-                                    console.log('Request others __1');
-
                                     x.followings[0] = res.follow;
                                     x.userRequest = [
                                         {
@@ -147,7 +141,6 @@ export default function LogicView(
                                     x.mores[0].followingAmount = res.count_following;
                                     x.mores[0].followedAmount = res.count_followed;
                                 } else if (res.id_friend !== userFirst.id) {
-                                    console.log('Request others __2');
                                     if (res.youId === userFirst.id) {
                                         x.mores[0].followingAmount = res.count_following_other;
                                         x.mores[0].followedAmount = res.count_followed_other;
@@ -157,8 +150,6 @@ export default function LogicView(
                                     }
                                 }
                             } else {
-                                console.log('Request others __3');
-
                                 x.mores[0].followingAmount = res.count_following_other;
                                 x.mores[0].followedAmount = res.count_followed_other;
                             }
@@ -187,7 +178,6 @@ export default function LogicView(
                 count_followed_other: number;
                 count_following_other: number;
             }) => {
-                console.log('Unfollow_', res, userFirst.id, res.userId, user.id);
                 if (res)
                     setUsersData((pre) =>
                         pre.map((us) => {
@@ -223,7 +213,6 @@ export default function LogicView(
                 count_followed_other: number;
                 count_following_other: number;
             }) => {
-                console.log('follow_', res, userFirst.id);
                 if (res)
                     setUsersData((pre) =>
                         pre.map((us) => {
@@ -259,30 +248,24 @@ export default function LogicView(
                 count_followed_other: number;
                 count_following_other: number;
             }) => {
-                console.log('Del request others', res, res.userId, user.id);
                 if (res)
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
                             if (x.id === user.id) {
-                                console.log('Del request others _N', res.userId, user.id);
                                 if (res.userId === userFirst.id) {
                                     x.userRequest = [];
-                                    console.log('Del Request others __');
                                     x.userIsRequested = [];
                                     x.followings = [];
                                     x.followed = [];
                                     x.mores[0].followingAmount = res.count_following;
                                     x.mores[0].followedAmount = res.count_followed;
                                 } else if (res.userId !== userFirst.id) {
-                                    console.log('Del Request others __1');
                                     if (res.userId !== user.id) {
-                                        console.log('Del Request others __2');
                                         x.mores[0].followingAmount = res.count_following;
                                         x.mores[0].followedAmount = res.count_followed;
                                     } else {
                                         x.mores[0].followingAmount = res.count_following_other;
                                         x.mores[0].followedAmount = res.count_followed_other;
-                                        console.log('Del Request others __3');
                                     }
                                 }
                             }
@@ -293,7 +276,7 @@ export default function LogicView(
             },
         );
         socket.on(
-            `Confirmed_friend ${user.id}`,
+            `Confirmed_friend_${user.id}`,
             (res: {
                 ok: {
                     id: string;
@@ -302,15 +285,61 @@ export default function LogicView(
                     level: number;
                     createdAt: Date;
                     updatedAt: Date;
+                    userIsRequested: {
+                        address: string;
+                        birthday: string;
+                        biography: string;
+                        gender: number;
+                        hobby: string[];
+                        skill: string[];
+                        occupation: string;
+                        schoolName: string;
+                        mores: {
+                            id: string;
+                            position: string;
+                            star: number;
+                            loverAmount: number;
+                            friendAmount: number;
+                            visitorAmount: number;
+                            followedAmount: number;
+                            followingAmount: number;
+                            relationship: string;
+                            language: string[];
+                            privacy: {
+                                [position: string]: string;
+                                address: string;
+                                birthday: string;
+                                relationship: string;
+                                gender: string;
+                                schoolName: string;
+                                occupation: string;
+                                hobby: string;
+                                skill: string;
+                                language: string;
+                                subAccount: string;
+                            };
+                            createdAt: string;
+                            updatedAt: string;
+                        }[];
+                    };
                 };
+                youId: string;
+                userId: string;
+                count_following_other: number;
+                count_followed_other: number;
+                count_friends_other: number;
             }) => {
+                console.log('Confirmed_friend', res);
+
                 if (res) {
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
-                            if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === res.ok?.id || x.userIsRequested[0]?.id === res.ok?.id)) {
-                                if (x.userRequest[0].level) x.userRequest[0].level = 2;
-                                if (x.userIsRequested[0].level) x.userIsRequested[0].level = 2;
-                                x.mores[0].friendAmount += 1;
+                            if (x.id === user.id) {
+                                if (res.userId === userFirst.id) {
+                                    if (x.userRequest[0]?.level) x.userRequest[0].level = 2;
+                                    if (x.userIsRequested[0]?.level) x.userIsRequested[0].level = 2;
+                                    return { ...x, ...res.ok.userIsRequested };
+                                }
                             }
                             return x;
                         });
@@ -572,7 +601,17 @@ export default function LogicView(
                 user.userRequest[0] = {
                     ...data.ok,
                 };
-                user.followings = [data.follower];
+                // if (user.userRequest.length)
+                //     user.userRequest[0] = {
+                //         ...data.ok,
+                //     };
+                // else if (user.userIsRequested.length)
+                //     user.userIsRequested[0] = {
+                //         ...data.ok,
+                //     };
+                if (user.followings.length) user.followings = [data.follower];
+                else if (user.followed.length) user.followed = [data.follower];
+                else user.followings = [data.follower];
                 setUsersData((pre) =>
                     pre.map((us) => {
                         if (us.id === id) return { ...user, ...data.ok.userRequest };
