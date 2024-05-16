@@ -210,13 +210,12 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    follow = async (dispatch: Dispatch<AnyAction>, id: string, follow?: string) => {
+    follow = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/follow', {
                 params: {
                     id,
-                    follow,
                 },
             });
             return res.data;
@@ -225,13 +224,12 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    Unfollow = async (dispatch: Dispatch<AnyAction>, id: string, unfollow: string) => {
+    Unfollow = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/Unfollow', {
                 params: {
                     id,
-                    unfollow,
                 },
             });
             console.log(res, 'sd');

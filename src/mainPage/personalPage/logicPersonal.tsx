@@ -168,18 +168,15 @@ export default function LogicView(
                 count_followed_other: number;
                 count_following_other: number;
             }) => {
-                console.log('Unfollow_', res, userFirst.id);
-                if (res && res.userId !== userFirst.id)
+                console.log('Unfollow_', res, userFirst.id, res.userId, user.id);
+                if (res)
                     setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) {
                                 if (res.userId === user.id) {
-                                    us.mores[0].followingAmount = res.count_following;
-                                    us.mores[0].followedAmount = res.count_followed;
+                                    us.mores[0].followingAmount = res.count_following_other;
+                                    us.mores[0].followedAmount = res.count_followed_other;
                                 } else {
-                                    if (res.userId === userFirst.id)
-                                        if (us.followed.length) us.followed = res.ok ? [res.ok] : [];
-                                        else if (us.followings.length) us.followings = res.ok ? [res.ok] : [];
                                     us.mores[0].followingAmount = res.count_following;
                                     us.mores[0].followedAmount = res.count_followed;
                                 }
@@ -208,17 +205,14 @@ export default function LogicView(
                 count_following_other: number;
             }) => {
                 console.log('follow_', res, userFirst.id);
-                if (res && res.userId !== userFirst.id)
+                if (res)
                     setUsersData((pre) =>
                         pre.map((us) => {
                             if (us.id === user.id) {
                                 if (res.userId === user.id) {
-                                    us.mores[0].followingAmount = res.count_following;
-                                    us.mores[0].followedAmount = res.count_followed;
+                                    us.mores[0].followingAmount = res.count_following_other;
+                                    us.mores[0].followedAmount = res.count_followed_other;
                                 } else {
-                                    if (res.userId === userFirst.id)
-                                        if (us.followed.length) us.followed = res.ok ? [res.ok] : [];
-                                        else if (us.followings.length) us.followings = res.ok ? [res.ok] : [];
                                     us.mores[0].followingAmount = res.count_following;
                                     us.mores[0].followedAmount = res.count_followed;
                                 }
@@ -605,7 +599,7 @@ export default function LogicView(
         });
         console.log('handleMessenger');
     };
-    const handleFollower = async (id: string, follow?: string) => {
+    const handleFollower = async (id: string) => {
         setLoads({ ...loads, follow: true });
         console.log('handleFollowe', id);
         const data: {
@@ -622,7 +616,7 @@ export default function LogicView(
             count_following: number;
             count_followed_other: number;
             count_following_other: number;
-        } = await userAPI.follow(dispatch, id, follow);
+        } = await userAPI.follow(dispatch, id);
         if (data) {
             setUsersData((pre) =>
                 pre.map((us) => {
@@ -642,7 +636,7 @@ export default function LogicView(
         setLoads({ ...loads, follow: false });
     };
 
-    const handleUnFollower = async (id: string, unfollow: string) => {
+    const handleUnFollower = async (id: string) => {
         setLoads({ ...loads, follow: true });
         const data: {
             ok: {
@@ -658,7 +652,7 @@ export default function LogicView(
             count_following: number;
             count_followed_other: number;
             count_following_other: number;
-        } = await userAPI.Unfollow(dispatch, id, unfollow);
+        } = await userAPI.Unfollow(dispatch, id);
         if (data) {
             setUsersData((pre) =>
                 pre.map((us) => {
@@ -955,11 +949,11 @@ export default function LogicView(
             id_fl === userFirst.id
                 ? following === 1
                     ? { name: 'Follow', onClick: () => handleFollower(user.id) }
-                    : { name: 'UnFollow', onClick: () => handleUnFollower(user.id, 'following') }
+                    : { name: 'UnFollow', onClick: () => handleUnFollower(user.id) }
                 : id_fled === userFirst.id
                 ? follwed === 1
                     ? { name: 'Follow', onClick: () => handleFollower(user.id) }
-                    : { name: 'UnFollow', onClick: () => handleUnFollower(user.id, 'followed') }
+                    : { name: 'UnFollow', onClick: () => handleUnFollower(user.id) }
                 : { name: 'Follow', onClick: () => handleFollower(user.id) },
         ],
         vi: [
@@ -984,12 +978,12 @@ export default function LogicView(
             },
             id_fl === userFirst.id
                 ? following === 1
-                    ? { name: 'Theo dõi', onClick: () => handleFollower(user.id, 'following') }
-                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(user.id, 'following') }
+                    ? { name: 'Theo dõi', onClick: () => handleFollower(user.id) }
+                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(user.id) }
                 : id_fled === userFirst.id
                 ? follwed === 1
-                    ? { name: 'Theo dõi', onClick: () => handleFollower(user.id, 'followed') }
-                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(user.id, 'followed') }
+                    ? { name: 'Theo dõi', onClick: () => handleFollower(user.id) }
+                    : { name: 'Bỏ theo dõi', onClick: () => handleUnFollower(user.id) }
                 : { name: 'Theo dõi', onClick: () => handleFollower(user.id) },
         ],
     };

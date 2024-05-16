@@ -23,27 +23,19 @@ class refreshToken {
     axiosJWTs() {
         const token = Cookies.get('tks');
         console.log('token here', token);
-        let i = 0;
         if (!refreshToken.isInterceptorAttached && !refreshToken.isInterceptorAttachedR && token) {
             let tokenN = token;
-
             axiosJWT.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
                             refreshToken.isInterceptorAttached = true;
-                            console.log('all right', i++);
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenN);
 
                             if (decodeToken.exp < date.getTime() / 1000 + 5) {
                                 // faster 50 second
-                                console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
-
                                 const data = await authHttpRequest.refreshToken();
-
-                                console.log(data.newAccessToken, 'newAccessToken');
-
                                 if (data?.newAccessToken) {
                                     const newToken = 'Bearer ' + data.newAccessToken;
                                     tokenN = newToken;
@@ -72,14 +64,12 @@ class refreshToken {
     axiosJWTsFIle() {
         const token = Cookies.get('tks');
         console.log('token here File', token);
-        let i = 0;
         if (!refreshToken.isInterceptorAttachedR && token) {
             let tokenNN = token;
             axiosJWTFile.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
-                            console.log('all right', i++);
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenNN);
                             refreshToken.isInterceptorAttachedR = true;
