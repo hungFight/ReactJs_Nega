@@ -95,6 +95,7 @@ export default function LogicView(
                 count_following: number;
                 count_followed_other: number;
                 count_following_other: number;
+                youId: string;
                 id_friend: string;
                 user: {
                     id: string;
@@ -123,25 +124,43 @@ export default function LogicView(
             }) => {
                 console.log('Request others', res, userFirst.id);
 
-                if (res && res.id_friend === userFirst.id) {
-                    res.data.idIsRequested = res.data.idRequest;
+                if (res) {
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
-                            if (x.id === res.data?.idIsRequested) {
-                                const userRequest = [
-                                    {
-                                        id: res.data.id,
-                                        idRequest: res.data.idRequest,
-                                        idIsRequested: res.data.idIsRequested,
-                                        createdAt: res.data.createdAt,
-                                        updatedAt: res.data.updatedAt,
-                                        level: 1,
-                                    },
-                                ];
-                                x.followings[0] = res.follow;
-                                x.mores[0].followingAmount = res.count_following;
-                                x.mores[0].followedAmount = res.count_followed;
-                                return { ...x, userRequest };
+                            if (x.id === res.data?.idRequest) {
+                                console.log('Request others __');
+
+                                if (res.id_friend === userFirst.id) {
+                                    console.log('Request others __1');
+
+                                    x.followings[0] = res.follow;
+                                    x.userRequest = [
+                                        {
+                                            id: res.data.id,
+                                            idRequest: res.data.idRequest,
+                                            idIsRequested: res.data.idIsRequested,
+                                            createdAt: res.data.createdAt,
+                                            updatedAt: res.data.updatedAt,
+                                            level: 1,
+                                        },
+                                    ];
+                                    x.mores[0].followingAmount = res.count_following;
+                                    x.mores[0].followedAmount = res.count_followed;
+                                } else if (res.id_friend !== userFirst.id) {
+                                    console.log('Request others __2');
+                                    if (res.youId === userFirst.id) {
+                                        x.mores[0].followingAmount = res.count_following_other;
+                                        x.mores[0].followedAmount = res.count_followed_other;
+                                    } else {
+                                        x.mores[0].followingAmount = res.count_following;
+                                        x.mores[0].followedAmount = res.count_followed;
+                                    }
+                                }
+                            } else {
+                                console.log('Request others __3');
+
+                                x.mores[0].followingAmount = res.count_following_other;
+                                x.mores[0].followedAmount = res.count_followed_other;
                             }
                             return x;
                         });
@@ -226,6 +245,7 @@ export default function LogicView(
             `Del request others?id=${user.id}`,
             (res: {
                 userId: string;
+                youId: string;
                 data: {
                     id: string;
                     idRequest: string;
@@ -243,18 +263,27 @@ export default function LogicView(
                 if (res)
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
-                            if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === res.data?.id || x.userIsRequested[0]?.id === res.data?.id)) {
+                            if (x.id === user.id) {
                                 console.log('Del request others _N', res.userId, user.id);
-                                if (res.userId === user.id) {
+                                if (res.userId === userFirst.id) {
                                     x.userRequest = [];
+                                    console.log('Del Request others __');
                                     x.userIsRequested = [];
                                     x.followings = [];
                                     x.followed = [];
                                     x.mores[0].followingAmount = res.count_following;
                                     x.mores[0].followedAmount = res.count_followed;
                                 } else if (res.userId !== userFirst.id) {
-                                    x.mores[0].followingAmount = res.count_following;
-                                    x.mores[0].followedAmount = res.count_followed;
+                                    console.log('Del Request others __1');
+                                    if (res.userId !== user.id) {
+                                        console.log('Del Request others __2');
+                                        x.mores[0].followingAmount = res.count_following;
+                                        x.mores[0].followedAmount = res.count_followed;
+                                    } else {
+                                        x.mores[0].followingAmount = res.count_following_other;
+                                        x.mores[0].followedAmount = res.count_followed_other;
+                                        console.log('Del Request others __3');
+                                    }
                                 }
                             }
                             return x;
