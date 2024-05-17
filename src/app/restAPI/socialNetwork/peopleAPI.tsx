@@ -5,6 +5,7 @@ import { PropsFriends } from '~/social_network/components/Header/layout/MakingFr
 import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
 import { PropsDataStranger } from '~/social_network/components/Header/layout/MakingFriends/Strangers';
+import { PropsMoresGetting, PropsParamsById } from '../userAPI';
 class PeopleRequest {
     setFriend = async (dispatch: Dispatch<AnyAction>, id: string, per?: string) => {
         try {
@@ -28,11 +29,11 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    setConfirm = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
+    setConfirm = async (dispatch: Dispatch<AnyAction>, id: string, params: PropsParamsById | undefined, mores: PropsMoresGetting | undefined, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.patch('/SN/people/setConfirm', {
-                params: { id_req: id, kindOf: kindOf, per },
+                params: { id_req: id, kindOf: kindOf, per, params, mores },
             });
             return res.data;
         } catch (error) {

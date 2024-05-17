@@ -137,6 +137,33 @@ export type PropsId_chats = {
     top?: number;
     left?: number;
 };
+export const params = {
+    address: true,
+    biography: true,
+    birthday: true,
+    gender: true,
+    active: true,
+    hobby: true,
+    skill: true,
+    occupation: true,
+    schoolName: true,
+    firstPage: true,
+    secondPage: true,
+    thirdPage: true,
+};
+export const mores = {
+    position: true,
+    star: true,
+    loverAmount: true,
+    friendAmount: true,
+    visitorAmount: true,
+    followedAmount: true,
+    followingAmount: true,
+    relationship: true,
+    language: true,
+    createdAt: true,
+    privacy: true,
+};
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/NextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
@@ -190,42 +217,7 @@ function App() {
     const handleCheck = useRef<boolean>(false);
     async function fetchF(id: string | string[], first?: string) {
         if (!first) setLoading(true);
-        const res: PropsUser = await userAPI.getById(
-            dispatch,
-            id,
-            {
-                id: true,
-                avatar: true,
-                background: true,
-                fullName: true,
-                address: true,
-                biography: true,
-                birthday: true,
-                gender: true,
-                active: true,
-                hobby: true,
-                skill: true,
-                occupation: true,
-                schoolName: true,
-                firstPage: true,
-                secondPage: true,
-                thirdPage: true,
-            },
-            {
-                position: true,
-                star: true,
-                loverAmount: true,
-                friendAmount: true,
-                visitorAmount: true,
-                followedAmount: true,
-                followingAmount: true,
-                relationship: true,
-                language: true,
-                createdAt: true,
-                privacy: true,
-            },
-            first,
-        );
+        const res: PropsUser = await userAPI.getById(dispatch, id, params, mores, first);
         // Tìm ảnh trong mã HTML và lấy URL của ảnh đầu tiên
         if (res)
             if (!Array.isArray(res)) {

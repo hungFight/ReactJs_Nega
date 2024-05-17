@@ -3,7 +3,7 @@ import { v4 as primaryKey } from 'uuid';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { PropsUser, PropsUserPer } from 'src/App';
+import { PropsUser, PropsUserPer, mores, params } from 'src/App';
 import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import { InitialStateHideShow, setTrueErrorServer } from '~/redux/hideShow';
@@ -595,9 +595,8 @@ export default function LogicView(
                         }[];
                     };
                 };
-            } = await peopleAPI.setConfirm(dispatch, id, 'friends', 'personal');
+            } = await peopleAPI.setConfirm(dispatch, id, params, mores, 'friends', 'personal');
             if (data) {
-                // du lieu chua chinh xac khi tra ve
                 user.userRequest[0] = {
                     ...data.ok,
                 };

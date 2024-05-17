@@ -40,7 +40,7 @@ interface PropsParamsMores {
     visitor?: boolean;
     relationship?: boolean | string;
 }
-interface PropsMoresGetting {
+export interface PropsMoresGetting {
     position?: boolean;
     star?: boolean;
     loverAmount?: boolean;

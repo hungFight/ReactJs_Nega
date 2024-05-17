@@ -66,7 +66,7 @@ const Others: React.FC<{ userData: PropsUser }> = ({ userData }) => {
         };
     }, [reload]);
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
-        const dataR = await peopleAPI.setConfirm(dispatch, id, kindOf);
+        const dataR = await peopleAPI.setConfirm(dispatch, id, undefined, undefined, kindOf);
         console.log('confirm', kindOf, id);
         refresh(dataR);
         function refresh(res: any) {

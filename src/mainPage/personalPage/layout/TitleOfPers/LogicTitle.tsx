@@ -101,7 +101,7 @@ const LogicTitle = (
         { icon: <PeopleI />, key: 4, qt: mores[0].visitorAmount, color: data.id === userFirst.id ? '#52c6a5' : '' },
     ];
     const itemsP = [
-        { icon: 'Followed', key: 5, qt: mores[0].followedAmount, color: '' },
+        { icon: 'Follower', key: 5, qt: mores[0].followedAmount, color: '' },
         { icon: 'Following', key: 6, qt: mores[0].followingAmount, color: '' },
     ];
     const itemMemoryBar = [
@@ -205,7 +205,7 @@ const LogicTitle = (
             letPrivate: mores[0].privacy.address,
         },
         gender: {
-            val: Gender(data.gender).string,
+            val: data.gender ? Gender(data.gender).string : '',
             placeholder: 'Gender',
             icon: <GenderMaleI />,
             color: '',
@@ -392,7 +392,7 @@ const LogicTitle = (
             letPrivate: mores[0].privacy.language,
         },
     };
-    console.log('title__', data);
+    console.log('title__', ObjectRender);
 
     const renderInfo = (res: string, placeholder: string, icon: ReactElement, key: string, length: number, privates: ReactElement, color: string) => {
         return (
@@ -616,7 +616,7 @@ const LogicTitle = (
                 letPrivate: mores[0].privacy.address,
             },
             gender: {
-                val: Gender(data.gender).string,
+                val: data.gender ? Gender(data.gender).string : '',
                 placeholder: 'Gender',
                 color: '',
                 icon: <GenderMaleI />,

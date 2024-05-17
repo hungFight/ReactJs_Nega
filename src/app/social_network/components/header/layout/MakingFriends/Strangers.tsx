@@ -114,7 +114,7 @@ const Strangers: React.FC<{
                             //     type: string;
                             // }
                             data?.map((x) => {
-                                if (x.id === newData.data.idIsRequested) {
+                                if (x.id === newData.id_friend) {
                                     if (newData.data.idIsRequested === newData.data.idRequest) {
                                         console.log(newData, 'newData_77');
                                         x.userRequest[0] = {
@@ -290,7 +290,7 @@ const Strangers: React.FC<{
                 createdAt: Date;
                 updatedAt: Date;
             };
-        } = await peopleAPI.setConfirm(dispatch, id, kindOf);
+        } = await peopleAPI.setConfirm(dispatch, id, undefined, undefined, kindOf);
         if (dataR) updateData.mutate({ ...dataR, type: 'confirm' });
     };
     const handleRemove = async (id: string, of: string = 'yes', kindOf?: string) => {
@@ -339,8 +339,8 @@ const Strangers: React.FC<{
                 ) : data?.length ? (
                     data?.map((vl) => {
                         console.log(vl, 'vlllll');
+                        const buttons = [];
                         if (vl?.userIsRequested || vl?.userRequest) {
-                            const buttons = [];
                             const idU = vl?.userIsRequested[0]?.idRequest ?? vl?.userRequest[0]?.idRequest;
                             const idFr = vl?.userRequest[0]?.idIsRequested ?? vl?.userIsRequested[0]?.idIsRequested;
                             const level = vl?.userIsRequested[0]?.level ?? vl?.userRequest[0]?.level;
@@ -394,49 +394,63 @@ const Strangers: React.FC<{
                                     );
                                 }
                             }
-                            return (
-                                <Div
-                                    key={vl.id}
-                                    wrap="wrap"
-                                    css={`
-                                        width: 185px;
-                                        padding: 5px;
-                                        border: 1px solid #414141;
-                                        margin: 10px;
-                                        transition: all 0.2s linear;
-                                        position: relative;
-                                        &:hover {
-                                            box-shadow: 0 0 8px #6a48bc;
-                                        }
-                                        @media (min-width: 480px) {
-                                            width: 306px;
-                                        }
-                                        @media (min-width: 769px) {
-                                            width: 190px;
-                                            height: fit-content;
-                                            flex-wrap: wrap;
-                                            justify-content: center;
-                                            text-align: center;
-                                            background-color: #292a2c;
-                                            box-shadow: 0 0 5px #7b797987;
-                                            border-radius: 5px;
-                                            padding: 0 0 12px;
-                                        }
-                                    `}
-                                >
-                                    <Div
-                                        css={`
-                                            position: absolute;
-                                            right: 9px;
-                                            font-size: 20px;
-                                        `}
-                                    >
-                                        <DotI />
-                                    </Div>
-                                    <TagProfile button={buttons} cssImage={cssImage} data={vl} />
-                                </Div>
+                        } else {
+                            console.log('else');
+                            buttons.push(
+                                {
+                                    text: 'Remove',
+                                    css: css,
+                                    onClick: () => handleRemove(vl.id, 'no'),
+                                },
+                                {
+                                    text: 'Add friend',
+                                    css: css + ' background-color: #366ab3;',
+                                    onClick: () => handleAdd(vl.id),
+                                },
                             );
                         }
+                        return (
+                            <Div
+                                key={vl.id}
+                                wrap="wrap"
+                                css={`
+                                    width: 185px;
+                                    padding: 5px;
+                                    border: 1px solid #414141;
+                                    margin: 10px;
+                                    transition: all 0.2s linear;
+                                    position: relative;
+                                    &:hover {
+                                        box-shadow: 0 0 8px #6a48bc;
+                                    }
+                                    @media (min-width: 480px) {
+                                        width: 306px;
+                                    }
+                                    @media (min-width: 769px) {
+                                        width: 190px;
+                                        height: fit-content;
+                                        flex-wrap: wrap;
+                                        justify-content: center;
+                                        text-align: center;
+                                        background-color: #292a2c;
+                                        box-shadow: 0 0 5px #7b797987;
+                                        border-radius: 5px;
+                                        padding: 0 0 12px;
+                                    }
+                                `}
+                            >
+                                <Div
+                                    css={`
+                                        position: absolute;
+                                        right: 9px;
+                                        font-size: 20px;
+                                    `}
+                                >
+                                    <DotI />
+                                </Div>
+                                <TagProfile button={buttons} cssImage={cssImage} data={vl} />
+                            </Div>
+                        );
                     })
                 ) : (
                     <DivFlex wrap="wrap">
