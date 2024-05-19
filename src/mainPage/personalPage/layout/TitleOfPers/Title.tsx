@@ -30,17 +30,17 @@ export interface PropsMores {
     relationship: string;
     visitorAmount: number;
     privacy: {
-        [position: string]: string;
-        address: string;
-        birthday: string;
-        relationship: string;
-        gender: string;
-        schoolName: string;
-        occupation: string;
-        hobby: string;
-        skill: string;
-        language: string;
-        subAccount: string;
+        [position: string]: 'everyone' | 'friends' | 'only';
+        address: 'everyone' | 'friends' | 'only';
+        birthday: 'everyone' | 'friends' | 'only';
+        relationship: 'everyone' | 'friends' | 'only';
+        gender: 'everyone' | 'friends' | 'only';
+        schoolName: 'everyone' | 'friends' | 'only';
+        occupation: 'everyone' | 'friends' | 'only';
+        hobby: 'everyone' | 'friends' | 'only';
+        skill: 'everyone' | 'friends' | 'only';
+        language: 'everyone' | 'friends' | 'only';
+        subAccount: 'everyone' | 'friends' | 'only';
     };
     updatedAt: string;
     createdAt: string;
@@ -739,7 +739,17 @@ const Title: React.FC<{
             )}
             {editTitle && (
                 <Div width="100%" css="justify-content: right;">
-                    <Button css=" margin-right: 10px; background-color: #9f3636; box-shadow: 0 0 1px #949090; margin-top: 7px;border-radius: 5px;" onClick={() => setEditTitle(false)}>
+                    <Button
+                        css={`
+                            margin-right: 10px;
+                            background-color: #9f3636;
+                            box-shadow: 0 0 1px #949090;
+                            margin-top: 7px;
+                            border-radius: 5px;
+                            color: ${colorText};
+                        `}
+                        onClick={() => setEditTitle(false)}
+                    >
                         Exit
                     </Button>
                     <Button
@@ -747,6 +757,7 @@ const Title: React.FC<{
                             background-color: #498c9b;
                             box-shadow: 0 0 1px #949090;
                             margin-top: 7px;
+                            color: ${colorText};
                             border-radius: 5px;
                             ${!check ? 'color: #ffffff61; background-color: #498c9b54; cursor: context-menu;' : ''};
                         `}

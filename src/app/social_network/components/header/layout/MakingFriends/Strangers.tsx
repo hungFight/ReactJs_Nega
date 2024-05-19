@@ -103,20 +103,9 @@ const Strangers: React.FC<{
                 queryClient.setQueryData(['getStrangers'], (preData: PropsQueryItem) => {
                     if (data && preData) {
                         if (newData.type === 'add') {
-                            // {
-                            //     id_friend: string;
-                            //     data: {
-                            //         createdAt: string;
-                            //         id: 79;
-                            //         idIsRequested: string;
-                            //         idRequest: string;
-                            //     }
-                            //     type: string;
-                            // }
                             data?.map((x) => {
                                 if (x.id === newData.id_friend) {
                                     if (newData.data.idIsRequested === newData.data.idRequest) {
-                                        console.log(newData, 'newData_77');
                                         x.userRequest[0] = {
                                             id: newData.data.id,
                                             idRequest: newData.data.idRequest,
@@ -125,7 +114,6 @@ const Strangers: React.FC<{
                                             level: 1,
                                         };
                                     } else {
-                                        console.log(newData, 'newData_88');
                                         x.userRequest[0] = {
                                             id: newData.data.id,
                                             idRequest: newData.data.idRequest,
@@ -138,16 +126,6 @@ const Strangers: React.FC<{
                                 return x;
                             });
                         } else if (newData.type === 'abolish') {
-                            //  {
-                            //      ok: {
-                            //          createdAt: string;
-                            //          id: string;
-                            //          idIsRequested: string;
-                            //          idRequest: string;
-                            //          level: number;
-                            //          updatedAt: string;
-                            //      }
-                            //  }
                             data?.map((x) => {
                                 if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === newData.ok?.id || x.userIsRequested[0]?.id === newData.ok?.id)) {
                                     x.userRequest = [];
@@ -161,8 +139,8 @@ const Strangers: React.FC<{
                         } else if (newData.type === 'confirm') {
                             data?.map((x) => {
                                 if ((x.userRequest.length || x.userIsRequested.length) && (x.userRequest[0]?.id === newData.ok?.id || x.userIsRequested[0]?.id === newData.ok?.id)) {
-                                    if (x.userRequest[0].level) x.userRequest[0].level = 2;
-                                    if (x.userIsRequested[0].level) x.userIsRequested[0].level = 2;
+                                    if (x.userRequest[0]?.level) x.userRequest[0].level = 2;
+                                    if (x.userIsRequested[0]?.level) x.userIsRequested[0].level = 2;
                                 }
                                 return x;
                             });
@@ -274,7 +252,7 @@ const Strangers: React.FC<{
         updateData.mutate({ ...dataR, type: 'add' });
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
+        const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
         if (dataR) updateData.mutate({ ...dataR, type: 'abolish' });
     };
     const handleMessenger = (id: string) => {
@@ -297,7 +275,7 @@ const Strangers: React.FC<{
         if (of === 'no' && id) {
             updateData.mutate({ id, type: 'deleteReal' }); // just remove
         } else {
-            const dataR = await peopleAPI.delete(dispatch, id, kindOf);
+            const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
             if (dataR) updateData.mutate({ id, type: 'deleteReal' }); // delete friend
         }
     };

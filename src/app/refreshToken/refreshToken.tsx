@@ -23,13 +23,13 @@ class refreshToken {
     axiosJWTs() {
         const token = Cookies.get('tks');
         console.log('token here', token);
-        if (!refreshToken.isInterceptorAttached && !refreshToken.isInterceptorAttachedR && token) {
+        if (!refreshToken.isInterceptorAttached && token) {
             let tokenN = token;
+            refreshToken.isInterceptorAttached = true;
             axiosJWT.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
-                            refreshToken.isInterceptorAttached = true;
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenN);
 
@@ -66,21 +66,16 @@ class refreshToken {
         console.log('token here File', token);
         if (!refreshToken.isInterceptorAttachedR && token) {
             let tokenNN = token;
+            refreshToken.isInterceptorAttachedR = true;
             axiosJWTFile.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenNN);
-                            refreshToken.isInterceptorAttachedR = true;
                             if (decodeToken.exp < date.getTime() / 1000 + 5) {
                                 // faster 50 second
-                                console.log(decodeToken.exp, date.getTime() / 1000 + 2, token, 'hhhh');
-
                                 const data = await authHttpRequest.refreshToken();
-
-                                console.log(data.newAccessToken, 'newAccessToken');
-
                                 if (data?.newAccessToken) {
                                     const newToken = 'Bearer ' + data.newAccessToken;
                                     tokenNN = newToken;

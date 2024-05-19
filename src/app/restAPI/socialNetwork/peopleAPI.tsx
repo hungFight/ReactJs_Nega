@@ -19,10 +19,10 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    delete = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
+    delete = async (dispatch: Dispatch<AnyAction>, id: string, params: PropsParamsById | undefined, mores: PropsMoresGetting | undefined, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
+            const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, params, mores, kindOf: kindOf, per } });
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;

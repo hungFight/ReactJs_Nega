@@ -26,6 +26,19 @@ interface PropsLanguage {
         };
     };
 }
+export interface PropsPrivacy {
+    [position: string]: 'everyone' | 'friends' | 'only';
+    address: 'everyone' | 'friends' | 'only';
+    birthday: 'everyone' | 'friends' | 'only';
+    relationship: 'everyone' | 'friends' | 'only';
+    gender: 'everyone' | 'friends' | 'only';
+    schoolName: 'everyone' | 'friends' | 'only';
+    occupation: 'everyone' | 'friends' | 'only';
+    hobby: 'everyone' | 'friends' | 'only';
+    skill: 'everyone' | 'friends' | 'only';
+    language: 'everyone' | 'friends' | 'only';
+    subAccount: 'everyone' | 'friends' | 'only';
+}
 export default function LogicView(
     user: PropsUserPer,
     userFirst: PropsUser,
@@ -235,40 +248,16 @@ export default function LogicView(
             (res: {
                 userId: string;
                 youId: string;
-                data: {
-                    id: string;
-                    idRequest: string;
-                    idIsRequested: string;
-                    level: number;
-                    createdAt: Date;
-                    updatedAt: Date;
-                };
+                ok: { youData: any; otherDataSt: any };
                 count_followed: number;
                 count_following: number;
                 count_followed_other: number;
                 count_following_other: number;
             }) => {
-                if (res)
+                if (res && res.userId === userFirst.id)
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {
-                            if (x.id === user.id) {
-                                if (res.userId === userFirst.id) {
-                                    x.userRequest = [];
-                                    x.userIsRequested = [];
-                                    x.followings = [];
-                                    x.followed = [];
-                                    x.mores[0].followingAmount = res.count_following;
-                                    x.mores[0].followedAmount = res.count_followed;
-                                } else if (res.userId !== userFirst.id) {
-                                    if (res.userId !== user.id) {
-                                        x.mores[0].followingAmount = res.count_following;
-                                        x.mores[0].followedAmount = res.count_followed;
-                                    } else {
-                                        x.mores[0].followingAmount = res.count_following_other;
-                                        x.mores[0].followedAmount = res.count_followed_other;
-                                    }
-                                }
-                            }
+                            if (x.id === user.id) x = res.ok.youData;
                             return x;
                         });
                         return newD;
@@ -305,19 +294,7 @@ export default function LogicView(
                             followingAmount: number;
                             relationship: string;
                             language: string[];
-                            privacy: {
-                                [position: string]: string;
-                                address: string;
-                                birthday: string;
-                                relationship: string;
-                                gender: string;
-                                schoolName: string;
-                                occupation: string;
-                                hobby: string;
-                                skill: string;
-                                language: string;
-                                subAccount: string;
-                            };
+                            privacy: PropsPrivacy;
                             createdAt: string;
                             updatedAt: string;
                         }[];
@@ -577,19 +554,7 @@ export default function LogicView(
                             followingAmount: number;
                             relationship: string;
                             language: string[];
-                            privacy: {
-                                [position: string]: string;
-                                address: string;
-                                birthday: string;
-                                relationship: string;
-                                gender: string;
-                                schoolName: string;
-                                occupation: string;
-                                hobby: string;
-                                skill: string;
-                                language: string;
-                                subAccount: string;
-                            };
+                            privacy: PropsPrivacy;
                             createdAt: string;
                             updatedAt: string;
                         }[];
@@ -624,31 +589,17 @@ export default function LogicView(
         setLoads({ ...loads, friend: true });
 
         const data: {
-            ok: {
-                createdAt: string;
-                id: number;
-                idIsRequested: string;
-                idRequest: string;
-                level: number;
-                updatedAt: string;
-            };
+            ok: { youData: any; otherDataSt: any }; // like Confirmed_friend_
             count_followed: number;
             count_following: number;
             count_followed_other: number;
             count_following_other: number;
-        } = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
+        } = await peopleAPI.delete(dispatch, id, params, mores, kindOf, 'personal');
         console.log('Abolish', kindOf, data);
         if (data) {
             setUsersData((pre) => {
                 const newD = pre.map((us) => {
-                    if (us.id === user.id) {
-                        us.userIsRequested = [];
-                        us.userRequest = [];
-                        us.followings = [];
-                        us.followed = [];
-                        us.mores[0].followedAmount = data.count_followed_other;
-                        us.mores[0].followingAmount = data.count_following_other;
-                    }
+                    if (us.id === user.id) us = data.ok.otherDataSt;
                     return us;
                 });
                 return newD;

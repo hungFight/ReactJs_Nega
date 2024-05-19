@@ -31,6 +31,7 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import Cookies from '~/utils/Cookies';
 import { useCookies } from 'react-cookie';
 import ServerBusy from '~/utils/ServerBusy';
+import { PropsPrivacy } from '../../logicPersonal';
 
 const LogicTitle = (
     data: PropsUserPer,
@@ -125,19 +126,7 @@ const LogicTitle = (
         return key === 'friends' && level === 2 ? true : key === 'only' ? false : key === 'everyone' ? true : false;
     }
     const [acPrivate, setAcPrivate] = useState<string>('');
-    const [privacy, setPrivacy] = useState<{
-        [position: string]: string;
-        address: string;
-        birthday: string;
-        relationship: string;
-        gender: string;
-        schoolName: string;
-        occupation: string;
-        hobby: string;
-        skill: string;
-        language: string;
-        subAccount: string;
-    }>(mores[0].privacy);
+    const [privacy, setPrivacy] = useState<PropsPrivacy>(mores[0].privacy);
 
     const [ObjectRender, setObjectRender] = useState<{
         [address: string]: {
@@ -147,7 +136,7 @@ const LogicTitle = (
             color: string;
             length: number;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         gender: {
             val: string;
@@ -156,7 +145,7 @@ const LogicTitle = (
             icon: ReactElement;
             length: number;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         birthday: {
             val: string;
@@ -165,7 +154,7 @@ const LogicTitle = (
             length: number;
             private: ReactElement;
             color: string;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         relationship: {
             val: string;
@@ -174,7 +163,7 @@ const LogicTitle = (
             length: number;
             color: string;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         occupation: {
             val: string;
@@ -183,7 +172,7 @@ const LogicTitle = (
             color: string;
             length: number;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         schoolName: {
             val: string;
@@ -192,7 +181,7 @@ const LogicTitle = (
             color: string;
             length: number;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
     }>({
         address: {
@@ -258,7 +247,7 @@ const LogicTitle = (
             icon: ReactElement;
             subVal: string;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         skill: {
             val: string[];
@@ -267,7 +256,7 @@ const LogicTitle = (
             icon: ReactElement;
             subVal: string;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
         language: {
             val: string[];
@@ -276,7 +265,7 @@ const LogicTitle = (
             icon: ReactElement;
             subVal: string;
             private: ReactElement;
-            letPrivate: string;
+            letPrivate: 'everyone' | 'friends' | 'only';
         };
     }>({
         hobby: {

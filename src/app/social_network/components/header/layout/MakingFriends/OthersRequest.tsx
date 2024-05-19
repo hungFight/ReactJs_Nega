@@ -81,7 +81,7 @@ const Others: React.FC<{ userData: PropsUser }> = ({ userData }) => {
     };
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
-        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
+        const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
         if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             console.log('delete', dataR);
