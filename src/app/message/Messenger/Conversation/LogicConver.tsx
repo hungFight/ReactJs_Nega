@@ -36,6 +36,7 @@ import { setOpenProfile } from '~/redux/hideShow';
 import { PropsConversionText } from 'src/dataText/DataMessenger';
 import chatAPI from '~/restAPI/chatAPI';
 import { removeBalloon, setBalloon, setTopLeft } from '~/redux/roomsChat';
+import { setRoomChat } from '~/redux/messenger';
 
 export function regexCus(val: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -253,7 +254,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 formDataFile.append('file', uploadIn?.up[i], uploadIn?.up[i].name + '@_id_***_get_$' + uploadIn?.up[i]._id); // assign file and _id of the file upload
             }
 
-            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(dispatch, formDataFile) : null;
+            const urlS = uploadIn?.up.length ? await fileWorkerAPI.addFiles(dispatch, formDataFile) : [];
             const onData: { id: string; width?: string; height?: string; type: string; tail: string; title?: string; id_sort?: string; id_client: string }[] | null = ServerBusy(urlS, dispatch);
             const id_ = uuidv4();
             const imageOrVideos = onData?.map((i) => {
@@ -359,8 +360,8 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                         rr.current = '';
                         if (!data._id) data._id = dataSent._id; // add id when id is empty
                         data.users.push(data.user);
+                        dispatch(setRoomChat(dataSent));
                         return { ...preData, data, load: converData?.load.filter((r) => r.id !== dataSent.rooms.filter[0].data[0]._id) };
-                        // dispatch(setRoomChat(dataSent));
                     } else {
                         return {
                             ...preData,
@@ -526,7 +527,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                                         if (ff._id === fr.filterId) {
                                             fr.data.forEach((dd) => {
                                                 ff.data.map((df) => {
-                                                    if (df._id === dd.dataId) df.seenBy.push({ id: resSee.userId, createdAt: resSee.createdAt });
+                                                    if (df._id === dd.dataId) {
+                                                        const ddd = { id: resSee.userId, createdAt: resSee.createdAt };
+                                                        console.log(df, dd, 'seeeeeennn', resSee, df.seenBy, ddd);
+                                                        df.seenBy = [...(df.seenBy ?? []), ddd];
+                                                    }
                                                     return df;
                                                 });
                                             });

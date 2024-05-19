@@ -17,15 +17,17 @@ const axiosJWTFile = axios.create({
         Accept: 'application/json',
     },
 });
+let controllerRequest = false;
 class refreshToken {
     private static isInterceptorAttached: boolean = false;
     private static isInterceptorAttachedR: boolean = false;
     axiosJWTs() {
         const token = Cookies.get('tks');
         console.log('token here', token);
-        if (!refreshToken.isInterceptorAttached && token) {
+        if (!refreshToken.isInterceptorAttached && token && !controllerRequest) {
             let tokenN = token;
             refreshToken.isInterceptorAttached = true;
+            controllerRequest = true;
             axiosJWT.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
@@ -45,6 +47,7 @@ class refreshToken {
                                         sameSite: 'strict',
                                         expires: new Date(new Date().getTime() + 30 * 86409000),
                                     });
+                                    controllerRequest = false;
                                 }
                             }
                             resolve(config);

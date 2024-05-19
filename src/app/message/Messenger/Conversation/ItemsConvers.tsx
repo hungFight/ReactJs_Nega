@@ -261,12 +261,14 @@ const ItemsRoom: React.FC<{
             };
         }
     }, []);
+    console.log('item room', rc);
+
     const statusRender = (title: string) => {
         return title === 'change_background' ? 'đã thay đổi nền' : title === 'delete_background' ? 'đã xoá nền' : '';
     };
     return (
         <>
-            {statusOperation.map((st) => {
+            {statusOperation?.map((st) => {
                 if (st.dataId === rc._id)
                     return (
                         <Div width="100%" css="justify-content: center;" key={st._id}>

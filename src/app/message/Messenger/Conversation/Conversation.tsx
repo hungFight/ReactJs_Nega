@@ -110,6 +110,7 @@ const Conversation: React.FC<{
         dataMore,
         scrollCheck,
     } = LogicConversation(id_chat, dataFirst.id, userOnline, colorText, conversationText, balloon);
+    const one = useRef<boolean>(true); // pin chat
     if (data?._id) {
         if (!mm.current.some((m) => m.id === data?._id && index === m.index)) {
             mm.current.push({ id: data._id, index });
@@ -384,7 +385,7 @@ const Conversation: React.FC<{
                         pins={data.pins}
                         setChoicePin={setChoicePin}
                         avatar={data.user.avatar}
-                        room={data.room}
+                        rooms={data.rooms}
                         name={data.user.fullName}
                         setConversation={setConversation}
                         itemPinData={itemPinData}
@@ -514,7 +515,7 @@ const Conversation: React.FC<{
                                     return null;
                                 }
                                 if (aR.length - 1 === indexR && index === arr.length - 1) date1.current = null;
-                                if (!(rc.delete === dataFirst.id))
+                                if (!(rc.delete === dataFirst.id) && aa)
                                     return (
                                         <ItemsRoom
                                             roomId={aa._id}
