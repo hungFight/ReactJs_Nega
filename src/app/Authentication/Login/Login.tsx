@@ -32,7 +32,8 @@ const Login: React.FC<{
     data: PropsLogin;
     setWhatKind: React.Dispatch<React.SetStateAction<string>>;
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
-}> = ({ data, setWhatKind, setUserFirst }) => {
+    setCookies: any;
+}> = ({ data, setWhatKind, setUserFirst, setCookies }) => {
     const {
         colorBg,
         colorText,
@@ -57,7 +58,7 @@ const Login: React.FC<{
         setShowPass,
         dispatch,
         loading,
-    } = LogicLogin(data, setWhatKind, setUserFirst);
+    } = LogicLogin(data, setWhatKind, setUserFirst, setCookies);
     return (
         <>
             <DivForm>

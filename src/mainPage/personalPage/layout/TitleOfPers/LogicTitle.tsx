@@ -987,55 +987,10 @@ const LogicTitle = (
             // login to change account here
             if (id && phoneOrEmail && pass?.val) {
                 setLoadingSub(true);
-                const res: typeof data = await authAPI.subLogin(phoneOrEmail, pass.val, other, id); // account's id is logging in
-                if (res) {
-                    res.avatar = CommonUtils.convertBase64(res.avatar);
-                    res.background = CommonUtils.convertBase64(res.background);
-                    setUserFirst({
-                        id: res.id,
-                        fullName: res.fullName,
-                        gender: res.gender,
-                        active: res.active,
-                        avatar: res.avatar,
-                        background: res.background,
-                        biography: res.biography,
-                        firstPage: res.firstPage,
-                        secondPage: res.secondPage,
-                        thirdPage: res.thirdPage,
-                    });
-                    setUsersData((pre) => {
-                        // of personal
-                        let checksF = false;
-                        pre.forEach((us) => {
-                            if (us.id === res.id) {
-                                checksF = true; //check is it existing?
-                            }
-                        });
-                        if (!checksF) {
-                            return pre.map((us) => {
-                                if (us.id === preId) {
-                                    return res;
-                                }
-                                return us;
-                            });
-                        } else {
-                            const newUs = pre.filter((us) => us.id !== data.id); // remove
-                            const newUsss = newUs.filter((us) => us.id !== res.id);
-                            if (newUsss.length) {
-                                return newUsss.map((us) => {
-                                    if (us.id === res.id) {
-                                        return res;
-                                    }
-                                    return us;
-                                });
-                            } else {
-                                return [res];
-                            }
-                        }
-                    });
-                } else {
-                    setError('false');
-                }
+                const res: PropsUser = await authAPI.subLogin(phoneOrEmail, pass.val, id); // account's id is logging in
+                if (res) setUserFirst(res);
+                else setError('false');
+
                 setLoadingSub(false);
             }
         } else {

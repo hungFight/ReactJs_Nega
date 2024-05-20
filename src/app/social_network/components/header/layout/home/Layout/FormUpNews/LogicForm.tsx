@@ -14,7 +14,7 @@ import { PropsUser } from 'src/App';
 
 export default function LogicForm(form: PropsFormHome, colorText: string, colorBg: number, setOpenPostCreation: () => void, user?: PropsUser, originalInputValue?: string) {
     const dispatch = useDispatch();
-    const { userId, token } = Cookies();
+    const { userId } = Cookies();
     const divRef = useRef<any>(null);
 
     const [displayEmoji, setdisplayEmoji] = useState<boolean>(false);
@@ -228,7 +228,6 @@ export default function LogicForm(form: PropsFormHome, colorText: string, colorB
         setuploadPre,
         loading,
         dataTextPreView,
-        token,
         userId,
         dataCentered,
         setDataCentered,

@@ -12,12 +12,7 @@ interface PropsState {
         };
     };
 }
-function LogicLogin(
-    data: PropsLogin,
-    setWhatKind: React.Dispatch<React.SetStateAction<string>>,
-    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
-) {
-    const [, setCookies] = useCookies(['tks', 'k_user']);
+function LogicLogin(data: PropsLogin, setWhatKind: React.Dispatch<React.SetStateAction<string>>, setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>, setCookies: any) {
     const [loading, setLoading] = useState<boolean>(false);
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer?.language.login);
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
@@ -67,21 +62,17 @@ function LogicLogin(
                 password: value.password,
             };
             setLoading(true);
-            const data = await authAPI.postLogin(params, setCookies);
-            setUserFirst({
-                id: '',
-                fullName: '',
-                avatar: null,
-                gender: 1,
-                background: '',
-                biography: '',
-                firstPage: 'en',
-                secondPage: 'en',
-                thirdPage: 'en',
-                active: true,
-            });
+            const data = await authAPI.postLogin(params);
+            if (data) {
+                setCookies('k_user', data.id, {
+                    path: '/',
+                    secure: false,
+                    sameSite: 'strict',
+                    expires: new Date(new Date().getTime() + 30 * 86409000), // 30 days
+                });
+                setUserFirst(data);
+            } else setErrText('Account is not exist or password wrong!');
             setLoading(false);
-            if (!data) setErrText('Account is not exist or password wrong!');
         }
     };
     const handleInputFocus = (e: { target: { getAttribute: any } }) => {

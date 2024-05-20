@@ -19,7 +19,7 @@ const Resize: React.FC<{
     arr: PropsDataFileUpload[];
     setUploadPre?: React.Dispatch<React.SetStateAction<PropsDataFileUpload[]>>;
 }> = ({ f, step, setShowComment, showComment, index, link, arr, setUploadPre }) => {
-    console.log('imggg');
+    console.log('imggg', arr, f);
     const [loading, setLoading] = useState<boolean>(true);
     const handleLoadMetaData = (e: React.SyntheticEvent<HTMLImageElement, Event>, _id?: string) => {
         const imgElement: any = e.target; // Access the target image element
@@ -55,7 +55,7 @@ const Resize: React.FC<{
             {f?.type === 'image' ? (
                 <>
                     <Img
-                        src={convertFIle(f?.pre || f?.link)}
+                        src={f?.pre || convertFIle(f?.link)}
                         id="baby"
                         alt={f?.link}
                         onLoad={(e) => handleLoadMetaData(e, f?._id)}
@@ -70,7 +70,7 @@ const Resize: React.FC<{
                     )}
                 </>
             ) : f?.type.includes('video') ? (
-                <Player src={f?.pre || f?.link || ''} step={step} />
+                <Player src={f?.pre || convertFIle(f?.link, 'video')} step={step} />
             ) : (
                 ''
             )}

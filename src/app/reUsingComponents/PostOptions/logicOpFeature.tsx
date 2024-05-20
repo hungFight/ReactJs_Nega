@@ -26,7 +26,6 @@ const LogicText = (
     >,
 
     setOpSelect: React.Dispatch<React.SetStateAction<string[]>>,
-    OpSelect: string[],
     setImotions: React.Dispatch<
         React.SetStateAction<
             {
@@ -124,7 +123,6 @@ const LogicText = (
     };
     const handleFirst = (rs: any, child: any) => {
         // show options selected
-
         if (rs.id === 1) {
             //set value of Privacy
             let check = false;
@@ -145,20 +143,8 @@ const LogicText = (
         //Private and Expire
     };
     const handleImotion = (s: { id: number; icon: string }) => {
-        let checkH = false;
-        Imotions.forEach((i) => {
-            if (i.id === s.id) {
-                checkH = true;
-            }
-        });
-        if (checkH) {
-            let checkD = false;
-            ImotionsDel.forEach((i) => {
-                if (i.id === s.id) {
-                    checkD = true;
-                }
-            });
-            if (!checkD) setImotionsDel([...ImotionsDel, s]);
+        if (Imotions.some((i) => i.id === s.id)) {
+            if (!ImotionsDel.some((i) => i.id === s.id)) setImotionsDel([...ImotionsDel, s]);
             setImotions(() => Imotions.filter((I) => I.id !== s.id));
         } else {
             const newID = ImotionsDel.filter((i) => i.id !== s.id);
@@ -173,12 +159,8 @@ const LogicText = (
                     { id: 6, icon: '😱' },
                     { id: 7, icon: '😡' },
                 ].filter((i) => {
-                    let checkF = false;
-                    newID.forEach((iD) => {
-                        if (iD.id === i.id) checkF = true;
-                    });
                     if (newID.length > 0) {
-                        if (!checkF) return i;
+                        if (!newID.some((iD) => iD.id === i.id)) return i;
                     } else {
                         return i;
                     }

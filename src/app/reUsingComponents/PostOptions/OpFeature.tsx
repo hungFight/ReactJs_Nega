@@ -85,7 +85,6 @@ const OpFeatureSetting: React.FC<{
         setTypeExpire,
         setValuePrivacy,
         setOpSelect,
-        OpSelect,
         setImotions,
         Imotions,
         ImotionsDel,
@@ -109,22 +108,14 @@ const OpFeatureSetting: React.FC<{
             `}
         >
             <Div width="100%" css="justify-content: space-between;">
-                <Div
-                    width="30px"
-                    css="height: 30px; font-size: 20px; align-items: center; justify-content: center;  cursor: var(--pointer);"
-                    onClick={() => setOptions(false)}
-                >
+                <Div width="30px" css="height: 30px; font-size: 20px; align-items: center; justify-content: center;  cursor: var(--pointer);" onClick={() => setOptions(false)}>
                     <UndoIRegister />
                 </Div>
                 <Div width="50px" css="align-items: center; justify-content: space-evenly;">
                     {typeExpire && <OclockI />}
                     {valuePrivacy.length > 0 && <PrivateI />}
                 </Div>
-                <Div
-                    width="30px"
-                    css="height: 30px; font-size: 20px; align-items: center; justify-content: center;"
-                    onClick={handleReset}
-                >
+                <Div width="30px" css="height: 30px; font-size: 20px; align-items: center; justify-content: center;" onClick={handleReset}>
                     <ResetI />
                 </Div>
             </Div>
@@ -188,12 +179,7 @@ const OpFeatureSetting: React.FC<{
                         )}
                     </Div>
                     {more.includes(rs.id) && (
-                        <Div
-                            width="100%"
-                            wrap="wrap"
-                            css="margin-top: 5px; padding: 10px; border-radius: 5px; background-color: #272727;"
-                            onClick={(e) => e.stopPropagation()}
-                        >
+                        <Div width="100%" wrap="wrap" css="margin-top: 5px; padding: 10px; border-radius: 5px; background-color: #272727;" onClick={(e) => e.stopPropagation()}>
                             {rs.title.children.map((child, index2, ar2) => (
                                 <Div
                                     width="100%"
@@ -207,15 +193,14 @@ const OpFeatureSetting: React.FC<{
                                             background-color: #3a3a3a;
                                         }
                                         ${index2 === 0 && 'border-top-right-radius: 5px;border-top-left-radius: 5px'};
-                                        ${index2 === ar2.length - 1 &&
-                                        'border-bottom-right-radius: 5px;border-bottom-left-radius: 5px'}
+                                        ${index2 === ar2.length - 1 && 'border-bottom-right-radius: 5px;border-bottom-left-radius: 5px'}
                                     `}
                                 >
                                     <P
                                         z="1.3rem"
                                         css={`
                                             width: 100%;
-                                            ${OpSelect?.includes(child.id + `2`) && ' padding: 5px 0;'}
+                                            /* ${OpSelect?.includes(child.id + `2`) && ' padding: 5px 0;'} */
                                         `}
                                         onClick={() => handleFirst(rs, child)}
                                     >
@@ -227,9 +212,7 @@ const OpFeatureSetting: React.FC<{
                                             wrap="wrap"
                                             css={`
                                                 justify-content: center;
-                                                background-color: ${typeof child.icon[0] === 'number'
-                                                    ? '#1c5689'
-                                                    : '#5c5c5c'};
+                                                background-color: ${typeof child.icon[0] === 'number' ? '#1c5689' : '#5c5c5c'};
                                                 padding: 8px;
                                                 border-radius: 5px;
                                             `}
@@ -242,12 +225,9 @@ const OpFeatureSetting: React.FC<{
                                                         height: 30px;
                                                         justify-content: center;
                                                         align-items: center;
-                                                        ${Imotions.some((i) => i.id === s.id) &&
-                                                        'background-color: #2f2f2f;'}
-                                                        ${index === 0 &&
-                                                        'border-top-left-radius: 5px; border-bottom-left-radius: 5px'};
-                                                        ${index === arr.length - 1 &&
-                                                        'border-top-right-radius: 5px; border-bottom-right-radius: 5px'};
+                                                        ${Imotions.some((i) => i.id === s.id) && 'background-color: #2f2f2f;'}
+                                                        ${index === 0 && 'border-top-left-radius: 5px; border-bottom-left-radius: 5px'};
+                                                        ${index === arr.length - 1 && 'border-top-right-radius: 5px; border-bottom-right-radius: 5px'};
                                                     `}
                                                     onClick={() => handleImotion(s)}
                                                 >

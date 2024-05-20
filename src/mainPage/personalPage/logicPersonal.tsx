@@ -254,6 +254,7 @@ export default function LogicView(
                 count_followed_other: number;
                 count_following_other: number;
             }) => {
+                console.log('Del Request', res);
                 if (res && res.userId === userFirst.id)
                     setUsersData((pre) => {
                         const newD = pre.map((x) => {

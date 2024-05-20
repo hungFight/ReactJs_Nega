@@ -27,7 +27,8 @@ const Authentication: React.FC<{
     dataLogin: PropsLogin;
     dataRegister: PropsRegisterLanguage;
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
-}> = ({ dataLogin, dataRegister, setUserFirst }) => {
+    setCookies: any;
+}> = ({ dataLogin, dataRegister, setUserFirst, setCookies }) => {
     const [enable, setEnable] = useState<boolean>(true);
     const [account, setAccount] = useState<string | number>('');
     const [whatKind, setWhatKind] = useState<string>('register');
@@ -48,13 +49,10 @@ const Authentication: React.FC<{
             if (enable) return <Register acc={acc} dataRegister={dataRegister} account={account} Next={Next} />;
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else if (whatKind === 'changePassword') {
-            if (enable)
-                return (
-                    <ChangePassword phoneMail={account} Next={Next} setWhatKind={setWhatKind} setEnable={setEnable} />
-                );
+            if (enable) return <ChangePassword phoneMail={account} Next={Next} setWhatKind={setWhatKind} setEnable={setEnable} />;
             return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
         } else {
-            return <Login data={dataLogin} setWhatKind={setWhatKind} setUserFirst={setUserFirst} />;
+            return <Login data={dataLogin} setCookies={setCookies} setWhatKind={setWhatKind} setUserFirst={setUserFirst} />;
         }
     };
     return (

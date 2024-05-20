@@ -4,7 +4,7 @@ import { DotI, LoadingI } from '~/assets/Icons/Icons';
 import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import CommonUtils from '~/utils/CommonUtils';
-import TagProfle from './TagProfile';
+import TagProfile from './TagProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
@@ -128,48 +128,7 @@ const Requested: React.FC<{ userData: PropsUser }> = ({ userData }) => {
                             onClick: () => handleAbolish(vl.id),
                         },
                     ];
-                    return (
-                        <Div
-                            key={vl.id}
-                            wrap="wrap"
-                            css={`
-                                width: 185px;
-                                padding: 5px;
-                                border: 1px solid #414141;
-                                margin: 10px;
-                                transition: all 0.2s linear;
-                                position: relative;
-                                &:hover {
-                                    box-shadow: 0 0 8px #6a48bc;
-                                }
-                                @media (min-width: 480px) {
-                                    width: 306px;
-                                }
-                                @media (min-width: 769px) {
-                                    width: 190px;
-                                    height: fit-content;
-                                    flex-wrap: wrap;
-                                    justify-content: center;
-                                    text-align: center;
-                                    background-color: #292a2c;
-                                    box-shadow: 0 0 5px #7b797987;
-                                    border-radius: 5px;
-                                    padding: 0 0 12px;
-                                }
-                            `}
-                        >
-                            <Div
-                                css={`
-                                    position: absolute;
-                                    right: 9px;
-                                    font-size: 20px;
-                                `}
-                            >
-                                <DotI />
-                            </Div>
-                            <TagProfle button={buttons} cssImage={cssImage} data={vl} />
-                        </Div>
-                    );
+                    return <TagProfile key={vl.id} button={buttons} cssImage={cssImage} data={vl} />;
                 })}
             </DivResults>
         </>

@@ -54,19 +54,12 @@ const FullScreenSildes: React.FC<{
             `}
         >
             <Swiper pagination={pagination} modules={[Pagination]} initialSlide={cc} className="mySwiperFull">
-                {files.map((f) => (
-                    <SwiperSlide key={f.link}>
+                {files.map((f, index) => (
+                    <SwiperSlide key={index}>
                         {f?.type === 'image' ? (
-                            <Img
-                                src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`}
-                                id="baby"
-                                alt={f?.link}
-                            />
+                            <Img src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_IMG_V1}/${f?.link}`} id="baby" alt={f?.link} />
                         ) : f?.type === 'video' ? (
-                            <Player
-                                src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${f?.link}`}
-                                step={step}
-                            />
+                            <Player src={f.pre || `${process.env.REACT_APP_SERVER_FILE_GET_VIDEO_V1}/${f?.link}`} step={step} />
                         ) : (
                             ''
                         )}

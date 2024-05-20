@@ -53,6 +53,8 @@ const DefaultType: React.FC<{
         { id: 7, color: '#71cbe1' },
     ];
     const Tag = link ? Div : Link;
+    console.log('image here', file);
+
     return (
         <Div
             width="100%"

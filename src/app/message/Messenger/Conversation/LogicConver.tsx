@@ -518,6 +518,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         const code = `${data?._id ? data._id : id_chat.id_other + '-' + id_you}phrase_chatRoom`;
         if (data) {
             socket.on(`conversation_see_chats_${data._id}`, (resSee: { param: PropsOldSeenBy[]; userId: string; createdAt: string }) => {
+                // to set who has watched the chats
                 queryClient.setQueryData(['getItemChats', id_chat.id_other + '_' + id_you], (preData: PropsItemQueryChat) => {
                     resSee.param.forEach((dr) => {
                         preData?.data.rooms.map((r) => {

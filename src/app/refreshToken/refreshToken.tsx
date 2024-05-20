@@ -23,32 +23,21 @@ class refreshToken {
     private static isInterceptorAttachedR: boolean = false;
     axiosJWTs() {
         const token = Cookies.get('tks');
-        console.log('token here', token);
         if (!refreshToken.isInterceptorAttached && token && !controllerRequest) {
             let tokenN = token;
-            refreshToken.isInterceptorAttached = true;
-            controllerRequest = true;
             axiosJWT.interceptors.request.use(
                 async (config) => {
                     return await new Promise(async (resolve, reject) => {
                         try {
                             const date = new Date();
                             const decodeToken: any = await jwt_decode(tokenN);
-
-                            if (decodeToken.exp < date.getTime() / 1000 + 5) {
+                            if (decodeToken.exp < date.getTime() / 1000 + 5 && !controllerRequest) {
+                                refreshToken.isInterceptorAttached = true;
+                                controllerRequest = true;
                                 // faster 50 second
-                                const data = await authHttpRequest.refreshToken();
-                                if (data?.newAccessToken) {
-                                    const newToken = 'Bearer ' + data.newAccessToken;
-                                    tokenN = newToken;
-                                    Cookies.set('tks', newToken, {
-                                        path: '/',
-                                        secure: false,
-                                        sameSite: 'strict',
-                                        expires: new Date(new Date().getTime() + 30 * 86409000),
-                                    });
-                                    controllerRequest = false;
-                                }
+                                await authHttpRequest.refreshToken();
+                                controllerRequest = false;
+                                refreshToken.isInterceptorAttached = false;
                             }
                             resolve(config);
                         } catch (error) {

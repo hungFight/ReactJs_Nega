@@ -67,7 +67,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
         setuploadPre,
         loading,
         dataTextPreView,
-        token,
         userId,
         dataCentered,
         setDataCentered,
@@ -266,7 +265,6 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                     file={uploadPre}
                                     valueText={inputValue}
                                     dataText={dataTextPreView}
-                                    token={token}
                                     userId={userId}
                                     setUploadPre={setuploadPre}
                                     handleImageUpload={handleImageUpload}

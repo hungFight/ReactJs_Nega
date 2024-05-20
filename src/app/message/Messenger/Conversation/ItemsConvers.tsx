@@ -107,6 +107,7 @@ const ItemsRoom: React.FC<{
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
     if (rc.userId === dataFirst.id && !wch) {
+        // to display a chat is watched by who, first render
         // your chats
         if (rc.seenBy.some((st) => st.id === user.id) && !rr.current) {
             rr.current = rc._id;
@@ -117,20 +118,6 @@ const ItemsRoom: React.FC<{
         }
     }
     if (wch) rr.current = '';
-    useEffect(() => {
-        if (width.current) {
-            if (width.current.clientWidth >= 150) {
-                console.log(width.current.clientWidth, 'clientWidth', width.current);
-                width.current.classList.add('adjustDate');
-            }
-        }
-        if (elWatChTime.current) {
-            if (elWatChTime.current.clientWidth >= 150) {
-                console.log(elWatChTime.current.clientWidth, 'clientWidth', elWatChTime.current);
-                elWatChTime.current.classList.add('adjustDate');
-            }
-        }
-    }, [width, elWatChTime]);
     const reuse = (whoseId: string) => {
         return [user, dataFirst].find((u) => u.id === whoseId);
     };
@@ -313,17 +300,18 @@ const ItemsRoom: React.FC<{
                     </Div>
                 </DivFlex>
             ))}
-            {rc?.delete !== dataFirst.id && timeS && (
-                <DivFlex>
-                    <DivNone width="20%" height="1px" bg="#828282"></DivNone>
-                    <P color="#b5b5b5f7" css="font-size: 1.2rem; text-align: center;padding: 2px 15px;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">
-                        {timeS}
-                    </P>
-                    <DivNone width="20%" height="1px" bg="#828282"></DivNone>
-                </DivFlex>
-            )}
+            {rc?.delete !== dataFirst.id &&
+                timeS && ( // display time for every distance of day
+                    <DivFlex>
+                        <DivNone width="20%" height="1px" bg="#828282"></DivNone>
+                        <P color="#b5b5b5f7" css="font-size: 1.2rem; text-align: center;padding: 2px 15px;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">
+                            {timeS}
+                        </P>
+                        <DivNone width="20%" height="1px" bg="#828282"></DivNone>
+                    </DivFlex>
+                )}
             {rc.userId === dataFirst.id
-                ? rc?.delete !== dataFirst.id && (
+                ? rc?.delete !== dataFirst.id && ( // your chat
                       <>
                           <Div
                               id={`chat_to_scroll_${rc._id}`}
@@ -351,106 +339,107 @@ const ItemsRoom: React.FC<{
                                   }
                               `}
                           >
-                              {rc?.reply && (rc?.reply?.imageOrVideos.length || rc.reply.text) && (
-                                  <Div
-                                      css={`
-                                          width: 100%;
-                                          user-select: none;
-                                          justify-content: end;
-                                      `}
-                                  >
+                              {rc?.reply &&
+                                  (rc?.reply?.imageOrVideos.length || rc.reply.text) && ( // for reply
                                       <Div
-                                          width="fit-content"
-                                          css="position: relative; cursor: var(--pointer); background-color: #363636; padding: 3px 5px; border-radius: 7px;"
-                                          onClick={() => {
-                                              if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
-                                          }}
+                                          css={`
+                                              width: 100%;
+                                              user-select: none;
+                                              justify-content: end;
+                                          `}
                                       >
-                                          {rc?.reply?.imageOrVideos.length > 3 && (
-                                              <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
-                                                  + {rc.reply.imageOrVideos.length - 3}
-                                              </DivPos>
-                                          )}
-                                          <Div css="position: absolute; top: 0px; left: -25px; z-index: 1" onClick={(e) => e.stopPropagation()}>
-                                              <Div wrap="wrap" css="position: relative;  &:hover{.moreReplyInfo {display: flex;}}">
-                                                  <ReplyI />
-                                                  <DivPos
-                                                      className="moreReplyInfo"
-                                                      top="-90px"
-                                                      width="190px"
-                                                      left="-82px"
-                                                      css="display: none; z-index: 20;height: auto; user-select: none; background-color: #1b5c5ffc; padding: 5px; border-radius: 5px;"
-                                                  >
-                                                      <Div wrap="wrap" width="100%">
-                                                          <DivFlex css="flex-wrap: wrap;">
-                                                              <Avatar
-                                                                  src={avatarReply}
-                                                                  alt={nameReply}
-                                                                  gender={genderReply}
-                                                                  radius="50%"
-                                                                  css="min-width: 30px; min-height: 30px; width: 30px; height: 30px; @media (min-width: 768px){min-width: 25px; min-height: 25px; width: 25px; height: 25px;}"
-                                                              />
-                                                              <Hname css="width: 100%; font-size: 1.2rem; text-align: center">{nameReply}</Hname>
-                                                          </DivFlex>
-                                                          <Div wrap="wrap" width="100%" css="padding: 3px; background-color: #262728; margin-top: 3px">
-                                                              <P z="1.2rem" css="width:100%;@media (min-width: 768px){font-size: 1rem;}">
-                                                                  sent on thứ hai, 20 tháng 11 năm 2023
-                                                              </P>
-                                                          </Div>
-                                                      </Div>
+                                          <Div
+                                              width="fit-content"
+                                              css="position: relative; cursor: var(--pointer); background-color: #363636; padding: 3px 5px; border-radius: 7px;"
+                                              onClick={() => {
+                                                  if (rc.reply.id_room) setChoicePin(rc.reply.id_room);
+                                              }}
+                                          >
+                                              {rc?.reply?.imageOrVideos.length > 3 && (
+                                                  <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
+                                                      + {rc.reply.imageOrVideos.length - 3}
                                                   </DivPos>
-                                              </Div>
-                                          </Div>
-                                          <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
-                                              {rc.reply.text && (
-                                                  <Div
-                                                      css={`
-                                                          font-size: 1.3rem;
-                                                          padding: 2px;
-                                                          width: fit-content;
-                                                          white-space: pre;
-                                                          text-wrap: wrap;
-                                                          word-wrap: break-word;
-                                                          max-width: 212px;
-                                                          @media (min-width: 768px) {
-                                                              font-size: 0.2rem;
-                                                          }
-                                                          ${rc.delete ? 'display: -webkit-box;overflow: hidden;-webkit-line-clamp: 2;-webkit-box-orient: vertical;' : ''}
-                                                      `}
-                                                      dangerouslySetInnerHTML={{ __html: rc.reply.text }}
-                                                  ></Div>
                                               )}
-                                              {rc?.reply?.imageOrVideos.length > 0 && (
-                                                  <Div
-                                                      css={`
-                                                          align-items: end;
-                                                          flex-grow: 1;
-                                                      `}
-                                                  >
+                                              <Div css="position: absolute; top: 0px; left: -25px; z-index: 1" onClick={(e) => e.stopPropagation()}>
+                                                  <Div wrap="wrap" css="position: relative;  &:hover{.moreReplyInfo {display: flex;}}">
+                                                      <ReplyI />
+                                                      <DivPos
+                                                          className="moreReplyInfo"
+                                                          top="-90px"
+                                                          width="190px"
+                                                          left="-82px"
+                                                          css="display: none; z-index: 20;height: auto; user-select: none; background-color: #1b5c5ffc; padding: 5px; border-radius: 5px;"
+                                                      >
+                                                          <Div wrap="wrap" width="100%">
+                                                              <DivFlex css="flex-wrap: wrap;">
+                                                                  <Avatar
+                                                                      src={avatarReply}
+                                                                      alt={nameReply}
+                                                                      gender={genderReply}
+                                                                      radius="50%"
+                                                                      css="min-width: 30px; min-height: 30px; width: 30px; height: 30px; @media (min-width: 768px){min-width: 25px; min-height: 25px; width: 25px; height: 25px;}"
+                                                                  />
+                                                                  <Hname css="width: 100%; font-size: 1.2rem; text-align: center">{nameReply}</Hname>
+                                                              </DivFlex>
+                                                              <Div wrap="wrap" width="100%" css="padding: 3px; background-color: #262728; margin-top: 3px">
+                                                                  <P z="1.2rem" css="width:100%;@media (min-width: 768px){font-size: 1rem;}">
+                                                                      sent on thứ hai, 20 tháng 11 năm 2023
+                                                                  </P>
+                                                              </Div>
+                                                          </Div>
+                                                      </DivPos>
+                                                  </Div>
+                                              </Div>
+                                              <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
+                                                  {rc.reply.text && (
                                                       <Div
-                                                          width="100%"
-                                                          wrap="wrap"
                                                           css={`
-                                                              .roomIf {
-                                                                  height: 50px;
-                                                                  width: auto;
+                                                              font-size: 1.3rem;
+                                                              padding: 2px;
+                                                              width: fit-content;
+                                                              white-space: pre;
+                                                              text-wrap: wrap;
+                                                              word-wrap: break-word;
+                                                              max-width: 212px;
+                                                              @media (min-width: 768px) {
+                                                                  font-size: 0.2rem;
                                                               }
+                                                              ${rc.delete ? 'display: -webkit-box;overflow: hidden;-webkit-line-clamp: 2;-webkit-box-orient: vertical;' : ''}
+                                                          `}
+                                                          dangerouslySetInnerHTML={{ __html: rc.reply.text }}
+                                                      ></Div>
+                                                  )}
+                                                  {rc?.reply?.imageOrVideos.length > 0 && (
+                                                      <Div
+                                                          css={`
+                                                              align-items: end;
+                                                              flex-grow: 1;
                                                           `}
                                                       >
-                                                          {rc?.reply?.imageOrVideos.map((fl, index) => {
-                                                              if (index <= 2) {
-                                                                  return <FileConversation id_room={rc._id} key={fl._id + '103' + index} type={fl?.type} id_file={fl._id} icon={fl.icon} />;
-                                                              }
-                                                          })}
+                                                          <Div
+                                                              width="100%"
+                                                              wrap="wrap"
+                                                              css={`
+                                                                  .roomIf {
+                                                                      height: 50px;
+                                                                      width: auto;
+                                                                  }
+                                                              `}
+                                                          >
+                                                              {rc?.reply?.imageOrVideos.map((fl, index) => {
+                                                                  if (index <= 2) {
+                                                                      return <FileConversation id_room={rc._id} key={fl._id + '103' + index} type={fl?.type} id_file={fl._id} icon={fl.icon} />;
+                                                                  }
+                                                              })}
+                                                          </Div>
                                                       </Div>
-                                                  </Div>
-                                              )}
+                                                  )}
+                                              </Div>
                                           </Div>
                                       </Div>
-                                  </Div>
-                              )}
+                                  )}
 
-                              {chatId && (
+                              {chatId && ( // pined
                                   <DivPos
                                       top="-13px"
                                       right="-11px"
@@ -477,8 +466,7 @@ const ItemsRoom: React.FC<{
                                       </P>
                                   </DivPos>
                               )}
-                              <Div
-                                  ref={elWatChTime}
+                              <Div // a chat
                                   display="block"
                                   className="noTouch"
                                   width="fit-content"
@@ -686,7 +674,7 @@ const ItemsRoom: React.FC<{
                                               </P>
                                           ) : (
                                               <>
-                                                  {/* {rc?.updatedAt && (rc.delete || rc?.update) && (
+                                                  {/* {rc?.updatedAt && (rc.delete || rc?.update) && ( // not done yet
                                                       <P css="font-size: 1.2rem;text-wrap: nowrap; margin-right: 12px; margin-left: 5px; @media (min-width: 768px){font-size: 1rem;}">
                                                           {rc?.update ? phraseText.dateTime.replace : phraseText.dateTime.remove} {handleTime(rc?.updatedAt, 'date')}
                                                       </P>
@@ -696,7 +684,7 @@ const ItemsRoom: React.FC<{
                                                   </P>
                                               </>
                                           )}
-                                          {rc.seenBy.some((st) => st.id === user.id) && (
+                                          {rc.seenBy.some((st) => st.id === user.id) && ( // who had watched the chat and display
                                               <Avatar
                                                   className="dateTime"
                                                   src={user.avatar}
@@ -721,7 +709,7 @@ const ItemsRoom: React.FC<{
                                       </Div>
                                   )}
                               </Div>
-                              {(wch === rc._id || rr.current === rc._id) && (
+                              {(wch === rc._id || rr.current === rc._id) && ( // who had watched the newest chat
                                   <Avatar
                                       src={user.avatar}
                                       alt={user.fullName}

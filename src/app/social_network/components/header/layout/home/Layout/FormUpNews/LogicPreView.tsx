@@ -28,7 +28,6 @@ export default function LogicPreView(
         type: string;
     },
     dataText: PropsPreViewFormHome,
-    token: string,
     userId: string,
 
     handleImageUpload: (e: any, addMore?: boolean) => Promise<void>,
@@ -80,9 +79,9 @@ export default function LogicPreView(
     const [options, setOptions] = useState<boolean>(false);
     const [showAc, setShowAc] = useState<boolean>(false);
     const [showComment, setShowComment] = useState<string>('');
-    const [actImotion, setActImotion] = useState<boolean>(false);
-    const [showI, setShowI] = useState<{ id: number; icon: string } | undefined>();
-    const [acEmo, setAcEmo] = useState<{ id: number; icon: React.ReactElement }>({ id: 1, icon: <LikeI /> }); // display a button as like to press
+    const [actImotion, setActImotion] = useState<boolean>(false); // display a list of emotion for selecting
+    const [showI, setShowI] = useState<{ id: number; icon: string } | undefined>(); // switch emotion button such as like or love button
+    const [acEmo, setAcEmo] = useState<{ id: number; icon: React.ReactElement }>({ id: 1, icon: <LikeI /> }); // display a like button to press
     const textA = useRef<any>();
 
     // options of setting
@@ -93,7 +92,7 @@ export default function LogicPreView(
         icon: <FriendI />,
     });
 
-    const [typeExpire, setTypeExpire] = useState<{ cate: number; name: string; value: number }>();
+    const [typeExpire, setTypeExpire] = useState<{ cate: number; name: string; value: number }>(); // future feature for setting timeout of the post
     const [Imotions, setImotions] = useState<{ id: number; icon: string }[]>([
         { id: 1, icon: '👍' },
         { id: 2, icon: '❤️' },
@@ -103,20 +102,17 @@ export default function LogicPreView(
         { id: 6, icon: '😱' },
         { id: 7, icon: '😡' },
     ]);
-    const [ImotionsDel, setImotionsDel] = useState<{ id: number; icon: string }[]>([]);
+    const [ImotionsDel, setImotionsDel] = useState<{ id: number; icon: string }[]>([]); // emotions are deleted
     const acList = [
         { id: 1, icon: <LikeI /> },
         { id: 2, icon: <HeartI /> },
     ];
     const font = fontFamily?.name + ' ' + fontFamily?.type;
 
-    const [more, setMore] = useState<number[]>([-1]);
-    const [OpSelect, setOpSelect] = useState<string[]>([]);
+    const [more, setMore] = useState<number[]>([-1]); // show more children in every feature
+    const [OpSelect, setOpSelect] = useState<string[]>([]); // even haven't known
     const [loading, setLoading] = useState<boolean>(false);
 
-    const images: string[] = [];
-    const videos: string[] = [];
-    let checkImg = false;
     useEffect(() => {
         if (textA.current) {
             textA.current.setAttribute('style', 'height: auto');
@@ -128,17 +124,10 @@ export default function LogicPreView(
             setDataCentered([{ id: 1, columns: 4, data: file }]);
         }
     }, [selectChild]);
-
-    for (let i = 0; i < file.length; i++) {
-        if (file[i].type === 'image') images.push(file[i].pre);
-        if (file[i].type === 'video') videos.push(file[i].pre);
-        if (file[i].type === '!images' && checkImg === false) checkImg = true;
-    }
     const handlePost = async () => {
         if (file.length > 0 || valueText) {
             setLoading(true);
             console.log('Option', selectType, 'private', valuePrivacy, 'Expire', typeExpire);
-
             let res: any;
             let id_c: string[] = [];
             const formDataFake: {
@@ -181,8 +170,8 @@ export default function LogicPreView(
                 case 0: // default
                     for (let fil of file) {
                         if (fil.file) formData.append('file', fil.file, fil.name + '@_id_***_get_$' + fil._id);
-                        formData.append('title', JSON.stringify({ title: fil.title, id: fil._id }));
-                        formData.append('id_sort', JSON.stringify({ id_sort: fil.id_sort, id: fil._id }));
+                        formData.append('title', JSON.stringify({ title: fil.title, id: fil._id })); // title of every files
+                        formData.append('id_sort', JSON.stringify({ id_sort: fil.id_sort, id: fil._id })); // refers the files are sorted
                     }
                     formDataFake.bg_default = bg;
                     if (file.length) {
@@ -294,11 +283,9 @@ export default function LogicPreView(
         <Circle colorText={colorText} file={file} step={step} setStep={setStep} />,
     ];
     console.log(ImotionsDel, 'ImotionsDel');
-
     let timeS: any;
     const handleShowI = (e: any) => {
         document.addEventListener('touchstart', handleMouseDown);
-
         function handleMouseDown(event: any) {
             if (event.target === e.target || event.target === e.target.closest) {
                 // Clicked inside the div
@@ -353,9 +340,6 @@ export default function LogicPreView(
         setMore,
         OpSelect,
         setOpSelect,
-        images,
-        videos,
-        checkImg,
         handlePost,
         postTypes,
         handleShowI,

@@ -94,7 +94,7 @@ const Settingcbl: React.FC<{
         if (res) {
             navigate('/');
             dispatch(offAll());
-            removeCookie('tks');
+            removeCookie('k_user');
             localStorage.clear();
             socket.emit('offline', k_user);
         }

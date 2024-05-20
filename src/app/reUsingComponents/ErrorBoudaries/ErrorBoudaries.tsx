@@ -6,11 +6,12 @@ import { setFalseErrorServer } from '~/redux/hideShow';
 import { PropsSessionCode, setSession } from '~/redux/reload';
 import { useCookies } from 'react-cookie';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 const ErrorBoundaries: React.FC<{
     code: PropsSessionCode;
 }> = ({ code }) => {
     const dispatch = useDispatch();
-    const [c, s, removeCookies] = useCookies(['k_user', 'tks']);
+    let navigate = useNavigate();
     const message = code === 'NeGA_ExcessiveRequest' ? 'Server is now busy! just wait for moment.' : code === 'NeGA_off' ? 'The session expired! Please login again' : '';
     return (
         <DivMessage>
@@ -35,10 +36,7 @@ const ErrorBoundaries: React.FC<{
                     onClick={() => {
                         dispatch(setSession(null));
                         dispatch(setFalseErrorServer());
-                        if (code === 'NeGA_off') {
-                            Cookies.remove('tks');
-                            removeCookies('k_user');
-                        }
+                        if (code === 'NeGA_off') navigate('/');
                     }}
                 >
                     {code === 'NeGA_off' ? 'Login' : 'Xác nhận'}

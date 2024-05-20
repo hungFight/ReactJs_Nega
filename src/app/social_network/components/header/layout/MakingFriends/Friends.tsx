@@ -1,6 +1,6 @@
 import { DotI, LoadingI } from '~/assets/Icons/Icons';
 import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
-import TagProfle from './TagProfile';
+import TagProfile from './TagProfile';
 import { useCookies } from 'react-cookie';
 import { useEffect, useRef, useState } from 'react';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
@@ -120,57 +120,18 @@ const Friends: React.FC<{
                 )}
 
                 {data?.map((vl) => (
-                    <Div
+                    <TagProfile
                         key={vl.id}
-                        wrap="wrap"
-                        css={`
-                            width: 185px;
-                            padding: 5px;
-                            border: 1px solid #414141;
-                            margin: 10px auto;
-                            transition: all 0.2s linear;
-                            position: relative;
-                            &:hover {
-                                box-shadow: 0 0 8px #6a48bc;
-                            }
-                            @media (min-width: 480px) {
-                                width: 306px;
-                                margin: 10px;
-                            }
-                            @media (min-width: 769px) {
-                                width: 190px;
-                                height: fit-content;
-                                flex-wrap: wrap;
-                                justify-content: center;
-                                text-align: center;
-                                background-color: #292a2c;
-                                box-shadow: 0 0 5px #7b797987;
-                                border-radius: 5px;
-                                padding: 0 0 12px;
-                            }
-                        `}
-                    >
-                        <Div
-                            css={`
-                                position: absolute;
-                                right: 9px;
-                                font-size: 20px;
-                            `}
-                        >
-                            <DotI />
-                        </Div>
-                        <TagProfle
-                            button={[
-                                {
-                                    text: 'Messenger',
-                                    css: css + ' background-color: #366ab3; ',
-                                    onClick: () => handleMessenger(vl.id),
-                                },
-                            ]}
-                            cssImage={cssImage}
-                            data={vl}
-                        />
-                    </Div>
+                        button={[
+                            {
+                                text: 'Messenger',
+                                css: css + ' background-color: #366ab3; ',
+                                onClick: () => handleMessenger(vl.id),
+                            },
+                        ]}
+                        cssImage={cssImage}
+                        data={vl}
+                    />
                 ))}
             </DivResults>
         </>

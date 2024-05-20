@@ -172,7 +172,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [_c, _set, _del] = useCookies(['tks', 'k_user']);
+    const [_c, setCookies, _del] = useCookies(['k_user']);
     const dispatch = useDispatch();
     const { userId, token, removeCookies } = Cookies(); // customs hook
     const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
@@ -322,7 +322,7 @@ function App() {
     };
 
     useEffect(() => {
-        if (userId && token) {
+        if (userId && token && !userFirst.id) {
             fetchF(userId, 'only');
         }
     }, [userId]);
@@ -516,7 +516,7 @@ function App() {
                 />
             }
         >
-            <Authentication setUserFirst={setUserFirst} dataLogin={{ en: login.en, vi: login.vi }} dataRegister={{ vi: register.vi, en: register.en }} />
+            <Authentication setUserFirst={setUserFirst} setCookies={setCookies} dataLogin={{ en: login.en, vi: login.vi }} dataRegister={{ vi: register.vi, en: register.en }} />
         </Suspense>
     );
 }

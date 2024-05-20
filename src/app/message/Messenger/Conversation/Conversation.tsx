@@ -139,7 +139,6 @@ const Conversation: React.FC<{
     useEffect(() => {
         if (ERef.current) ERef.current.addEventListener('scroll', handleScroll);
         return () => ERef.current?.removeEventListener('scroll', handleScroll);
-
         // Optional: Call the observer's callback function immediately to get the initial scroll height
     }, []);
     function setSeenBy() {
@@ -183,7 +182,7 @@ const Conversation: React.FC<{
             isIntersecting.current = [];
         }
     }
-    const handleTime = (dateTime: string, type: string) => {
+    const handleTime = (dateTime: string, type: string) => { // convert date
         if (type === 'hour') {
             const newDateTime = moment(dateTime).locale(lg).format('LT');
             return newDateTime;
@@ -243,7 +242,7 @@ const Conversation: React.FC<{
     const era = Dot.length < eraser.current;
     eraser.current = Dot.length;
     const Time = ''; //data ? moments().FromNow(data, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg) : '';
-    const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => { // response from others writing chats
         console.log(e.target.value, 'enter');
         socket.emit(`user_${data?.user.id}_in_roomChat_personal_writing`, {
             roomId: data?._id,
@@ -427,7 +426,7 @@ const Conversation: React.FC<{
                                 let timeS: any = '';
                                 const mn = moment(rc.createdAt); //show time for every day
                                 if (date1.current)
-                                    if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
+                                    if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {  // compare an old chat to a new cha
                                         timeS = date1.current?.diff(new Date(), 'days') >= 0 ? date1.current?.locale(lg).calendar() : date1.current?.locale(lg).format('LL');
                                         date1.current = mn;
                                     } else timeS = '';

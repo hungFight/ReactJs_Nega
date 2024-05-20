@@ -36,7 +36,6 @@ const PreviewPost: React.FC<{
     };
     valueText: string;
     dataText: PropsPreViewFormHome;
-    token: string;
     userId: string;
     handleImageUpload: (e: any, addMore?: boolean) => Promise<void>;
     dataCentered: {
@@ -92,7 +91,6 @@ const PreviewPost: React.FC<{
     valueText,
     fontFamily,
     dataText,
-    token,
     userId,
     handleImageUpload,
     dataCentered,
@@ -149,9 +147,6 @@ const PreviewPost: React.FC<{
         setMore,
         OpSelect,
         setOpSelect,
-        images,
-        videos,
-        checkImg,
         handlePost,
         postTypes,
         handleShowI,
@@ -162,7 +157,7 @@ const PreviewPost: React.FC<{
         actImotion,
         setActImotion,
         dispatch,
-    } = LogicPreView(user, colorText, colorBg, file, valueText, fontFamily, dataText, token, userId, handleImageUpload, dataCentered, setDataCentered, handleClear, hashTags, tags, setUploadPre);
+    } = LogicPreView(user, colorText, colorBg, file, valueText, fontFamily, dataText, userId, handleImageUpload, dataCentered, setDataCentered, handleClear, hashTags, tags, setUploadPre);
     const swiperType = 1;
     const GridColumns = 1;
     const Circle = 1;
