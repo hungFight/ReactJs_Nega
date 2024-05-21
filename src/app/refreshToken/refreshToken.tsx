@@ -35,7 +35,7 @@ class refreshToken {
                                 refreshToken.isInterceptorAttached = true;
                                 controllerRequest = true;
                                 // faster 50 second
-                                await authHttpRequest.refreshToken();
+                                const newToken = await authHttpRequest.refreshToken();
                                 controllerRequest = false;
                                 refreshToken.isInterceptorAttached = false;
                             }

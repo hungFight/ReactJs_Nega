@@ -30,7 +30,7 @@ const TagProfile: React.FC<PropsTagP> = ({ data, onClick, button, margin, bg, co
                 background-image: linear-gradient(13deg, #00ffff73, #784fbf, #ff16165e);
                 opacity: 0.9;
                 &:hover {
-                    box-shadow: 0 0 8px #6a48bc;
+                    box-shadow: 0 0 4px #6a48bc;
                 }
                 @media (min-width: 480px) {
                     width: 306px;

@@ -283,7 +283,7 @@ const Strangers: React.FC<{
     const css = `    display: flex;
             align-items: center;
             padding: 4px 6px;
-           background-color: #5e5e5e;
+           background-color: #434343;
             color: #cbcbcb;
             cursor: var(--pointer);
             border-radius: 5px;
@@ -366,7 +366,7 @@ const Strangers: React.FC<{
                                         },
                                         {
                                             text: 'Add friend',
-                                            css: css + ' background-color: #366ab3;',
+                                            css: css + ' background-color: #00427e;',
                                             onClick: () => handleAdd(vl.id),
                                         },
                                     );
@@ -382,7 +382,7 @@ const Strangers: React.FC<{
                                 },
                                 {
                                     text: 'Add friend',
-                                    css: css + ' background-color: #366ab3;',
+                                    css: css + ' background-color: #00427e;',
                                     onClick: () => handleAdd(vl.id),
                                 },
                             );

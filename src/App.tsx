@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'src/app/utils/Cookies';
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 // Import Swiper styles
 import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
@@ -172,10 +172,10 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [_c, setCookies, _del] = useCookies(['k_user']);
+    const [_c, setCookies, _delCookies] = useCookies(['k_user']);
     const dispatch = useDispatch();
     const { userId, token, removeCookies } = Cookies(); // customs hook
-    const { openProfile, errorServer } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
+    const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const { chats, balloon, established } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
     const mm = useRef<{ index: number; id: string }[]>([]);
@@ -213,7 +213,6 @@ function App() {
     //     },
     //     skip: !userId || !token,
     // });
-    const [idAbsolute, setIdAbsolute] = useState<string[]>([]);
     const handleCheck = useRef<boolean>(false);
     async function fetchF(id: string | string[], first?: string) {
         if (!first) setLoading(true);
@@ -245,8 +244,7 @@ function App() {
         const search = async () => {
             const search = window.location.search;
             const ids = search.split('id=').filter((r) => r !== '?');
-            if (ids.length < 4 && ids.length > 0) setIdAbsolute(ids);
-            if (openProfile.newProfile.length === 1 || ids.length) {
+            if (openProfile.newProfile.length === 1 || (ids.length < 4 && ids.length > 1)) {
                 const data = await fetchF([...ids, ...openProfile.newProfile]);
                 if (data)
                     if (userData.length) {
@@ -341,7 +339,7 @@ function App() {
 
     `;
     // console.log('id_cookie', userId, userData, id_chats, chats);
-    if (session === 'NeGA_off') return <ErrorBoundaries code={session} />;
+    if (session === 'NeGA_off') return <ErrorBoundaries code={session} _delCookies={_delCookies} />;
     if (token && userId) {
         return (
             <Suspense
@@ -368,7 +366,7 @@ function App() {
                         }
                     `}
                 >
-                    {session === 'NeGA_ExcessiveRequest' && <ErrorBoundaries code={session} />}
+                    {session === 'NeGA_ExcessiveRequest' && <ErrorBoundaries code={session} _delCookies={_delCookies} />}
                     {/* {userFirst ? ( */}
                     <>
                         <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} setId_chats={setId_chats} />
