@@ -242,7 +242,6 @@ const OptionForItem: React.FC<{
                                 roomId: optionsForItem.roomId,
                                 filterId: optionsForItem.filterId,
                                 dataId: optionsForItem._id,
-                                latestChatId: conversation.rooms[0].filter[0].data[0]._id,
                             });
                             if (res) {
                                 // setConversation((pre) => {

@@ -147,7 +147,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    pin = async (dispatch: Dispatch<AnyAction>, data: { userId: string; conversationId: string; roomId: string; filterId: string; dataId: string; latestChatId: string }) => {
+    pin = async (dispatch: Dispatch<AnyAction>, data: { userId: string; conversationId: string; roomId: string; filterId: string; dataId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>(`/${this.domain}/pin`, data);
