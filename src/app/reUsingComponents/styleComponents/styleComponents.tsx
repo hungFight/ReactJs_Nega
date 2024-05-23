@@ -171,41 +171,9 @@ export const ButtonAnimationSurround: React.FC<{
         </>
     );
 };
-interface PropsDivContainer {
-    width?: string;
-    height?: string;
-    wrap?: string;
-    content?: string;
-    bg?: string;
-    css?: string;
-    padding?: string;
-    margin?: string;
-    display?: string;
-    align?: string;
-    radius?: string;
-}
-export const DivContainer = styled.div<PropsDivContainer>`
+export const DivNone = styled.div<{ width?: string; css?: string }>`
     width: ${(props) => props.width};
-    height: ${(props) => props.height};
-    background-color: ${(props) => props.bg || 'transparent'};
-    display: ${(props) => props.display};
-    flex-wrap: ${(props) => props.wrap};
-    align-items: ${(props) => props.align};
-    justify-content: ${(props) => props.content};
-    padding: ${(props) => props.padding};
-    margin: ${(props) => props.margin};
-    border-radius: ${(props) => props.radius};
-    ${(props) => props.css};
-`;
-export const DivImg = styled(Link)<PropsDivContainer>`
-    width: 100%;
-    height: 100%;
-    ${(props) => props.css};
-`;
-export const DivImgS = styled.div<PropsDivContainer>`
-    width: 100%;
-    height: 100%;
-    ${(props) => props.css};
+    ${(props) => props.css}
 `;
 interface PropsHname {
     size?: string;
@@ -221,44 +189,55 @@ export const Hname = styled.h3<PropsHname>`
     overflow: hidden;
     ${(props) => props.css}
 `;
-interface PropsClose {
-    size?: string;
-    top?: string;
-    left?: string;
+
+interface PropsDivFlexPosition {
+    wrap?: string;
+    css?: string;
     width?: string;
-    height?: string;
-    bg?: string;
+    align?: string;
+    justify?: string;
+    display?: string;
+    position?: string;
+    top?: string;
     right?: string;
     bottom?: string;
-    css?: string;
-    position?: string;
+    left?: string;
+    bg?: string;
     index?: number;
+    size?: string;
     translateT?: string;
 }
-export const DivPos = styled.div<PropsClose>`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: ${(props) => props.width};
-    height: ${(props) => props.height || props.width};
-    top: ${(props) => props.top};
+export const DivImgLink = styled(Link)`
+    width: 100%;
+    height: 100%;
+    ${(props: { css?: string }) => props.css};
+`;
+export const DivImgS = styled.div`
+    width: 100%;
+    height: 100%;
+    ${(props: { css?: string }) => props.css};
+`;
+export const DivFlexPosition = styled.div<PropsDivFlexPosition>`
+    width: ${(props) => props.width || '100%'};
+    display: ${(props) => props.display || 'flex'};
+    flex-wrap: ${(props) => props.wrap || 'none'};
+    justify-content: ${(props) => props.justify || 'center'};
+    align-items: ${(props) => props.align || 'center'};
+    position: ${(props) => props.position || 'absolute'};
     left: ${(props) => props.left};
     right: ${(props) => props.right};
+    top: ${(props) => props.top};
     bottom: ${(props) => props.bottom};
-    color: ${(props) => props.color};
-    position: ${(props) => props.position || 'absolute'};
-    z-index: ${(props) => props.index};
+    font-size: ${(props) => props.size || '20px'};
     translate: ${(props) => props.translateT};
-    font-size: ${(props) => props.size};
-    border-radius: 50%;
+    z-index: ${(props) => props.index || 1};
     ${(props) => props.css}
     @media (min-width: 768px) {
         cursor: var(--pointer);
     }
-
     &:hover {
         transition: all 0.1s linear;
-        background-color: ${(props) => props.bg || ''};
+        background-color: ${(props) => props.bg || 'transparent'};
     }
 `;
 export const DivLoading = styled.div`

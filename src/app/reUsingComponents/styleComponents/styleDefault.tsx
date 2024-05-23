@@ -107,9 +107,7 @@ interface PropsDiv {
     css?: string;
     width?: string;
     height?: string;
-    size?: string;
     display?: string;
-    bg?: string;
 }
 interface PropsDivFlex {
     wrap?: string;
@@ -133,26 +131,6 @@ export const Div = styled.div<PropsDiv>`
     height: ${(props) => props.height};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap};
-    font-size: ${(props) => props.size};
-    ${(props) => props.css}
-`;
-export const DivNone = styled.div<PropsDivNone>`
-    width: ${(props) => props.width};
-    height: ${(props) => props.height};
-    display: ${(props) => props.display};
-    cursor: ${(props) => props.cursor};
-    flex-wrap: ${(props) => props.wrap};
-    justify-content: ${(props) => props.justify};
-    align-items: ${(props) => props.align};
-    margin: ${(props) => props.margin};
-    padding: ${(props) => props.padding};
-    size: ${(props) => props.size};
-    border: ${(props) => props.border};
-    background-color: ${(props) => props.bg};
-    ${(props) => props.css};
-`;
-export const DivFill = styled.div<PropsDiv>`
-    width: 100%;
     ${(props) => props.css}
 `;
 export const Strong = styled.strong`
@@ -169,40 +147,12 @@ export const DivFlex = styled.div<PropsDivFlex>`
     height: ${(props) => props.height || 'auto'};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap || 'none'};
-    margin: ${(props) => props.margin};
     justify-content: ${(props) => props.justify || 'center'};
     align-items: ${(props) => props.align || 'center'};
-    padding: ${(props) => props.padding};
-    cursor: ${(props) => props.cursor};
     color: ${(props) => props.color};
     ${(props) => props.css}
 `;
-interface PropsDivFlexPosition {
-    wrap?: string;
-    css?: string;
-    width?: string;
-    align?: string;
-    justify?: string;
-    display?: string;
-    position?: string;
-    top?: string;
-    right?: string;
-    bottom?: string;
-    left?: string;
-}
-export const DivFlexPosition = styled.div<PropsDivFlexPosition>`
-    width: ${(props) => props.width || '100%'};
-    display: ${(props) => props.display || 'flex'};
-    flex-wrap: ${(props) => props.wrap || 'none'};
-    justify-content: ${(props) => props.justify || 'center'};
-    align-items: ${(props) => props.align || 'center'};
-    position: ${(props) => props.position || ''};
-    left: ${(props) => props.left || ''};
-    right: ${(props) => props.right || ''};
-    top: ${(props) => props.top || ''};
-    bottom: ${(props) => props.bottom || ''};
-    ${(props) => props.css}
-`;
+
 interface PorpsTextarea {
     bg?: string;
     font?: string;

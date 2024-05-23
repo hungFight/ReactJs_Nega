@@ -11,10 +11,10 @@ import Bar from '~/reUsingComponents/Bar/Bar';
 import { useCookies } from 'react-cookie';
 import { DivResults, DivSearch, Input } from './styleSearch';
 import { useDispatch, useSelector } from 'react-redux';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import CommonUtils from '~/utils/CommonUtils';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import ServerBusy from '~/utils/ServerBusy';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 export interface PropsSearchTextSN {
     rec: string;
     menu: {
@@ -150,9 +150,9 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
     return (
         <DivSearch>
             <Input id="notS" ref={closeRef} type="text" color={colorText} value={searchUser} placeholder={title} onChange={(e) => handleResultSearch(e)} />
-            <DivPos width="30px" size="1.8rem" top="3.5px" right="0px" color={colorText} onClick={handleCloseSearch}>
+            <DivFlexPosition width="30px" size="1.8rem" top="3.5px" right="0px" color={colorText} onClick={handleCloseSearch}>
                 <CloseI />
-            </DivPos>
+            </DivFlexPosition>
 
             {(resultSearch?.length > 0 || cateMore || searchUser) && (
                 <>

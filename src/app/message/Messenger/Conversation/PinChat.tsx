@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { queryClient } from 'src';
 import { PropsUser } from 'src/App';
 import { ArrowDownI, LoadingI } from '~/assets/Icons/Icons';
-import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import chatAPI from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
@@ -170,89 +170,90 @@ const PinChat: React.FC<{
         });
     }, [itemPin]);
 
-    return null;
-    <Div
-        css={`
-            user-select: none;
-            position: absolute;
-            top: 64px;
-            left: 0;
-            width: 100%;
-            background-color: #030303c4;
-            transition: all 0.5s linear;
-            z-index: 23;
-            padding: 5px 0 5px 5px;
-            ${more ? 'max-height: 81%; ' : 'max-height: 39px;'}
-            @media(min-width: 768px) {
-                top: 45px;
-            }
-        `}
-    >
-        <Div
-            width={more ? '100%' : '90%'}
-            css={`
-                position: relative;
-                ${more ? '' : 'pointer-events: none;'}
-            `}
-        >
-            <DivPos
-                top="-8px"
-                left="-7px"
-                index={24}
-                css={`
-                    transform: rotate(297deg);
-                `}
-            >
-                📌
-            </DivPos>
-            <DivPos top="17px" index={24} left="5px" css="font-size: 1.2rem;">
-                {pins.length}
-            </DivPos>
-            <Div width="100%" display="block" wrap="wrap" css="overflow-y: overlay; justify-content: center; ">
-                {isLoading && check && (
-                    <DivLoading css="margin: 0px;">
-                        <LoadingI />
-                    </DivLoading>
-                )}
-                {data?.map((r) => {
-                    if (pins.some((p) => p.chatId === r._id))
-                        return (
-                            <ItemPin
-                                coord={coord}
-                                coordS={coordS}
-                                conversationId={conversationId}
-                                removePin={removePin}
-                                key={r._id}
-                                setChoicePin={setChoicePin}
-                                r={r}
-                                setConversation={setConversation}
-                                pins={pins}
-                                dataFirst={dataFirst}
-                                user={user}
-                            />
-                        );
-                })}
-            </Div>
-        </Div>
+    return (
         <Div
             css={`
-                justify-content: center;
-                align-items: center;
-                margin: auto;
-                font-size: 24px;
-                padding: 4px;
-                cursor: var(--pointer);
-                ${more
-                    ? 'position: absolute; transform: rotate(178deg); right: 8px; top: 16px; height: 30px; width: 30px; font-size: 20px; background-color: #2b2b2bf2; border-radius: 50%;'
-                    : 'width: 7%;'}
-                @media(min-width: 500px) {
+                user-select: none;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                width: 100%;
+                background-color: #030303c4;
+                transition: all 0.5s linear;
+                z-index: 23;
+                padding: 5px 0 5px 5px;
+                ${more ? 'max-height: 81%; ' : 'max-height: 39px;'}
+                @media(min-width: 768px) {
+                    top: 45px;
                 }
             `}
-            onClick={() => setMore(!more)}
         >
-            <ArrowDownI />
+            <Div
+                width={more ? '100%' : '90%'}
+                css={`
+                    position: relative;
+                    ${more ? '' : 'pointer-events: none;'}
+                `}
+            >
+                <DivFlexPosition
+                    top="-8px"
+                    left="-7px"
+                    index={24}
+                    css={`
+                        transform: rotate(297deg);
+                    `}
+                >
+                    📌
+                </DivFlexPosition>
+                <DivFlexPosition top="17px" index={24} left="5px" css="font-size: 1.2rem;">
+                    {pins.length}
+                </DivFlexPosition>
+                <Div width="100%" display="block" wrap="wrap" css="overflow-y: overlay; justify-content: center; ">
+                    {isLoading && check && (
+                        <DivLoading css="margin: 0px;">
+                            <LoadingI />
+                        </DivLoading>
+                    )}
+                    {data?.map((r) => {
+                        if (pins.some((p) => p.chatId === r._id))
+                            return (
+                                <ItemPin
+                                    coord={coord}
+                                    coordS={coordS}
+                                    conversationId={conversationId}
+                                    removePin={removePin}
+                                    key={r._id}
+                                    setChoicePin={setChoicePin}
+                                    r={r}
+                                    setConversation={setConversation}
+                                    pins={pins}
+                                    dataFirst={dataFirst}
+                                    user={user}
+                                />
+                            );
+                    })}
+                </Div>
+            </Div>
+            <Div
+                css={`
+                    justify-content: center;
+                    align-items: center;
+                    margin: auto;
+                    font-size: 24px;
+                    padding: 4px;
+                    cursor: var(--pointer);
+                    ${more
+                        ? 'position: absolute; transform: rotate(178deg); right: 8px; top: 16px; height: 30px; width: 30px; font-size: 20px; background-color: #2b2b2bf2; border-radius: 50%;'
+                        : 'width: 7%;'}
+                    @media(min-width: 500px) {
+                    }
+                `}
+                onClick={() => setMore(!more)}
+            >
+                <ArrowDownI />
+            </Div>
         </Div>
-    </Div>;
+    );
 };
 
 export default PinChat;

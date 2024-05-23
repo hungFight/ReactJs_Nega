@@ -1,14 +1,10 @@
-import clsx from 'clsx';
-import React, { memo, useState, useEffect, useLayoutEffect, useCallback, forwardRef, Ref, useRef } from 'react';
+import React, { memo, useState, useEffect, forwardRef } from 'react';
 
 import { FaUserCircle } from 'react-icons/fa';
-import Images from '../../assets/images';
-import { Img } from '../styleComponents/styleDefault';
-import { useDispatch, useSelector } from 'react-redux';
-import { DivImg, DivImgS } from '../styleComponents/styleComponents';
-import { InitialStateHideShow, onPersonalPage, onSetting, setOpenProfile } from '../../redux/hideShow';
-import CommonUtils from '~/utils/CommonUtils';
-import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
+import { Div, Img } from '../styleComponents/styleDefault';
+import { useDispatch } from 'react-redux';
+import { DivImgLink, DivImgS } from '../styleComponents/styleComponents';
+import { setOpenProfile } from '../../redux/hideShow';
 import subImage from '~/utils/subImage';
 import { convertFIle } from '~/utils/convertFilt';
 
@@ -25,7 +21,7 @@ interface _Avatar {
     gender: number | string | undefined;
     onClick?: (args: any) => void;
     css?: string;
-    profile?: string;
+    profile?: 'url' | 'po';
     onTouchMove?: (args: any) => void;
     children?: React.ReactElement;
     currentId?: string; // Is current profile's id
@@ -67,7 +63,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     const handleOpentProfile = () => {
         if (profile === 'po' && id) dispatch(setOpenProfile({ newProfile: [id], currentId: currentId }));
     };
-    const TagH: any = profile === 'url' ? DivImg : DivImgS;
+    const TagH: any = profile === 'url' ? DivImgLink : DivImgS;
 
     return avatar ? (
         <FaUserCircle />

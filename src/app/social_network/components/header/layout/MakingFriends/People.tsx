@@ -2,7 +2,7 @@
 
 import { io } from 'socket.io-client';
 
-import { Div, DivFlex, DivNone, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivItems, DivMenu, DivOptions, DivResults, DivSearch, Input } from './styleMakingFriends';
 import { useState, useEffect, useLayoutEffect, memo, useRef } from 'react';
 import Strangers from './Strangers';
@@ -10,7 +10,7 @@ import Friends from './Friends';
 import Requested from './Requested';
 import Others from './OthersRequest';
 import { PropsId_chats, PropsUser } from 'src/App';
-import { ButtonAnimationSurround } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, DivNone } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const socket = io('http://localhost:3001', { transports: ['websocket'] });
 

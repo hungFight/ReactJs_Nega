@@ -1,4 +1,4 @@
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import httpFile from '~/utils/httpFile';

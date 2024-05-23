@@ -1,5 +1,4 @@
 import { FollowI, FriendI, HeartMI, PeopleI, StarI, UndoIRegister } from '~/assets/Icons/Icons';
-import { DivPos } from '../../../app/reUsingComponents/styleComponents/styleComponents';
 import { Div, P, Span } from '../../../app/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '../../../app/reUsingComponents/Avatars/Avatar';
 import { useEffect, useState } from 'react';
@@ -7,6 +6,7 @@ import { Input } from '~/social_network/components/Header/layout/MakingFriends/s
 import { DivSearch } from './styleLayout';
 import { GiBurningBook } from 'react-icons/gi';
 import { useCookies } from 'react-cookie';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const UserBar: React.FC<{
     colorBg: number;
@@ -70,12 +70,10 @@ const UserBar: React.FC<{
                 `}
             >
                 <DivSearch>
-                    <DivPos size="20px" left="6px" css="padding: 3px;" onClick={() => setPosition(0)}>
+                    <DivFlexPosition size="20px" left="6px" css="padding: 3px;" onClick={() => setPosition(0)}>
                         <UndoIRegister />
-                    </DivPos>
-                    {search && (
-                        <Input value={valueS} onChange={handleSearch} border="1px solid rgb(107 107 107 / 83%)" />
-                    )}
+                    </DivFlexPosition>
+                    {search && <Input value={valueS} onChange={handleSearch} border="1px solid rgb(107 107 107 / 83%)" />}
                     <P
                         z="1.4rem"
                         css={`

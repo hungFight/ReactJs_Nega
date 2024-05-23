@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckI, CloseI, HashI, PlusI, ProfileI, SearchI, TagPostI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { CheckI, CloseI, ProfileI } from '~/assets/Icons/Icons';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
+import { Div, H3, Input } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { PropsFriends } from '../../../../MakingFriends/Friends';
 import Account from '~/social_network/Accoutns/Account';
-import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch, useSelector } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtils';
 import { InitialStateHideShow, setOpenProfile } from '~/redux/hideShow';
@@ -128,9 +127,9 @@ const Tags: React.FC<{
                         `}
                     >
                         Tag
-                        <DivPos size="25px" top="8px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
+                        <DivFlexPosition size="25px" top="8px" left="10px" onClick={() => setOnTagU((pre) => !pre)}>
                             <CloseI />
-                        </DivPos>
+                        </DivFlexPosition>
                     </H3>
                     <Div width="80%" css="margin: auto;">
                         <Input placeholder="Search" color={colorText} />
@@ -153,7 +152,7 @@ const Tags: React.FC<{
                             }}
                             Element={
                                 <>
-                                    <DivPos
+                                    <DivFlexPosition
                                         top="12.5px"
                                         right="57px"
                                         size="30px"
@@ -164,8 +163,8 @@ const Tags: React.FC<{
                                         }}
                                     >
                                         <ProfileI />
-                                    </DivPos>
-                                    <DivPos
+                                    </DivFlexPosition>
+                                    <DivFlexPosition
                                         top="15px"
                                         right="22px"
                                         width="23px"
@@ -183,7 +182,7 @@ const Tags: React.FC<{
                                                 <CheckI />
                                             </Div>
                                         )}
-                                    </DivPos>
+                                    </DivFlexPosition>
                                 </>
                             }
                         />

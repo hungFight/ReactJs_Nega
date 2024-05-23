@@ -1,5 +1,5 @@
 import { CloseI, EyedI, EyemI, GarbageI, InventionI, PinI, StorageI } from '~/assets/Icons/Icons';
-import { DivPos } from '../styleComponents/styleComponents';
+import { DivFlexPosition } from '../styleComponents/styleComponents';
 import { Div, P } from '../styleComponents/styleDefault';
 
 const OpUpdate: React.FC<{
@@ -54,9 +54,9 @@ const OpUpdate: React.FC<{
                     align-items: center;
                 `}
             >
-                <DivPos top="8px" right="8px" size="20px" onClick={() => setOptions('')}>
+                <DivFlexPosition top="8px" right="8px" size="20px" onClick={() => setOptions('')}>
                     <CloseI />
-                </DivPos>
+                </DivFlexPosition>
             </Div> */}
             <Div
                 width="100%"
@@ -68,10 +68,7 @@ const OpUpdate: React.FC<{
                     <Div key={o.type} display="block" css={``} onClick={onClick}>
                         <P css="border-top-left-radius: 20px;margin: 10px 0; border-top-right-radius: 20px; border: 1px solid #969696; padding: 2px; background-color: #b8b8b8; font-weight: 600;"></P>
                         {o.children.map((c) => (
-                            <Div
-                                key={c.id}
-                                css="align-items: center; cursor: var(--pointerR);padding-left: 5px; &:hover{background-color: #c1c1c1;border-radius: 5px;}"
-                            >
+                            <Div key={c.id} css="align-items: center; cursor: var(--pointerR);padding-left: 5px; &:hover{background-color: #c1c1c1;border-radius: 5px;}">
                                 <Div css="margin-right: 5px">{c.icon}</Div>
                                 <P>{c.name}</P>
                             </Div>

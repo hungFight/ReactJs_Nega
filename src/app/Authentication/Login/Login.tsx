@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ButtonAnimationSurround, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
 import { changeLogin } from '~/redux/languageRD';
 
-import Language from '~/Language/Language';
+import Language from '~/utils/Language/Language';
 import { A, DivForm, DivLanguage, Perror, DivRegister, DivAccount } from './styleLogin';
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import { Input } from '~/reUsingComponents/styleComponents/styleDefault';

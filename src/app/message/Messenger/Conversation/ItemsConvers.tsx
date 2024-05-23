@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { PropsBackground_chat, PropsItemOperationsCon, PropsItemQueryChat, PropsItemsData, PropsOldSeenBy, PropsPinC } from '~/typescript/messengerType';
-import { Div, DivFlex, DivNone, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { memo, useEffect, useRef, useState } from 'react';
@@ -8,7 +8,7 @@ import { DotI, GarbageI, LoadingI, ReplyI, WarningI } from '~/assets/Icons/Icons
 import CryptoJS from 'crypto-js';
 import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessenger';
-import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivFlexPosition, Hname, DivNone } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
 import { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import { queryClient } from 'src';
@@ -303,11 +303,11 @@ const ItemsRoom: React.FC<{
             {rc?.delete !== dataFirst.id &&
                 timeS && ( // display time for every distance of day
                     <DivFlex>
-                        <DivNone width="20%" height="1px" bg="#828282"></DivNone>
+                        <DivNone css="width: 20%;height: 1px; background-color:#828282 "></DivNone>
                         <P color="#b5b5b5f7" css="font-size: 1.2rem; text-align: center;padding: 2px 15px;  margin: 10px 0;@media (min-width: 768px){font-size: 1rem;}">
                             {timeS}
                         </P>
-                        <DivNone width="20%" height="1px" bg="#828282"></DivNone>
+                        <DivNone css="width: 20%;height: 1px; background-color:#828282 "></DivNone>
                     </DivFlex>
                 )}
             {rc.userId === dataFirst.id
@@ -356,14 +356,14 @@ const ItemsRoom: React.FC<{
                                               }}
                                           >
                                               {rc?.reply?.imageOrVideos.length > 3 && (
-                                                  <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
+                                                  <DivFlexPosition size="1.2rem" bottom="3px" right="10px" index={1}>
                                                       + {rc.reply.imageOrVideos.length - 3}
-                                                  </DivPos>
+                                                  </DivFlexPosition>
                                               )}
                                               <Div css="position: absolute; top: 0px; left: -25px; z-index: 1" onClick={(e) => e.stopPropagation()}>
                                                   <Div wrap="wrap" css="position: relative;  &:hover{.moreReplyInfo {display: flex;}}">
                                                       <ReplyI />
-                                                      <DivPos
+                                                      <DivFlexPosition
                                                           className="moreReplyInfo"
                                                           top="-90px"
                                                           width="190px"
@@ -387,7 +387,7 @@ const ItemsRoom: React.FC<{
                                                                   </P>
                                                               </Div>
                                                           </Div>
-                                                      </DivPos>
+                                                      </DivFlexPosition>
                                                   </Div>
                                               </Div>
                                               <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
@@ -440,7 +440,7 @@ const ItemsRoom: React.FC<{
                                   )}
 
                               {chatId && ( // pined
-                                  <DivPos
+                                  <DivFlexPosition
                                       top="-13px"
                                       right="-11px"
                                       index={16}
@@ -464,7 +464,7 @@ const ItemsRoom: React.FC<{
                                       <P z="1rem" css="display: none">
                                           {fullNameChatId}
                                       </P>
-                                  </DivPos>
+                                  </DivFlexPosition>
                               )}
                               <Div // a chat
                                   display="block"
@@ -648,7 +648,7 @@ const ItemsRoom: React.FC<{
                                           </P>
                                       ) : (
                                           <DivFlex width="auto" height="auto" color="#f35d5d">
-                                              <Div size="14px">
+                                              <Div css="font-size: 14px;">
                                                   <WarningI />
                                               </Div>
                                               <P z="1.2rem" css="text-align: end; @media (min-width: 768px){font-size: 1.1rem;}">
@@ -775,14 +775,14 @@ const ItemsRoom: React.FC<{
                                       css="position: relative; cursor: var(--pointer); background-color: #363636; padding: 3px 5px; border-radius: 7px;"
                                   >
                                       {rc?.reply?.imageOrVideos.length > 3 && (
-                                          <DivPos size="1.2rem" bottom="3px" right="10px" index={1}>
+                                          <DivFlexPosition size="1.2rem" bottom="3px" right="10px" index={1}>
                                               + {rc.reply.imageOrVideos.length - 3}
-                                          </DivPos>
+                                          </DivFlexPosition>
                                       )}
                                       <Div css="position: absolute; top: 0px; right: -25px; z-index: 1" onClick={(e) => e.stopPropagation()}>
                                           <Div wrap="wrap" css="position: relative;  &:hover{.moreReplyInfo {display: flex;}}">
                                               <ReplyI />
-                                              <DivPos
+                                              <DivFlexPosition
                                                   className="moreReplyInfo"
                                                   top="-90px"
                                                   width="190px"
@@ -806,7 +806,7 @@ const ItemsRoom: React.FC<{
                                                           </P>
                                                       </Div>
                                                   </Div>
-                                              </DivPos>
+                                              </DivFlexPosition>
                                           </Div>
                                       </Div>
                                       <Div wrap="wrap" width="inherit" css="opacity: 0.5;">
@@ -859,7 +859,7 @@ const ItemsRoom: React.FC<{
                               </Div>
                           )}
                           {chatId && (
-                              <DivPos
+                              <DivFlexPosition
                                   top="-13px"
                                   left="14px"
                                   index={16}
@@ -884,7 +884,7 @@ const ItemsRoom: React.FC<{
                                   <P z="1rem" css="display: none">
                                       {fullNameChatId}
                                   </P>
-                              </DivPos>
+                              </DivFlexPosition>
                           )}
                           <Div
                               ref={elWatChTime}

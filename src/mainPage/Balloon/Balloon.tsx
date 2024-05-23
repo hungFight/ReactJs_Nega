@@ -5,7 +5,7 @@ import { queryClient } from 'src';
 import { PropsId_chats, PropsUser } from 'src/App';
 import { BalloonI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { onChats } from '~/redux/roomsChat';
 import chatAPI from '~/restAPI/chatAPI';
@@ -154,7 +154,7 @@ const Balloon: React.FC<{
                 </P>
                 {data?.map((c, index) => {
                     return (
-                        <DivPos
+                        <DivFlexPosition
                             key={c._id}
                             className={`balloon balloon_${index}`}
                             size="1.2rem"
@@ -200,7 +200,7 @@ const Balloon: React.FC<{
                                     {c.user.fullName}
                                 </Hname>
                             </Div>
-                        </DivPos>
+                        </DivFlexPosition>
                     );
                 })}
             </Div>

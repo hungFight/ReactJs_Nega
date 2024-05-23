@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
 import { CloseI, SelectLinkI, TextBoldI, TextEditorI, WriteLinkI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsValueQuill } from '../FormUpNews';
 
@@ -17,19 +17,7 @@ const TextEditor: React.FC<{
     valueSelected: React.MutableRefObject<boolean>;
     consider: React.MutableRefObject<number>;
     tagDivURL: React.MutableRefObject<HTMLDivElement | null>;
-}> = ({
-    valueText,
-    font,
-    setOnEditor,
-    setInputValue,
-    quillRef,
-    valueQuill,
-    setInsertURL,
-    insertURL,
-    valueSelected,
-    consider,
-    tagDivURL,
-}) => {
+}> = ({ valueText, font, setOnEditor, setInputValue, quillRef, valueQuill, setInsertURL, insertURL, valueSelected, consider, tagDivURL }) => {
     const [chosen, setChosen] = useState<number>(0);
     // Transcription
     const data = [
@@ -178,9 +166,9 @@ const TextEditor: React.FC<{
                         <TextEditorI />
                     </Div>{' '}
                     Editor
-                    <DivPos size="25px" top="3px" left="10px" onClick={() => setOnEditor(false)}>
+                    <DivFlexPosition size="25px" top="3px" left="10px" onClick={() => setOnEditor(false)}>
                         <CloseI />
-                    </DivPos>
+                    </DivFlexPosition>
                 </H3>
                 <Div width="80%" css="margin: 10px auto; padding: 10px; border: 1px solid #595959;border-radius: 5px;">
                     {data.map((tor) => (

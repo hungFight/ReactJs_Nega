@@ -1,5 +1,5 @@
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsBackground_chat, PropsDataMoreConversation } from '~/typescript/messengerType';
 
@@ -19,7 +19,7 @@ const MoreOption: React.FC<{
     background?: PropsBackground_chat;
 }> = ({ dataMore, colorText, setMoreBar, setOpMore, background }) => {
     return (
-        <DivPos
+        <DivFlexPosition
             width="100%"
             bottom="0"
             left="0"
@@ -116,7 +116,7 @@ const MoreOption: React.FC<{
                     </Div>
                 ))}
             </Div>
-        </DivPos>
+        </DivFlexPosition>
     );
 };
 export default MoreOption;

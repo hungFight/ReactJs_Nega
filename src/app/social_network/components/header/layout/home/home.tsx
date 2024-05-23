@@ -6,12 +6,13 @@ import { DivPost } from './styleHome';
 import { useDispatch, useSelector } from 'react-redux';
 import FormUpNews, { PropsFormHome } from './Layout/FormUpNews/FormUpNews';
 import Posts from './Layout/DataPosts/Posts';
-import { Button, Div, DivFlex, DivNone, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Button, Div, DivFlex, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import homeAPI from '~/restAPI/socialNetwork/postAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { PostsI, ShortStoryI, YoutubeI } from '~/assets/Icons/Icons';
 import { PropsUser } from 'src/App';
+import { DivNone } from '~/reUsingComponents/styleComponents/styleComponents';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CloseI, HashI, PlusI, SearchI, TagPostI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { v4 as primaryKey } from 'uuid';
 
@@ -79,9 +79,9 @@ const Hashtag: React.FC<{
                     `}
                 >
                     <HashI /> Hashtag
-                    <DivPos size="20px" top="3px" left="10px" onClick={() => setOnTags(false)}>
+                    <DivFlexPosition size="20px" top="3px" left="10px" onClick={() => setOnTags(false)}>
                         <CloseI />
-                    </DivPos>
+                    </DivFlexPosition>
                 </H3>
                 <Div
                     width="94%"
@@ -121,8 +121,7 @@ const Hashtag: React.FC<{
                                 }
                             `}
                             onClick={() => {
-                                if (hashTags.some((ts) => ts.value === t.value))
-                                    setHashTags((pre) => pre.filter((ts) => ts.value !== t.value));
+                                if (hashTags.some((ts) => ts.value === t.value)) setHashTags((pre) => pre.filter((ts) => ts.value !== t.value));
                             }}
                         >
                             {t.value}
@@ -137,10 +136,7 @@ const Hashtag: React.FC<{
                         setOnTags(false);
                     }}
                 >
-                    <P
-                        z="1.5rem"
-                        css="padding: 5px 10px; border-radius: 5px; background-color: #187bd7; margin-right: 5px; @media(min-width: 768px){margin-right: 10px;}"
-                    >
+                    <P z="1.5rem" css="padding: 5px 10px; border-radius: 5px; background-color: #187bd7; margin-right: 5px; @media(min-width: 768px){margin-right: 10px;}">
                         Done
                     </P>
                 </Div>
@@ -238,11 +234,7 @@ const Hashtag: React.FC<{
                                 onKeyUp={(e) => {
                                     if (e.key === 'Enter') {
                                         const occurrences = (hashTag.match(/#/g) || []).length;
-                                        if (
-                                            hashTag.length > 1 &&
-                                            occurrences === 1 &&
-                                            !hashTags.some((ts) => ts.value === hashTag)
-                                        ) {
+                                        if (hashTag.length > 1 && occurrences === 1 && !hashTags.some((ts) => ts.value === hashTag)) {
                                             if (!hashTags.some((v) => v.value.includes(hashTag))) {
                                                 const uId = primaryKey();
                                                 setRealData((pre) =>
@@ -260,9 +252,9 @@ const Hashtag: React.FC<{
                                     }
                                 }}
                             />
-                            <DivPos size="25px" right="60px" top="6px" css="@media(min-width: 768px){right: 80px}">
+                            <DivFlexPosition size="25px" right="60px" top="6px" css="@media(min-width: 768px){right: 80px}">
                                 <SearchI />
-                            </DivPos>
+                            </DivFlexPosition>
                         </Div>
                         <Div width="100%" wrap="wrap" css="padding: 10px; margin-top: 15px;">
                             {realData.map((t) => (
@@ -280,12 +272,8 @@ const Hashtag: React.FC<{
                                         }
                                         cursor: var(--pointer);
                                         margin-bottom: 5px;
-                                        ${hashTags.some((ts) => ts.value === t.value)
-                                            ? 'background-color: #1f4749;'
-                                            : ''}
-                                        ${hashTag === t.value
-                                            ? 'background-image: linear-gradient(45deg, black, transparent);box-shadow: 0 0 3px #97b8a8;'
-                                            : ''}
+                                        ${hashTags.some((ts) => ts.value === t.value) ? 'background-color: #1f4749;' : ''}
+                                        ${hashTag === t.value ? 'background-image: linear-gradient(45deg, black, transparent);box-shadow: 0 0 3px #97b8a8;' : ''}
                                     `}
                                     onClick={() => {
                                         if (!hashTags.some((ts) => ts.value === t.value)) {

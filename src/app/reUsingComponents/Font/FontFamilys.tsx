@@ -1,8 +1,6 @@
 import { ReactElement, ReactNode, memo, useEffect, useRef, useState } from 'react';
 import { Div, H3 } from '../styleComponents/styleDefault';
 import { DivFonts, DivList, DivName, PItems } from './styleFontFamily';
-import { DivPos } from '../styleComponents/styleComponents';
-import { CloseI, ItalicI, StraightI } from '~/assets/Icons/Icons';
 import { fontDatas } from 'src/dataText/dataHomeForm';
 
 const FontFamilys: React.FC<{
@@ -87,9 +85,7 @@ const FontFamilys: React.FC<{
                                                 <Div
                                                     css={`
                                                         width: 1.5px;
-                                                        background-color: ${fontFamily.type === t.name
-                                                            ? '#345fccdb'
-                                                            : '#43464c'};
+                                                        background-color: ${fontFamily.type === t.name ? '#345fccdb' : '#43464c'};
                                                         height: ${t.id > 1 ? '9px' : '14px'};
                                                         position: absolute;
                                                         top: ${t.id > 1 ? '33px' : '28px'};

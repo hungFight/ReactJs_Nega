@@ -3,7 +3,7 @@ import { LinkProps } from 'react-router-dom';
 import { StyledComponent } from 'styled-components';
 import { BackI, DotI, HeartMI, ShareI } from '~/assets/Icons/Icons';
 import Player from '~/reUsingComponents/Videos/Player';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { PropsDataFileUpload } from '../../FormUpNews';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
@@ -128,9 +128,9 @@ const Resize: React.FC<{
                             onClick={(e) => e.stopPropagation()}
                         >
                             <Div width="100%" css="height: 30px; align-items: center; justify-content: center;  background-color: #9a9a9a; ">
-                                <DivPos size="25px" top="3px" left="4px" onClick={() => setShowComment(() => showComment.filter((c) => c !== index))}>
+                                <DivFlexPosition size="25px" top="3px" left="4px" onClick={() => setShowComment(() => showComment.filter((c) => c !== index))}>
                                     <BackI />
-                                </DivPos>
+                                </DivFlexPosition>
                                 <P z="1.5rem" css="">
                                     Comment
                                 </P>

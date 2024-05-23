@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ScreenI, TitleI, UndoI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<number>>, colorText: string) => {
     const [moreFile, setMoreFile] = useState<number>(6);
@@ -22,7 +22,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
     const ToolDefault = (st: number) => {
         if (st === 0)
             return (
-                <DivPos
+                <DivFlexPosition
                     size="20px"
                     top="-25px"
                     right="11.5px"
@@ -41,12 +41,12 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                     `}
                 >
                     <ScreenI />
-                </DivPos>
+                </DivFlexPosition>
             );
 
         if (st === 2)
             return (
-                <DivPos
+                <DivFlexPosition
                     size="20px"
                     top="50px"
                     right="11.5px"
@@ -57,11 +57,11 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                     css="position: fixed;  color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px; background-color: #a1a1a18a; transition: all 0.5s linear; "
                 >
                     <UndoI />
-                </DivPos>
+                </DivFlexPosition>
             );
         if (st === 1)
             return (
-                <DivPos
+                <DivFlexPosition
                     size="20px"
                     top="50px"
                     right="11.5px"
@@ -69,7 +69,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                     css="position: fixed;  color: #e2d2d2; font-size: 22px; z-index: 888; width: 35px; height: 35px; background-color: #0304048a; transition: all 0.5s linear; "
                 >
                     <TitleI />
-                </DivPos>
+                </DivFlexPosition>
             );
     };
 

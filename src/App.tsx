@@ -7,7 +7,7 @@ import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataText/dataLogin';
 import { register } from './dataText/dataRegister';
-import { DivContainer, DivLoading, DivPos, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivFlexPosition, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
 import Progress from './app/reUsingComponents/Progress/Progress';
@@ -326,18 +326,6 @@ function App() {
     }, [userId]);
 
     const leng = userData.length;
-    const css = `
-            position: absolute;
-            right: 0;top: 0px;
-            z-index: 999;
-            overflow-y: overlay;
-            &::-webkit-scrollbar {
-                width: 0px;
-                height: 0px;
-                border-radius: 0;
-            }
-
-    `;
     // console.log('id_cookie', userId, userData, id_chats, chats);
     if (session === 'NeGA_off') return <ErrorBoundaries code={session} _delCookies={_delCookies} />;
     if (token && userId) {
@@ -440,11 +428,28 @@ function App() {
                             </Div>
                         )}
                         {userData?.length && (
-                            <DivContainer width="100%" height="99%" css={css} bg={`${colorBg === 1 ? '#272727' : 'white'}`} content={leng === 1 ? 'center' : 'start'} display="flex">
+                            <Div
+                                width="100%"
+                                height="99%"
+                                css={`
+                                    position: absolute;
+                                    right: 0;
+                                    top: 0px;
+                                    z-index: 999;
+                                    overflow-y: overlay;
+                                    background-color: ${colorBg === 1 ? '#272727' : 'white'};
+                                    justify-content: ${leng === 1 ? 'center' : 'start'};
+                                    &::-webkit-scrollbar {
+                                        width: 0px;
+                                        height: 0px;
+                                        border-radius: 0;
+                                    }
+                                `}
+                            >
                                 {userData?.length > 1 && (
                                     <Div
+                                        display="none"
                                         css={`
-                                            display: none;
                                             @media (max-width: 600px) {
                                                 width: auto;
                                                 height: auto;
@@ -485,10 +490,10 @@ function App() {
                                     />
                                 ))}
 
-                                <DivPos position="absolute" size="30px" top="15px" right="15px" color={colorText} onClick={handleClick}>
+                                <DivFlexPosition position="absolute" size="30px" top="15px" right="15px" color={colorText} onClick={handleClick}>
                                     <UndoI />
-                                </DivPos>
-                            </DivContainer>
+                                </DivFlexPosition>
+                            </Div>
                         )}
                     </>
                     {/* ) : (

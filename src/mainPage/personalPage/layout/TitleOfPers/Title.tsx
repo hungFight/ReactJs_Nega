@@ -7,7 +7,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
 import CommonUtils from '~/utils/CommonUtils';
-import { ButtonAnimationSurround, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Button, Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivTitleP } from '../styleLayout';
 import UserBar from 'src/mainPage/personalPage/layout/UserBar';
@@ -86,7 +86,6 @@ const Title: React.FC<{
         inputRef,
         loading,
         setLoading,
-        userId,
         itemsT,
         handlePosition,
         handleAddFile,
@@ -133,7 +132,7 @@ const Title: React.FC<{
                                 font-size: 20px;
                                 color: ${colorText};
                                 div {
-                                    color: ${i.key === 3 && [id_o, userRequested].includes(userId) && level === 2 ? '#257fc2' : ''};
+                                    color: ${i.key === 3 && [id_o, userRequested].includes(userFirst.id) && level === 2 ? '#257fc2' : ''};
                                 }
                                 @media (min-width: 768px) {
                                     font-size: 22px;
@@ -267,7 +266,7 @@ const Title: React.FC<{
                         </Div>
                         <P css="font-size: 1.4rem; margin-top: 2.5px;">{mores[0].position}</P>
                         {editTitle && (
-                            <DivPos
+                            <DivFlexPosition
                                 top="0px"
                                 right="5px"
                                 size="19px"
@@ -333,7 +332,7 @@ const Title: React.FC<{
                                         {privacy.position === 'only' ? <PrivateI /> : privacy.position === 'friends' ? <FriendI /> : <EarthI />}
                                     </Div>
                                 </Div>
-                            </DivPos>
+                            </DivFlexPosition>
                         )}
                     </Div>
                 )}
@@ -525,7 +524,7 @@ const Title: React.FC<{
                                             <Div key={sub.id} width="fit-content" css="margin: 0 3px; position: relative; margin-bottom: 10px;">
                                                 {subAccount && userFirst.id === data.id ? ( // is your
                                                     <>
-                                                        <DivPos
+                                                        <DivFlexPosition
                                                             top="5px"
                                                             right="3px"
                                                             size="25px"
@@ -533,7 +532,7 @@ const Title: React.FC<{
                                                             onClick={() => setSubAccount(false)}
                                                         >
                                                             <BackI />
-                                                        </DivPos>
+                                                        </DivFlexPosition>
                                                         <Div wrap="wrap" css=" justify-content: center; background-color: #4c5260;  border-radius: 5px; text-align: center; padding: 5px;">
                                                             <Div css="align-items: center;">
                                                                 <Div
@@ -632,7 +631,7 @@ const Title: React.FC<{
                                                             src={sub.avatar}
                                                             alt={sub.fullName}
                                                             currentId={data.id}
-                                                            profile={!(userFirst.id === data.id && userFirst.id === userId) ? 'po' : ''}
+                                                            profile={!(userFirst.id === data.id) ? 'po' : undefined}
                                                             gender={sub.gender}
                                                             radius="50%"
                                                         />
@@ -647,7 +646,7 @@ const Title: React.FC<{
                             </Div>
                         )}
                         {editTitle && editValue !== 10 && (
-                            <DivPos
+                            <DivFlexPosition
                                 top="-2px"
                                 right="5px"
                                 size="19px"
@@ -712,7 +711,7 @@ const Title: React.FC<{
                                         {privacy.subAccount === 'only' ? <PrivateI /> : privacy.subAccount === 'friends' ? <FriendI /> : <EarthI />}
                                     </Div>
                                 </Div>
-                            </DivPos>
+                            </DivFlexPosition>
                         )}
                     </Div>
                 )}

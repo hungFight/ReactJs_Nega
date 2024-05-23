@@ -6,7 +6,7 @@ import { CameraI, CloseI, HashI, LoadingI, TagPostI, TextEditorI } from '~/asset
 
 import { DivDataFake, DivForm, DivItems, DivOptions, DivUpNews, Form, Label } from './styleFormUpNews';
 import { Button, Div } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, DivLoading, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import FontFamilys from '~/reUsingComponents/Font/FontFamilys';
 import PreviewPost, { PropsPreViewFormHome } from './PreView';
 import LogicForm from './LogicForm';
@@ -137,9 +137,9 @@ const FormUpNews: React.FC<PropsFormUpNews> = ({ form, colorText, colorBg, user,
                                         }
                                     `}
                                 >
-                                    <DivPos width="30px" top="5px" right="-29px" size="22px" color={colorText} onClick={() => setdisplayEmoji(false)}>
+                                    <DivFlexPosition width="30px" top="5px" right="-29px" size="22px" color={colorText} onClick={() => setdisplayEmoji(false)}>
                                         <CloseI />
-                                    </DivPos>
+                                    </DivFlexPosition>
                                     <Picker locale={form.emoji} set="facebook" emojiVersion={14} data={dataEmoji} theme={colorBg === 1 ? 'dark' : 'light'} onEmojiSelect={handleEmojiSelect} />
                                 </Div>
                             )}

@@ -2,10 +2,10 @@ import ReactQuill, { Quill } from 'react-quill';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
-import { Div, DivFill, DivFlex, DivFlexPosition, DivNone, Img, Input, P, Span, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, DivFlex, Img, Input, P, Span, Textarea } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivComment, DivEmoji, Label } from '../FormUpNews/styleFormUpNews';
-import { ArrowRightI, BanI, CameraI, DotI, EscalatorI, IconI, MinusI, PostCommentInI, ResetI, SendI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
-import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ArrowRightI, BanI, CameraI, DotI, IconI, ResetI, SendOPTI, UndoIRegister } from '~/assets/Icons/Icons';
+import { DivFlexPosition, DivNone, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { BsDot } from 'react-icons/bs';
 import { FcReadingEbook } from 'react-icons/fc';
@@ -22,6 +22,7 @@ import { socket } from 'src/mainPage/NextWeb';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import ReplyComment from './ReplyComment';
 import { useDispatch } from 'react-redux';
+import { DivFill } from './stylePost';
 const Comment: React.FC<{
     anony: {
         id: string;
@@ -514,16 +515,16 @@ const Comment: React.FC<{
                         border-bottom: 1px solid #494949;
                     `}
                 >
-                    <DivPos size="22px" top="10px" left="8px" onClick={() => setShowComment('')}>
+                    <DivFlexPosition size="22px" top="10px" left="8px" onClick={() => setShowComment('')}>
                         <UndoIRegister />
-                    </DivPos>
+                    </DivFlexPosition>
                     <P z="1.4rem">Comment</P>{' '}
                     <Div css="margin-right: 5px;">
                         <FcReadingEbook />
                     </Div>{' '}
-                    <DivPos size="22px" top="10px" right="8px">
+                    <DivFlexPosition size="22px" top="10px" right="8px">
                         <ResetI />
-                    </DivPos>
+                    </DivFlexPosition>
                 </Div>
 
                 <DivFill css=" padding: 10px 14px">
@@ -642,9 +643,9 @@ const Comment: React.FC<{
                                         valueQuill={valueQuill}
                                         valueText={inputValue}
                                     />
-                                    <DivPos id="placeholder_comment_post" css="cursor: auto !important; pointer-events: none;" top="5px" left="11px" size="1.3rem">
+                                    <DivFlexPosition id="placeholder_comment_post" css="cursor: auto !important; pointer-events: none;" top="5px" left="11px" size="1.3rem">
                                         comment
-                                    </DivPos>
+                                    </DivFlexPosition>
                                 </Div>
                                 <Div css="font-size: 20px; cursor: var(--pointer); margin-top: 5px;" onClick={() => handleComment()}>
                                     <SendOPTI />
@@ -675,7 +676,7 @@ const Comment: React.FC<{
                                         <DivFlex width="72%" justify="left" wrap="wrap" css="margin: 0 5px;">
                                             <Div>
                                                 <Skeleton circle height="35px" width="35px" duration={1} />
-                                                <DivNone width="80%" margin="0 10px">
+                                                <DivNone width="80%" css="margin: 0 10px">
                                                     <Skeleton height="16px" width="200px" duration={1} />
                                                     <Skeleton height="13px" width="150px" duration={1} />
                                                 </DivNone>
@@ -698,7 +699,7 @@ const Comment: React.FC<{
                                         const hasEmo = c.feel.onlyEmo.some((o) => o.id_user.length);
                                         return (
                                             <DivFlex key={c._id} justify="start" align="start" css="margin-bottom: 40px; position: relative;">
-                                                <DivPos top="-3px" right="55px" index={1} css="text-wrap: nowrap; ">
+                                                <DivFlexPosition top="-3px" right="55px" index={1} css="text-wrap: nowrap; ">
                                                     <Div
                                                         css="font-weight: 600; width: 20px; height: 20px; justify-content: center;align-items: center;} @media (min-width: 768px) {
                                                     &:hover {#emoBarPost {display: flex;top: -33px;}}}position: relative;"
@@ -706,9 +707,9 @@ const Comment: React.FC<{
                                                     >
                                                         {!emo ? <IconI /> : emo.icon}
 
-                                                        <DivPos top="19px" right="50%" left="50%" translateT="-50%">
+                                                        <DivFlexPosition top="19px" right="50%" left="50%" translateT="-50%">
                                                             <P z="1.3rem"> {amount} </P>
-                                                        </DivPos>
+                                                        </DivFlexPosition>
                                                         <Div
                                                             id="emoBarPost"
                                                             width="fit-content"
@@ -750,7 +751,7 @@ const Comment: React.FC<{
                                                                 ))}
                                                         </Div>
                                                     </Div>
-                                                </DivPos>
+                                                </DivFlexPosition>
 
                                                 <DivNone width="40px" css="border-bottom: 1px solid #4f4f4f; @media(min-width: 550px){width: 70px}"></DivNone>
                                                 <DivFlexPosition wrap="wrap" position="relative" width="79%">
@@ -784,8 +785,7 @@ const Comment: React.FC<{
                                                             >
                                                                 -
                                                             </P>
-                                                            <DivNone
-                                                                display="flex"
+                                                            <Div
                                                                 css={`
                                                                     div:first-child {
                                                                         margin: 0 !important;
@@ -799,7 +799,7 @@ const Comment: React.FC<{
                                                                         Cảm xúc
                                                                     </P>
                                                                 )}
-                                                            </DivNone>
+                                                            </Div>
                                                             <P z="1.1rem" css="margin: 0 5px">
                                                                 -
                                                             </P>

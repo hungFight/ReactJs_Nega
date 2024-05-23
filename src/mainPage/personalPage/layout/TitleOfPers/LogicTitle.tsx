@@ -21,7 +21,7 @@ import {
     StrengthI,
     WorkingI,
 } from '~/assets/Icons/Icons';
-import { ButtonAnimationSurround, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { ButtonAnimationSurround, DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import userAPI from '~/restAPI/userAPI';
@@ -86,7 +86,6 @@ const LogicTitle = (
     const [loadingSub, setLoadingSub] = useState<boolean>(false); // login in subAccount
     const [subAccount, setSubAccount] = useState<boolean>(false);
     const [pass, setPass] = useState<{ id: string; kind: string; val: string }>();
-    const { userId } = Cookies();
     const [viewMore, setViewMore] = useState<boolean>(false); // view content
 
     const itemsT: { icon: React.ReactElement; key: number; qt: number; css?: string | undefined; color: string }[] = [
@@ -441,10 +440,10 @@ const LogicTitle = (
                                             }
                                         }}
                                     />
-                                    <DivPos size="1.3rem" right="10px" top="18.5px">
+                                    <DivFlexPosition size="1.3rem" right="10px" top="18.5px">
                                         {ObjectRender[key].val?.length ?? 0}
                                         {'/' + length}
-                                    </DivPos>
+                                    </DivFlexPosition>
                                 </Div>
                                 <ButtonAnimationSurround title="As I want" css="margin: 0; width: 20%;" onClick={() => setEditValue(undefined)} />
                             </>
@@ -495,11 +494,11 @@ const LogicTitle = (
                 ) : (
                     <>
                         <P css="font-size: 1.4rem; margin-top: 2.5px;">{res || placeholder}</P>
-                        {editTitle && <DivPos right="0" css="padding: 6px;" onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}></DivPos>}
+                        {editTitle && <DivFlexPosition right="0" css="padding: 6px;" onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}></DivFlexPosition>}
                     </>
                 )}
                 {editTitle && editValue !== key && (
-                    <DivPos
+                    <DivFlexPosition
                         top="0px"
                         right="5px"
                         size="19px"
@@ -566,7 +565,7 @@ const LogicTitle = (
                                 {privates}
                             </Div>
                         </Div>
-                    </DivPos>
+                    </DivFlexPosition>
                 )}
             </Div>
         );
@@ -832,7 +831,7 @@ const LogicTitle = (
                     </Div>
                 )}
                 {editTitle && editValue !== key && (
-                    <DivPos
+                    <DivFlexPosition
                         top="0px"
                         right="5px"
                         size="19px"
@@ -899,7 +898,7 @@ const LogicTitle = (
                                 {privates}
                             </Div>
                         </Div>
-                    </DivPos>
+                    </DivFlexPosition>
                 )}
             </Div>
         );
@@ -1044,7 +1043,6 @@ const LogicTitle = (
         inputRef,
         loading,
         setLoading,
-        userId,
         itemsT,
         handlePosition,
         handleAddFile,

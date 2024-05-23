@@ -1,4 +1,4 @@
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 class SearchAPI {
     user = async (id: string) => {
         try {

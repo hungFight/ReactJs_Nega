@@ -234,19 +234,26 @@ const OptionForItem: React.FC<{
                 title: 'Pin',
                 top: '-40px',
                 onClick: async () => {
-                    // if (conversation && optionsForItem) {
-                    //     if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
-                    //         const res = await chatAPI.pin(optionsForItem._id, optionsForItem.id, conversation._id, conversation.room[0]._id);
-                    //         if (res) {
-                    //             setConversation((pre) => {
-                    //                 if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
-                    //                 return pre;
-                    //             });
-                    //             setItemPin(res);
-                    //         }
-                    //     }
-                    //     setOptions(undefined);
-                    // }
+                    if (conversation && optionsForItem) {
+                        if (!conversation.pins.some((p) => p.chatId === optionsForItem._id)) {
+                            const res = await chatAPI.pin(dispatch, {
+                                userId: optionsForItem.userId,
+                                conversationId: conversation._id,
+                                roomId: optionsForItem.roomId,
+                                filterId: optionsForItem.filterId,
+                                dataId: optionsForItem._id,
+                                latestChatId: conversation.rooms[0].filter[0].data[0]._id,
+                            });
+                            if (res) {
+                                // setConversation((pre) => {
+                                //     if (pre) return { ...pre, pins: [res, ...pre.pins] }; // add pin into
+                                //     return pre;
+                                // });
+                                // setItemPin(res);
+                            }
+                        }
+                        setOptions(undefined);
+                    }
                 },
             },
         ],

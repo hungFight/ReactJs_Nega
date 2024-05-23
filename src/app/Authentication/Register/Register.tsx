@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { EmailI, LGBTI, PhoneI } from '~/assets/Icons/Icons';
 import { ButtonAnimationSurround, Htitle } from '~/reUsingComponents/styleComponents/styleComponents';
 import { DivForm, DivFormGroup, DivGenderC, DivGenderP, DivLGBT, PcontentPassword, Pcontent, SpanIconPhoneMail, Pmessage } from './styleRegister';
-import Language from '~/Language/Language';
+import Language from '~/utils/Language/Language';
 import { changeRegister } from '~/redux/languageRD';
 import { DivLanguage } from '../Login/styleLogin';
 import authHttpRequest from '~/restAPI/authAPI/authAPI';

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ArrowRightI, CameraI, SendOPTI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Label } from '../FormUpNews/styleFormUpNews';
 import QuillText from '~/reUsingComponents/Libraries/QuillText';
@@ -139,10 +139,10 @@ const ReplyComment: React.FC<{
                         valueQuill={valueQuill}
                         valueText={r.text}
                     />
-                    <DivPos id="placeholder_comment_post_reply" css="cursor: auto !important; pointer-events: none;opacity: 0.9;" top="7px" left="11px" size="1.2rem">
+                    <DivFlexPosition id="placeholder_comment_post_reply" css="cursor: auto !important; pointer-events: none;opacity: 0.9;" top="7px" left="11px" size="1.2rem">
                         {r.title}
                         <ArrowRightI /> {r.name}
-                    </DivPos>
+                    </DivFlexPosition>
                 </Div>
                 <Div css="font-size: 20px; cursor: var(--pointer);margin-top: 5px;" onClick={() => handleComment(r)}>
                     <SendOPTI />

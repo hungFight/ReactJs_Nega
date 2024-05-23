@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { NavigateFunction } from 'react-router-dom';
 import { CookieSetOptions } from 'universal-cookie/cjs/types';
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import http from '~/utils/http';
 import errorHandling from '../errorHandling/errorHandling';
 import Cookies from 'js-cookie';

@@ -4,7 +4,7 @@ import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { PropsUser, PropsUserPer, mores, params } from 'src/App';
-import { DivLoading, DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import { InitialStateHideShow, setTrueErrorServer } from '~/redux/hideShow';
 import userAPI from '~/restAPI/userAPI';
@@ -899,7 +899,7 @@ export default function LogicView(
             `;
     const empty = () => {};
     const tx = (
-        <DivPos
+        <DivFlexPosition
             ref={DivRef}
             css={`
                 width: 100%;
@@ -933,7 +933,7 @@ export default function LogicView(
                     Huỷ kết bạn
                 </Div>
             </Div>
-        </DivPos>
+        </DivFlexPosition>
     );
     const buttons: {
         [en: string]: {

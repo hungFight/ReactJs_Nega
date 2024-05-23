@@ -6,11 +6,10 @@ import { Swiper } from 'swiper/react';
 import 'swiper/css';
 
 // import required modules
-import { Pagination } from 'swiper';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
-import { DivPos, SwiperSlideF } from '~/reUsingComponents/styleComponents/styleComponents';
-import { CloseI, LayoutI, ScreenI } from '~/assets/Icons/Icons';
+import { SwiperSlideF } from '~/reUsingComponents/styleComponents/styleComponents';
+import { CloseI } from '~/assets/Icons/Icons';
 import LogicType from '../logicType';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import { PropsDataFileUpload } from '../../../FormUpNews';
@@ -39,39 +38,14 @@ const Centered: React.FC<{
     >;
 
     setColumnCen: React.Dispatch<React.SetStateAction<number>>;
-}> = ({
-    file,
-    colorText,
-    step,
-    setStep,
-    handleImageUpload,
-    dataCentered,
-    setDataCentered,
-    ColumnCentered,
-    setColumnCen,
-}) => {
+}> = ({ file, colorText, step, setStep, handleImageUpload, dataCentered, setDataCentered, ColumnCentered, setColumnCen }) => {
     let cld: number[] = [];
     for (let i = 1; i <= file.length; i++) {
         if (i >= 4) cld.push(i);
     }
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     return (
-        <Div
-            width="100%"
-            display="block"
-            css="position: relative; height: 100%; .mySwiper{ width: 100%; img{ user-select: none;}}"
-        >
+        <Div width="100%" display="block" css="position: relative; height: 100%; .mySwiper{ width: 100%; img{ user-select: none;}}">
             {/* <DivPos top="0" left="11px" index={2} size="22px">
                 <LayoutI />
             </DivPos> */}

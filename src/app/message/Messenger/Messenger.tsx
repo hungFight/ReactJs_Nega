@@ -12,7 +12,7 @@ import useDebounce from '~/reUsingComponents/hook/useDebounce';
 import { DivIconMs } from '../styleMessage';
 import { DivResults, DivSend } from './styleSed';
 import { Div, Input } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivLoading, DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import ListAccounts from './ListAccounts';
 import MoreOption from './MoreOption';
 import LogicMessenger from './LogicMessenger';
@@ -60,9 +60,9 @@ const Send: React.FC<{
                             <UndoI />
                         </Div>
                         <Input type="text" value={searchUser} placeholder="Search" onChange={handleSearch} color={colorText} border="0" width="73%" margin="0" />
-                        <DivPos width="35px" size="22px" right="100px" onClick={() => setSearchUser('')}>
+                        <DivFlexPosition width="35px" size="22px" right="100px" onClick={() => setSearchUser('')}>
                             <CloseI />
-                        </DivPos>
+                        </DivFlexPosition>
                         <Avatar src={dataUser.avatar} alt={dataUser.fullName} gender={dataUser.gender} radius="50%" css="width: 35px; height: 35px;" />
                     </Div>
                     <DivResults>

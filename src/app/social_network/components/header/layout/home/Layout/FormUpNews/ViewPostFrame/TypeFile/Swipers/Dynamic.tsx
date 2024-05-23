@@ -8,9 +8,6 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
-import { DivSwiper } from './styleSwipers';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { ScreenI } from '~/assets/Icons/Icons';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import LogicType from '../logicType';
 import { PropsDataFileUpload } from '../../../FormUpNews';
@@ -23,18 +20,7 @@ const Dynamic: React.FC<{
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ file, colorText, step, setStep }) => {
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     const [heightV, setHeightV] = useState<{ id: number; value: string }[]>([]);
     const [heightI, setHeightI] = useState<string>('');
     useEffect(() => {

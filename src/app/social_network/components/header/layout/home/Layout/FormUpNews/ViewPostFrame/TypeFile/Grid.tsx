@@ -1,8 +1,6 @@
 import { Player } from 'video-react';
 import { useState } from 'react';
 
-import { ColorsI, FullScreenI, ScreenI, SquareI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import LogicType from './logicType';
 import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
@@ -17,18 +15,7 @@ const Grid: React.FC<{
     bg: string;
     setBg: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ column, file, step, setStep, colorText, bg, setBg }) => {
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     const [showColors, setShowColors] = useState(false);
     let columns = '';
     if (column) {
@@ -53,9 +40,7 @@ const Grid: React.FC<{
                 max-height: 500px;
                 margin: 4px 0;
                 background-color: ${bg};
-                ${step === 1
-                    ? 'position: fixed; max-height:100%; top: 0; left: 0; width: 100%; height: 99%; z-index: 12; overflow-y: overlay;'
-                    : ''}
+                ${step === 1 ? 'position: fixed; max-height:100%; top: 0; left: 0; width: 100%; height: 99%; z-index: 12; overflow-y: overlay;' : ''}
             `}
         >
             {' '}
@@ -90,13 +75,7 @@ const Grid: React.FC<{
                             `}
                             onClick={(e) => handleStep(e, index)}
                         >
-                            {f.type.includes('image') ? (
-                                <Img src={f.link} alt={f.link} radius="5px" />
-                            ) : f.type.includes('video') ? (
-                                <Player src={f.link} />
-                            ) : (
-                                ''
-                            )}
+                            {f.type.includes('image') ? <Img src={f.link} alt={f.link} radius="5px" /> : f.type.includes('video') ? <Player src={f.link} /> : ''}
                         </Div>
                     );
                 })}

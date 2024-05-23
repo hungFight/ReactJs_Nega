@@ -1,4 +1,4 @@
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import errorHandling from './errorHandling/errorHandling';
 import { AxiosError } from 'axios';
 import { PropsId_chats } from 'src/App';
@@ -147,15 +147,10 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    pin = async (dispatch: Dispatch<AnyAction>, chatId: string, userId: string, conversationId: string, latestChatId: string) => {
+    pin = async (dispatch: Dispatch<AnyAction>, data: { userId: string; conversationId: string; roomId: string; filterId: string; dataId: string; latestChatId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
-            const res = await Axios.post<PropsChat>(`/${this.domain}/pin`, {
-                chatId,
-                userId,
-                conversationId,
-                latestChatId,
-            });
+            const res = await Axios.post<PropsChat>(`/${this.domain}/pin`, data);
             return res.data;
         } catch (error) {
             const err = error as AxiosError;

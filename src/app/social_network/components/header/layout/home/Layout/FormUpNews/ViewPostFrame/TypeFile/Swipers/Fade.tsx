@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -11,8 +11,6 @@ import 'swiper/css/pagination';
 import { EffectFade, Pagination } from 'swiper';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { ScreenI } from '~/assets/Icons/Icons';
 import LogicType from '../logicType';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import { PropsDataFileUpload } from '../../../FormUpNews';
@@ -23,18 +21,7 @@ const Fade: React.FC<{
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ file, colorText, step, setStep }) => {
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     return (
         <Div
             width="100%"
@@ -67,13 +54,7 @@ const Fade: React.FC<{
                             handleStep(e, index);
                         }}
                     >
-                        {f.type.includes('image') ? (
-                            <Img src={f?.link || f.pre} id="baby" alt={f.link} radius="5px" />
-                        ) : f.type.includes('video') ? (
-                            <Player src={f?.link || f.pre} step={step} />
-                        ) : (
-                            ''
-                        )}
+                        {f.type.includes('image') ? <Img src={f?.link || f.pre} id="baby" alt={f.link} radius="5px" /> : f.type.includes('video') ? <Player src={f?.link || f.pre} step={step} /> : ''}
                     </SwiperSlide>
                 ))}
             </Swiper>

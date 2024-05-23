@@ -10,9 +10,9 @@ import Bar from '~/reUsingComponents/Bar/Bar';
 import { PropsSetting } from './interface';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { DivPos, DivContainer } from '../styleComponents/styleComponents';
+import { DivFlexPosition } from '../styleComponents/styleComponents';
 import { DivLanguages, DivResults } from './styleSetting';
-import { P } from '../styleComponents/styleDefault';
+import { Div, P } from '../styleComponents/styleDefault';
 import { socket } from 'src/mainPage/NextWeb';
 import { changeSN } from '~/redux/languageRD';
 
@@ -61,6 +61,8 @@ const Settingcbl: React.FC<{
         box-shadow: 0 0 4px rgb(108 106 106);
         z-index: 9999;
         transition: all 0.3s linear;
+        border-radius: 5px;
+        background-color: #202124;
         color: var(--color-light);
     `;
     const handleResult = (data: any) => {
@@ -101,8 +103,8 @@ const Settingcbl: React.FC<{
     };
     return (
         <>
-            <DivContainer height="500px" display="flex" bg=" #202124" radius="5px" css={css1} onClick={(e) => e.stopPropagation()}>
-                <DivPos
+            <Div height="500px" css={css1} onClick={(e) => e.stopPropagation()}>
+                <DivFlexPosition
                     size="25px"
                     top="11px"
                     left="11px"
@@ -112,8 +114,8 @@ const Settingcbl: React.FC<{
                     }}
                 >
                     <CloseI />
-                </DivPos>
-                <DivContainer width="250px" css={css2}>
+                </DivFlexPosition>
+                <Div width="250px" css={css2}>
                     {datas.map((setting: any, index: number) => {
                         if (setting.logout) {
                         }
@@ -132,10 +134,10 @@ const Settingcbl: React.FC<{
                             </div>
                         );
                     })}
-                </DivContainer>
+                </Div>
                 {resultoption && <Bar top="calc(50% - 10px);" onClick={() => setResultoption(false)} css="width: 5px;" />}
                 {resultoption && <DivResults> {showresult}</DivResults>}
-            </DivContainer>
+            </Div>
         </>
     );
 };

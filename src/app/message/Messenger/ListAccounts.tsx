@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Languages from '~/reUsingComponents/languages';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 
 import { DotI, TyOnlineI } from '~/assets/Icons/Icons';
@@ -151,9 +151,9 @@ const ListAccounts: React.FC<{
                 css="min-width: 50px; width: 50px; height: 50px; margin: 3px 5px; @media(min-width: 500px){min-width: 45px;width: 45px; height: 45px; } "
             />
             {userOnline.includes(data.user.id) && (
-                <DivPos bottom="2px" left="32px" size="10px" css="color: #149314; padding: 2px; background-color: #1c1b1b;">
+                <DivFlexPosition bottom="2px" left="32px" size="10px" css="color: #149314; padding: 2px; background-color: #1c1b1b;">
                     <TyOnlineI />
-                </DivPos>
+                </DivFlexPosition>
             )}
             <Div
                 width="75%"
@@ -213,9 +213,9 @@ const ListAccounts: React.FC<{
                         <></>
                     )}
                 </Div>
-                <DivPos top="3px" right="40px" css="width: fit-content;" size="1.1rem">
+                <DivFlexPosition top="3px" right="40px" css="width: fit-content;" size="1.1rem">
                     .{Time}
-                </DivPos>
+                </DivFlexPosition>
             </Div>
             <Div
                 width="30px"

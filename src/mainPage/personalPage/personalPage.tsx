@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '../../app/reUsingComponents/Avatars/Avatar';
 
 import { Buttons, Div, Img, P, Span } from '../../app/reUsingComponents/styleComponents/styleDefault';
-import { DivContainer, DivLoading, DivPos, Hname } from '../../app/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, DivLoading, Hname } from '../../app/reUsingComponents/styleComponents/styleComponents';
 import { DivPersonalPage } from '../styleNextWeb';
 import { DivBg, DivIntr, DivItems, DivOp, DivPerson, DivStories, InputChangeP } from './stypePersonal';
 import { offPersonalPage, setNewProfile, setOpenProfile, setTrueErrorServer } from '../../app/redux/hideShow';
@@ -124,15 +124,15 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
             }}
         >
             {(room.background || room.avatar) && (
-                <DivPos position="fixed" size="30px" top="20px" right="12px" css="z-index: 1;" index={8888} onClick={() => setRoom({ avatar: false, background: false })}>
+                <DivFlexPosition position="fixed" size="30px" top="20px" right="12px" css="z-index: 1;" index={8888} onClick={() => setRoom({ avatar: false, background: false })}>
                     <UndoI />
-                </DivPos>
+                </DivFlexPosition>
             )}
 
             {AllArray.length > 1 && (
-                <DivPos size="30px" top="20px" right="11px" onClick={handleUndo} css="z-index: 1;">
+                <DivFlexPosition size="30px" top="20px" right="11px" onClick={handleUndo}>
                     <UndoI />
-                </DivPos>
+                </DivFlexPosition>
             )}
             <DivPerson>
                 <Div css={cssBg}>
@@ -228,7 +228,7 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
                         </Hname>
                         {categories === 2 && inputChange(handleVName, valueName, user.fullName)}
                         {user.id !== userFirst.id && (
-                            <DivPos
+                            <DivFlexPosition
                                 size="25px"
                                 color={colorText}
                                 bottom="4px"
@@ -264,11 +264,11 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
                                 <P z="26px" css="position: absolute;  color: #7c8787; right: 13px; z-index: 6; top: -17px;">
                                     .
                                 </P>
-                            </DivPos>
+                            </DivFlexPosition>
                         )}
                     </Div>
                     {categories === 0 && (
-                        <DivPos
+                        <DivFlexPosition
                             size="25px"
                             right="0"
                             css={`
@@ -282,7 +282,7 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
                             onClick={handleEdit}
                         >
                             <DotI />
-                        </DivPos>
+                        </DivFlexPosition>
                     )}
                     {edit && (
                         <>

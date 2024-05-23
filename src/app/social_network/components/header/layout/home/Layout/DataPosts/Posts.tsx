@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
-import { DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, H3, Img, P, Smooth, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews';
 import { DotI, EarthI, FriendI, HeartI, LikeI, LockI, PostCommentI, PrivacyI, ShareI } from '~/assets/Icons/Icons';
@@ -9,12 +9,10 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import moment from 'moment';
 import Languages from '~/reUsingComponents/languages';
 import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
-import Cookies from '~/utils/Cookies';
 import { PropsDataPosts, PropsPosts } from './interfacePosts';
 import FormUpNews from '../FormUpNews/FormUpNews';
 import DefaultType from '../FormUpNews/ViewPostFrame/TypeFile/DefaultType';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
-import { keyframes } from 'styled-components';
 import Comment from './Comment';
 import { queryClient } from 'src';
 import { useDispatch } from 'react-redux';
@@ -350,7 +348,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                     `}
                 >
                     {/* {step === 0 && file.length > 0 && (
-                        <DivPos
+                        <DivFlexPosition
                             size="18px"
                             top="11px"
                             right="46.5px"
@@ -359,7 +357,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             onClick={() => setStep(1)}
                         >
                             <FullScreenI />
-                        </DivPos>
+                        </DivFlexPosition>
                     )} */}
                     <Div width="100%" css="height: fit-content; margin-top: 5px; position: relative;">
                         <Div
@@ -409,7 +407,8 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                                 </Span>
                             </Div>
                         </Div>
-                        <DivPos
+                        <DivFlexPosition
+                            width="auto"
                             size="21px"
                             top="4px"
                             right="10px"
@@ -427,7 +426,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                             }}
                         >
                             <DotI />
-                        </DivPos>
+                        </DivFlexPosition>
                     </Div>
 
                     <Div width="100%" css="padding: 5px 6px 10px 6px;" onClick={(e) => e.stopPropagation()}>
@@ -670,7 +669,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                 </Div>
             </Div>
             {showCM && (
-                <DivPos
+                <DivFlexPosition
                     width="100%"
                     position="fixed"
                     top="0"
@@ -681,7 +680,7 @@ const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options,
                         border-radius: 0;
                         background-color: #00000085;
                     `}
-                ></DivPos>
+                ></DivFlexPosition>
             )}
         </div>
     );

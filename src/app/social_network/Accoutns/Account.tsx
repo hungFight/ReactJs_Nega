@@ -1,11 +1,9 @@
-import React, { ReactElement, ReactHTMLElement, ReactNode, memo } from 'react';
+import React, { ReactElement, memo } from 'react';
 
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { useDispatch } from 'react-redux';
-import { setOpenProfile } from '~/redux/hideShow';
-import userAPI from '~/restAPI/userAPI';
 import { Div, Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivImg, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const Account: React.FC<{
     data: {

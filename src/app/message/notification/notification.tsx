@@ -8,16 +8,13 @@ import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import React, { memo, useEffect, useState } from 'react';
 import { DivIconMs } from '../styleMessage';
 import { DivBar, DivItem, DivListIs, DivRes } from './styleNot';
-import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Button, Buttons, Div, H3, Li, Ol, P, Span, Strong } from '~/reUsingComponents/styleComponents/styleDefault';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { socket } from 'src/mainPage/NextWeb';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import Send from '../Messenger/Messenger';
 import { setOpenProfile } from '~/redux/hideShow';
 import moment from 'moment';
-import CommonUtils from '~/utils/CommonUtils';
 import { PropsUser } from 'src/App';
 interface PropsLanguage {
     persistedReducer: {
@@ -133,7 +130,6 @@ const Notification: React.FC<{
             //             x.status = 0;
             //             return x;
             //         }
-
             //         return x;
             //     });
             //     setDataInfo({ ...dataInfo, user: newData });
@@ -205,9 +201,9 @@ const Notification: React.FC<{
                 <>
                     <DivRes bg={colorBg === 1 ? 'rgb(32 33 35)' : ''}>
                         <DivBar>
-                            <DivPos color={colorText} size="20px" top="8px" left="4px" onClick={handleShowHide}>
+                            <DivFlexPosition color={colorText} size="20px" top="8px" left="4px" onClick={handleShowHide}>
                                 <CloseI />
-                            </DivPos>
+                            </DivFlexPosition>
                             <H3 color={colorText} css="font-size: 1.6rem;">
                                 {dataText[lg].title}
                             </H3>

@@ -1,5 +1,5 @@
 import axios, { AxiosError, CancelTokenSource } from 'axios';
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import { CookieSetOptions } from 'universal-cookie';
 import errorHandling from '../errorHandling/errorHandling';
 import { PropsComments, PropsDataPosts, feel } from '~/social_network/components/Header/layout/Home/Layout/DataPosts/interfacePosts';

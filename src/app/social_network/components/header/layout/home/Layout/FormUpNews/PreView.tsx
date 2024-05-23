@@ -4,7 +4,7 @@ import { DotI, FullScreenI, IconI, ImageI, LoadingCircleI, LockI, MinusI, Privat
 import { DivAction, DivEmoji, DivItems, DivWrapButton, Label } from './styleFormUpNews';
 import { useEffect, useState } from 'react';
 import OptionType from './ViewPostFrame/OptionType';
-import { DivLoading, DivPos, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, DivLoading, ReactQuillF } from '~/reUsingComponents/styleComponents/styleComponents';
 import OpFeatureSetting from '~/reUsingComponents/PostOptions/OpFeature';
 import Comment from '../DataPosts/Comment';
 import LogicPreView from './LogicPreView';
@@ -293,7 +293,7 @@ const PreviewPost: React.FC<{
                             {selectChild.id === 5 && ( //Centered
                                 <>
                                     {dataCentered.length < 3 && (
-                                        <DivPos
+                                        <DivFlexPosition
                                             size="18px"
                                             top="32px"
                                             right="19px"
@@ -319,9 +319,9 @@ const PreviewPost: React.FC<{
                                                     Thêm Hàng
                                                 </Label>
                                             </DivItems>
-                                        </DivPos>
+                                        </DivFlexPosition>
                                     )}
-                                    <DivPos
+                                    <DivFlexPosition
                                         size="18px"
                                         top="30px"
                                         right="105px"
@@ -341,16 +341,16 @@ const PreviewPost: React.FC<{
                                         onClick={() => setColumnCentered(!ColumnCentered)}
                                     >
                                         <P>Columns</P>
-                                    </DivPos>
+                                    </DivFlexPosition>
                                 </>
                             )}
                         </>
                     )}
                     {/* view full screen */}
                     {step === 0 && file.length > 0 && (
-                        <DivPos size="18px" top="11px" right="46.5px" css="z-index: 1;" color={colorText} onClick={() => setStep(1)}>
+                        <DivFlexPosition size="18px" top="11px" right="46.5px" css="z-index: 1;" color={colorText} onClick={() => setStep(1)}>
                             <FullScreenI />
-                        </DivPos>
+                        </DivFlexPosition>
                     )}
                     <Div width="100%" css="height: fit-content; margin-top: 5px; position: relative;">
                         <Div
@@ -394,9 +394,9 @@ const PreviewPost: React.FC<{
                                 </Div>
                             )}
                         </Div>
-                        <DivPos size="25px" top="4px" right="15px" color={colorText} onClick={() => setOptions(!options)}>
+                        <DivFlexPosition size="25px" top="4px" right="15px" color={colorText} onClick={() => setOptions(!options)}>
                             <DotI />
-                        </DivPos>
+                        </DivFlexPosition>
                     </Div>
 
                     <Div

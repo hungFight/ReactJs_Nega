@@ -9,8 +9,6 @@ import 'swiper/css/effect-cards';
 import { EffectCards } from 'swiper';
 import { Div, Img } from '~/reUsingComponents/styleComponents/styleDefault';
 import Player from '~/reUsingComponents/Videos/Player';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
-import { ScreenI } from '~/assets/Icons/Icons';
 import LogicType from '../logicType';
 import FullScreenSildes from '../FullScreenSildes/FullScreenSildes';
 import { PropsDataFileUpload } from '../../../FormUpNews';
@@ -21,18 +19,7 @@ const Cards: React.FC<{
     step: number;
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ file, colorText, step, setStep }) => {
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    const { cc, handleStep, ToolDefault } = LogicType(step, setStep, colorText);
     return (
         <>
             <Div

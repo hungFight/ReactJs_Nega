@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Div, P, Span } from '../styleComponents/styleDefault';
 import { BeforeI, CheckI, NextI, OclockI, PrivateI, ResetI, UndoIRegister } from '~/assets/Icons/Icons';
-import { DivPos } from '../styleComponents/styleComponents';
+import { DivFlexPosition } from '../styleComponents/styleComponents';
 import LogicText from './logicOpFeature';
 
 const OpFeatureSetting: React.FC<{
@@ -238,14 +238,14 @@ const OpFeatureSetting: React.FC<{
                                     ) : (
                                         <>
                                             {valuePrivacy.some((p) => p.id === child.id) && rs.id === 1 && (
-                                                <DivPos top="5px" left="150px" color="#61ff61;">
+                                                <DivFlexPosition top="5px" left="150px" color="#61ff61;">
                                                     <CheckI />
-                                                </DivPos>
+                                                </DivFlexPosition>
                                             )}
                                             {valueSeePost.id === child.id && rs.id === 2 && (
-                                                <DivPos top="5px" left="150px" color="#61ff61;">
+                                                <DivFlexPosition top="5px" left="150px" color="#61ff61;">
                                                     <CheckI />
-                                                </DivPos>
+                                                </DivFlexPosition>
                                             )}
                                         </>
                                     )}

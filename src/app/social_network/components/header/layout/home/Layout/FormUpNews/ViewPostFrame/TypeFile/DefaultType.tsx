@@ -1,14 +1,12 @@
-import { Button, Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { useState, useEffect } from 'react';
-import { BackI, BanI, ChangeI, ColorsI, DotI, FullScreenI, HeartMI, ScreenI, ShareI, TitleI } from '~/assets/Icons/Icons';
-import { DivPos } from '~/reUsingComponents/styleComponents/styleComponents';
+import { BanI, ColorsI } from '~/assets/Icons/Icons';
 import LogicType from './logicType';
-import Player from '~/reUsingComponents/Videos/Player';
-import { InputT } from './Swipers/styleSwipers';
 import FullScreenSildes from './FullScreenSildes/FullScreenSildes';
 import Resize from './Resize';
 import { Link } from 'react-router-dom';
 import { PropsDataFileUpload } from '../../FormUpNews';
+import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 
 const DefaultType: React.FC<{
     file: PropsDataFileUpload[];
@@ -84,7 +82,7 @@ const DefaultType: React.FC<{
             `}
         >
             {!_id && file.length > 1 && (
-                <DivPos
+                <DivFlexPosition
                     css={`
                         top: ${step === 1 ? '55px' : '15px'};
                         right: 12.5px;
@@ -132,7 +130,7 @@ const DefaultType: React.FC<{
                             </Div>
                         ))}
                     </Div>
-                </DivPos>
+                </DivFlexPosition>
             )}
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             <>

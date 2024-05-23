@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import errorHandling from '../errorHandling/errorHandling';
 import { PropsFriends } from '~/social_network/components/Header/layout/MakingFriends/Friends';
 import { Dispatch } from 'react';

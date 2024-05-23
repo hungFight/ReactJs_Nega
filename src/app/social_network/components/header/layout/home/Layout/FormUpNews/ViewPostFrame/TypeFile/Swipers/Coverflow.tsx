@@ -9,7 +9,7 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import { Player } from 'video-react';
 import { Buttons, Div, H3, Img, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivPos, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { FullScreenI, LayoutI, PlayI, ScreenI, TitleI } from '~/assets/Icons/Icons';
 import { DivSwiper } from './styleSwipers';
 import { Textarea } from '../../../styleFormUpNews';
@@ -31,18 +31,7 @@ const Coverflow: React.FC<{
         e.target.setAttribute('style', 'height: auto');
         e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
     };
-    const {
-        moreFile,
-        cc,
-        handleStep,
-        setMoreFile,
-        ToolDefault,
-        showTitle,
-        update,
-        setUpdate,
-        showComment,
-        setShowComment,
-    } = LogicType(step, setStep, colorText);
+    const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     const handleGetTitle = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         console.log(e.target.value, title);
         let check = false;
@@ -65,8 +54,6 @@ const Coverflow: React.FC<{
         }
     };
     const handleGetContent = (e: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
-        console.log(e.target.value, content);
-
         let check = false;
         content.forEach((t) => {
             if (t.id === index) {
@@ -87,6 +74,29 @@ const Coverflow: React.FC<{
         }
     };
     const TList: number[] = [];
+    const propsBut = (index: number) => [
+        {
+            text: 'Save',
+            css: 'color: #247f76;',
+        },
+        {
+            text: 'Cancel',
+            css: 'color: #ac5b5b;',
+            onClick: () => {
+                let check = false;
+                showTitleCoverflow.forEach((s) => {
+                    if (s === index) {
+                        check = true;
+                    }
+                });
+                if (check) {
+                    setShowTitle(() => showTitleCoverflow.filter((s) => s !== index));
+                } else {
+                    setShowTitle([...showTitleCoverflow, index]);
+                }
+            },
+        },
+    ];
     return (
         <DivSwiper>
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
@@ -167,61 +177,17 @@ const Coverflow: React.FC<{
                                                     padding: 10px;
                                                 `}
                                             >
-                                                {showTitleCoverflow.length > 0 &&
-                                                    !showTitleCoverflow.includes(index) && (
-                                                        <Div
-                                                            onClick={() => setShowTitle([...showTitleCoverflow, index])}
-                                                        >
-                                                            <TitleI />
-                                                        </Div>
-                                                    )}
+                                                {showTitleCoverflow.length > 0 && !showTitleCoverflow.includes(index) && (
+                                                    <Div onClick={() => setShowTitle([...showTitleCoverflow, index])}>
+                                                        <TitleI />
+                                                    </Div>
+                                                )}
 
                                                 {showTitleCoverflow.includes(index) && step === 1 && (
                                                     <>
-                                                        <Input
-                                                            placeholder="Title"
-                                                            color={colorText}
-                                                            onChange={(e) => handleGetTitle(e, index)}
-                                                        />
-                                                        <Textarea
-                                                            color={colorText}
-                                                            bg="transparent"
-                                                            placeholder="Content"
-                                                            onKeyUp={handleOnKeyup}
-                                                            onChange={(e) => handleGetContent(e, index)}
-                                                        />
-                                                        <Buttons
-                                                            text={[
-                                                                {
-                                                                    text: 'Save',
-                                                                    css: 'color: #247f76;',
-                                                                },
-                                                                {
-                                                                    text: 'Cancel',
-                                                                    css: 'color: #ac5b5b;',
-                                                                    onClick: () => {
-                                                                        let check = false;
-                                                                        showTitleCoverflow.forEach((s) => {
-                                                                            if (s === index) {
-                                                                                check = true;
-                                                                            }
-                                                                        });
-                                                                        if (check) {
-                                                                            setShowTitle(() =>
-                                                                                showTitleCoverflow.filter(
-                                                                                    (s) => s !== index,
-                                                                                ),
-                                                                            );
-                                                                        } else {
-                                                                            setShowTitle([
-                                                                                ...showTitleCoverflow,
-                                                                                index,
-                                                                            ]);
-                                                                        }
-                                                                    },
-                                                                },
-                                                            ]}
-                                                        />
+                                                        <Input placeholder="Title" color={colorText} onChange={(e) => handleGetTitle(e, index)} />
+                                                        <Textarea color={colorText} bg="transparent" placeholder="Content" onKeyUp={handleOnKeyup} onChange={(e) => handleGetContent(e, index)} />
+                                                        <Buttons text={propsBut(index)} />
 
                                                         {title.map((t) => {
                                                             return t.id === index ? (
@@ -229,9 +195,7 @@ const Coverflow: React.FC<{
                                                                     key={index}
                                                                     css={`
                                                                         width: 100%;
-                                                                        ${step === 1
-                                                                            ? 'font-size: 1.6rem;'
-                                                                            : 'font-size: 1.4rem;'}
+                                                                        ${step === 1 ? 'font-size: 1.6rem;' : 'font-size: 1.4rem;'}
                                                                     `}
                                                                 >
                                                                     {t.title}
@@ -247,9 +211,7 @@ const Coverflow: React.FC<{
                                                                     css={`
                                                                         ${(!more.includes(index) || step !== 1) &&
                                                                         ' overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;'}
-                                                                        ${step === 1
-                                                                            ? 'font-size: 1.4rem'
-                                                                            : 'font-size: 1rem;'}
+                                                                        ${step === 1 ? 'font-size: 1.4rem' : 'font-size: 1rem;'}
                                                                     `}
                                                                 >
                                                                     {t.title}

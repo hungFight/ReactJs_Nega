@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import refreshToken from '~/refreshToken/refreshToken';
+import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import Cookies from 'universal-cookie';
 import { PropsUser, PropsUserPer } from 'src/App';
 import CommonUtils from '~/utils/CommonUtils';

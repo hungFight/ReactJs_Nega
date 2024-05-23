@@ -1,9 +1,6 @@
 import { BanI, BeforeI, NextI } from '~/assets/Icons/Icons';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivItemsType, DivsetC } from './styleOptionType';
-import OnlyImages from './TypeFile/Grid';
-import Coverflow from './TypeFile/Swipers/Coverflow';
-import DefaultType from './TypeFile/DefaultType';
 import { ReactElement, useState } from 'react';
 import { PropsDataFileUpload } from '../FormUpNews';
 
@@ -18,18 +15,7 @@ const OptionType: React.FC<{
     selectChild: { id: number; name: string };
     step: number;
     selectType: number;
-}> = ({
-    colorText,
-    colorBg,
-    file,
-    setSelectType,
-    setColumn,
-    selectChild,
-    setSelectChild,
-    column,
-    step,
-    selectType,
-}) => {
+}> = ({ colorText, colorBg, file, setSelectType, setColumn, selectChild, setSelectChild, column, step, selectType }) => {
     const [children, setChildren] = useState<{ id: number; name: string; icon?: ReactElement }[]>();
     const postTypes: {
         name: string;
@@ -127,31 +113,14 @@ const OptionType: React.FC<{
                                             size={`${step === 1 && selectType === 2 ? '22px' : ''}`}
                                             onClick={() =>
                                                 setColumn((pre) =>
-                                                    file.length > 6
-                                                        ? pre > 3
-                                                            ? pre - 1
-                                                            : pre
-                                                        : file.length > 2
-                                                        ? pre > 2
-                                                            ? pre - 1
-                                                            : pre
-                                                        : file.length > 1
-                                                        ? pre > 1
-                                                            ? pre - 1
-                                                            : pre
-                                                        : 1,
+                                                    file.length > 6 ? (pre > 3 ? pre - 1 : pre) : file.length > 2 ? (pre > 2 ? pre - 1 : pre) : file.length > 1 ? (pre > 1 ? pre - 1 : pre) : 1,
                                                 )
                                             }
                                         >
                                             <BeforeI />
                                         </DivsetC>
                                         {column}
-                                        <DivsetC
-                                            size={`${step === 1 && select(2) ? '22px' : ''}`}
-                                            onClick={() =>
-                                                setColumn((pre) => (pre < file.length && pre < 8 ? pre + 1 : pre))
-                                            }
-                                        >
+                                        <DivsetC size={`${step === 1 && select(2) ? '22px' : ''}`} onClick={() => setColumn((pre) => (pre < file.length && pre < 8 ? pre + 1 : pre))}>
                                             <NextI />
                                         </DivsetC>
                                     </Div>
