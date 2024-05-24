@@ -14,7 +14,8 @@ import { useRef, useState } from 'react';
 import Hashtag from './PostEditOptions/Hashtag';
 import Tags from './PostEditOptions/Tags';
 import TextEditor from './PostEditOptions/TextEditor';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
+
 export interface PropsFormHome {
     textarea: string;
     buttonOne: string;

@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { PropsFormHome } from '../FormUpNews/FormUpNews';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 
 export interface feel {
     onlyEmo: {

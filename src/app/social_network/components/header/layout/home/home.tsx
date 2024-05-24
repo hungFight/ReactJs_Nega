@@ -11,7 +11,7 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import homeAPI from '~/restAPI/socialNetwork/postAPI';
 import ServerBusy from '~/utils/ServerBusy';
 import { PostsI, ShortStoryI, YoutubeI } from '~/assets/Icons/Icons';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 import { DivNone } from '~/reUsingComponents/styleComponents/styleComponents';
 
 console.log('eeeeeeeeeeeeeeeeeeeeeeeee');

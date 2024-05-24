@@ -21,7 +21,8 @@ import userAPI from '~/restAPI/userAPI';
 import { useCookies } from 'react-cookie';
 import { PropsBgRD } from '~/redux/background';
 import ServerBusy from '~/utils/ServerBusy';
-import { PropsId_chats, PropsUser } from 'src/App';
+import { PropsId_chats } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 
 //button
 // to = Link tag, href = a tag

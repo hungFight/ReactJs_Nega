@@ -1,6 +1,6 @@
 import React from 'react';
-import { PropsId_chats, PropsUser } from 'src/App';
-
+import { PropsId_chats } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 import { socialnetwork } from 'src/dataText/dateTextSocialNetWork';
 import Socialnetwork from '~/social_network';
 import Study from '~/study';
@@ -15,12 +15,7 @@ interface PropsCPage {
 const currentPageL: React.FC<PropsCPage> = ({ currentPage, listPage, dataUser, setId_chats, setDataUser }) => {
     if (listPage) {
         return currentPage === 1 ? (
-            <Socialnetwork
-                data={socialnetwork}
-                dataUser={dataUser}
-                setId_chats={setId_chats}
-                setDataUser={setDataUser}
-            />
+            <Socialnetwork data={socialnetwork} dataUser={dataUser} setId_chats={setId_chats} setDataUser={setDataUser} />
         ) : currentPage === 2 ? (
             <Study />
         ) : (

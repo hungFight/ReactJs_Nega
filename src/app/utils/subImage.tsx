@@ -1,4 +1,3 @@
-import React from 'react';
 import Images from '~/assets/images';
 
 const subImage = (id: string | undefined, gender: number | string | undefined) => {

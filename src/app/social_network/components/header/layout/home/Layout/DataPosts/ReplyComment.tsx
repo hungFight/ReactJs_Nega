@@ -5,7 +5,7 @@ import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Label } from '../FormUpNews/styleFormUpNews';
 import QuillText from '~/reUsingComponents/Libraries/QuillText';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 import ReactQuill from 'react-quill';
 import { PropsValueQuill } from '../FormUpNews/FormUpNews';
 

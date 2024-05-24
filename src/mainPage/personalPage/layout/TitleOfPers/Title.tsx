@@ -1,22 +1,17 @@
-import { AccountI, BackI, CloseI, EarthI, FriendI, PrivacyI, PrivateI, VerifyI } from '~/assets/Icons/Icons';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, EffectCoverflow } from 'swiper';
-
+import { AccountI, BackI, CloseI, EarthI, FriendI, PrivateI, VerifyI } from '~/assets/Icons/Icons';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
-import CommonUtils from '~/utils/CommonUtils';
 import { ButtonAnimationSurround, DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Button, Div, H3, Input, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivTitleP } from '../styleLayout';
 import UserBar from 'src/mainPage/personalPage/layout/UserBar';
-import { PropsUser, PropsUserPer } from 'src/App';
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import LogicTitle from './LogicTitle';
 import { setOpenProfile } from '~/redux/hideShow';
-import { useState } from 'react';
+import { PropsUser, PropsUserPer } from '~/typescript/userType';
 
 export interface PropsMores {
     id: string;
@@ -519,7 +514,6 @@ const Title: React.FC<{
                                 {subAccountsData.length ? (
                                     subAccountsData?.map((ac) => {
                                         const sub = ac.account;
-                                        sub.avatar = CommonUtils.convertBase64(sub.avatar);
                                         return (
                                             <Div key={sub.id} width="fit-content" css="margin: 0 3px; position: relative; margin-bottom: 10px;">
                                                 {subAccount && userFirst.id === data.id ? ( // is your

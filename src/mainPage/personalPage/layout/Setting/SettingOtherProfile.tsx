@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { PropsUserPer } from 'src/App';
-import { CheckI, CopyI, ImageI } from '~/assets/Icons/Icons';
-import { Buttons, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { CheckI, CopyI } from '~/assets/Icons/Icons';
+import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { PropsUserPer } from '~/typescript/userType';
 
 const SettingOtherProfile: React.FC<{
     editP: { name: string; id: number; icon?: { id: number; name: string }[] }[];
@@ -42,13 +41,9 @@ const SettingOtherProfile: React.FC<{
                             await navigator.clipboard.writeText(text);
                             AllArray.forEach((us) => {
                                 if (us.id === userId) {
-                                    document
-                                        .getElementById(`profileCopyId=${userId}`)
-                                        ?.setAttribute('style', 'display: flex;');
+                                    document.getElementById(`profileCopyId=${userId}`)?.setAttribute('style', 'display: flex;');
                                 } else {
-                                    document
-                                        .getElementById(`profileCopyId=${us.id}`)
-                                        ?.setAttribute('style', 'display: none;');
+                                    document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
                                 }
                             });
                             console.log('Text copied to clipboard:', text);
@@ -62,13 +57,9 @@ const SettingOtherProfile: React.FC<{
                             document.body.removeChild(textarea);
                             AllArray.forEach((us) => {
                                 if (us.id === userId) {
-                                    document
-                                        .getElementById(`profileCopyId=${userId}`)
-                                        ?.setAttribute('style', 'display: flex;');
+                                    document.getElementById(`profileCopyId=${userId}`)?.setAttribute('style', 'display: flex;');
                                 } else {
-                                    document
-                                        .getElementById(`profileCopyId=${us.id}`)
-                                        ?.setAttribute('style', 'display: none;');
+                                    document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
                                 }
                             });
                             console.log('Text copied to clipboard (fallback):', text);
@@ -77,11 +68,7 @@ const SettingOtherProfile: React.FC<{
                     copyToClipboard(`${process.env.REACT_APP_ROUTE}profile?id=${userId}`);
                 }}
             >
-                <Div
-                    id={`profileCopyId=${userId}`}
-                    display="none"
-                    css="color: #2aa02a; font-size: 22px; padding: 0 5px;"
-                >
+                <Div id={`profileCopyId=${userId}`} display="none" css="color: #2aa02a; font-size: 22px; padding: 0 5px;">
                     <CheckI />
                 </Div>
                 <P z="1.4rem" css="width: max-content;">
@@ -91,11 +78,7 @@ const SettingOtherProfile: React.FC<{
                     <CopyI />
                 </Div>
             </Div>
-            <Div
-                width="100%"
-                css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)"
-                onClick={() => setEdit(false)}
-            >
+            <Div width="100%" css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)" onClick={() => setEdit(false)}>
                 <P z="1.4rem" css="width: max-content;">
                     Đóng tap
                 </P>

@@ -1,15 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { DotI, LoadingI } from '~/assets/Icons/Icons';
-import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
+import { LoadingI } from '~/assets/Icons/Icons';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
-import CommonUtils from '~/utils/CommonUtils';
 import TagProfile from './TagProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
-import ServerBusy from '~/utils/ServerBusy';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 interface PropsYouSent {
     avatar: any;
     birthday: string;
@@ -61,7 +57,7 @@ const Requested: React.FC<{ userData: PropsUser }> = ({ userData }) => {
     }, [reload]);
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
         console.log('Abolish', kindOf, id);
-        const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             setData(newData);
@@ -69,7 +65,7 @@ const Requested: React.FC<{ userData: PropsUser }> = ({ userData }) => {
     };
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
-        const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             console.log('delete', dataR);

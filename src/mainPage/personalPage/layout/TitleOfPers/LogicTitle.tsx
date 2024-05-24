@@ -13,7 +13,6 @@ import {
     LanguageI,
     LocationI,
     PeopleI,
-    PrivacyI,
     PrivateI,
     SchoolI,
     StarI,
@@ -24,7 +23,6 @@ import { ButtonAnimationSurround, DivFlexPosition } from '~/reUsingComponents/st
 import { Div, H3, Input, P, Span } from '~/reUsingComponents/styleComponents/styleDefault';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import userAPI from '~/restAPI/userAPI';
-import CommonUtils from '~/utils/CommonUtils';
 import Gender from '~/utils/Gender';
 import handleFileUpload from '~/utils/handleFileUpload';
 import { PropsPrivacy } from '~/typescript/personalPage';
@@ -1002,9 +1000,6 @@ const LogicTitle = (
                         phoneNumberEmail: string;
                     };
                 } = await authAPI.subLogin(login.userName, login.password);
-                if (res?.account.avatar) {
-                    res.account.avatar = CommonUtils.convertBase64(res.account.avatar);
-                }
                 setLoadingSub(false);
                 if (res) {
                     setSubAccountsData([...(subAccountsData ?? []), res]);

@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PropsUser, PropsUserPer } from 'src/App';
+import { PropsUser, PropsUserPer } from '~/typescript/userType';
 import PersonalPage from 'src/mainPage/personalPage/PersonalPage';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import userAPI from '~/restAPI/userAPI';
-import ServerBusy from '~/utils/ServerBusy';
 const Personalpage: React.FC<{
     dataUser: PropsUser;
     setDataUser: React.Dispatch<React.SetStateAction<PropsUser>>;
@@ -25,41 +24,7 @@ const Personalpage: React.FC<{
     const dispatch = useDispatch();
 
     async function fetchD(ids: string[]) {
-        const res = await userAPI.getById(
-            dispatch,
-            ids,
-            {
-                id: true,
-                avatar: true,
-                background: true,
-                fullName: true,
-                address: true,
-                biography: true,
-                birthday: true,
-                gender: true,
-                active: true,
-                hobby: true,
-                skill: true,
-                occupation: true,
-                schoolName: true,
-                firstPage: true,
-                secondPage: true,
-                thirdPage: true,
-            },
-            {
-                position: true,
-                star: true,
-                loverAmount: true,
-                friendAmount: true,
-                visitorAmount: true,
-                followedAmount: true,
-                followingAmount: true,
-                relationship: true,
-                language: true,
-                createdAt: true,
-                privacy: true,
-            },
-        );
+        const res = await userAPI.getById(dispatch, ids);
         if (Array.isArray(res)) {
             setUsersData(res);
         }

@@ -9,7 +9,7 @@ import { A, DivForm, DivLanguage, Perror, DivRegister, DivAccount } from './styl
 import Eyes from '~/reUsingComponents/Eys/Eye';
 import { Input } from '~/reUsingComponents/styleComponents/styleDefault';
 import LogicLogin from './logicLogin';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 interface InLogin {
     title: string;

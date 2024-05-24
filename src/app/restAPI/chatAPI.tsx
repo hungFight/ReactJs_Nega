@@ -11,7 +11,7 @@ export type PropsRoomChat = PropsConversationCustoms & PropsRoom;
 
 class Messenger {
     private domain: string = 'messenger';
-    send = async (dispatch: Dispatch<AnyAction>, fda: any) => {
+    public send = async (dispatch: Dispatch<AnyAction>, fda: any) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsRoomChat>(`/${this.domain}/sendChat`, fda);
@@ -21,7 +21,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    getRoom = async (dispatch: Dispatch<AnyAction>, limit: number, offset: number) => {
+    public getRoom = async (dispatch: Dispatch<AnyAction>, limit: number, offset: number) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get<PropsRoomsChat[]>(`/${this.domain}/getRoom`, { params: { limit, offset } });
@@ -31,7 +31,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    getChat = async (dispatch: Dispatch<AnyAction>, id_chat: PropsId_chats, indexQuery: number, moreChat: boolean = false, indexRef: number, conversationId?: string) => {
+    public getChat = async (dispatch: Dispatch<AnyAction>, id_chat: PropsId_chats, indexQuery: number, moreChat: boolean = false, indexRef: number, conversationId?: string) => {
         console.log(conversationId, 'conversationId', moreChat);
 
         try {
@@ -51,7 +51,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    delete = async (dispatch: Dispatch<AnyAction>, id_room: string) => {
+    public delete = async (dispatch: Dispatch<AnyAction>, id_room: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.delete<{
@@ -70,7 +70,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    undo = async (dispatch: Dispatch<AnyAction>, id_room: string) => {
+    public undo = async (dispatch: Dispatch<AnyAction>, id_room: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>(`/${this.domain}/undo`, {
@@ -82,7 +82,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    delChatAll = async (dispatch: Dispatch<AnyAction>, data: { conversationId: string; dataId: string; roomId: string; filterId: string; userId: string }) => {
+    public delChatAll = async (dispatch: Dispatch<AnyAction>, data: { conversationId: string; dataId: string; roomId: string; filterId: string; userId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<string>(`/${this.domain}/delChatAll`, data);
@@ -92,7 +92,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    delChatSelf = async (dispatch: Dispatch<AnyAction>, data: { conversationId: string; dataId: string; roomId: string; filterId: string }) => {
+    public delChatSelf = async (dispatch: Dispatch<AnyAction>, data: { conversationId: string; dataId: string; roomId: string; filterId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<string | null>(`/${this.domain}/delChatSelf`, data);
@@ -102,7 +102,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    updateChat = async (
+    public updateChat = async (
         dispatch: Dispatch<AnyAction>,
         formData: {
             value: string;
@@ -147,7 +147,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    pin = async (dispatch: Dispatch<AnyAction>, data: { userId: string; conversationId: string; roomId: string; filterId: string; dataId: string }) => {
+    public pin = async (dispatch: Dispatch<AnyAction>, data: { userId: string; conversationId: string; roomId: string; filterId: string; dataId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsChat>(`/${this.domain}/pin`, data);
@@ -157,7 +157,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    getPins = async (dispatch: Dispatch<AnyAction>, conversationId: string, pins: string[]) => {
+    public getPins = async (dispatch: Dispatch<AnyAction>, conversationId: string, pins: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get(`/${this.domain}/getPins`, {
@@ -172,7 +172,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    deletePin = async (dispatch: Dispatch<AnyAction>, conversationId: string, pinId: string, roomId: string) => {
+    public deletePin = async (dispatch: Dispatch<AnyAction>, conversationId: string, pinId: string, roomId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.delete(`/${this.domain}/deletePin`, {
@@ -188,7 +188,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    setBackground = async (dispatch: Dispatch<AnyAction>, data: { id_file: { id: string; type: string }; conversationId: string; dataId: string }) => {
+    public setBackground = async (dispatch: Dispatch<AnyAction>, data: { id_file: { id: string; type: string }; conversationId: string; dataId: string }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<{
@@ -206,7 +206,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    delBackground = async (dispatch: Dispatch<AnyAction>, conversationId: string, dataId: string) => {
+    public delBackground = async (dispatch: Dispatch<AnyAction>, conversationId: string, dataId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<PropsItemOperationsCon>(`/${this.domain}/delBackground`, { conversationId, dataId });
@@ -216,7 +216,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    getConversationBalloon = async (dispatch: Dispatch<AnyAction>, conversationId: string[]) => {
+    public getConversationBalloon = async (dispatch: Dispatch<AnyAction>, conversationId: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post(`/${this.domain}/getConversationBalloon`, { conversationId });
@@ -226,7 +226,7 @@ class Messenger {
             return errorHandling(err, dispatch);
         }
     };
-    setSeenBy = async (dispatch: Dispatch<AnyAction>, param: PropsOldSeenBy[], conversationId: string) => {
+    public setSeenBy = async (dispatch: Dispatch<AnyAction>, param: PropsOldSeenBy[], conversationId: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post<boolean>(`/${this.domain}/setSeenBy`, { param, conversationId });

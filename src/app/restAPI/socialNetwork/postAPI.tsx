@@ -6,7 +6,7 @@ import { PropsComments, PropsDataPosts, feel } from '~/social_network/components
 import { AnyAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'react';
 class PostAPI {
-    getPosts = async (dispatch: Dispatch<AnyAction>, limit: number, offset: number, status: string) => {
+    public getPosts = async (dispatch: Dispatch<AnyAction>, limit: number, offset: number, status: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.get<PropsDataPosts[]>('/SN/home/post/getPosts', {
@@ -18,7 +18,7 @@ class PostAPI {
             return errorHandling(err, dispatch);
         }
     };
-    setPost = async (dispatch: Dispatch<AnyAction>, formData: any) => {
+    public setPost = async (dispatch: Dispatch<AnyAction>, formData: any) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post<PropsDataPosts>('/SN/home/post/setPost', { ...formData });
@@ -32,7 +32,7 @@ class PostAPI {
             // }
         }
     };
-    sendComment = async (
+    public sendComment = async (
         dispatch: Dispatch<AnyAction>,
         data: {
             postId: string;
@@ -59,7 +59,7 @@ class PostAPI {
             return errorHandling(err, dispatch);
         }
     };
-    setEmotion = async (
+    public setEmotion = async (
         dispatch: Dispatch<AnyAction>,
         data: { _id: string; index: number | null; id_user: string; state: string; oldIndex?: number; id_comment?: string; groupCommentId?: string },
     ) => {
@@ -72,7 +72,7 @@ class PostAPI {
             return errorHandling(err, dispatch);
         }
     };
-    getComments = async (dispatch: Dispatch<AnyAction>, postId: string, offset: number, limit: number) => {
+    public getComments = async (dispatch: Dispatch<AnyAction>, postId: string, offset: number, limit: number) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post<PropsComments[]>('/SN/home/post/getComments', { postId, offset, limit });

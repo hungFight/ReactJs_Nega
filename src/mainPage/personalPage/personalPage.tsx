@@ -1,5 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, memo } from 'react';
 import Avatar from '../../app/reUsingComponents/Avatars/Avatar';
 
 import { Buttons, Div, P } from '../../app/reUsingComponents/styleComponents/styleDefault';

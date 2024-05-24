@@ -40,7 +40,7 @@ interface PropsParamsMores {
 
 type PropsErrorCode = 'NeGA_off' | 'NeGA_ExcessiveRequest' | null;
 class HttpRequestUser {
-    getById = async (dispatch: Dispatch<AnyAction>, id: string | string[], first?: string) => {
+    public getById = async (dispatch: Dispatch<AnyAction>, id: string | string[], first?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/getById', {
@@ -53,7 +53,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    getByName = async (dispatch: Dispatch<AnyAction>, name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {
+    public getByName = async (dispatch: Dispatch<AnyAction>, name: string, cateMore: string, searchMore: string, params: PropsParamsById) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/getByName', {
@@ -68,7 +68,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    setLg = async (dispatch: Dispatch<AnyAction>, id: string, lg: string) => {
+    public setLg = async (dispatch: Dispatch<AnyAction>, id: string, lg: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setLg', {
@@ -81,7 +81,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    setActive = async (dispatch: Dispatch<AnyAction>, active: boolean) => {
+    public setActive = async (dispatch: Dispatch<AnyAction>, active: boolean) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/setActive', {
@@ -93,7 +93,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    getNewMes = async (dispatch: Dispatch<AnyAction>) => {
+    public getNewMes = async (dispatch: Dispatch<AnyAction>) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getNewMes');
@@ -103,7 +103,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    delMessage = async (dispatch: Dispatch<AnyAction>) => {
+    public delMessage = async (dispatch: Dispatch<AnyAction>) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/delMessage');
@@ -113,7 +113,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    delSubAccount = async (dispatch: Dispatch<AnyAction>, id: string, phoneOrEmail: string) => {
+    public delSubAccount = async (dispatch: Dispatch<AnyAction>, id: string, phoneOrEmail: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/delSubAccount', { id, phoneOrEmail });
@@ -123,7 +123,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    changesOne = async (
+    public changesOne = async (
         dispatch: Dispatch<AnyAction>,
         id: string,
         params: PropsParamsById,
@@ -160,7 +160,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    changesMany = async (
+    public changesMany = async (
         dispatch: Dispatch<AnyAction>,
         params: PropsParamsById,
         mores: PropsParamsMores,
@@ -193,7 +193,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    follow = async (dispatch: Dispatch<AnyAction>, id: string) => {
+    public follow = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/follow', {
@@ -207,7 +207,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    Unfollow = async (dispatch: Dispatch<AnyAction>, id: string) => {
+    public Unfollow = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.patch('/user/Unfollow', {
@@ -223,7 +223,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    getMore = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number) => {
+    public getMore = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getMore', {
@@ -240,7 +240,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    setHistory = async (dispatch: Dispatch<AnyAction>, data: { id: string; avatar: string; fullName: string; gender: number }) => {
+    public setHistory = async (dispatch: Dispatch<AnyAction>, data: { id: string; avatar: string; fullName: string; gender: number }) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/setHistory', {
@@ -253,7 +253,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    getHistory = async (dispatch: Dispatch<AnyAction>) => {
+    public getHistory = async (dispatch: Dispatch<AnyAction>) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getHistory');
@@ -263,7 +263,7 @@ class HttpRequestUser {
             return errorHandling(err, dispatch);
         }
     };
-    getActiveStatus = async (dispatch: Dispatch<AnyAction>, id_other?: string) => {
+    public getActiveStatus = async (dispatch: Dispatch<AnyAction>, id_other?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.get('/user/getActiveStatus', { params: { id_other } });

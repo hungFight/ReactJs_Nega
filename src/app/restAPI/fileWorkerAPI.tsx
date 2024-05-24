@@ -6,7 +6,7 @@ import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
 
 class fileWorkerAPI {
-    addFiles = async (dispatch: Dispatch<AnyAction>, formData: FormData) => {
+    public addFiles = async (dispatch: Dispatch<AnyAction>, formData: FormData) => {
         try {
             // file, title?, id_sort?, old_id?(to delete old file)
             const Axios = refreshToken.axiosJWTsFIle();
@@ -17,7 +17,7 @@ class fileWorkerAPI {
             return errorHandling(err, dispatch);
         }
     };
-    deleteFileImg = async (dispatch: Dispatch<AnyAction>, ids: string[]) => {
+    public deleteFileImg = async (dispatch: Dispatch<AnyAction>, ids: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.post<boolean>(`/deleteFileImg`, { ids });
@@ -27,7 +27,7 @@ class fileWorkerAPI {
             return errorHandling(err, dispatch);
         }
     };
-    deleteFileVideo = async (dispatch: Dispatch<AnyAction>, ids: string[]) => {
+    public deleteFileVideo = async (dispatch: Dispatch<AnyAction>, ids: string[]) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.post<boolean>(`/deleteFileVideo`, { ids });
@@ -37,7 +37,7 @@ class fileWorkerAPI {
             return errorHandling(err, dispatch);
         }
     };
-    getFileImg = async (dispatch: Dispatch<AnyAction>, id: string) => {
+    public getFileImg = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.get(`/getFileImg/${id}`);
@@ -47,7 +47,7 @@ class fileWorkerAPI {
             return errorHandling(err, dispatch);
         }
     };
-    getFileVideo = async (dispatch: Dispatch<AnyAction>, id: string) => {
+    public getFileVideo = async (dispatch: Dispatch<AnyAction>, id: string) => {
         try {
             const Axios = refreshToken.axiosJWTsFIle();
             const res = await Axios.get(`/getFileVideo/${id}`);

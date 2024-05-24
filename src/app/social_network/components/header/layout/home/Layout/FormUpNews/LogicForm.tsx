@@ -4,13 +4,13 @@ import { ImageI, VideoI } from '~/assets/Icons/Icons';
 import { setTrueErrorServer } from '~/redux/hideShow';
 import { useDispatch } from 'react-redux';
 import { PropsDataFileUpload, PropsFormHome } from './FormUpNews';
-import CommonUtils from '~/utils/CommonUtils';
+import CommonUtils from '~/utils/ClassFile';
 import { useCookies } from 'react-cookie';
 import Cookies from '~/utils/Cookies';
 import { Link } from 'react-router-dom';
 import { Links, Smooth } from '~/reUsingComponents/styleComponents/styleDefault';
 import ReactQuill, { Quill } from 'react-quill';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 
 export default function LogicForm(form: PropsFormHome, colorText: string, colorBg: number, setOpenPostCreation: () => void, user?: PropsUser, originalInputValue?: string) {
     const dispatch = useDispatch();

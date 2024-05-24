@@ -1,16 +1,14 @@
 import { AnyAction } from '@reduxjs/toolkit';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import React, { Dispatch, useEffect, useRef } from 'react';
-import { queryClient } from 'src';
-import { PropsId_chats, PropsUser } from 'src/App';
+import { PropsId_chats } from 'src/App';
 import { BalloonI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { onChats } from '~/redux/roomsChat';
 import chatAPI from '~/restAPI/chatAPI';
-import CommonUtils from '~/utils/CommonUtils';
-
+import { PropsUser } from '~/typescript/userType';
 const Balloon: React.FC<{
     userFirst: PropsUser;
     colorText: string;
@@ -37,10 +35,7 @@ const Balloon: React.FC<{
                 };
             }[] = await chatAPI.getConversationBalloon(dispatch, balloon);
             memory.current = false;
-            return data.map((r) => {
-                r.user.avatar = CommonUtils.convertBase64(r.user.avatar);
-                return r;
-            });
+            return data;
         },
     });
     console.log(balloon, 'balloon', isLoading);

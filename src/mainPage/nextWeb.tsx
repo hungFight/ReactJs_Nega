@@ -29,14 +29,14 @@ import Time from './DateTime/DateTime';
 import Progress from '~/reUsingComponents/Progress/Progress';
 import { io } from 'socket.io-client';
 import Tools from './Tools/Tools';
-import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import Profile from './profiles/profile';
+import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import NextListWeb from './listWebs/ListWebs';
 import WarningBrowser from '~/reUsingComponents/ErrorBoudaries/Warning_browser';
-import { PropsId_chats, PropsUser, PropsUserPer } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
 import { setOnline } from '~/redux/userOnlineRD';
 import { useNavigate } from 'react-router-dom';
+import { PropsUser } from '~/typescript/userType';
+import { PropsId_chats } from 'src/App';
 
 export const socket = io('http://localhost:3001', {
     path: '/socket.io',
@@ -168,10 +168,6 @@ const Website: React.FC<{
         },
     ];
     const [option, setOption] = useState<React.ReactNode>(<NextListWeb data={buttonPage} />);
-
-    const handleProfile = () => {
-        setOption(<Profile />);
-    };
     const handleWebsite = () => {
         setOption(<NextListWeb data={buttonPage} />);
     };
@@ -264,9 +260,6 @@ const Website: React.FC<{
                                         <DivOptions>
                                             <DivElements color={colorText} onClick={handleWebsite}>
                                                 <WebsiteI />
-                                            </DivElements>
-                                            <DivElements color={colorText} onClick={handleProfile}>
-                                                <ProfileI />
                                             </DivElements>
                                             <DivElements
                                                 color={colorText}

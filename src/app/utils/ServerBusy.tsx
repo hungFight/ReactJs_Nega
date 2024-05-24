@@ -1,7 +1,5 @@
 import { AnyAction } from '@reduxjs/toolkit';
-import React, { Dispatch } from 'react';
-import { useCookies } from 'react-cookie';
-import { useDispatch } from 'react-redux';
+import { Dispatch } from 'react';
 import { setSession } from '~/redux/reload';
 
 const ServerBusy = (res: any, dispatch: Dispatch<AnyAction>) => {

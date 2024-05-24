@@ -1,7 +1,6 @@
 import { AnyAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { Dispatch } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { setSession } from '~/redux/reload';
 
 const errorHandling = (error: AxiosError, dispatch?: Dispatch<AnyAction>) => {

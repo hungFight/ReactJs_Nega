@@ -30,9 +30,12 @@ const ErrorBoundaries: React.FC<{
                     size="1.3rem"
                     css="margin: 10px auto; "
                     onClick={() => {
+                        if (code === 'NeGA_off') {
+                            _delCookies('k_user', { path: '/' });
+                            _delCookies('tks', { path: '/' });
+                        }
                         dispatch(setSession(null));
                         dispatch(setFalseErrorServer());
-                        if (code === 'NeGA_off') _delCookies('k_user');
                     }}
                 >
                     {code === 'NeGA_off' ? 'Login' : 'Xác nhận'}

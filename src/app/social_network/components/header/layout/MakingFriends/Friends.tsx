@@ -1,19 +1,16 @@
-import { DotI, LoadingI } from '~/assets/Icons/Icons';
-import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
+import { LoadingI } from '~/assets/Icons/Icons';
 import TagProfile from './TagProfile';
-import { useCookies } from 'react-cookie';
 import { useEffect, useRef, useState } from 'react';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
-import CommonUtils from '~/utils/CommonUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
-import { PropsBgRD } from '~/redux/background';
-import ServerBusy from '~/utils/ServerBusy';
-import { PropsId_chats, PropsUser } from 'src/App';
+import { PropsId_chats } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from 'src';
+
 export interface PropsFriends {
     avatar: any;
     birthday: string;

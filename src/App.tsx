@@ -1,20 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'src/app/utils/Cookies';
-import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 // Import Swiper styles
 import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataText/dataLogin';
 import { register } from './dataText/dataRegister';
-import { DivLoading, DivFlexPosition, Hname } from './app/reUsingComponents/styleComponents/styleComponents';
+import { DivLoading, DivFlexPosition } from './app/reUsingComponents/styleComponents/styleComponents';
 import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
 import Progress from './app/reUsingComponents/Progress/Progress';
 import ErrorBoundaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
 import { LoadingI, UndoI } from '~/assets/Icons/Icons';
 import userAPI from '~/restAPI/userAPI';
-import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
 import { PropsReloadRD } from '~/redux/reload';
@@ -52,7 +51,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [_c, setCookies, _delCookies] = useCookies(['k_user']),
+    const [_c, setCookies] = useCookies(['k_user']),
         dispatch = useDispatch(),
         { userId, token, removeCookies } = Cookies(), // customs hook
         { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
@@ -201,7 +200,7 @@ function App() {
         dispatch(setOpenProfile({ newProfile: [], currentId: '' }));
     };
     const leng = userData.length;
-    if (session === 'NeGA_off') return <ErrorBoundaries code={session} _delCookies={_delCookies} />;
+    if (session === 'NeGA_off') return <ErrorBoundaries code={session} _delCookies={removeCookies} />;
     if (token && userId) {
         return (
             <Suspense
@@ -228,7 +227,7 @@ function App() {
                         }
                     `}
                 >
-                    {session === 'NeGA_ExcessiveRequest' && <ErrorBoundaries code={session} _delCookies={_delCookies} />}
+                    {session === 'NeGA_ExcessiveRequest' && <ErrorBoundaries code={session} _delCookies={removeCookies} />}
                     {/* {userFirst ? ( */}
                     <>
                         <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} setId_chats={setId_chats} />

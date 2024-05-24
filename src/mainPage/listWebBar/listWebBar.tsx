@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import Bar from '~/reUsingComponents/Bar/Bar';
 import clsx from 'clsx';
 import { BookI, WorkI, NewI, HomeI } from '~/assets/Icons/Icons';
-import Button from '~/reUsingComponents/Buttoms/ListButton/Buttons';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import styles from './listWebBar.module.scss';
 import { ButtonLink, DivList } from './styleListWeb';
-import Images from '~/assets/images';
-import { Alogo } from '~/social_network/components/Header/styleHeader';
-import { A, Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { A, Div } from '~/reUsingComponents/styleComponents/styleDefault';
 interface Props {
     handleNextStart: () => void;
     hanNextWebsite: (index: number) => void;
@@ -29,11 +26,7 @@ const ListWebBar: React.FC<Props> = ({ handleNextStart, hanNextWebsite, colorBg,
     ];
     const elements = () => {
         return listOptions.map((res) => (
-            <ButtonLink
-                key={res.id}
-                to={res.part}
-                onClick={() => (res.page ? res.onClick(res.page) : handleNextStart())}
-            >
+            <ButtonLink key={res.id} to={res.part} onClick={() => (res.page ? res.onClick(res.page) : handleNextStart())}>
                 <div className={clsx(styles.website)}>{res.icon}</div>
             </ButtonLink>
         ));

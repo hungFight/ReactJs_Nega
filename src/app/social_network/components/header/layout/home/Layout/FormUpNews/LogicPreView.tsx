@@ -9,7 +9,7 @@ import { PropsPreViewFormHome } from './PreView';
 import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
 import { PropsDataFileUpload } from './FormUpNews';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 import DefaultType from './ViewPostFrame/TypeFile/DefaultType';
 import Dynamic from './ViewPostFrame/TypeFile/Swipers/Dynamic';
 import Fade from './ViewPostFrame/TypeFile/Swipers/Fade';

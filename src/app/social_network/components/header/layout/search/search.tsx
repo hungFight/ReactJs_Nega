@@ -1,19 +1,13 @@
-import React, { InputHTMLAttributes, LegacyRef, memo, useEffect, useRef, useState } from 'react';
-import clsx from 'clsx';
+import React, { memo, useEffect, useRef, useState } from 'react';
 
 import useDebounce from '../../../../../reUsingComponents/hook/useDebounce';
 
 import userAPI from '~/restAPI/userAPI';
 import { CloseI, DotI, SearchI } from '~/assets/Icons/Icons';
 import Account from '~/social_network/Accoutns/Account';
-import styles from './search.module.scss';
-import Bar from '~/reUsingComponents/Bar/Bar';
-import { useCookies } from 'react-cookie';
 import { DivResults, DivSearch, Input } from './styleSearch';
-import { useDispatch, useSelector } from 'react-redux';
-import CommonUtils from '~/utils/CommonUtils';
+import { useDispatch } from 'react-redux';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import ServerBusy from '~/utils/ServerBusy';
 import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 export interface PropsSearchTextSN {
     rec: string;
@@ -69,10 +63,6 @@ const Search: React.FC<PropsSearch> = ({ location, colorBg, colorText, dataText,
                 avatar: true,
                 fullName: true,
                 gender: true,
-            });
-            console.log(results, 'results');
-            results.map((result: any) => {
-                if (result.avatar) result.avatar = CommonUtils.convertBase64(result.avatar);
             });
             setResultSearch(results);
         };

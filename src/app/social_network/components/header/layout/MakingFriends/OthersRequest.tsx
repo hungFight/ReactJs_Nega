@@ -1,16 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { DotI, LoadingI } from '~/assets/Icons/Icons';
-import { Div, H3 } from '~/reUsingComponents/styleComponents/styleDefault';
+import { LoadingI } from '~/assets/Icons/Icons';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
-import CommonUtils from '~/utils/CommonUtils';
 import TagProfile from './TagProfile';
 import { useDispatch, useSelector } from 'react-redux';
-import Requested from './Requested';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { DivResults } from './styleMakingFriends';
-import ServerBusy from '~/utils/ServerBusy';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 
 interface PropsOthers {
     avatar: any;
@@ -66,7 +61,7 @@ const Others: React.FC<{ userData: PropsUser }> = ({ userData }) => {
         };
     }, [reload]);
     const handleConfirm = async (id: string, kindOf: string = 'friends') => {
-        const dataR = await peopleAPI.setConfirm(dispatch, id, undefined, undefined, kindOf);
+        const dataR = await peopleAPI.setConfirm(dispatch, id, kindOf);
         console.log('confirm', kindOf, id);
         refresh(dataR);
         function refresh(res: any) {
@@ -81,7 +76,7 @@ const Others: React.FC<{ userData: PropsUser }> = ({ userData }) => {
     };
     const handleRemove = async (id: string, kindOf?: string) => {
         console.log('deleted', id);
-        const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) {
             const newData: any = data?.filter((d: { id: string }) => d.id !== id);
             console.log('delete', dataR);

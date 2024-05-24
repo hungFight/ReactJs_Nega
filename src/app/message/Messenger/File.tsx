@@ -1,10 +1,6 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { ImageI } from '~/assets/Icons/Icons';
 import Player from '~/reUsingComponents/Videos/Player';
 import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import sendChatAPi from '~/restAPI/chatAPI';
-import CommonUtils from '~/utils/CommonUtils';
 
 const FileConversation: React.FC<{
     id_pre?: string;

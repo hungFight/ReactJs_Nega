@@ -1,7 +1,5 @@
 import moment from 'moment';
-import { v4 as primaryKey } from 'uuid';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivFlexPosition, DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';

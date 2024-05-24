@@ -5,8 +5,9 @@ import Send from './Messenger/Messenger';
 import { DivMs } from './styleMessage';
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PropsId_chats, PropsUser } from 'src/App';
 import { PropsBgRD } from '~/redux/background';
+import { PropsUser } from '~/typescript/userType';
+import { PropsId_chats } from 'src/App';
 
 const Message: React.FC<{
     dataUser: PropsUser;

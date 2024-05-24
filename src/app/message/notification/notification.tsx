@@ -15,7 +15,7 @@ import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenProfile } from '~/redux/hideShow';
 import moment from 'moment';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 interface PropsLanguage {
     persistedReducer: {
         language: {

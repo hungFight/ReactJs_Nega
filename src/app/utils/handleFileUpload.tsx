@@ -1,19 +1,9 @@
-import React, { useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { setTrueErrorServer } from '~/redux/hideShow';
-import CommonUtils from './CommonUtils';
+import CommonUtils from './ClassFile';
 import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-const handleFileUpload = async (
-    file: FileList,
-    quantity: number,
-    imageSize: number,
-    videoTime: number,
-    dispatch: Dispatch<AnyAction>,
-    type: string,
-    videoAc: boolean,
-) => {
+const handleFileUpload = async (file: FileList, quantity: number, imageSize: number, videoTime: number, dispatch: Dispatch<AnyAction>, type: string, videoAc: boolean) => {
     const getFilesToPre: { link: string; type: string; _id: string }[] = [];
     const upLoad: Blob[] = [];
     const getFilesToPrePer: { file: string; type: string }[] = [];
@@ -40,9 +30,7 @@ const handleFileUpload = async (
                                     fil._id = _id; // _id flow setupload's _id
                                     resolve({ file: fil, pre: { _id, link: url, type: fil.type.split('/')[0] } });
                                 } else {
-                                    dispatch(
-                                        setTrueErrorServer('Our length of the video must be less than 16 seconds!'),
-                                    );
+                                    dispatch(setTrueErrorServer('Our length of the video must be less than 16 seconds!'));
                                 }
                             };
                         });
@@ -56,12 +44,7 @@ const handleFileUpload = async (
 
                     dispatch(setTrueErrorServer('This format is not support!'));
                 }
-            } else if (
-                file[i].type.includes('image/jpg') ||
-                file[i].type.includes('image/jpeg') ||
-                file[i].type.includes('image/png') ||
-                file[i].type.includes('image/webp')
-            ) {
+            } else if (file[i].type.includes('image/jpg') || file[i].type.includes('image/jpeg') || file[i].type.includes('image/png') || file[i].type.includes('image/webp')) {
                 try {
                     if (Number((file[i].size / 1024 / 1024).toFixed(1)) <= imageSize) {
                         if (type === 'per') {

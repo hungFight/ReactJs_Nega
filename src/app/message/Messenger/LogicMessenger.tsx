@@ -1,14 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { socket } from 'src/mainPage/NextWeb';
-import { ClockCirclesI, LoadingI, MinusI, ProfileCircelI } from '~/assets/Icons/Icons';
+import { LoadingI, MinusI, ProfileCircelI } from '~/assets/Icons/Icons';
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { setOpenProfile } from '~/redux/hideShow';
-import { PropsReloadRD, setDelIds, setSession } from '~/redux/reload';
+import { PropsReloadRD, setDelIds } from '~/redux/reload';
 import sendChatAPi, { PropsRoomsChat } from '~/restAPI/chatAPI';
-import CommonUtils from '~/utils/CommonUtils';
-import ServerBusy from '~/utils/ServerBusy';
 import CryptoJS from 'crypto-js';
 import { PropsReMessengerRD } from '~/redux/messenger';
 import { PropsUser } from '~/typescript/userType';

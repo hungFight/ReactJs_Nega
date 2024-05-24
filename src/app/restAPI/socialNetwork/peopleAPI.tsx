@@ -6,7 +6,7 @@ import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
 import { PropsDataStranger } from '~/social_network/components/Header/layout/MakingFriends/Strangers';
 class PeopleRequest {
-    setFriend = async (dispatch: Dispatch<AnyAction>, id: string, per?: string) => {
+    public setFriend = async (dispatch: Dispatch<AnyAction>, id: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/people/setFriend', {
@@ -18,7 +18,7 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    delete = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
+    public delete = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
@@ -28,7 +28,7 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    setConfirm = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
+    public setConfirm = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.patch('/SN/people/setConfirm', {
@@ -40,7 +40,7 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    getStrangers = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number, rel?: string) => {
+    public getStrangers = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number, rel?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.get<PropsDataStranger[]>('/SN/people/getStrangers', {
@@ -56,7 +56,7 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    getFriends = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number, type: string) => {
+    public getFriends = async (dispatch: Dispatch<AnyAction>, offset: number, limit: number, type: string) => {
         // there are three type friend, requested, send request
         try {
             const axiosJWTss = refreshToken.axiosJWTs();

@@ -1,6 +1,6 @@
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivConversation, DivResultsConversation } from '../styleSed';
-import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, MinusI, TyOnlineI, PenI, EraserI, PinI, BackgroundI, GarbageI } from '~/assets/Icons/Icons';
+import { DotI, CameraI, ProfileCircelI, SendOPTI, UndoI, LoadingI, TyOnlineI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
@@ -15,16 +15,12 @@ import 'moment/locale/vi';
 import ItemsRoom from './ItemsConvers';
 import MoreOption from '../MoreOption';
 import OptionForItem, { PropsOptionForItem } from './OptionForItems/OptionForItem';
-import moments from '~/utils/moment';
 import { socket } from 'src/mainPage/NextWeb';
 import { PropsConversionText } from 'src/dataText/DataMessenger';
-import { decrypt } from '~/utils/crypto';
-import PinChat from './PinChat';
-import { offChats, removeBalloon, setBalloon, setTopLeft } from '~/redux/roomsChat';
-import handleFileUpload from '~/utils/handleFileUpload';
+import { offChats } from '~/redux/roomsChat';
 import chatAPI from '~/restAPI/chatAPI';
 import { queryClient } from 'src';
-import { PropsItemQueryChat, PropsOldSeenBy } from '~/typescript/messengerType';
+import { PropsItemQueryChat } from '~/typescript/messengerType';
 import { PropsUser } from '~/typescript/userType';
 
 const Conversation: React.FC<{

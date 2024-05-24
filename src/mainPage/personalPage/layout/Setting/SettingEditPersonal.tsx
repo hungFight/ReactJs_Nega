@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { PropsUserPer } from 'src/App';
 import { ChangeI, CheckI, CopyI, GarbageI, ImageI } from '~/assets/Icons/Icons';
 import { Buttons, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { PropsUserPer } from '~/typescript/userType';
 
 const EditP: React.FC<{
     editP: { name: string; id: number; icon?: { id: number; name: string }[] }[];
@@ -35,13 +35,7 @@ const EditP: React.FC<{
                 onClick={(e) => e.stopPropagation()}
             >
                 {editP.map((ed) => (
-                    <Div
-                        key={ed.id}
-                        width="100%"
-                        wrap="wrap"
-                        css=" padding: 3px; margin: 5px;  font-size: 1.4rem; form{width: 100%;}"
-                        onClick={(e) => handleMore(e, ed.id)}
-                    >
+                    <Div key={ed.id} width="100%" wrap="wrap" css=" padding: 3px; margin: 5px;  font-size: 1.4rem; form{width: 100%;}" onClick={(e) => handleMore(e, ed.id)}>
                         <Div
                             id="edit"
                             width="100%"
@@ -55,24 +49,11 @@ const EditP: React.FC<{
                         {more === ed.id && ed.icon && (
                             <Div width="100%" css="justify-content: start; align-items: center; padding: 5px 10px;">
                                 {ed.icon?.map((i) => (
-                                    <Div
-                                        key={i.id}
-                                        css="font-size: 20px; margin: 0 5px; background-color: #434546; &:hover{background-color: #0c769e;} border-radius: 5px; "
-                                    >
+                                    <Div key={i.id} css="font-size: 20px; margin: 0 5px; background-color: #434546; &:hover{background-color: #0c769e;} border-radius: 5px; ">
                                         {i.id === 1 ? (
                                             <form encType="multipart/form-data">
-                                                <input
-                                                    id={`uploads${ed.id}`}
-                                                    type="file"
-                                                    name="file[]"
-                                                    hidden
-                                                    onChange={(e) => onClick(e, ed.id)}
-                                                />
-                                                <Label
-                                                    htmlFor={`uploads${ed.id}`}
-                                                    color={colorText}
-                                                    css="padding: 5px 15px;"
-                                                >
+                                                <input id={`uploads${ed.id}`} type="file" name="file[]" hidden onChange={(e) => onClick(e, ed.id)} />
+                                                <Label htmlFor={`uploads${ed.id}`} color={colorText} css="padding: 5px 15px;">
                                                     <ChangeI />
                                                 </Label>
                                             </form>
@@ -103,13 +84,9 @@ const EditP: React.FC<{
                                 await navigator.clipboard.writeText(text);
                                 AllArray.forEach((us) => {
                                     if (us.id === userId) {
-                                        document
-                                            .getElementById(`profileCopyId=${userId}`)
-                                            ?.setAttribute('style', 'display: flex;');
+                                        document.getElementById(`profileCopyId=${userId}`)?.setAttribute('style', 'display: flex;');
                                     } else {
-                                        document
-                                            .getElementById(`profileCopyId=${us.id}`)
-                                            ?.setAttribute('style', 'display: none;');
+                                        document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
                                     }
                                 });
                                 console.log('Text copied to clipboard:', text);
@@ -123,13 +100,9 @@ const EditP: React.FC<{
                                 document.body.removeChild(textarea);
                                 AllArray.forEach((us) => {
                                     if (us.id === userId) {
-                                        document
-                                            .getElementById(`profileCopyId=${userId}`)
-                                            ?.setAttribute('style', 'display: flex;');
+                                        document.getElementById(`profileCopyId=${userId}`)?.setAttribute('style', 'display: flex;');
                                     } else {
-                                        document
-                                            .getElementById(`profileCopyId=${us.id}`)
-                                            ?.setAttribute('style', 'display: none;');
+                                        document.getElementById(`profileCopyId=${us.id}`)?.setAttribute('style', 'display: none;');
                                     }
                                 });
                                 console.log('Text copied to clipboard (fallback):', text);
@@ -138,11 +111,7 @@ const EditP: React.FC<{
                         copyToClipboard(`${process.env.REACT_APP_ROUTE}profile?id=${userId}`);
                     }}
                 >
-                    <Div
-                        id={`profileCopyId=${userId}`}
-                        display="none"
-                        css="color: #2aa02a; font-size: 22px; padding: 0 5px;"
-                    >
+                    <Div id={`profileCopyId=${userId}`} display="none" css="color: #2aa02a; font-size: 22px; padding: 0 5px;">
                         <CheckI />
                     </Div>
                     <P z="1.4rem" css="width: max-content;">
@@ -152,11 +121,7 @@ const EditP: React.FC<{
                         <CopyI />
                     </Div>
                 </Div>
-                <Div
-                    width="100%"
-                    css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)"
-                    onClick={() => setEdit(false)}
-                >
+                <Div width="100%" css="padding-left: 23px; margin-top: 5px; cursor: var(--pointer)" onClick={() => setEdit(false)}>
                     <P z="1.4rem" css="width: max-content;">
                         Đóng tap
                     </P>

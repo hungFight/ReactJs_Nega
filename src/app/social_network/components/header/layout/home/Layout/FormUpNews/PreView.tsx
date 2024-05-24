@@ -11,7 +11,7 @@ import LogicPreView from './LogicPreView';
 import { PropsDataFileUpload, PropsValueQuill } from './FormUpNews';
 import EditFiles from './EditFiles.tsx/Editfiles';
 import ReactQuill from 'react-quill';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 export interface PropsPreViewFormHome {
     time: {
         hour: string;

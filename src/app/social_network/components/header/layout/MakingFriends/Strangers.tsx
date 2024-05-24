@@ -1,19 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
+import { DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import TagProfile from './TagProfile';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { useCookies } from 'react-cookie';
-import { DotI, LoadingI } from '~/assets/Icons/Icons';
-import CommonUtils from '~/utils/CommonUtils';
+import { LoadingI } from '~/assets/Icons/Icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { DivResults } from './styleMakingFriends';
 import { ButtonAnimationSurround, DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
-import ServerBusy from '~/utils/ServerBusy';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from 'src';
-import { io } from 'socket.io-client';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 import { socket } from 'src/mainPage/NextWeb';
 export interface PropsDataStranger {
     avatar: any;
@@ -252,7 +249,7 @@ const Strangers: React.FC<{
         updateData.mutate({ ...dataR, type: 'add' });
     };
     const handleAbolish = async (id: string, kindOf: string = 'friends') => {
-        const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
+        const dataR = await peopleAPI.delete(dispatch, id, kindOf);
         if (dataR) updateData.mutate({ ...dataR, type: 'abolish' });
     };
     const handleMessenger = (id: string) => {
@@ -268,14 +265,14 @@ const Strangers: React.FC<{
                 createdAt: Date;
                 updatedAt: Date;
             };
-        } = await peopleAPI.setConfirm(dispatch, id, undefined, undefined, kindOf);
+        } = await peopleAPI.setConfirm(dispatch, id, kindOf);
         if (dataR) updateData.mutate({ ...dataR, type: 'confirm' });
     };
     const handleRemove = async (id: string, of: string = 'yes', kindOf?: string) => {
         if (of === 'no' && id) {
             updateData.mutate({ id, type: 'deleteReal' }); // just remove
         } else {
-            const dataR = await peopleAPI.delete(dispatch, id, undefined, undefined, kindOf);
+            const dataR = await peopleAPI.delete(dispatch, id, kindOf);
             if (dataR) updateData.mutate({ id, type: 'deleteReal' }); // delete friend
         }
     };

@@ -1,20 +1,16 @@
 import { PropsAccount } from '~/Authentication/ChangePassword/typeChangePassword';
-import CommonUtils from '~/utils/CommonUtils';
+import CommonUtils from '~/utils/ClassFile';
 import http from '~/utils/http';
 
 class AccountRequest {
-    getPhoneMail = async (params: { phoneMail: string | number }) => {
+    public getPhoneMail = async (params: { phoneMail: string | number }) => {
         const res = await http.post<PropsAccount[]>('account/get', {
             params,
         });
-        return res.data.map((u) => {
-            const a = CommonUtils.convertBase64(u.avatar);
-            u.avatar = a;
-            return u;
-        });
+        return res.data;
     };
 
-    changePassword = async (params: { id: string; password: string }) => {
+    public changePassword = async (params: { id: string; password: string }) => {
         try {
             const res = await http.post('account/changePassword', {
                 params,

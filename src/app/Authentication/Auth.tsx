@@ -7,7 +7,7 @@ import { UndoIRegister } from '~/assets/Icons/Icons';
 import Verify from './Verify/Verify';
 import { PropsRegisterLanguage } from './Register/interfaceType';
 import ChangePassword from './ChangePassword/ChangePassword';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 const DivBackground = styled.div`
     width: 100%;
     height: 100%;

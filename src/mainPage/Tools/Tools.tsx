@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { DivItems, DivResults, DivTools } from './stylesTools';
-import { DotI, OfflineI, OnlineI } from '~/assets/Icons/Icons';
+import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import { DivResults, DivTools } from './stylesTools';
+import { OfflineI, OnlineI } from '~/assets/Icons/Icons';
 import { socket } from '../NextWeb';
 import Cookies from 'universal-cookie';
 import HttpRequestUser from '~/restAPI/userAPI';
-import { PropsUser } from 'src/App';
-import { PropsReloadRD } from '~/redux/reload';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { PropsUser } from '~/typescript/userType';
 
 const cookies = new Cookies();
 

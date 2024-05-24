@@ -6,7 +6,6 @@ import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { PropsFriends } from '../../../../MakingFriends/Friends';
 import Account from '~/social_network/Accoutns/Account';
 import { useDispatch, useSelector } from 'react-redux';
-import CommonUtils from '~/utils/CommonUtils';
 import { InitialStateHideShow, setOpenProfile } from '~/redux/hideShow';
 
 const Tags: React.FC<{
@@ -41,12 +40,6 @@ const Tags: React.FC<{
     useEffect(() => {
         async function fetchFriends() {
             const dataRes = await peopleAPI.getFriends(dispatch, offsetRef.current, limit, 'friends');
-            dataRes?.map((f: { avatar: string | undefined }) => {
-                if (f.avatar) {
-                    const av = CommonUtils.convertBase64(f.avatar);
-                    f.avatar = av;
-                }
-            });
             if (dataRes) {
                 dataRef.current = [...(dataRef.current ?? []), ...dataRes];
                 setData(dataRef.current);

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import authAPI from '~/restAPI/authAPI/authAPI';
 import { PropsLogin } from './Login';
 import { PropsBgRD } from '~/redux/background';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 interface PropsState {
     persistedReducer: {
         language: {

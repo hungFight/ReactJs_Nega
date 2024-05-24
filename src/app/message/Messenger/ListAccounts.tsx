@@ -1,6 +1,5 @@
-import moment from 'moment';
 import 'moment/locale/vi';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Avatar from '~/reUsingComponents/Avatars/Avatar';

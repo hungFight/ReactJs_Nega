@@ -3,18 +3,18 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { queryClient } from 'src';
-import { PropsUser } from 'src/App';
 import { ArrowDownI, LoadingI } from '~/assets/Icons/Icons';
 import { DivLoading, DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, Img, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import chatAPI from '~/restAPI/chatAPI';
-import CommonUtils from '~/utils/CommonUtils';
+import CommonUtils from '~/utils/ClassFile';
 import ServerBusy from '~/utils/ServerBusy';
 import { decrypt } from '~/utils/crypto';
 import { socket } from 'src/mainPage/NextWeb';
 import ItemPin from './ItemPin';
 import { PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
 import { PropsChat } from './LogicConver';
+import { PropsUser } from '~/typescript/userType';
 
 const PinChat: React.FC<{
     pins: PropsPinC[];

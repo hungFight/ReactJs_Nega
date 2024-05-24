@@ -1,5 +1,4 @@
 import CryptoJS from 'crypto-js';
-import React from 'react';
 
 export const encrypt = (t: string, key: string) => {
     return CryptoJS.AES.encrypt(t, key).toString();
