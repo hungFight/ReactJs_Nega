@@ -7,7 +7,6 @@ import { DivAction, DivEmoji, TextAreaPre } from '../FormUpNews/styleFormUpNews'
 import { DotI, EarthI, FriendI, HeartI, LikeI, LockI, PostCommentI, PrivacyI, ShareI } from '~/assets/Icons/Icons';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import moment from 'moment';
-import Languages from '~/reUsingComponents/languages';
 import OpUpdate from '~/reUsingComponents/PostOptions/OpUpdate';
 import { PropsDataPosts, PropsPosts } from './interfacePosts';
 import FormUpNews from '../FormUpNews/FormUpNews';
@@ -16,13 +15,14 @@ import postAPI from '~/restAPI/socialNetwork/postAPI';
 import Comment from './Comment';
 import { queryClient } from 'src';
 import { useDispatch } from 'react-redux';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
 
 const Posts: React.FC<PropsPosts> = ({ user, colorBg, colorText, dataP, options, setOptions, setFormThat, form, setShowComment, showComment }) => {
     const dispatch = useDispatch();
     const dataPostRef = useRef<PropsDataPosts>(dataP);
     if (!dataPostRef.current.user.length || dataPostRef.current.user[0]?.id === "It's me") dataPostRef.current.user[0] = user;
     const [d, setD] = useState<string>('');
-    const { lg } = Languages();
+    const { lg } = useLanguages();
     const [actImotion, setActImotion] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
     // const avatar = CommonUtils.convertBase64(dataPostRef.current.user[0].avatar);

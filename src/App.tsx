@@ -12,7 +12,6 @@ import styled from 'styled-components';
 import { A, Div, P } from './app/reUsingComponents/styleComponents/styleDefault';
 import Progress from './app/reUsingComponents/Progress/Progress';
 import ErrorBoundaries from './app/reUsingComponents/ErrorBoudaries/ErrorBoudaries';
-import { socket } from './mainPage/NextWeb';
 import { LoadingI, UndoI } from '~/assets/Icons/Icons';
 import userAPI from '~/restAPI/userAPI';
 import { PropsMores } from './mainPage/personalPage/layout/TitleOfPers/Title';
@@ -20,17 +19,14 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import Conversation from '~/Message/Messenger/Conversation/Conversation';
 import { PropsReloadRD } from '~/redux/reload';
 import { PropsBgRD } from '~/redux/background';
-import { PropsRoomChat } from '~/restAPI/chatAPI';
 import { gql } from '@apollo/client';
-import ServerBusy from '~/utils/ServerBusy';
 import { useCookies } from 'react-cookie';
-import { decrypt } from '~/utils/crypto';
 import { ConversationText } from './dataText/DataMessenger';
-import Languages from '~/reUsingComponents/languages';
 import { PropsRoomsChatRD } from '~/redux/roomsChat';
 import Balloon from './mainPage/Balloon/Balloon';
-import subImage from '~/utils/subImage';
-import { useQuery } from '@tanstack/react-query';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
+import { PropsUser, PropsUserPer } from '~/typescript/userType';
+
 const DivOpacity = styled.div`
     width: 100%;
     height: 100%;
@@ -41,164 +37,50 @@ const DivOpacity = styled.div`
     right: 0;
     z-index: 10;
 `;
-export interface PropsUser {
-    readonly id: string;
-    avatar: any;
-    fullName: string;
-    gender: number;
-    background: any;
-    biography: string;
-    firstPage: string;
-    secondPage: string;
-    thirdPage: string;
-    active: boolean;
-}
-export interface PropsUserPer {
-    readonly id: string;
-    avatar: any;
-    fullName: string;
-    address: string;
-    gender: number;
-    birthday: string;
-    background: any;
-    biography: string;
-    active: boolean;
-    occupation: string;
-    schoolName: string;
-    skill: string[];
-    hobby: string[];
-    firstPage: string;
-    secondPage: string;
-    thirdPage: string;
-    mores: PropsMores[];
-    userRequest:
-        | {
-              id: string;
-              idRequest: string;
-              idIsRequested: string;
-              level: number;
-              createdAt: string | Date;
-              updatedAt: string | Date;
-          }[];
-    userIsRequested:
-        | {
-              id: string;
-              idRequest: string;
-              idIsRequested: string;
-              level: number;
-              createdAt: string | Date;
-              updatedAt: string | Date;
-          }[];
-    isLoved:
-        | {
-              id: string;
-              userId: string;
-              idIsLoved: string;
-              createdAt: string | Date;
-          }[];
-    loved:
-        | {
-              id: string;
-              userId: string;
-              idIsLoved: string;
-              createdAt: string | Date;
-          }[];
-    followings:
-        | {
-              id: string;
-              idFollowing: string;
-              idIsFollowed: string;
-              following: number;
-              followed: number;
-              createdAt: string | Date;
-          }[];
-    followed:
-        | {
-              id: string;
-              idFollowing: string;
-              idIsFollowed: string;
-              following: number;
-              followed: number;
-              createdAt: string | Date;
-          }[];
-    accountUser: {
-        account: {
-            id: string;
-            fullName: string;
-            avatar: string | null;
-            gender: number;
-            phoneNumberEmail: string;
-        };
-    }[];
-}
+
 export type PropsId_chats = {
     conversationId?: string;
     id_other: string;
     top?: number;
     left?: number;
 };
-export const params = {
-    address: true,
-    biography: true,
-    birthday: true,
-    gender: true,
-    active: true,
-    hobby: true,
-    skill: true,
-    occupation: true,
-    schoolName: true,
-    firstPage: true,
-    secondPage: true,
-    thirdPage: true,
-};
-export const mores = {
-    position: true,
-    star: true,
-    loverAmount: true,
-    friendAmount: true,
-    visitorAmount: true,
-    followedAmount: true,
-    followingAmount: true,
-    relationship: true,
-    language: true,
-    createdAt: true,
-    privacy: true,
-};
 const Authentication = React.lazy(() => import('~/Authentication/Auth'));
 const Website = React.lazy(() => import('./mainPage/NextWeb'));
 const Message = React.lazy(() => import('~/Message/Message'));
 function App() {
-    const { lg } = Languages();
+    const { lg } = useLanguages();
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [_c, setCookies, _delCookies] = useCookies(['k_user']);
-    const dispatch = useDispatch();
-    const { userId, token, removeCookies } = Cookies(); // customs hook
-    const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
-    const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-    const { chats, balloon, established } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
-    const mm = useRef<{ index: number; id: string }[]>([]);
-    const { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
-    const { session } = useSelector((state: PropsReloadRD) => state.reload);
-    const userOnline = useSelector((state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline);
-    const [userData, setUsersData] = useState<PropsUserPer[]>([]);
-    const [userFirst, setUserFirst] = useState<PropsUser>({
-        id: '',
-        fullName: '',
-        avatar: null,
-        gender: 1,
-        background: '',
-        biography: '',
-        firstPage: 'en',
-        secondPage: 'en',
-        thirdPage: 'en',
-        active: true,
-    });
-    const [loading, setLoading] = useState<boolean>(false);
-    // messenger
-    const [id_chats, setId_chats] = useState<PropsId_chats[]>(chats);
-    const showChat = useRef<HTMLInputElement | null>(null);
+    const [_c, setCookies, _delCookies] = useCookies(['k_user']),
+        dispatch = useDispatch(),
+        { userId, token, removeCookies } = Cookies(), // customs hook
+        { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
+        { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background),
+        { chats, balloon, established } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat),
+        mm = useRef<{ index: number; id: string }[]>([]),
+        { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
+        { session } = useSelector((state: PropsReloadRD) => state.reload),
+        userOnline = useSelector((state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline),
+        [userData, setUsersData] = useState<PropsUserPer[]>([]),
+        [userFirst, setUserFirst] = useState<PropsUser>({
+            id: '',
+            fullName: '',
+            avatar: null,
+            gender: 1,
+            background: '',
+            biography: '',
+            firstPage: 'en',
+            secondPage: 'en',
+            thirdPage: 'en',
+            active: true,
+        }),
+        [loading, setLoading] = useState<boolean>(false),
+        // messenger
+        [id_chats, setId_chats] = useState<PropsId_chats[]>(chats),
+        showChat = useRef<HTMLInputElement | null>(null),
+        handleCheck = useRef<boolean>(false);
+
     const GET_USERDATA = gql`
         query Get_dataWarning($id: String!) {
             warningData(id: $id) {
@@ -213,10 +95,9 @@ function App() {
     //     },
     //     skip: !userId || !token,
     // });
-    const handleCheck = useRef<boolean>(false);
     async function fetchF(id: string | string[], first?: string) {
         if (!first) setLoading(true);
-        const res: PropsUser = await userAPI.getById(dispatch, id, params, mores, first);
+        const res: PropsUser = await userAPI.getById(dispatch, id, first);
         // Tìm ảnh trong mã HTML và lấy URL của ảnh đầu tiên
         if (res)
             if (!Array.isArray(res)) {
@@ -226,8 +107,6 @@ function App() {
                 return res;
             }
     }
-    console.log(userFirst, 'userFirst');
-    console.log(userData, 'userData');
     const ListEl = useRef<NodeListOf<Element>>();
     const timeouts = useRef<NodeJS.Timeout[]>([]);
     function expire(eleDiv1s: NodeListOf<Element>) {
@@ -304,10 +183,13 @@ function App() {
         //     expire(eleDiv1s);
         // });
     }, [openProfile]);
+    useEffect(() => {
+        if (userId && token && !userFirst.id) {
+            fetchF(userId, 'only');
+        }
+    }, [userId]);
     const handleStopClearing = () => {
-        // stop clearing the show message
         timeouts.current.forEach((t) => clearTimeout(t));
-        console.log('Stop clearing', timeouts);
     };
     const handleClear = () => {
         if (ListEl.current) expire(ListEl.current);
@@ -318,15 +200,7 @@ function App() {
         handleCheck.current = true;
         dispatch(setOpenProfile({ newProfile: [], currentId: '' }));
     };
-
-    useEffect(() => {
-        if (userId && token && !userFirst.id) {
-            fetchF(userId, 'only');
-        }
-    }, [userId]);
-
     const leng = userData.length;
-    // console.log('id_cookie', userId, userData, id_chats, chats);
     if (session === 'NeGA_off') return <ErrorBoundaries code={session} _delCookies={_delCookies} />;
     if (token && userId) {
         return (

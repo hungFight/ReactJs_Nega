@@ -1,20 +1,20 @@
 import React, { useRef, useState } from 'react';
-import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RedeemI, RemoveCircleI, SendI, SendOPTI } from '~/assets/Icons/Icons';
+import { CameraI, ChangeChatI, DelAllI, DelSelfI, PinI, RemoveCircleI, SendOPTI } from '~/assets/Icons/Icons';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import FileConversation from '../../File';
-import Languages from '~/reUsingComponents/languages';
 import chatAPI from '~/restAPI/chatAPI';
-import ServerBusy from '~/utils/ServerBusy';
 import { useDispatch } from 'react-redux';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { v4 as uuidv4 } from 'uuid';
 import handleFileUpload from '~/utils/handleFileUpload';
-import { decrypt, encrypt } from '~/utils/crypto';
+import { encrypt } from '~/utils/crypto';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { useMutation } from '@tanstack/react-query';
 import { queryClient } from 'src';
 import { PropsImageOrVideosAtMessenger, PropsItemQueryChat, PropsItemRoom, PropsPinC } from '~/typescript/messengerType';
 import { PropsChat } from '../LogicConver';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
+
 export interface PropsOptionForItem {
     _id: string;
     userId: string;
@@ -36,7 +36,6 @@ const OptionForItem: React.FC<{
     conversation: PropsChat;
     colorText: string;
     setEmoji: React.Dispatch<React.SetStateAction<boolean>>;
-    setConversation: React.Dispatch<React.SetStateAction<PropsChat | undefined>>;
     setItemPin: React.Dispatch<React.SetStateAction<PropsPinC | undefined>>;
     id_you: string;
     setRoomImage: React.Dispatch<
@@ -55,8 +54,8 @@ const OptionForItem: React.FC<{
           }
         | undefined;
     itemPinData: React.MutableRefObject<PropsItemRoom[]>;
-}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setConversation, setItemPin, id_you, setRoomImage, roomImage, itemPin, itemPinData }) => {
-    const { lg } = Languages();
+}> = ({ setOptions, optionsForItem, ERef, del, conversation, colorText, setEmoji, setItemPin, id_you, setRoomImage, roomImage, itemPin, itemPinData }) => {
+    const { lg } = useLanguages();
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<string>('');
     const textarea = useRef<HTMLTextAreaElement | null>(null);
@@ -620,10 +619,7 @@ const OptionForItem: React.FC<{
     const handleChange = async () => {
         if (conversation && optionsForItem && !loading && ((value && value !== optionsForItem.text) || fileUpload?.up.length)) {
             setLoading('updating...');
-            console.log(value, 'vlvlvl');
-
             const id_files = optionsForItem.imageOrVideos.map((f) => f._id);
-            const id_s = uuidv4(); //  id_s if conversation._id doesn't exist
             const vl = value ? encrypt(value, `chat_${optionsForItem.secondary ? optionsForItem.secondary : conversation._id}`) : '';
             const formData = new FormData();
             for (let i = 0; i < fileUpload?.up.length; i++) {

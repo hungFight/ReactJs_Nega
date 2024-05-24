@@ -3,42 +3,19 @@ import { v4 as primaryKey } from 'uuid';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { PropsUser, PropsUserPer, mores, params } from 'src/App';
 import { DivFlexPosition, DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div } from '~/reUsingComponents/styleComponents/styleDefault';
 import { InitialStateHideShow, setTrueErrorServer } from '~/redux/hideShow';
 import userAPI from '~/restAPI/userAPI';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
-import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
-import { Buffer } from 'buffer';
 import { ExpandI, LoadingI } from '~/assets/Icons/Icons';
 import { onChats } from '~/redux/roomsChat';
-import httpFile from '~/utils/httpFile';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { socket } from '../NextWeb';
-interface PropsLanguage {
-    persistedReducer: {
-        language: {
-            sn: string;
-            l: string;
-            w: string;
-        };
-    };
-}
-export interface PropsPrivacy {
-    [position: string]: 'everyone' | 'friends' | 'only';
-    address: 'everyone' | 'friends' | 'only';
-    birthday: 'everyone' | 'friends' | 'only';
-    relationship: 'everyone' | 'friends' | 'only';
-    gender: 'everyone' | 'friends' | 'only';
-    schoolName: 'everyone' | 'friends' | 'only';
-    occupation: 'everyone' | 'friends' | 'only';
-    hobby: 'everyone' | 'friends' | 'only';
-    skill: 'everyone' | 'friends' | 'only';
-    language: 'everyone' | 'friends' | 'only';
-    subAccount: 'everyone' | 'friends' | 'only';
-}
+import { PropsConFirmFriend, PropsConFirmFriendSocket } from '~/typescript/personalPage';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
+import { PropsUser, PropsUserPer } from '~/typescript/userType';
 export default function LogicView(
     user: PropsUserPer,
     userFirst: PropsUser,
@@ -60,45 +37,36 @@ export default function LogicView(
     where?: string,
 ) {
     const dispatch = useDispatch();
-    const [cookies, setCookies] = useCookies(['tks', 'k_user']);
-    const [currentPage, setCurrentPage] = useState<number>(() => {
-        return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
-    });
     const { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow);
-    const language = useSelector((state: PropsLanguage) => state.persistedReducer.language);
+    const [more, setMore] = useState<boolean>(false),
+        [valueName, setValueName] = useState<string>(''),
+        [valueNickN, setValueNickN] = useState<string>(''),
+        [categories, setCategories] = useState<number>(0),
+        [errText, setErrText] = useState<string>(''),
+        [resTitle, setResTitle] = useState<{
+            star: number;
+            love: number;
+            visitor: number;
+            followed: number;
+            following: number;
+        }>({ star: 0, love: 0, visitor: 0, followed: 0, following: 0 });
 
-    const [more, setMore] = useState<boolean>(false);
-    const [valueName, setValueName] = useState<string>('');
-    const [valueNickN, setValueNickN] = useState<string>('');
-    const [categories, setCategories] = useState<number>(0);
-    const [errText, setErrText] = useState<string>('');
-    const [resTitle, setResTitle] = useState<{
-        star: number;
-        love: number;
-        visitor: number;
-        followed: number;
-        following: number;
-    }>({ star: 0, love: 0, visitor: 0, followed: 0, following: 0 });
+    const [room, setRoom] = useState<{ avatar: boolean; background: boolean }>({ avatar: false, background: false }),
+        [edit, setEdit] = useState<boolean>(false),
+        [loading, setLoading] = useState<boolean>(false),
+        [loads, setLoads] = useState<{ friend: boolean; follow: boolean }>({ friend: false, follow: false }),
+        { lg } = useLanguages();
 
-    const [room, setRoom] = useState<{ avatar: boolean; background: boolean }>({ avatar: false, background: false });
-    const [edit, setEdit] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [loads, setLoads] = useState<{ friend: boolean; follow: boolean }>({ friend: false, follow: false });
+    const userRequest = user.userRequest[0]?.idRequest || user.userIsRequested[0]?.idRequest,
+        userRequested = user.userRequest[0]?.idIsRequested || user.userIsRequested[0]?.idIsRequested,
+        level = user.userRequest[0]?.level || user.userIsRequested[0]?.level;
 
-    const token = cookies.tks;
-    const lg = currentPage === 1 ? language.sn : currentPage === 2 ? language.l : language.w;
-
-    const userRequest = user.userRequest[0]?.idRequest || user.userIsRequested[0]?.idRequest;
-    const userRequested = user.userRequest[0]?.idIsRequested || user.userIsRequested[0]?.idIsRequested;
-    const level = user.userRequest[0]?.level || user.userIsRequested[0]?.level;
-
-    const id_fl = user.followings[0]?.idFollowing || user.followed[0]?.idFollowing;
-    const id_fled = user.followings[0]?.idIsFollowed || user.followed[0]?.idIsFollowed;
-    const following = user.followings[0]?.following || user.followed[0]?.following;
+    const id_fl = user.followings[0]?.idFollowing || user.followed[0]?.idFollowing,
+        id_fled = user.followings[0]?.idIsFollowed || user.followed[0]?.idIsFollowed,
+        following = user.followings[0]?.following || user.followed[0]?.following;
 
     const follwed = user.followings[0]?.followed || user.followed[0]?.followed;
     const DivRef = useRef<HTMLDivElement | null>(null);
-    console.log(user, 'userrrr');
 
     useEffect(() => {
         socket.on(
@@ -265,67 +233,24 @@ export default function LogicView(
                     });
             },
         );
-        socket.on(
-            `Confirmed_friend_${user.id}`,
-            (res: {
-                ok: {
-                    id: string;
-                    idRequest: string;
-                    idIsRequested: string;
-                    level: number;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    userIsRequested: {
-                        address: string;
-                        birthday: string;
-                        biography: string;
-                        gender: number;
-                        hobby: string[];
-                        skill: string[];
-                        occupation: string;
-                        schoolName: string;
-                        mores: {
-                            id: string;
-                            position: string;
-                            star: number;
-                            loverAmount: number;
-                            friendAmount: number;
-                            visitorAmount: number;
-                            followedAmount: number;
-                            followingAmount: number;
-                            relationship: string;
-                            language: string[];
-                            privacy: PropsPrivacy;
-                            createdAt: string;
-                            updatedAt: string;
-                        }[];
-                    };
-                };
-                youId: string;
-                userId: string;
-                count_following_other: number;
-                count_followed_other: number;
-                count_friends_other: number;
-            }) => {
-                console.log('Confirmed_friend', res);
-
-                if (res) {
-                    setUsersData((pre) => {
-                        const newD = pre.map((x) => {
-                            if (x.id === user.id) {
-                                if (res.userId === userFirst.id) {
-                                    if (x.userRequest[0]?.level) x.userRequest[0].level = 2;
-                                    if (x.userIsRequested[0]?.level) x.userIsRequested[0].level = 2;
-                                    return { ...x, ...res.ok.userIsRequested };
-                                }
+        socket.on(`Confirmed_friend_${user.id}`, (res: PropsConFirmFriendSocket) => {
+            console.log('Confirmed_friend', res);
+            if (res) {
+                setUsersData((pre) => {
+                    const newD = pre.map((x) => {
+                        if (x.id === user.id) {
+                            if (res.userId === userFirst.id) {
+                                if (x.userRequest[0]?.level) x.userRequest[0].level = 2;
+                                if (x.userIsRequested[0]?.level) x.userIsRequested[0].level = 2;
+                                return { ...x, ...res.ok.userIsRequested };
                             }
-                            return x;
-                        });
-                        return newD;
+                        }
+                        return x;
                     });
-                }
-            },
-        );
+                    return newD;
+                });
+            }
+        });
         return () => {
             socket.off(`Request others?id=${user.id}`);
             socket.off(`Confirmed_friend ${user.id}`);
@@ -518,62 +443,11 @@ export default function LogicView(
 
     const handleConfirm = async (id: string) => {
         if (id) {
-            const data: {
-                follower: {
-                    id: string;
-                    idFollowing: string;
-                    idIsFollowed: string;
-                    following: number;
-                    followed: number;
-                    createdAt: Date;
-                    updatedAt: Date;
-                };
-                ok: {
-                    createdAt: string;
-                    id: string;
-                    idIsRequested: string;
-                    idRequest: string;
-                    level: number;
-                    updatedAt: string;
-                    userRequest: {
-                        address: string;
-                        birthday: string;
-                        biography: string;
-                        gender: number;
-                        hobby: string[];
-                        skill: string[];
-                        occupation: string;
-                        schoolName: string;
-                        mores: {
-                            id: string;
-                            position: string;
-                            star: number;
-                            loverAmount: number;
-                            friendAmount: number;
-                            visitorAmount: number;
-                            followedAmount: number;
-                            followingAmount: number;
-                            relationship: string;
-                            language: string[];
-                            privacy: PropsPrivacy;
-                            createdAt: string;
-                            updatedAt: string;
-                        }[];
-                    };
-                };
-            } = await peopleAPI.setConfirm(dispatch, id, params, mores, 'friends', 'personal');
+            const data: PropsConFirmFriend = await peopleAPI.setConfirm(dispatch, id, 'friends', 'personal');
             if (data) {
                 user.userRequest[0] = {
                     ...data.ok,
                 };
-                // if (user.userRequest.length)
-                //     user.userRequest[0] = {
-                //         ...data.ok,
-                //     };
-                // else if (user.userIsRequested.length)
-                //     user.userIsRequested[0] = {
-                //         ...data.ok,
-                //     };
                 if (user.followings.length) user.followings = [data.follower];
                 else if (user.followed.length) user.followed = [data.follower];
                 else user.followings = [data.follower];
@@ -595,7 +469,7 @@ export default function LogicView(
             count_following: number;
             count_followed_other: number;
             count_following_other: number;
-        } = await peopleAPI.delete(dispatch, id, params, mores, kindOf, 'personal');
+        } = await peopleAPI.delete(dispatch, id, kindOf, 'personal');
         console.log('Abolish', kindOf, data);
         if (data) {
             setUsersData((pre) => {
@@ -1065,10 +939,8 @@ export default function LogicView(
         setEdit,
         loading,
         setLoading,
-        setCurrentPage,
         valueName,
         setValueName,
-        valueNickN,
         categories,
         setCategories,
         errText,

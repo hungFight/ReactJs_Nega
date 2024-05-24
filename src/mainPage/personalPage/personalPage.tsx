@@ -2,19 +2,19 @@ import React, { useState, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '../../app/reUsingComponents/Avatars/Avatar';
 
-import { Buttons, Div, Img, P, Span } from '../../app/reUsingComponents/styleComponents/styleDefault';
+import { Buttons, Div, P } from '../../app/reUsingComponents/styleComponents/styleDefault';
 import { DivFlexPosition, DivLoading, Hname } from '../../app/reUsingComponents/styleComponents/styleComponents';
 import { DivPersonalPage } from '../styleNextWeb';
-import { DivBg, DivIntr, DivItems, DivOp, DivPerson, DivStories, InputChangeP } from './stypePersonal';
-import { offPersonalPage, setNewProfile, setOpenProfile, setTrueErrorServer } from '../../app/redux/hideShow';
+import { DivPerson, InputChangeP } from './stypePersonal';
+import { setNewProfile } from '../../app/redux/hideShow';
 import Title from './layout/TitleOfPers/Title';
-import { CheckI, CloseI, CopyI, DotI, HeartI, HeartMI, ImageI, LoadingI, UndoI } from '~/assets/Icons/Icons';
+import { CheckI, DotI, HeartI, HeartMI, UndoI } from '~/assets/Icons/Icons';
 import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
-import { PropsUser, PropsUserPer } from 'src/App';
 import SettingEditPersonal from './layout/Setting/SettingEditPersonal';
 import LogicView from './logicPersonal';
 import SettingOtherProfile from './layout/Setting/SettingOtherProfile';
 import Image from '~/reUsingComponents/Avatars/Image';
+import { PropsUser, PropsUserPer } from '~/typescript/userType';
 
 interface PropsPer {
     AllArray: PropsUserPer[];
@@ -47,7 +47,6 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
         loading,
         valueName,
         setValueName,
-        valueNickN,
         categories,
         setCategories,
         errText,
@@ -106,7 +105,6 @@ const PersonalPage: React.FC<PropsPer> = ({ AllArray, where, setUsersData, user,
         );
     };
     const cssMoreAva = online.includes(user.id) ? 'border: 1px solid #418a7a;' : 'border: 1px solid #696969;';
-    console.log(user, 'cssMoreAva');
     const handleUndo = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         handleCheck.current = true;

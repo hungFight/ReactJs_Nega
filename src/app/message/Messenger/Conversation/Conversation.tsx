@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import LogicConversation from './LogicConver';
 import { Player } from 'video-react';
-import { PropsId_chats, PropsUser } from 'src/App';
+import { PropsId_chats } from 'src/App';
 import moment from 'moment';
 import 'moment/locale/vi';
 import ItemsRoom from './ItemsConvers';
@@ -25,6 +25,7 @@ import handleFileUpload from '~/utils/handleFileUpload';
 import chatAPI from '~/restAPI/chatAPI';
 import { queryClient } from 'src';
 import { PropsItemQueryChat, PropsOldSeenBy } from '~/typescript/messengerType';
+import { PropsUser } from '~/typescript/userType';
 
 const Conversation: React.FC<{
     index: number;
@@ -75,8 +76,6 @@ const Conversation: React.FC<{
         setEmoji,
         handleEmojiSelect,
         dispatch,
-        conversation,
-        setConversation,
         opMore,
         setOpMore,
         lg,
@@ -110,37 +109,36 @@ const Conversation: React.FC<{
         dataMore,
         scrollCheck,
     } = LogicConversation(id_chat, dataFirst.id, userOnline, colorText, conversationText, balloon);
+    const [optionsForItem, setOptions] = useState<PropsOptionForItem | undefined>(undefined);
     const one = useRef<boolean>(true); // pin chat
     if (data?._id) {
         if (!mm.current.some((m) => m.id === data?._id && index === m.index)) {
             mm.current.push({ id: data._id, index });
         }
     }
-    const handleTouchMoveRoomChat = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (data?._id && mouse.includes(data?._id ?? '') && del.current) {
-            const x = e.clientX;
-            const y = e.clientY;
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            if (del.current) {
-                del.current.style.transition = 'none';
-                if (viewportWidth - 10 >= x && x >= 19) {
-                    xRef.current = x - 200;
-                    del.current.style.left = `${x - 200}px`;
-                }
-                if (viewportHeight - 10 >= y && y >= 24) {
-                    yRef.current = y - 200;
-                    del.current.style.top = `${y - 200}px`;
-                }
-            }
-        }
-        // Đặt vị trí cho phần tử
-    };
+
     useEffect(() => {
         if (ERef.current) ERef.current.addEventListener('scroll', handleScroll);
         return () => ERef.current?.removeEventListener('scroll', handleScroll);
         // Optional: Call the observer's callback function immediately to get the initial scroll height
     }, []);
+    // if (data?.room[0]?.id) {
+    //     dataMore.options.push({
+    //         id: 5,
+    //         name: conversationText.optionRoom.del,
+    //         load: loadDel,
+    //         icon: loadDel ? (
+    //             <DivLoading css="font-size: 12px; margin: 0;">
+    //                 <LoadingI />
+    //             </DivLoading>
+    //         ) : (
+    //             <MinusI />
+    //         ),
+    //         onClick: () => {
+    //             if (ye) handleDelete();
+    //         },
+    //     });
+    // }
     function setSeenBy() {
         if (isIntersecting.current.length && data) {
             queryClient.setQueryData(['getItemChats', `${id_chat.id_other}_${dataFirst.id}`], (pre: PropsItemQueryChat) => {
@@ -182,67 +180,70 @@ const Conversation: React.FC<{
             isIntersecting.current = [];
         }
     }
-    const handleTime = (dateTime: string, type: string) => { // convert date
-        if (type === 'hour') {
-            const newDateTime = moment(dateTime).locale(lg).format('LT');
-            return newDateTime;
-        } else {
-            const newDateTime = moment(dateTime)
-                .locale(lg)
-                .format(lg === 'vi' ? 'dddd, LL' : 'MMMM Do YYYY');
-            return newDateTime;
-        }
-    };
-    // if (data?.room[0]?.id) {
-    //     dataMore.options.push({
-    //         id: 5,
-    //         name: conversationText.optionRoom.del,
-    //         load: loadDel,
-    //         icon: loadDel ? (
-    //             <DivLoading css="font-size: 12px; margin: 0;">
-    //                 <LoadingI />
-    //             </DivLoading>
-    //         ) : (
-    //             <MinusI />
-    //         ),
-    //         onClick: () => {
-    //             if (ye) handleDelete();
-    //         },
-    //     });
-    // }
-    const handleOnKeyup = (e: any) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSend(data?._id, data?.user.id);
-        } else {
-            e.target.setAttribute('style', 'height: auto');
-            if (e.key === 'Backspace') {
-                e.target.setAttribute('style', `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`);
+    const handleTime = (dateTime: string, type: string) => {
+            // convert date
+            if (type === 'hour') {
+                const newDateTime = moment(dateTime).locale(lg).format('LT');
+                return newDateTime;
             } else {
-                e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
+                const newDateTime = moment(dateTime)
+                    .locale(lg)
+                    .format(lg === 'vi' ? 'dddd, LL' : 'MMMM Do YYYY');
+                return newDateTime;
             }
-        }
-    };
-    const handleOnKeyDown = (e: any) => {
-        console.log(e.key);
-        if (e.key === 'Enter') e.preventDefault();
-        if (e.key === 'Alt') {
-            e.preventDefault();
-            e.target.value += '\n';
-        }
-    };
-    const [optionsForItem, setOptions] = useState<PropsOptionForItem | undefined>(undefined);
-    const Dot: number[] = [];
-    const eraser = useRef<number>(0);
-    if (writingBy) {
-        for (let i = 1; i <= writingBy.length; i++) {
-            Dot.push(i);
-        }
-    }
-    const era = Dot.length < eraser.current;
-    eraser.current = Dot.length;
+        },
+        handleOnKeyup = (e: any) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend(data?._id, data?.user.id);
+            } else {
+                e.target.setAttribute('style', 'height: auto');
+                if (e.key === 'Backspace') {
+                    e.target.setAttribute('style', `height: ${value ? e.target.scrollHeight : e.target.scrollHeight - 16}px`);
+                } else {
+                    e.target.setAttribute('style', `height: ${e.target.scrollHeight}px`);
+                }
+            }
+        },
+        handleOnKeyDown = (e: any) => {
+            console.log(e.key);
+            if (e.key === 'Enter') e.preventDefault();
+            if (e.key === 'Alt') {
+                e.preventDefault();
+                e.target.value += '\n';
+            }
+        },
+        handleTouchMoveRoomChat = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            if (data?._id && mouse.includes(data?._id ?? '') && del.current) {
+                const x = e.clientX;
+                const y = e.clientY;
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                if (del.current) {
+                    del.current.style.transition = 'none';
+                    if (viewportWidth - 10 >= x && x >= 19) {
+                        xRef.current = x - 200;
+                        del.current.style.left = `${x - 200}px`;
+                    }
+                    if (viewportHeight - 10 >= y && y >= 24) {
+                        yRef.current = y - 200;
+                        del.current.style.top = `${y - 200}px`;
+                    }
+                }
+            }
+            // Đặt vị trí cho phần tử
+        };
+    // const Dot: number[] = [];
+    // const eraser = useRef<number>(0);
+    // if (writingBy) {
+    //     for (let i = 1; i <= writingBy.length; i++) {
+    //         Dot.push(i);s
+    // }
+    // const era = Dot.length < eraser.current;
+    // eraser.current = Dot.length;
     const Time = ''; //data ? moments().FromNow(data, 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss', lg) : '';
-    const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => { // response from others writing chats
+    const handleWriteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        // response from others writing chats
         console.log(e.target.value, 'enter');
         socket.emit(`user_${data?.user.id}_in_roomChat_personal_writing`, {
             roomId: data?._id,
@@ -251,8 +252,6 @@ const Conversation: React.FC<{
         });
         setValue(e.target.value);
     };
-    console.log(conversation, 'conversation');
-
     return (
         <DivConversation
             ref={del}
@@ -297,7 +296,6 @@ const Conversation: React.FC<{
                         del={del}
                         optionsForItem={optionsForItem}
                         conversation={data}
-                        setConversation={setConversation}
                         setEmoji={setEmoji}
                         roomImage={roomImage}
                         setRoomImage={setRoomImage}
@@ -426,7 +424,8 @@ const Conversation: React.FC<{
                                 let timeS: any = '';
                                 const mn = moment(rc.createdAt); //show time for every day
                                 if (date1.current)
-                                    if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {  // compare an old chat to a new cha
+                                    if (mn.diff(date1.current, 'days') < 1 && date1.current?.format('YYYY-MM-DD') !== mn.format('YYYY-MM-DD')) {
+                                        // compare an old chat to a new cha
                                         timeS = date1.current?.diff(new Date(), 'days') >= 0 ? date1.current?.locale(lg).calendar() : date1.current?.locale(lg).format('LL');
                                         date1.current = mn;
                                     } else timeS = '';
@@ -466,48 +465,7 @@ const Conversation: React.FC<{
                                                     <Div
                                                         wrap="wrap"
                                                         css=" padding: 2px 12px 4px; border-radius: 7px; border-top-right-radius: 13px; border-bottom-right-radius: 13px; background-color: #353636; border: 1px solid #4e4d4b;"
-                                                    >
-                                                        {Dot.map((f, index) => (
-                                                            <Div key={f} css=" position: relative;">
-                                                                <Div
-                                                                    width="12px"
-                                                                    css={`
-                                                                        animation: writingChat 0.5s linear;
-                                                                        @keyframes writingChat {
-                                                                            0% {
-                                                                                width: 0px;
-                                                                            }
-                                                                            50% {
-                                                                                width: 6px;
-                                                                            }
-                                                                            100% {
-                                                                                width: 12px;
-                                                                            }
-                                                                        }
-                                                                    `}
-                                                                >
-                                                                    <MinusI />
-                                                                </Div>
-                                                                {index + 1 === Dot.length && (
-                                                                    <Div
-                                                                        css={`
-                                                                            position: absolute;
-                                                                            right: -14px;
-                                                                            top: -9px;
-                                                                            animation: writingChatPen 0.5s linear;
-                                                                            @keyframes writingChatPen {
-                                                                                100% {
-                                                                                    right: -14px;
-                                                                                }
-                                                                            }
-                                                                        `}
-                                                                    >
-                                                                        {era ? <EraserI /> : <PenI />}
-                                                                    </Div>
-                                                                )}
-                                                            </Div>
-                                                        ))}
-                                                    </Div>
+                                                    ></Div>
                                                 </Div>
                                             </Div>
                                         );

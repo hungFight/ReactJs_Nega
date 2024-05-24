@@ -11,11 +11,9 @@ import { BsDot } from 'react-icons/bs';
 import { FcReadingEbook } from 'react-icons/fc';
 import QuillText from '~/reUsingComponents/Libraries/QuillText';
 import { PropsValueQuill } from '../FormUpNews/FormUpNews';
-import { PropsUser } from 'src/App';
 import postAPI from '~/restAPI/socialNetwork/postAPI';
 import { PropsComments, PropsCommentsIN, PropsDataPosts } from './interfacePosts';
 import '~/reUsingComponents/Libraries/formatMoment';
-import Languages from '~/reUsingComponents/languages';
 import moments from '~/utils/moment';
 import { queryClient } from 'src';
 import { socket } from 'src/mainPage/NextWeb';
@@ -23,6 +21,8 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import ReplyComment from './ReplyComment';
 import { useDispatch } from 'react-redux';
 import { DivFill } from './stylePost';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
+import { PropsUser } from '~/typescript/userType';
 const Comment: React.FC<{
     anony: {
         id: string;
@@ -54,7 +54,7 @@ const Comment: React.FC<{
         setAnonymous(!anonymous);
         if (setDD) setDD('525');
     };
-    const { lg } = Languages();
+    const { lg } = useLanguages();
     const noData = useRef<boolean>(false);
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['Comment', dataPost?._id],

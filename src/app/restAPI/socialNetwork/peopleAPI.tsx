@@ -5,7 +5,6 @@ import { PropsFriends } from '~/social_network/components/Header/layout/MakingFr
 import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
 import { PropsDataStranger } from '~/social_network/components/Header/layout/MakingFriends/Strangers';
-import { PropsMoresGetting, PropsParamsById } from '../userAPI';
 class PeopleRequest {
     setFriend = async (dispatch: Dispatch<AnyAction>, id: string, per?: string) => {
         try {
@@ -19,21 +18,21 @@ class PeopleRequest {
             return errorHandling(err, dispatch);
         }
     };
-    delete = async (dispatch: Dispatch<AnyAction>, id: string, params: PropsParamsById | undefined, mores: PropsMoresGetting | undefined, kindOf?: string, per?: string) => {
+    delete = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
-            const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, params, mores, kindOf: kindOf, per } });
+            const res = await axiosJWTss.post('/SN/people/deleteReq', { params: { id_req: id, kindOf: kindOf, per } });
             return res.data;
         } catch (error) {
             const err: any = error as AxiosError;
             return errorHandling(err, dispatch);
         }
     };
-    setConfirm = async (dispatch: Dispatch<AnyAction>, id: string, params: PropsParamsById | undefined, mores: PropsMoresGetting | undefined, kindOf?: string, per?: string) => {
+    setConfirm = async (dispatch: Dispatch<AnyAction>, id: string, kindOf?: string, per?: string) => {
         try {
             const axiosJWTss = refreshToken.axiosJWTs();
             const res = await axiosJWTss.patch('/SN/people/setConfirm', {
-                params: { id_req: id, kindOf: kindOf, per, params, mores },
+                params: { id_req: id, kindOf: kindOf, per },
             });
             return res.data;
         } catch (error) {

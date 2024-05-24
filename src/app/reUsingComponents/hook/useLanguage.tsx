@@ -9,7 +9,7 @@ interface PropsLanguage {
         };
     };
 }
-const Languages = () => {
+const useLanguages = () => {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
@@ -18,4 +18,4 @@ const Languages = () => {
 
     return { lg };
 };
-export default Languages;
+export default useLanguages;

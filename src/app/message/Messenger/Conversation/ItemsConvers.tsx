@@ -5,15 +5,14 @@ import FileConversation from '../File';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { memo, useEffect, useRef, useState } from 'react';
 import { DotI, GarbageI, LoadingI, ReplyI, WarningI } from '~/assets/Icons/Icons';
-import CryptoJS from 'crypto-js';
-import { PropsUser } from 'src/App';
 import { PropsPhraseText } from 'src/dataText/DataMessenger';
 import { DivLoading, DivFlexPosition, Hname, DivNone } from '~/reUsingComponents/styleComponents/styleComponents';
 import Conversation from './Conversation';
 import { PropsOptionForItem } from './OptionForItems/OptionForItem';
 import { queryClient } from 'src';
-import Languages from '~/reUsingComponents/languages';
 import { socket } from 'src/mainPage/NextWeb';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
+import { PropsUser } from '~/typescript/userType';
 type PropsRc = PropsItemsData;
 const ItemsRoom: React.FC<{
     roomId: string;
@@ -103,7 +102,7 @@ const ItemsRoom: React.FC<{
     setSeenBy,
     statusOperation,
 }) => {
-    const { lg } = Languages();
+    const { lg } = useLanguages();
     const elWatChTime = useRef<HTMLDivElement | null>(null);
     const width = useRef<HTMLDivElement | null>(null);
     if (rc.userId === dataFirst.id && !wch) {

@@ -1,6 +1,5 @@
 import React, { useRef, useState, ReactElement, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { PropsUser, PropsUserPer } from 'src/App';
 import {
     BirthI,
     CloseI,
@@ -28,10 +27,8 @@ import userAPI from '~/restAPI/userAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import Gender from '~/utils/Gender';
 import handleFileUpload from '~/utils/handleFileUpload';
-import Cookies from '~/utils/Cookies';
-import { useCookies } from 'react-cookie';
-import ServerBusy from '~/utils/ServerBusy';
-import { PropsPrivacy } from '../../logicPersonal';
+import { PropsPrivacy } from '~/typescript/personalPage';
+import { PropsUser, PropsUserPer } from '~/typescript/userType';
 
 const LogicTitle = (
     data: PropsUserPer,

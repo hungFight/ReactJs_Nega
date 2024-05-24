@@ -1,8 +1,5 @@
 import axios, { AxiosError } from 'axios';
 import refreshToken from '~/restAPI/refreshToken/refreshToken';
-import Cookies from 'universal-cookie';
-import { PropsUser, PropsUserPer } from 'src/App';
-import CommonUtils from '~/utils/CommonUtils';
 import errorHandling from './errorHandling/errorHandling';
 import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
@@ -40,29 +37,15 @@ interface PropsParamsMores {
     visitor?: boolean;
     relationship?: boolean | string;
 }
-export interface PropsMoresGetting {
-    position?: boolean;
-    star?: boolean;
-    loverAmount?: boolean;
-    friendAmount?: boolean;
-    visitorAmount?: boolean;
-    followedAmount?: boolean;
-    followingAmount?: boolean;
-    relationship?: boolean;
-    language?: boolean;
-    privacy: boolean;
-    createdAt?: boolean;
-}
+
 type PropsErrorCode = 'NeGA_off' | 'NeGA_ExcessiveRequest' | null;
 class HttpRequestUser {
-    getById = async (dispatch: Dispatch<AnyAction>, id: string | string[], params: PropsParamsById, mores: PropsMoresGetting, first?: string) => {
+    getById = async (dispatch: Dispatch<AnyAction>, id: string | string[], first?: string) => {
         try {
             const Axios = refreshToken.axiosJWTs();
             const res = await Axios.post('/user/getById', {
                 id: id,
                 first,
-                params: params,
-                mores,
             });
             return res.data;
         } catch (error) {

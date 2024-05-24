@@ -2,13 +2,11 @@ import { memo } from 'react';
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
-import CryptoJS from 'crypto-js';
 import 'swiper/css/effect-coverflow';
 
 import { CloseI, SendI, UndoI, LoadingI } from '~/assets/Icons/Icons';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
-import useDebounce from '~/reUsingComponents/hook/useDebounce';
 import { DivIconMs } from '../styleMessage';
 import { DivResults, DivSend } from './styleSed';
 import { Div, Input } from '~/reUsingComponents/styleComponents/styleDefault';
@@ -16,7 +14,8 @@ import { DivLoading, DivFlexPosition, Hname } from '~/reUsingComponents/styleCom
 import ListAccounts from './ListAccounts';
 import MoreOption from './MoreOption';
 import LogicMessenger from './LogicMessenger';
-import { PropsId_chats, PropsUser } from 'src/App';
+import { PropsId_chats } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
 
 const Send: React.FC<{
     colorText: string;

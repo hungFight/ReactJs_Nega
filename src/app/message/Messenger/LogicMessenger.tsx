@@ -10,9 +10,9 @@ import sendChatAPi, { PropsRoomsChat } from '~/restAPI/chatAPI';
 import CommonUtils from '~/utils/CommonUtils';
 import ServerBusy from '~/utils/ServerBusy';
 import CryptoJS from 'crypto-js';
-import Languages from '~/reUsingComponents/languages';
 import { PropsReMessengerRD } from '~/redux/messenger';
-import { PropsUser } from 'src/App';
+import { PropsUser } from '~/typescript/userType';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
 export interface PropsDataMore {
     [en: string]: {
         options: {
@@ -45,7 +45,7 @@ export interface PropsDataMore {
 }
 const LogicMessenger = (dataUser: PropsUser) => {
     const dispatch = useDispatch();
-    const { lg } = Languages();
+    const { lg } = useLanguages();
     const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
     const { roomChat } = useSelector((state: PropsReMessengerRD) => state.messenger);
 

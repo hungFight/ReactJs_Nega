@@ -7,8 +7,6 @@ import moment from 'moment';
 
 import DateTime from '~/reUsingComponents/CurrentDateTime';
 import { socket } from 'src/mainPage/NextWeb';
-import { PropsReloadRD, setDelIds } from '~/redux/reload';
-import Languages from '~/reUsingComponents/languages';
 import ServerBusy from '~/utils/ServerBusy';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import handleFileUpload from '~/utils/handleFileUpload';
@@ -17,7 +15,6 @@ import { PropsId_chats } from 'src/App';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';
 import { queryClient } from 'src';
 import {
-    PropsBackground_chat,
     PropsConversationCustoms,
     PropsDataMoreConversation,
     PropsImageOrVideosAtMessenger,
@@ -37,6 +34,7 @@ import { PropsConversionText } from 'src/dataText/DataMessenger';
 import chatAPI from '~/restAPI/chatAPI';
 import { removeBalloon, setBalloon, setTopLeft } from '~/redux/roomsChat';
 import { setRoomChat } from '~/redux/messenger';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
 
 export function regexCus(val: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -81,47 +79,42 @@ export function regexCus(val: string): string {
 const installOffset = 10;
 export type PropsChat = PropsConversationCustoms & PropsRooms;
 export default function LogicConversation(id_chat: PropsId_chats, id_you: string, userOnline: string[], colorText: string, conversationText: PropsConversionText, balloon: string[]) {
-    console.log(id_you, 'id_you', id_chat);
-
     const dispatch = useDispatch();
-    const { delIds } = useSelector((state: PropsReloadRD) => state.reload);
     //action
-    const { lg } = Languages();
-    const textarea = useRef<HTMLTextAreaElement | null>(null);
-    const ERef = useRef<HTMLDivElement | null>(null);
-    const del = useRef<HTMLDivElement | null>(null);
-    const cRef = useRef<number>(0);
-    const mRef = useRef<any>(0);
-    const offset = useRef<number>(installOffset);
-    const indexRef = useRef<number>(1);
-    const emptyRef = useRef<boolean>(false);
-    const moreAction = useRef<{ prevent: boolean; moreChat: boolean }>({ prevent: true, moreChat: false });
+    const { lg } = useLanguages(),
+        textarea = useRef<HTMLTextAreaElement | null>(null),
+        ERef = useRef<HTMLDivElement | null>(null),
+        del = useRef<HTMLDivElement | null>(null),
+        cRef = useRef<number>(0),
+        mRef = useRef<any>(0),
+        offset = useRef<number>(installOffset),
+        indexRef = useRef<number>(1),
+        emptyRef = useRef<boolean>(false),
+        moreAction = useRef<{ prevent: boolean; moreChat: boolean }>({ prevent: true, moreChat: false });
 
-    const [value, setValue] = useState<string>('');
-    const [emoji, setEmoji] = useState<boolean>(false);
-    const [option, setOption] = useState<boolean>(false); // not yet
-    const [opMore, setOpMore] = useState<boolean>(false);
-    const [uploadIn, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
+    const [value, setValue] = useState<string>(''),
+        [emoji, setEmoji] = useState<boolean>(false),
+        [option, setOption] = useState<boolean>(false), // not yet
+        [opMore, setOpMore] = useState<boolean>(false),
+        [uploadIn, setupload] = useState<{ pre: { _id: string; link: any; type: string }[]; up: any } | undefined>();
     // loading
-    const [loadDel, setLoadDel] = useState<boolean>(false);
-    const [loading, setLoading] = useState<string>('');
-    const [roomImage, setRoomImage] = useState<{ id_room: string; id_file: string } | undefined>(undefined);
+    const [loadDel, setLoadDel] = useState<boolean>(false),
+        [loading, setLoading] = useState<string>(''),
+        [roomImage, setRoomImage] = useState<{ id_room: string; id_file: string } | undefined>(undefined);
     // scroll
-    const [moves, setMoves] = useState<string[]>([]);
-    const [mouse, setMouse] = useState<string[]>([]);
-    const xRef = useRef<number | null>(null);
-    const yRef = useRef<number | null>(null);
-    const scrollCheck = useRef<boolean>(true);
-    const isIntersecting = useRef<PropsOldSeenBy[]>([]);
+    const [moves, setMoves] = useState<string[]>([]),
+        [mouse, setMouse] = useState<string[]>([]),
+        xRef = useRef<number | null>(null),
+        yRef = useRef<number | null>(null),
+        scrollCheck = useRef<boolean>(true),
+        isIntersecting = useRef<PropsOldSeenBy[]>([]);
 
-    const [wch, setWch] = useState<string | undefined>('');
-    const rr = useRef<string>('');
+    const [wch, setWch] = useState<string | undefined>(''),
+        rr = useRef<string>('');
     // pin page
-    const [choicePin, setChoicePin] = useState<string>('');
-    const [itemPin, setItemPin] = useState<PropsPinC>();
-    const itemPinData = useRef<PropsItemRoom[]>([]);
-
-    const [conversation, setConversation] = useState<PropsChat>();
+    const [choicePin, setChoicePin] = useState<string>(''),
+        [itemPin, setItemPin] = useState<PropsPinC>(),
+        itemPinData = useRef<PropsItemRoom[]>([]);
     // display conversation's each day
     const date1 = useRef<moment.Moment | null>(null);
     const [writingBy, setWritingBy] = useState<{ length: number; id: string } | undefined>();
@@ -270,11 +263,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 userId: id_you,
                 _id: id_,
             };
-            console.log(data, 'conn_1');
-
             const con = data.rooms.find((r) => r._id === data.lastElement.roomId);
-            console.log(con, 'connn');
-
             if (con && con.count < 50) {
                 const filter = con.filter.find((f) => !f.full);
                 if (filter)
@@ -304,8 +293,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                     createdAt: new Date(),
                 });
             }
-            console.log(data.rooms, 'data.rooms');
-
             const formData = new FormData();
             const fda: any = {};
             if (value) fda.value = encrypt(value, `chat_${data._id ? data._id : id_s}`);
@@ -408,14 +395,14 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         dispatch(setOpenProfile({ newProfile: id_oth, currentId: '' }));
     };
     const handleDelete = async () => {
-        setLoadDel(true);
-        if (data) {
-            const res = await sendChatAPi.delete(dispatch, data._id);
-            if (res) {
-                setConversation({ ...data, rooms: [], deleted: res.deleted });
-                dispatch(setDelIds(res));
-            }
-        }
+        // setLoadDel(true);
+        // if (data) {
+        //     const res = await sendChatAPi.delete(dispatch, data._id);
+        //     if (res) {
+        //         setConversation({ ...data, rooms: [], deleted: res.deleted });
+        //         dispatch(setDelIds(res));
+        //     }
+        // }
 
         setLoadDel(false);
     };
@@ -738,11 +725,11 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
                 },
             );
             return () => {
-                socket.off(`phrase_chatRoom_response_${conversation?._id}_${id_you}`);
-                socket.off(`user_${conversation?.user.id}_in_roomChat_${conversation?._id}_personal_receive`);
+                socket.off(`phrase_chatRoom_response_${data?._id}_${id_you}`);
+                socket.off(`user_${data?.user.id}_in_roomChat_${data?._id}_personal_receive`);
                 socket.off(code);
-                socket.off(`Conversation_chat_deleteAll_${conversation?._id}`);
-                socket.off(`Conversation_chat_update_${conversation?._id}`);
+                socket.off(`Conversation_chat_deleteAll_${data?._id}`);
+                socket.off(`Conversation_chat_update_${data?._id}`);
             };
         }
     }, [data?._id]);
@@ -779,7 +766,7 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         // return () => {
         //     if (re) observer.unobserve(re);
         // };
-    }, [choicePin, conversation]);
+    }, [choicePin]);
     useEffect(() => {
         // if (dataSent && !writingBy) {
         //     if (conversation?.room.some((r) => r.length)) {
@@ -1002,8 +989,6 @@ export default function LogicConversation(id_chat: PropsId_chats, id_you: string
         setEmoji,
         handleEmojiSelect,
         dispatch,
-        conversation,
-        setConversation,
         opMore,
         setOpMore,
         lg,

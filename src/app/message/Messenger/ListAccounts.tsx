@@ -3,7 +3,6 @@ import 'moment/locale/vi';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Languages from '~/reUsingComponents/languages';
 import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import { DivFlexPosition, Hname } from '~/reUsingComponents/styleComponents/styleComponents';
 import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefault';
@@ -14,6 +13,7 @@ import moments from '~/utils/moment';
 import { PropsId_chats } from 'src/App';
 import { PropsRoomsChatRD, onChats } from '~/redux/roomsChat';
 import '~/reUsingComponents/Libraries/formatMoment';
+import useLanguages from '~/reUsingComponents/hook/useLanguage';
 
 const ListAccounts: React.FC<{
     colorText: string;
@@ -44,7 +44,7 @@ const ListAccounts: React.FC<{
     });
     const { chats } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat);
 
-    const { lg } = Languages();
+    const { lg } = useLanguages();
     const seenBy = useRef<HTMLDivElement | null>(null);
 
     let time: string | number | NodeJS.Timeout | undefined;
