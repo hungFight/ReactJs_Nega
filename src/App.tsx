@@ -51,7 +51,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [_c, setCookies] = useCookies(['k_user']),
+    const [_c, setCookies,dele] = useCookies(['k_user']),
         dispatch = useDispatch(),
         { userId, token, removeCookies } = Cookies(), // customs hook
         { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
