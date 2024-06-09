@@ -7,7 +7,7 @@ import { EmailI, LoadingI, PhoneI, SendOPTI } from '~/assets/Icons/Icons';
 import { DivExpireTime, DivOtp, DivReSend, DivSendMail, DivVerifymail, Form } from './styleVerify';
 import { Pcontent, SpanIconPhoneMail } from '../Register/styleRegister';
 import { Button, Input } from '~/reUsingComponents/styleComponents/styleDefault';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PropsBgRD } from '~/redux/background';
 interface PropsVerify {
     setEnable: React.Dispatch<SetStateAction<boolean>>;
@@ -16,6 +16,7 @@ interface PropsVerify {
     setAcc: React.Dispatch<React.SetStateAction<number>>;
 }
 const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) => {
+    const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [loading, setLoading] = useState<boolean>(false);
     const [otpStatus, setOtpStatus] = useState<boolean>(false);
@@ -34,6 +35,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
 
     const handlePhoneNumberEmail = (e: { target: any }) => {
         if (isNaN(e.target.value)) {
+            // mail
             const validateEmail = /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,5})+$/;
             setPhoneNumberEmail({ value: e.target.value, icon: <EmailI /> });
 
@@ -49,6 +51,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
             setPhoneNumberEmail({ value: '', icon: '' });
             setCheckPhoneNumberEmail({ check: false, title: '' });
         } else {
+            // phone
             if (e.target.value.length <= 11 && e.target.value.length >= 9) {
                 setCheckPhoneNumberEmail({ check: false, title: '' });
             } else {
@@ -96,21 +99,20 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                         phoneMail: valuePhoneNumberEmail.value,
                         otp: otp,
                     };
-                    const res = await authAPI.postVerifyOTP(params);
-                    setAcc(Number(res?.acc));
-                    if (res?.status === 1) {
-                        setError({ otp: '', mail: '' });
-                        setEnable(true);
-                        setOtpStatus(false);
-                        setOtpTime(0);
-                    } else {
-                        setError({ ...error, otp: res?.message });
-                    }
+                    const res = await authAPI.postVerifyOTP(dispatch, params);
+                    if (res && typeof res !== 'number') {
+                        if (res.phoneEmail === valuePhoneNumberEmail.value) {
+                            setError({ otp: '', mail: '' });
+                            setEnable(true);
+                            setOtpStatus(false);
+                            setOtpTime(0);
+                        }
+                    } else setError({ ...error, otp: 'Account was wrong or not signed up' });
                 } else {
-                    setError({ ...error, otp: 'Please otp code must 6 characters!' });
+                    setError({ ...error, otp: 'Please otp code must be 6 characters!' });
                 }
             } else {
-                setError({ ...error, otp: 'Please Enter Your Data!' });
+                setError({ ...error, otp: 'Please Enter Your code!' });
             }
         }
     };

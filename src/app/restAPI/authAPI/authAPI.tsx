@@ -6,6 +6,7 @@ import http from '~/utils/http';
 import errorHandling from '../errorHandling/errorHandling';
 import Cookies from 'js-cookie';
 import { PropsUser } from '~/typescript/userType';
+import { AnyAction, Dispatch } from '@reduxjs/toolkit';
 
 class AuthRequest {
     public postLogin = async (params: { nameAccount: string; password: string }) => {
@@ -33,10 +34,16 @@ class AuthRequest {
         });
         return response;
     };
-    public postVerifyOTP = async (params: { phoneMail: string; otp: string }): Promise<{ status: number; message: string; acc: number }> => {
+    public postVerifyOTP = async (dispatch: Dispatch<AnyAction>, params: { phoneMail: string; otp: string }) => {
         const path = 'verify/otp';
-        const res = await http.post(path, { params }).then((data) => data.data);
-        return res;
+        return await http
+            .post<{ phoneEmail: string; id: string } | number | null>(path, { params })
+            .then((data) => data.data)
+            .catch((error) => {
+                const err = error as AxiosError;
+                if (err.response?.status === 404) return err.response?.status;
+                return errorHandling(err, dispatch);
+            });
     };
     public postRegister = async (params: { name: string; phoneMail: string | Number; password: string; gender: number | null; date: string }) => {
         try {
