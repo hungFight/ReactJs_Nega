@@ -37,11 +37,10 @@ class AuthRequest {
     public postVerifyOTP = async (dispatch: Dispatch<AnyAction>, params: { phoneMail: string; otp: string }) => {
         const path = 'verify/otp';
         return await http
-            .post<{ phoneEmail: string; id: string } | number | null>(path, { params })
+            .post<{ status: 1 | 0; message: string }>(path, { params })
             .then((data) => data.data)
             .catch((error) => {
                 const err = error as AxiosError;
-                if (err.response?.status === 404) return err.response?.status;
                 return errorHandling(err, dispatch);
             });
     };

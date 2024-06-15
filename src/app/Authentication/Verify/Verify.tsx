@@ -21,7 +21,6 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
     const [loading, setLoading] = useState<boolean>(false);
     const [otpStatus, setOtpStatus] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');
-    const [otpTime, setOtpTime] = useState<number>(61);
     const [error, setError] = useState<{ mail: string; otp: string }>({ mail: '', otp: '' });
     const [valuePhoneNumberEmail, setPhoneNumberEmail] = useState<{
         value: string;
@@ -86,7 +85,6 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                     setError({ otp: '', mail: '' });
                     setAccount(valuePhoneNumberEmail.value);
                     setOtpStatus(true);
-                    setOtpTime(60);
                 } else {
                     setError({ ...error, mail: res?.message });
                 }
@@ -100,13 +98,10 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                         otp: otp,
                     };
                     const res = await authAPI.postVerifyOTP(dispatch, params);
-                    if (res && typeof res !== 'number') {
-                        if (res.phoneEmail === valuePhoneNumberEmail.value) {
-                            setError({ otp: '', mail: '' });
-                            setEnable(true);
-                            setOtpStatus(false);
-                            setOtpTime(0);
-                        }
+                    if (res?.status === 1) {
+                        setError({ otp: '', mail: '' });
+                        setEnable(true);
+                        setOtpStatus(false);
                     } else setError({ ...error, otp: 'Account was wrong or not signed up' });
                 } else {
                     setError({ ...error, otp: 'Please otp code must be 6 characters!' });
@@ -117,20 +112,6 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
         }
     };
     // async check the email
-    useEffect(() => {
-        if (otpStatus) {
-            if (otpTime === 0) {
-                // setOtpStatus(false);
-                return;
-            }
-            const time = setInterval(() => {
-                setOtpTime((pre) => pre - 1);
-            }, 1000);
-            return () => clearInterval(time);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [otpTime]);
-    console.log(otpTime, otpStatus);
     const insertOTP = () => {
         if (otpStatus) {
             return (
