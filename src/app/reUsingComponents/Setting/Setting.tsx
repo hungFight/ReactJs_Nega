@@ -10,7 +10,7 @@ import Bar from '~/reUsingComponents/Bar/Bar';
 import { PropsSetting } from './interface';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { DivFlexPosition } from '../styleComponents/styleComponents';
+import { DivFlexPosition, DivNone } from '../styleComponents/styleComponents';
 import { DivLanguages, DivResults } from './styleSetting';
 import { Div, P } from '../styleComponents/styleDefault';
 import { socket } from 'src/mainPage/NextWeb';
@@ -58,7 +58,7 @@ const Settingcbl: React.FC<{
         position: fixed;
         top: 0px;
         right: ${turnSetting ? '9px' : '-280px'};
-        box-shadow: 0 0 4px rgb(108 106 106);
+        box-shadow: 0 0 7px rgb(14 14 14);padding: 0 5px;
         z-index: 9999;
         transition: all 0.3s linear;
         border-radius: 5px;
@@ -105,6 +105,7 @@ const Settingcbl: React.FC<{
         <>
             <Div height="500px" css={css1} onClick={(e) => e.stopPropagation()}>
                 <DivFlexPosition
+                    width="auto"
                     size="25px"
                     top="11px"
                     left="11px"
@@ -115,7 +116,7 @@ const Settingcbl: React.FC<{
                 >
                     <CloseI />
                 </DivFlexPosition>
-                <Div width="250px" css={css2}>
+                <DivNone width="250px" css={css2}>
                     {datas.map((setting: any, index: number) => {
                         if (setting.logout) {
                         }
@@ -134,7 +135,7 @@ const Settingcbl: React.FC<{
                             </div>
                         );
                     })}
-                </Div>
+                </DivNone>
                 {resultoption && <Bar top="calc(50% - 10px);" onClick={() => setResultoption(false)} css="width: 5px;" />}
                 {resultoption && <DivResults> {showresult}</DivResults>}
             </Div>

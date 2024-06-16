@@ -2,7 +2,6 @@ import { createSlice, current } from '@reduxjs/toolkit';
 
 export interface InitialStateHideShow {
     setting: boolean;
-    personalPage: boolean;
     openProfile: {
         newProfile: string[];
         currentId?: string; // is used in personalPage's title
@@ -14,7 +13,6 @@ export interface InitialStateHideShow {
 }
 const initialState: InitialStateHideShow = {
     setting: false,
-    personalPage: false,
     openProfile: {
         newProfile: [],
         currentId: '',
@@ -34,14 +32,7 @@ const hideShowSlice = createSlice({
         offSetting: (state) => {
             state.setting = false;
         },
-        onPersonalPage: (state) => {
-            state.personalPage = true;
-        },
-        offPersonalPage: (state) => {
-            state.personalPage = false;
-        },
         offAll: (state) => {
-            state.personalPage = false;
             state.setting = false;
         },
         setOpenProfile: (state, action: { payload: { newProfile: string[]; currentId?: string } }) => {
@@ -63,16 +54,5 @@ const hideShowSlice = createSlice({
         },
     },
 });
-export const {
-    onSetting,
-    offSetting,
-    onPersonalPage,
-    offPersonalPage,
-    setOpenProfile,
-    offAll,
-    setTrueErrorServer,
-    setFalseErrorServer,
-    setCurrentIdProfile,
-    setNewProfile,
-} = hideShowSlice.actions;
+export const { onSetting, offSetting, setOpenProfile, offAll, setTrueErrorServer, setFalseErrorServer, setCurrentIdProfile, setNewProfile } = hideShowSlice.actions;
 export default hideShowSlice.reducer;

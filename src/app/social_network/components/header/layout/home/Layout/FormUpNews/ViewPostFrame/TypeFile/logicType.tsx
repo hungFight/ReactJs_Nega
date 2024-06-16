@@ -33,6 +33,7 @@ const LogicType = (step: number, setStep: React.Dispatch<React.SetStateAction<nu
                         setCC(null);
                     }}
                     css={`
+                        border-radius: 50%;
                         ${step > 0
                             ? `${
                                   step > 1 ? 'background-color: #a1a1a18a;' : 'background-color: #0304048a;'

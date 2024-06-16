@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'src/app/utils/Cookies';
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 // Import Swiper styles
-import { InitialStateHideShow, setOpenProfile } from './app/redux/hideShow';
+import { InitialStateHideShow, offAll, setOpenProfile } from './app/redux/hideShow';
 import PersonalPage from './mainPage/personalPage/PersonalPage';
 import { login } from './dataText/dataLogin';
 import { register } from './dataText/dataRegister';
@@ -30,11 +30,11 @@ const DivOpacity = styled.div`
     width: 100%;
     height: 100%;
     position: fixed;
-    background-color: #686767a1;
+    background-color: #0808088c;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: 9998;
 `;
 
 export type PropsId_chats = {
@@ -51,14 +51,14 @@ function App() {
     const [currentPage, setCurrentPage] = useState<number>(() => {
         return JSON.parse(localStorage.getItem('currentPage') || '{}').currentWeb;
     });
-    const [_c, setCookies,dele] = useCookies(['k_user']),
+    const [_c, setCookies, dele] = useCookies(['k_user']),
         dispatch = useDispatch(),
         { userId, token, removeCookies } = Cookies(), // customs hook
         { openProfile } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
         { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background),
         { chats, balloon, established } = useSelector((state: PropsRoomsChatRD) => state.persistedReducer.roomsChat),
         mm = useRef<{ index: number; id: string }[]>([]),
-        { setting, personalPage } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
+        { setting } = useSelector((state: { hideShow: InitialStateHideShow }) => state.hideShow),
         { session } = useSelector((state: PropsReloadRD) => state.reload),
         userOnline = useSelector((state: { userOnlineRD: { userOnline: string[] } }) => state.userOnlineRD.userOnline),
         [userData, setUsersData] = useState<PropsUserPer[]>([]),
@@ -195,9 +195,9 @@ function App() {
     };
     const handleClick = (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
+        dispatch(offAll());
         setUsersData([]);
         handleCheck.current = true;
-        dispatch(setOpenProfile({ newProfile: [], currentId: '' }));
     };
     const leng = userData.length;
     if (session === 'NeGA_off') return <ErrorBoundaries code={session} _delCookies={removeCookies} />;
@@ -232,7 +232,7 @@ function App() {
                     <>
                         <Website openProfile={openProfile.newProfile} dataUser={userFirst} setDataUser={setUserFirst} setId_chats={setId_chats} />
                         <Message dataUser={userFirst} userOnline={userOnline} setId_chats={setId_chats} id_chats={id_chats} />
-                        {(setting || personalPage) && <DivOpacity onClick={handleClick} />}
+                        {setting && <DivOpacity onClick={handleClick} />}
                         <Div
                             width="240px"
                             wrap="wrap"

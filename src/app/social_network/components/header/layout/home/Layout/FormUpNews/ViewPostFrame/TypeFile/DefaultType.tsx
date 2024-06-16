@@ -7,6 +7,7 @@ import Resize from './Resize';
 import { Link } from 'react-router-dom';
 import { PropsDataFileUpload } from '../../FormUpNews';
 import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
+import Background from '~/reUsingComponents/Background';
 
 const DefaultType: React.FC<{
     file: PropsDataFileUpload[];
@@ -21,7 +22,6 @@ const DefaultType: React.FC<{
 }> = ({ file, colorText, step, setStep, setBg, bg, link, setUploadPre, _id }) => {
     const { moreFile, cc, handleStep, setMoreFile, ToolDefault, showTitle, update, setUpdate, showComment, setShowComment } = LogicType(step, setStep, colorText);
     //edit
-    const [showColors, setShowColors] = useState(false);
     const [heightV, setHeightV] = useState<string>('');
     useEffect(() => {
         setHeightV('');
@@ -64,7 +64,6 @@ const DefaultType: React.FC<{
                 background-color: ${bg};
                 ${file.length > 1 ? (step === 1 ? ' grid-auto-rows: unset;  display: grid;' : ' grid-auto-rows: 200px;  display: grid;') : ''}
                 grid-template-columns: ${file.length === 1 ? '1fr' : file.length === 4 || file.length === 2 || file.length === 3 ? '1fr 1fr' : '1fr 1fr 1fr'};
-
                 ${step === 1 &&
                 `
                 grid-template-columns: 1fr;
@@ -81,57 +80,7 @@ const DefaultType: React.FC<{
                 }`}
             `}
         >
-            {!_id && file.length > 1 && (
-                <DivFlexPosition
-                    css={`
-                        top: ${step === 1 ? '55px' : '15px'};
-                        right: 12.5px;
-                        font-size: 30px;
-                        flex-direction: column;
-                        z-index: 1;
-                    `}
-                >
-                    <Div display="block" css="position: relative;">
-                        <Div
-                            css={`
-                                position: absolute;
-                                top: -5px;
-                                right: -2px;
-                                padding: 2px;
-                                background-color: ${bg || '#4e4e4e'};
-                                border-radius: 50%;
-                                color: ${bg === '#fcfcfc' ? '#1e1e1e' : '#ffffff'};
-                                z-index: 1;
-                            `}
-                            onClick={() => setShowColors(!showColors)}
-                        >
-                            <ColorsI />
-                        </Div>
-                        {colors.map((cl, index) => (
-                            <Div
-                                key={cl.id}
-                                css={`
-                                    width: 27px;
-                                    height: 27px;
-                                    border-radius: 5px;
-                                    transition: all 0.5s linear;
-                                    position: absolute;
-                                    top: ${(index + 1) * 30}px;
-                                    right: 2px;
-                                    background-color: ${cl.color};
-                                    ${index === 0 ? 'color: white;' : ''}
-                                    ${!showColors && 'top: 0px; background-color: #00000000; color:#00000000; '}
-                                `}
-                                onClick={() => {
-                                    if (setBg) setBg(cl.color);
-                                }}
-                            >
-                                {cl?.icon}
-                            </Div>
-                        ))}
-                    </Div>
-                </DivFlexPosition>
-            )}
+            {!_id && file.length > 1 && <Background bg={bg} setBg={setBg} />}
             {cc !== null && <FullScreenSildes step={step} cc={cc} files={file} />}
             <>
                 {step > 0 && ToolDefault(0)}

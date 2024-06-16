@@ -7,7 +7,6 @@ import Avatar from '~/reUsingComponents/Avatars/Avatar';
 import ListWebBar from './listWebBar/listWebBar';
 import { BookI, EarthI, FriendI, GridDotI, NewI, ProfileI, WebsiteI, WorkI } from '~/assets/Icons/Icons';
 import Background from 'src/backbround/background';
-import { onPersonalPage } from '~/redux/hideShow';
 import CurrentPageL from './CurrentPage';
 import {
     DivAvatar,
@@ -170,9 +169,6 @@ const Website: React.FC<{
     const [option, setOption] = useState<React.ReactNode>(<NextListWeb data={buttonPage} />);
     const handleWebsite = () => {
         setOption(<NextListWeb data={buttonPage} />);
-    };
-    const handleProfileMain = () => {
-        dispatch(onPersonalPage());
     };
     const onli = userOnline.includes(userId) ? 'border: 1px solid #418a7a;' : 'border: 1px solid #696969;';
     console.log('userrrrrr', dataUser);

@@ -218,7 +218,7 @@ export const DivImgS = styled.div`
     ${(props: { css?: string }) => props.css};
 `;
 export const DivFlexPosition = styled.div<PropsDivFlexPosition>`
-    width: ${(props) => props.width || '100%'};
+    width: ${(props) => props.width || 'auto'};
     display: ${(props) => props.display || 'flex'};
     flex-wrap: ${(props) => props.wrap || 'none'};
     justify-content: ${(props) => props.justify || 'center'};
