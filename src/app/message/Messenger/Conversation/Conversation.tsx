@@ -6,7 +6,6 @@ import { DivLoading, Hname } from '~/reUsingComponents/styleComponents/styleComp
 import dataEmoji from '@emoji-mart/data/sets/14/facebook.json';
 import Picker from '@emoji-mart/react';
 import { useEffect, useRef, useState } from 'react';
-import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import LogicConversation from './LogicConver';
 import { Player } from 'video-react';
 import { PropsId_chats } from 'src/App';
@@ -22,6 +21,7 @@ import chatAPI from '~/restAPI/chatAPI';
 import { queryClient } from 'src';
 import { PropsItemQueryChat } from '~/typescript/messengerType';
 import { PropsUser } from '~/typescript/userType';
+import { Label, Textarea } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 
 const Conversation: React.FC<{
     index: number;

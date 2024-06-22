@@ -12,7 +12,12 @@ interface PropsState {
         };
     };
 }
-function LogicLogin(data: PropsLogin, setWhatKind: React.Dispatch<React.SetStateAction<string>>, setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>, setCookies: any) {
+function LogicLogin(
+    data: PropsLogin,
+    setWhatKind: React.Dispatch<React.SetStateAction<'register' | 'changePassword' | ''>>,
+    setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>,
+    setCookies: any,
+) {
     const [loading, setLoading] = useState<boolean>(false);
     const dataLanguages = useSelector((state: PropsState) => state.persistedReducer?.language.login);
     const { colorBg, colorText } = useSelector((state: PropsBgRD) => state.persistedReducer.background);

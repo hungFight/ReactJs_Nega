@@ -41,7 +41,7 @@ export interface PropsComments {
 }
 export interface PropsDataPosts {
     _id: string;
-    user: { id: string; avatar: Buffer | undefined; fullName: string; gender: number }[];
+    user: { id: string; avatar: string | undefined; fullName: string; gender: number }[];
     category: number;
     background: string;
     id_user: string;

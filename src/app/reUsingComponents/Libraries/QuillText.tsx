@@ -1,7 +1,7 @@
 import React from 'react';
 import { ReactQuillF } from '../styleComponents/styleComponents';
 import ReactQuill from 'react-quill';
-import { PropsValueQuill } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/FormUpNews';
+import { PropsValueQuill } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/FormUpNews';
 
 const QuillText: React.FC<{
     quillRef: React.RefObject<ReactQuill>;

@@ -10,8 +10,6 @@ import Images from '~/assets/images';
 import Hovertitle from '~/reUsingComponents/HandleHover/HoverTitle';
 import { CameraI, ExchangeI, FriendI, HomeI, LanguageI, SearchI, SettingI } from '~/assets/Icons/Icons';
 import { Alogo, ButtonSt, DivHeader, DivHollow, DivWrapper, LinkCall, LinkExchange, LinkHome, Plogo, SpanX } from './styleHeader';
-import styled from 'styled-components';
-import Socialnetwork from '~/social_network';
 import { PropsTextHome } from './layout/Home/Home';
 import { PropsTextFriends } from './layout/MakingFriends/People';
 import { DivItems, Input } from './layout/MakingFriends/styleMakingFriends';

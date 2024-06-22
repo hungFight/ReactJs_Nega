@@ -4,8 +4,7 @@ import { Div, DivFlex, P } from '~/reUsingComponents/styleComponents/styleDefaul
 import FileConversation from '../../File';
 import chatAPI from '~/restAPI/chatAPI';
 import { useDispatch } from 'react-redux';
-import { Label, Textarea } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
-import { v4 as uuidv4 } from 'uuid';
+import { Label, Textarea } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import handleFileUpload from '~/utils/handleFileUpload';
 import { encrypt } from '~/utils/crypto';
 import fileWorkerAPI from '~/restAPI/fileWorkerAPI';

@@ -2,8 +2,8 @@ import React from 'react';
 import { PropsId_chats } from 'src/App';
 import { PropsUser } from '~/typescript/userType';
 import { socialnetwork } from 'src/dataText/dateTextSocialNetWork';
-import Socialnetwork from '~/social_network';
-import Study from '~/study';
+import Socialnetwork from '~/Pages/social_network';
+import Study from '~/Pages/study';
 
 interface PropsCPage {
     currentPage: number;

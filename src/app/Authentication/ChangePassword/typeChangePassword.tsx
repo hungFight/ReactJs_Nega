@@ -1,6 +1,6 @@
 export interface PropsChangeP {
     Next: React.ReactNode;
-    setWhatKind: React.Dispatch<React.SetStateAction<string>>;
+    setWhatKind: React.Dispatch<React.SetStateAction<'register' | 'changePassword' | ''>>;
     phoneMail: string | number;
     setEnable: React.Dispatch<React.SetStateAction<boolean>>;
 }

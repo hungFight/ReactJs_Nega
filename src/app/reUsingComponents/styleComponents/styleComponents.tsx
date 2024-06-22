@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { SwiperSlide } from 'swiper/react';
 import { LoadingI } from '~/assets/Icons/Icons';
-import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { Label } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { Span } from './styleDefault';
 import ReactQuill from 'react-quill';
 export const ReactQuillF = styled(ReactQuill)`

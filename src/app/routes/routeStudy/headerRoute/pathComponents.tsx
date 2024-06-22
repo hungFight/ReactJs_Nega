@@ -1,4 +1,4 @@
-import { Home, Personalpage } from '~/study/components/header/importLayoutComponents';
+import { Home, Personalpage } from '~/Pages/study/components/header/importLayoutComponents';
 interface Routes {
     home: string;
     Personalpage: string;

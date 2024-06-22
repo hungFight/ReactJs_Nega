@@ -4,7 +4,7 @@ import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleCompon
 import { Div, H3, Input } from '~/reUsingComponents/styleComponents/styleDefault';
 import peopleAPI from '~/restAPI/socialNetwork/peopleAPI';
 import { PropsFriends } from '../../../../MakingFriends/Friends';
-import Account from '~/social_network/Accoutns/Account';
+import Account from '~/Pages/social_network/Accoutns/Account';
 import { useDispatch, useSelector } from 'react-redux';
 import { InitialStateHideShow, setOpenProfile } from '~/redux/hideShow';
 

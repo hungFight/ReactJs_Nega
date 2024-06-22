@@ -7,14 +7,8 @@ import { PropsBgRD } from '~/redux/background';
 
 export interface PropsListWeb {
     data: {
-        Tag: StyledComponent<
-            React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<HTMLAnchorElement>>,
-            any,
-            {},
-            never
-        >;
+        Tag: StyledComponent<React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<HTMLAnchorElement>>, any, {}, never>;
         link: string;
-        next: (index: number) => void;
         name: string;
         icon: JSX.Element;
         page: number;
@@ -22,18 +16,12 @@ export interface PropsListWeb {
 }
 const NextListWeb: React.FC<PropsListWeb> = ({ data }) => {
     const { colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
-    console.log('next web', data);
 
     return (
         <>
             {data.map((V) => {
                 return (
-                    <V.Tag
-                        key={V.name}
-                        to={V.link}
-                        onClick={() => V.next(V.page)}
-                        color={colorBg === 1 ? '#202124f5' : ''}
-                    >
+                    <V.Tag key={V.name} to={V.link} color={colorBg === 1 ? '#202124f5' : ''}>
                         <DivPage>{V.icon}</DivPage>
                         <Ptitle>{V.name}</Ptitle>
                     </V.Tag>

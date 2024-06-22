@@ -1,5 +1,5 @@
 import { LanguageI } from '~/assets/Icons/Icons';
-import { InNetWork } from '~/social_network';
+import { InNetWork } from '~/Pages/social_network';
 
 export const socialnetwork: { vi: InNetWork; en: InNetWork } = {
     vi: {

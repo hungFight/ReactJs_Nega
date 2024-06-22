@@ -1,9 +1,8 @@
 import Images from '~/assets/images';
 
-const subImage = (id: string | undefined, gender: number | string | undefined) => {
-    if (id) {
-        return id;
-    } else {
+const subImage = (id: string | undefined | null, gender: number | string | undefined) => {
+    if (id) return id;
+    else {
         if (typeof gender === 'string') {
             return gender === 'male'
                 ? Images.defaultAvatarMale

@@ -30,7 +30,7 @@ export interface PropsLogin {
 
 const Login: React.FC<{
     data: PropsLogin;
-    setWhatKind: React.Dispatch<React.SetStateAction<string>>;
+    setWhatKind: React.Dispatch<React.SetStateAction<'register' | 'changePassword' | ''>>;
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
     setCookies: any;
 }> = ({ data, setWhatKind, setUserFirst, setCookies }) => {

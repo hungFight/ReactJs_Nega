@@ -1,10 +1,10 @@
 import { AxiosError } from 'axios';
 import refreshToken from '~/restAPI/refreshToken/refreshToken';
 import errorHandling from '../errorHandling/errorHandling';
-import { PropsFriends } from '~/social_network/components/Header/layout/MakingFriends/Friends';
+import { PropsFriends } from '~/Pages/social_network/components/Header/layout/MakingFriends/Friends';
 import { Dispatch } from 'react';
 import { AnyAction } from '@reduxjs/toolkit';
-import { PropsDataStranger } from '~/social_network/components/Header/layout/MakingFriends/Strangers';
+import { PropsDataStranger } from '~/Pages/social_network/components/Header/layout/MakingFriends/Strangers';
 class PeopleRequest {
     public setFriend = async (dispatch: Dispatch<AnyAction>, id: string, per?: string) => {
         try {

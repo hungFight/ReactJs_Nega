@@ -1,10 +1,8 @@
 import { FollowI, FriendI, HeartMI, PeopleI, StarI, UndoIRegister } from '~/assets/Icons/Icons';
 import { Div, P, Span } from '../../../app/reUsingComponents/styleComponents/styleDefault';
-import Avatar from '../../../app/reUsingComponents/Avatars/Avatar';
 import { useEffect, useState } from 'react';
-import { Input } from '~/social_network/components/Header/layout/MakingFriends/styleMakingFriends';
+import { Input } from '~/Pages/social_network/components/Header/layout/MakingFriends/styleMakingFriends';
 import { DivSearch } from './styleLayout';
-import { GiBurningBook } from 'react-icons/gi';
 import { useCookies } from 'react-cookie';
 import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
 

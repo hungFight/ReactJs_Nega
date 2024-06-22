@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChangeI, CheckI, CopyI, GarbageI, ImageI } from '~/assets/Icons/Icons';
 import { Buttons, Div, H3, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { Label } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { PropsUserPer } from '~/typescript/userType';
 
 const EditP: React.FC<{

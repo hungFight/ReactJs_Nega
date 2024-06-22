@@ -29,9 +29,9 @@ const Authentication: React.FC<{
     setUserFirst: React.Dispatch<React.SetStateAction<PropsUser>>;
     setCookies: any;
 }> = ({ dataLogin, dataRegister, setUserFirst, setCookies }) => {
-    const [enable, setEnable] = useState<boolean>(true);
+    const [enable, setEnable] = useState<boolean>(false);
     const [account, setAccount] = useState<string | number>('');
-    const [whatKind, setWhatKind] = useState<string>('register');
+    const [whatKind, setWhatKind] = useState<'register' | 'changePassword' | ''>('');
     const [acc, setAcc] = useState<number>(0);
     const Next: ReactNode = (
         <Pnext
@@ -47,10 +47,10 @@ const Authentication: React.FC<{
     const Element = () => {
         if (whatKind === 'register') {
             if (enable) return <Register acc={acc} dataRegister={dataRegister} account={account} Next={Next} />;
-            return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
+            return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} whatKind={whatKind} />;
         } else if (whatKind === 'changePassword') {
             if (enable) return <ChangePassword phoneMail={account} Next={Next} setWhatKind={setWhatKind} setEnable={setEnable} />;
-            return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} />;
+            return <Verify setAcc={setAcc} setEnable={setEnable} setAccount={setAccount} Next={Next} whatKind={whatKind} />;
         } else {
             return <Login data={dataLogin} setCookies={setCookies} setWhatKind={setWhatKind} setUserFirst={setUserFirst} />;
         }

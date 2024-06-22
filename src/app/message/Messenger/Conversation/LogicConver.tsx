@@ -28,7 +28,7 @@ import {
 import { DivLoading } from '~/reUsingComponents/styleComponents/styleComponents';
 import { BackgroundI, BalloonI, ClockCirclesI, GarbageI, LoadingI, MoveI, ProfileCircelI } from '~/assets/Icons/Icons';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
-import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { Label } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import { setOpenProfile } from '~/redux/hideShow';
 import { PropsConversionText } from 'src/dataText/DataMessenger';
 import chatAPI from '~/restAPI/chatAPI';

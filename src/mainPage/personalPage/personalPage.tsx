@@ -8,7 +8,7 @@ import { DivPerson, InputChangeP } from './stypePersonal';
 import { setNewProfile } from '../../app/redux/hideShow';
 import Title from './layout/TitleOfPers/Title';
 import { CheckI, DotI, HeartI, HeartMI, UndoI } from '~/assets/Icons/Icons';
-import { Label } from '~/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
+import { Label } from '~/Pages/social_network/components/Header/layout/Home/Layout/FormUpNews/styleFormUpNews';
 import SettingEditPersonal from './layout/Setting/SettingEditPersonal';
 import LogicView from './logicPersonal';
 import SettingOtherProfile from './layout/Setting/SettingOtherProfile';

@@ -14,8 +14,9 @@ interface PropsVerify {
     setAccount: React.Dispatch<React.SetStateAction<string | number>>;
     Next: ReactNode;
     setAcc: React.Dispatch<React.SetStateAction<number>>;
+    whatKind: 'register' | 'changePassword';
 }
-const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) => {
+const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next, whatKind }) => {
     const dispatch = useDispatch();
     const { colorText, colorBg } = useSelector((state: PropsBgRD) => state.persistedReducer.background);
     const [loading, setLoading] = useState<boolean>(false);
@@ -74,6 +75,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
         if (!otpStatus) {
             if (!checkPhoneNumberEmail.check && valuePhoneNumberEmail.value) {
                 const params = {
+                    whatKind,
                     phoneMail: valuePhoneNumberEmail.value,
                 };
                 setLoading(true);
@@ -95,6 +97,7 @@ const Verify: React.FC<PropsVerify> = ({ setAcc, setEnable, setAccount, Next }) 
                 if (otp.length === 6) {
                     const params = {
                         phoneMail: valuePhoneNumberEmail.value,
+                        whatKind,
                         otp: otp,
                     };
                     const res = await authAPI.postVerifyOTP(dispatch, params);

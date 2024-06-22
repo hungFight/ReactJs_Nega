@@ -12,10 +12,10 @@ interface _Avatar {
     className?: string;
     idH?: string;
     id?: string;
-    src?: any;
+    src?: string | null;
     alt?: string | undefined;
     fallback?: any;
-    staticI?: boolean;
+    staticI?: boolean; // for comment of post
     width?: string;
     radius?: string;
     gender: number | string | undefined;
@@ -36,7 +36,7 @@ const Avatar = forwardRef((props: _Avatar, ref: any) => {
     // useEffect(() => {
     //     setAvatarFallback(!src ? Fallback : src);
     // }, [Fallback, src]);
-    console.log(gender, alt, 'avatarFallback', src);
+    console.log(gender, alt, 'avatarFallback', src, avatarFallback);
     const [repetitions, setRepetitions] = useState<number>(0);
     const handleErrorImage = (e: any) => {
         e.target.src = subImage('', gender);

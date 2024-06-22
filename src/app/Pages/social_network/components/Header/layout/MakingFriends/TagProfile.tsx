@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import Avatar from '../../../../../reUsingComponents/Avatars/Avatar';
-import { Hname } from '../../../../../reUsingComponents/styleComponents/styleComponents';
-import { Buttons, Div } from '../../../../../reUsingComponents/styleComponents/styleDefault';
+import { Hname } from '~/reUsingComponents/styleComponents/styleComponents';
+import { Buttons, Div } from '~/reUsingComponents/styleComponents/styleDefault';
+import Avatar from '~/reUsingComponents/Avatars/Avatar';
 interface PropsTagP {
     data: {
         id: string;

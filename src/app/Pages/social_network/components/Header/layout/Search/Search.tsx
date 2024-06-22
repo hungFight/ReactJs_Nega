@@ -1,14 +1,13 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-
-import useDebounce from '../../../../../reUsingComponents/hook/useDebounce';
-
 import userAPI from '~/restAPI/userAPI';
 import { CloseI, DotI, SearchI } from '~/assets/Icons/Icons';
-import Account from '~/social_network/Accoutns/Account';
 import { DivResults, DivSearch, Input } from './styleSearch';
 import { useDispatch } from 'react-redux';
 import { Div, P } from '~/reUsingComponents/styleComponents/styleDefault';
 import { DivFlexPosition } from '~/reUsingComponents/styleComponents/styleComponents';
+import useDebounce from '~/reUsingComponents/hook/useDebounce';
+import Account from '~/Pages/social_network/Accoutns/Account';
+
 export interface PropsSearchTextSN {
     rec: string;
     menu: {

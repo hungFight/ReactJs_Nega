@@ -1,10 +1,4 @@
-import {
-    Home,
-    Exchange,
-    CallVideo,
-    MakingFriends,
-    PersonalPage,
-} from '~/social_network/components/Header/importLayoutComponents';
+import { Home, Exchange, CallVideo, MakingFriends, PersonalPage } from '~/Pages/social_network/components/Header/importLayoutComponents';
 interface Routes {
     home: string;
     exchange: string;
